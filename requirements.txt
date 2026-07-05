@@ -1,0 +1,11 @@
+# Tool dependencies for the University & Course Finder.
+# Install with:  pip install -r requirements.txt
+
+# Config / secrets loading (.env)
+python-dotenv
+
+# Web discovery (tools/firecrawl_search.py)
+firecrawl-py
+
+# The master list, comparisons, dossiers, and calendar are local CSV/markdown,
+# written with the stdlib `csv` / `json` modules — no extra dependency needed.
