@@ -9,3 +9,7 @@ firecrawl-py
 
 # The master list, comparisons, dossiers, and calendar are local CSV/markdown,
 # written with the stdlib `csv` / `json` modules — no extra dependency needed.
+
+# Markdown -> PDF export of dossiers (tools/dossier_to_pdf.py) — pure-pip, no native libs
+markdown
+xhtml2pdf

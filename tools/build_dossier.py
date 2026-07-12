@@ -2,7 +2,9 @@
 build_dossier.py — render a standardized deep-research dossier for one finalist.
 
 Reads a research JSON the agent assembles in Stage 5 and renders a fixed-order,
-14-section Markdown dossier so every finalist is directly comparable. Writes it to
+16-section Markdown dossier (Snapshot + 14 content sections + Sources) built to
+answer three decision questions — can I get in? will I belong & thrive? what will
+it take to apply? — so the student can decide, not just compare. Writes it to
 data/students/<slug>/dossiers/<uni-course-slug>.md and flips that row in
 master_list.csv to Dossier status = Done (and List status = Finalist).
 
@@ -20,18 +22,20 @@ Input JSON shape (see workflows/05_university_dossier.md for the full spec):
       "application_system": "...", "admission_likelihood": "...",
       "slug": "manchester-cs",                # optional; derived if absent
       "sections": {
-        "course_details": "markdown...",
         "entry_and_fit": "markdown...",
+        "admitted_profiles": "markdown...",
+        "course_details": "markdown...",
         "costs": "markdown...",
         "scholarships": "markdown...",
+        "cost_of_living": "markdown...",
         "visa_immigration": "markdown...",
         "recognition_back_home": "markdown...",
-        "cost_of_living": "markdown...",
         "employability": "markdown...",
-        "environment_community": "markdown...",
-        "student_sentiment": "markdown...",
-        "how_to_apply": "markdown...",
-        "key_dates": "markdown..."
+        "student_life_culture": "markdown...",
+        "city_and_belonging": "markdown...",
+        "application_checklist": "markdown...",
+        "key_dates": "markdown...",
+        "why_here": "markdown..."
       },
       "sources": [
         {"title": "...", "url": "...", "authority": "Official"|"Aggregator", "as_of": "2026"}
@@ -54,20 +58,25 @@ if hasattr(sys.stdout, "reconfigure"):
 REPO_ROOT = Path(__file__).resolve().parent.parent
 STUDENTS_DIR = REPO_ROOT / "data" / "students"
 
-# (section key, heading). Snapshot (1) is generated; Sources (14) is a list.
+# (section key, heading). Snapshot (1) is generated; Sources (last) is a list.
+# Ordered decision-first: can I get in? → course & cost → gates & payoff → will I
+# belong? → what it takes to apply → should I? Every content section is enforced
+# non-empty (see validate); the numbering below is auto-derived from this order.
 CONTENT_SECTIONS = [
-    ("course_details", "Course details & structure"),
     ("entry_and_fit", "Entry requirements & this student's fit"),
+    ("admitted_profiles", "Who actually gets in"),
+    ("course_details", "Course details & structure"),
     ("costs", "Costs (full)"),
     ("scholarships", "Scholarships & financial aid"),
+    ("cost_of_living", "Cost of living & accommodation"),
     ("visa_immigration", "Visa & immigration"),
     ("recognition_back_home", "Recognition back home"),
-    ("cost_of_living", "Cost of living & accommodation"),
     ("employability", "Employability & outcomes"),
-    ("environment_community", "Environment, community & student life"),
-    ("student_sentiment", "Student sentiment"),
-    ("how_to_apply", "How to apply — step by step"),
+    ("student_life_culture", "Student life & culture"),
+    ("city_and_belonging", "The city, the area & belonging"),
+    ("application_checklist", "Application prep checklist"),
     ("key_dates", "Key dates & deadlines"),
+    ("why_here", "Why here / why hesitate"),
 ]
 
 STATUS_COL = SHORTLIST_HEADERS.index("List status")
@@ -87,8 +96,8 @@ def validate(data):
         sys.exit(
             "ERROR: dossier is incomplete — these sections are empty: "
             + ", ".join(missing)
-            + ".\nEvery finalist dossier must fill all 12 content sections (research them, "
-            "or write 'Not found — <why>')."
+            + f".\nEvery finalist dossier must fill all {len(CONTENT_SECTIONS)} content sections "
+            "(research them, or write 'Not found — <why>')."
         )
     if not data.get("sources"):
         sys.exit("ERROR: dossier has no sources. Every hard fact needs a citation.")
@@ -130,7 +139,7 @@ def render_dossier(data):
         parts.append(f"## {i}. {heading}")
         parts.append(sections[key].strip())
         parts.append("")
-    parts.append("## 14. Sources")
+    parts.append(f"## {len(CONTENT_SECTIONS) + 2}. Sources")
     parts.append(render_sources(data["sources"]))
     parts.append("")
     return "\n".join(parts)

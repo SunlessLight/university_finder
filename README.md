@@ -14,10 +14,11 @@ See [CLAUDE.md](CLAUDE.md) for the agent operating instructions, and
 ## Layout
 
 ```
-workflows/   Markdown SOPs (00_overview … 06_decide_and_apply)
-tools/       Python execution scripts (firecrawl_search, init_student, shortlist_schema,
-             sync_shortlist, compare_universities, build_dossier, build_calendar)
+workflows/   Markdown SOPs (00_overview … 06_decide_and_apply, + 07_form_intake)
+tools/       Python execution scripts (firecrawl_search, init_student, ingest_form_csv,
+             shortlist_schema, sync_shortlist, compare_universities, build_dossier, build_calendar)
 data/students/   One private data bank per student (gitignored — PII)
+data/form/       Google Form CSV exports dropped here for batch intake (gitignored — PII)
 .tmp/        Disposable intermediates (gitignored)
 .env         Secrets only (gitignored)
 ```
@@ -30,7 +31,7 @@ data/students/   One private data bank per student (gitignored — PII)
 | 2 Aspirations | `preferences.json` | Countries, field, priorities (interest-discovery if undecided) |
 | 3 Discover | `master_list.csv` (Longlist) | 20-40 candidates, scored |
 | 4 Verify | `master_list.csv` (Shortlist) | 8-12, official facts, Reach/Match/Safety, comparison tables |
-| 5a Dossier | `dossiers/<uni>.md` | 3-5 deep 14-section dossiers |
+| 5a Dossier | `dossiers/<uni>.md` | 3-5 deep 16-section decision dossiers |
 | 5b Decide | `recommendation.md` + `calendar.md` | Ranked picks, application strategy, deadlines |
 
 ## Setup (first time)
@@ -67,9 +68,26 @@ python tools/build_dossier.py --student aisyah-rahman --input .tmp/aisyah-rahman
 python tools/build_calendar.py --student aisyah-rahman
 ```
 
-Full instructions — the per-destination query playbook, scoring rubric, the 14-section dossier template,
+Full instructions — the per-destination query playbook, scoring rubric, the 16-section dossier template,
 and the narrowing rules — live in [workflows/](workflows/), starting with
 [00_overview.md](workflows/00_overview.md).
+
+## Intake from a Google Form (help many students at once)
+
+Instead of a live conversation, others can request a search by filling a **Google Form**; the responses
+become student data banks in bulk. This replaces Stages 1-2 only — Stages 3-5 are unchanged.
+
+1. Build the form once — the exact questions, sections, and consent gate are in
+   [workflows/07_form_intake.md](workflows/07_form_intake.md).
+2. Export responses as CSV and drop the file in **`data/form/`** (gitignored — PII).
+3. Ingest:
+   ```powershell
+   python tools/ingest_form_csv.py data/form/responses.csv --dry-run   # preview
+   python tools/ingest_form_csv.py data/form/responses.csv             # create folders
+   ```
+   Or just tell Claude **"ingest the form responses"** and it follows workflow 07 — creating one
+   `profile.json` + `preferences.json` per consenting respondent, then finalizing the few
+   judgment-heavy fields (grades → subjects, recognition targets, undecided students) before Stage 3.
 
 ## Notes
 

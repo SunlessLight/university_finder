@@ -83,18 +83,20 @@ DEFAULT_DOSSIER_STATUS = "Not started"
 # Desirability scoring. Each sub-score is 0-5; the weighted sum is normalized to
 # 0-100. NOTE the deliberate absence of an "entry_fit" weight (see module docstring).
 # --------------------------------------------------------------------------- #
-# Weights follow Toru's stated priority order (2026-07-05): scholarship > hands-on experience >
-# ranking > location > employability > recognition. Cost is deliberately near-zero this round because
-# the student set no budget limit and asked for cost NOT to be a screening factor. Re-tune per student.
+# Weights are PER-STUDENT — re-tuned before each sync_shortlist.py run (one student at a time).
+# CURRENT: Zafri (2026-07-12): employability > scholarship > ranking, with course ACCREDITATION
+# elevated (he explicitly values accreditation over pure ranking) and cost near-zero (no budget given,
+# so cost is not a screening factor). This overwrites the previous student's tuning — the accepted
+# pattern: an already-synced student's master_list.csv scores are baked in and only change on re-sync.
 SCORE_WEIGHTS = {
-    "scholarship_opportunity": 0.22, # #1: realistic funding available to this student
-    "experiential_fit": 0.18,        # #2: hands-on projects/research/community involvement, not just exams
-    "course_match": 0.15,            # baseline: how well the course matches the field/goal (robotics)
-    "subject_reputation": 0.15,      # #3 ranking: subject-specific rank + graduate outcomes
-    "location_pref_fit": 0.10,       # #4: matches stated location/lifestyle preferences
-    "post_study_work_fit": 0.10,     # #5 employability: visa / post-study work vs migration intent
-    "recognition_fit": 0.06,         # #6: recognised back home (MQA + professional body) where it matters
-    "total_cost_fit": 0.04,          # cost is NOT a screening factor this round (near-neutralised)
+    "post_study_work_fit": 0.20,     # #1 employability: visa / post-study work + graduate outcomes
+    "scholarship_opportunity": 0.17, # #2: realistic funding available to this student
+    "subject_reputation": 0.16,      # #3 ranking: subject-specific rank + graduate outcomes
+    "course_match": 0.15,            # baseline: is it genuinely naval architecture / marine engineering
+    "recognition_fit": 0.13,         # elevated: accreditation (RINA/IMarEST -> Washington Accord -> BEM)
+    "location_pref_fit": 0.08,       # rural / campus-based + close to public transport
+    "experiential_fit": 0.07,        # engineering is hands-on but the student didn't emphasise it
+    "total_cost_fit": 0.04,          # cost is NOT a screening factor this round (no budget given)
 }
 
 # Priority tiers by normalized desirability score (same thresholds as the speaker tool).

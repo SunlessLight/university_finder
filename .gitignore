@@ -9,6 +9,9 @@ token.json
 # Student data banks — hold personal info (PDPA), keep out of git
 data/students/
 
+# Google Form CSV exports — hold personal info (PDPA), keep out of git
+data/form/
+
 # Python
 .venv/
 __pycache__/

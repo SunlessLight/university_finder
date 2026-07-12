@@ -63,10 +63,19 @@ def profile_template(slug, name):
             "constraints": [],
         },
         "needs": {
-            "halal_food": None,
-            "prayer_facilities": None,
-            "malaysian_community": None,
+            # "Support & belonging" — broad, faith/culture-neutral. All PDPA-sensitive → only set
+            # from what the student volunteers; unmentioned stays null (not False).
+            "diet_halal": None,
+            "diet_vegetarian_vegan": None,
+            "diet_other": None,
+            "worship_facilities": None,       # any faith
+            "diaspora_community": None,       # a home-country community nearby (Malaysian or other)
             "proximity_to_family": None,
+            "disability_accessibility": None,
+            "wellbeing_support": None,        # mental-health / counselling
+            "lgbtq_friendly": None,
+            "personal_safety": None,
+            "climate_weather": None,
         },
         "notes": None,
     }

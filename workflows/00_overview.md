@@ -21,12 +21,23 @@ university that hasn't passed the cheap cut first.
 | 2 | `02_aspirations_intake.md` | `preferences.json` | What they want (countries, field, priorities) — incl. *interest-discovery* if undecided |
 | 3 | `03_discover_longlist.md` | `master_list.csv` (Longlist) | Broad, cheap, snippet-level discovery — 20-40 candidates |
 | 4 | `04_verify_shortlist.md` | `master_list.csv` (Shortlist) | Verify hard facts from official sources; Reach/Match/Safety; feasibility gates; comparison tables — cut to 8-12 |
-| 5a | `05_university_dossier.md` | `dossiers/<uni>.md` | Full 14-section dossier per finalist — 3-5 |
+| 5a | `05_university_dossier.md` | `dossiers/<uni>.md` | Full 16-section decision dossier per finalist — 3-5 |
 | 5b | `06_decide_and_apply.md` | `recommendation.md` + `calendar.md` | Recommendation, application strategy, one deadline calendar |
 
 **Cross-cutting:** `resume.md` (utility, not a stage) — when a returning student says **"resume
 &lt;name&gt;"**, it reconstructs state from `status.md` (cross-checked against the files) so a fresh
 session skips the cold start. Update each student's `status.md` at the end of every stage.
+
+**Apply-prep deliverable:** `08_application_prep.md` (utility, not a stage) — when a student has decided
+to **apply broadly and compare offers first, research fit later**, this produces a per-region, action-only
+"how to apply" guide grouped by application system (checklist + fees + tests + financial-aid forms/dates +
+deadlines) via `build_application_prep.py`. Dossier-free and **read-only** (never changes `List status`).
+
+**Alternate on-ramp:** `07_form_intake.md` replaces the conversational Stages 1-2 with a **Google
+Form**. Others fill the form; you export the CSV to `data/form/` and run `ingest_form_csv.py`, which
+batch-creates `profile.json` + `preferences.json` per respondent. You then finalize a few
+judgment-heavy fields (grades → subjects, recognition targets, undecided students) and continue at
+Stage 3. Use this to help many students without driving each intake by hand.
 
 ## The data bank (one folder per student)
 
@@ -36,9 +47,10 @@ data/students/<student-slug>/
   profile.json         # Stage 1
   preferences.json     # Stage 2
   master_list.csv      # Stages 3-4: every candidate + a "List status" column
-  dossiers/<uni>.md    # Stage 5a
+  dossiers/<uni>.md    # Stage 5a  (dossiers/<uni>.pdf — optional, on request via dossier_to_pdf.py)
   recommendation.md    # Stage 5b
   calendar.md          # Stage 5b
+  application_prep/<region>.md  # 08_application_prep.md — per-region "how to apply" guide (optional)
 ```
 
 **The master list is the narrowing surface.** Every candidate has a **`List status`**:
@@ -51,7 +63,7 @@ The columns are defined once in `shortlist_schema.py` (`SHORTLIST_HEADERS`). Cel
 plain-English sentences, not jargon. Quick glossary of the less-obvious columns:
 - **`Info source`** — where a fact came from: `Official` (the uni's own page / UCAS / Common App) or
   `Aggregator` (rankings sites, StudyPortals — discovery only). Hard facts must be `Official` by Stage 4.
-- **`Dossier status`** — internal pipeline flag: whether the full 14-section deep-profile has been built
+- **`Dossier status`** — internal pipeline flag: whether the full 16-section deep-profile has been built
   yet (`Not started` / `Done`). The student can ignore it.
 - **`Backup entry route`** — a way in if direct entry is a stretch (foundation year / INTO-Kaplan-Navitas
   pathway / community-college transfer).
@@ -102,6 +114,8 @@ The student's data bank holds personal data (grades, finances, nationality). `da
 
 ## Tools (deterministic layer) — see each workflow for usage
 
-`firecrawl_search.py` (discovery) · `init_student.py` (scaffold) · `shortlist_schema.py` (single source
-of truth) · `sync_shortlist.py` (score/dedupe/append) · `compare_universities.py` (comparison tables) ·
-`build_dossier.py` (14-section dossier) · `build_calendar.py` (deadline calendar).
+`firecrawl_search.py` (discovery) · `init_student.py` (scaffold) · `ingest_form_csv.py` (batch-scaffold
+from a Google Form CSV) · `shortlist_schema.py` (single source of truth) · `sync_shortlist.py`
+(score/dedupe/append) · `compare_universities.py` (comparison tables) · `build_dossier.py` (16-section
+dossier) · `dossier_to_pdf.py` (export a dossier to PDF for the student) · `build_calendar.py`
+(deadline calendar) · `build_application_prep.py` (per-region apply guide grouped by application system).
