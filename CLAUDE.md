@@ -62,6 +62,9 @@ These stop a tidy-looking list from being quietly wrong:
 
 - **Desirability ≠ admissibility.** The 0-100 score excludes entry fit; admissibility lives in
   `Admission likelihood` (Reach/Match/Safety) + `Warnings`. An unreachable uni must not rank high.
+- **Scoring weights are per-student** — `data/students/<slug>/weights.json`, derived via the
+  `scoring-weights` skill. **Never hardcode weights in `tools/shortlist_schema.py`**: it's shared source,
+  so concurrent sessions silently overwrite each other. Sync hard-errors if a student's file is missing.
 - **Official sources for hard facts.** Verify fees/requirements/deadlines against the official uni /
   UCAS / Common App page before a row becomes Shortlist; aggregators are discovery only. Stamp
   `Info source` + `Data as-of`.

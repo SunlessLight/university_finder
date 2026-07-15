@@ -8,8 +8,8 @@ countries, score them at snippet level, and land them in `master_list.csv` as **
 
 ## Tools used (in order)
 
-1. `firecrawl_search.py` — discovery: runs search queries, saves results to `.tmp/search_results.json`.
-   **Costs credits — ask the user before running.**
+1. `firecrawl_search.py --student <slug>` — discovery: runs search queries, saves results to
+   `.tmp/<slug>/search_results.json`. **Costs credits — ask the user before running.**
 2. *(agent step)* review results, extract candidates → write `.tmp/<slug>/uni_candidates.json`.
 3. `sync_shortlist.py --student <slug>` — scores, dedupes, appends Longlist rows to `master_list.csv`.
 
@@ -69,14 +69,15 @@ CSC scholarship <field> bachelor
 ```powershell
 python tools/firecrawl_search.py "query one" "query two" --limit 6 --scrape-top 2
 ```
-Or put queries in a JSON list and pass `--queries-file .tmp/queries.json`. Use `--scrape-top N` to pull
-full markdown for the most promising official course/prospectus pages (those scrape cleanly; social/forum
-URLs return "Website Not Supported" — capture the URL + snippet, don't waste a scrape slot). Results land
-in `.tmp/search_results.json`.
+Or put queries in a JSON list and pass `--queries-file .tmp/<slug>/queries.json`. Use `--scrape-top N` to
+pull full markdown for the most promising official course/prospectus pages (those scrape cleanly;
+social/forum URLs return "Website Not Supported" — capture the URL + snippet, don't waste a scrape slot).
+Results land in `.tmp/<slug>/search_results.json`. **`--student` (or `--out`) is required** — there is no
+shared default path, so parallel sessions can't overwrite each other's results.
 
 ## Extract candidates (agent judgement)
 
-Read `.tmp/search_results.json`. For each plausible university+course, build a candidate object with honest
+Read `.tmp/<slug>/search_results.json`. For each plausible university+course, build a candidate object with honest
 **0-5 sub-scores** and an **`entry_margin`** judgement, and write the list to
 `.tmp/<slug>/uni_candidates.json`:
 
@@ -151,11 +152,12 @@ Read `.tmp/search_results.json`. For each plausible university+course, build a c
 - `location_pref_fit` — matches stated location/lifestyle preferences.
 - `recognition_fit` — recognised back home (MQA + professional body) where it matters.
 
-> **Weights are per-student.** `SCORE_WEIGHTS` in `shortlist_schema.py` reflects the *current* student's
-> priority order (for Toru, 2026-07-05: scholarship > hands-on experience > ranking > location >
-> employability > recognition, with cost near-zero as he set no budget). Re-tune it when the student's
-> priorities differ. The rich scholarship/community/student-life detail columns are usually left blank at
-> discovery and filled during Stage 4.
+> **Weights are per-student and live in `data/students/<slug>/weights.json`** — never in
+> `tools/shortlist_schema.py`, which is shared source that concurrent sessions would fight over.
+> Derive them from the student's `preferences.priorities` with the **`scoring-weights` skill** before
+> syncing; `sync_shortlist.py` refuses to run without a valid file. Because no student state is shared,
+> two students can be discovered and synced **in parallel**. The rich scholarship/community/student-life
+> detail columns are usually left blank at discovery and filled during Stage 4.
 
 ## Sync to the master list
 

@@ -8,13 +8,20 @@ deduplication. Imported by init_student.py, sync_shortlist.py, compare_universit
 build_dossier.py, and build_calendar.py so the layout and the math never drift apart.
 
 Design rule baked in here: DESIRABILITY is kept separate from ADMISSIBILITY. Entry
-fit is NOT one of the SCORE_WEIGHTS — a university the student can't get into must
+fit is NOT one of the scoring weights — a university the student can't get into must
 not rank highly on price alone. Admissibility lives in classify_admission() (Reach /
 Match / Safety) and feasibility_flags(), which are surfaced alongside the score.
+validate_weights() enforces that rule mechanically via FORBIDDEN_WEIGHT_KEYS.
+
+Scoring weights are PER-STUDENT and live in data/students/<slug>/weights.json — never
+in this file. This module is shared, so a weight hardcoded here is a weight two
+concurrent sessions fight over. Derive them with the 'scoring-weights' skill.
 """
 
+import json
 import re
 from datetime import date
+from pathlib import Path
 
 # --------------------------------------------------------------------------- #
 # Master list columns (row 1 headers). Grouped by purpose; order is the CSV order.
@@ -82,39 +89,122 @@ DEFAULT_DOSSIER_STATUS = "Not started"
 # --------------------------------------------------------------------------- #
 # Desirability scoring. Each sub-score is 0-5; the weighted sum is normalized to
 # 0-100. NOTE the deliberate absence of an "entry_fit" weight (see module docstring).
+#
+# The weights themselves are NOT here — they are per-student data, loaded from
+# data/students/<slug>/weights.json by load_weights(). See the 'scoring-weights' skill.
 # --------------------------------------------------------------------------- #
-# Weights are PER-STUDENT — re-tuned before each sync_shortlist.py run (one student at a time).
-# CURRENT: Lai Zheng Yi (2026-07-13): Biomedical Engineering, ranking (importance 5/5) tied with a
-# scholarship HARD GATE at the top, then recognition = cost. Biomedical Engineering IS a regulated
-# profession (BEM/EAC via Washington Accord), so recognition_fit carries real weight; he has an explicit
-# post-study-work preference + intent to migrate (post_study_work_fit elevated over the flexible
-# location_pref). Real ~RM500k total budget makes total_cost_fit a genuine factor. Stays set to Lai Zheng
-# Yi for ALL his per-country sessions (UK done -> Australia -> USA -> Singapore/Malaysia) so the shared
-# master_list.csv scores stay comparable. This overwrites the previous student's tuning — the accepted
-# pattern: an already-synced student's master_list.csv scores are baked in and only change on re-sync.
-# (This set was reconstructed from his UK candidates' sub-scores; it reproduces 9/11 stored UK scores
-# exactly and the other 2 within +/-1 rounding. Previous tunings this session: Zafri, Ong Kyan —
-# restore per-student before re-syncing them.)
-SCORE_WEIGHTS = {
-    "subject_reputation": 0.20,      # #1 ranking (importance 5/5): subject-specific rank + graduate outcomes
-    "scholarship_opportunity": 0.20, # scholarship is a hard gate for him -> elevated, ties ranking at the top
-    "course_match": 0.15,            # baseline: how well the course matches Biomedical Engineering
-    "post_study_work_fit": 0.13,     # explicit post-study-work preference + intent to migrate
-    "total_cost_fit": 0.10,          # real ~RM500k budget -> full-programme cost (MYR) vs budget matters
-    "recognition_fit": 0.10,         # Biomedical Eng is regulated (BEM/EAC via Washington Accord) -> matters
-    "location_pref_fit": 0.07,       # flexible (Urban + Rural/Campus + near-family all ticked)
-    "experiential_fit": 0.05,        # not emphasised by this student
-}
+WEIGHT_KEYS = (
+    "course_match",
+    "subject_reputation",
+    "total_cost_fit",
+    "post_study_work_fit",
+    "scholarship_opportunity",
+    "experiential_fit",
+    "location_pref_fit",
+    "recognition_fit",
+)
+
+# Equal-weight template for the 'scoring-weights' skill to start from. NEVER a fallback:
+# it is deliberately flat so that any accidental use yields obviously-uniform scores
+# rather than plausible-looking wrong ones. compute_score() has no default for this reason.
+DEFAULT_WEIGHTS = {k: 0.125 for k in WEIGHT_KEYS}
+
+# Admissibility must never leak into the desirability score (see module docstring).
+FORBIDDEN_WEIGHT_KEYS = ("entry_fit", "admission_fit", "admissibility", "entry_margin_fit")
+
+MAX_SINGLE_WEIGHT = 0.5
+_WEIGHT_SUM_TOLERANCE = 1e-6
 
 # Priority tiers by normalized desirability score (same thresholds as the speaker tool).
 TIER_A_MIN = 75  # A: >= 75
 TIER_B_MIN = 55  # B: 55-74 ; C: < 55
 
 
-def compute_score(scores):
-    """Return a 0-100 normalized weighted desirability score from a sub-score dict."""
+def validate_weights(weights, source="weights"):
+    """Raise ValueError unless `weights` is a usable weight set.
+
+    Rejects — never normalizes. Silently rescaling a set that doesn't sum to 1.0 would
+    hide a derivation mistake behind scores that still look plausible.
+    """
+    if not isinstance(weights, dict):
+        raise ValueError(f"{source}: expected an object mapping weight keys to numbers.")
+
+    forbidden = [k for k in weights if k in FORBIDDEN_WEIGHT_KEYS]
+    if forbidden:
+        raise ValueError(
+            f"{source}: {', '.join(sorted(forbidden))} is not allowed as a weight. "
+            "Desirability is kept separate from admissibility: entry fit belongs in "
+            "'Admission likelihood' (Reach/Match/Safety) and 'Warnings', never in the score."
+        )
+
+    missing = sorted(set(WEIGHT_KEYS) - set(weights))
+    extra = sorted(set(weights) - set(WEIGHT_KEYS))
+    if missing:
+        raise ValueError(f"{source}: missing weight key(s): {', '.join(missing)}.")
+    if extra:
+        raise ValueError(
+            f"{source}: unknown weight key(s): {', '.join(extra)}. "
+            f"Valid keys: {', '.join(WEIGHT_KEYS)}."
+        )
+
+    clean = {}
+    for key in WEIGHT_KEYS:
+        value = weights[key]
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            raise ValueError(f"{source}: {key} must be a number, got {value!r}.")
+        value = float(value)
+        if value < 0:
+            raise ValueError(f"{source}: {key} is negative ({value}).")
+        if value > MAX_SINGLE_WEIGHT:
+            raise ValueError(
+                f"{source}: {key} is {value}, above the {MAX_SINGLE_WEIGHT} cap — "
+                "no single factor may dominate the score."
+            )
+        clean[key] = value
+
+    total = sum(clean.values())
+    if abs(total - 1.0) > _WEIGHT_SUM_TOLERANCE:
+        raise ValueError(
+            f"{source}: weights sum to {total:.6f}, not 1.0 (off by {total - 1.0:+.6f}). "
+            "Fix the derivation — do not fudge a key to make the sum work."
+        )
+    return clean
+
+
+def load_weights(slug, students_dir=None):
+    """Load and validate data/students/<slug>/weights.json.
+
+    Returns (weights, meta) where meta is the full file (weights_id, student, rationale...).
+    Raises FileNotFoundError if absent and ValueError if invalid — there is deliberately
+    no fallback: scoring under weights nobody chose is the bug this file structure prevents.
+    """
+    base = Path(students_dir) if students_dir else (Path(__file__).resolve().parent.parent / "data" / "students")
+    path = base / slug / "weights.json"
+    if not path.exists():
+        raise FileNotFoundError(str(path))
+    try:
+        meta = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"{path}: not valid JSON ({exc}).") from exc
+    if not isinstance(meta, dict) or "weights" not in meta:
+        raise ValueError(f"{path}: missing the top-level 'weights' object.")
+    if not str(meta.get("rationale") or "").strip():
+        raise ValueError(
+            f"{path}: 'rationale' is required — it is the only thing that makes a weight set reviewable."
+        )
+    weights = validate_weights(meta["weights"], source=str(path))
+    return weights, meta
+
+
+def compute_score(scores, weights):
+    """Return a 0-100 normalized weighted desirability score from a sub-score dict.
+
+    `weights` is a REQUIRED positional argument. It has no default on purpose: a
+    `weights=None -> DEFAULT_WEIGHTS` fallback would let a future call site silently
+    score a student under weights nobody derived for them.
+    """
     total = 0.0
-    for field, weight in SCORE_WEIGHTS.items():
+    for field, weight in weights.items():
         raw = scores.get(field, 0) if isinstance(scores, dict) else 0
         try:
             raw = float(raw)

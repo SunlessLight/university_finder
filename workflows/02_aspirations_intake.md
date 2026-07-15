@@ -18,8 +18,8 @@ Output is `data/students/<slug>/preferences.json`.
   and `scholarship_required`. These gate affordability and feed `total_cost_fit` scoring.
 - **Priorities** — `priorities`, an **ordered** list (e.g. `["cost","employability","recognition",
   "ranking","location"]`). This tells you which sub-scores to weight most heavily when you judge candidates
-  in Stage 3. (v1 scoring weights are static; you reflect priorities through honest sub-scoring and through
-  which options you promote.)
+  in Stage 3. **`priorities` is the direct input to the student's `weights.json`** (via the
+  `scoring-weights` skill) — the **ordering matters**, so capture it faithfully rather than as a rough set.
 - **Migration intent** — `intent_to_migrate` (bool) and `post_study_work_importance`. If they want to work
   abroad after, post-study-work rights (UK Graduate Route / AUS 485 / US OPT) become decision-critical.
 - **Ranking** — `ranking_importance`, `min_subject_rank_pref`. Steer toward **subject** ranking, not overall

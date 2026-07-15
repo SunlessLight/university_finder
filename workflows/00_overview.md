@@ -46,7 +46,9 @@ data/students/<student-slug>/
   status.md            # Session-handoff note — where we are / next action (resume.md; updated each stage)
   profile.json         # Stage 1
   preferences.json     # Stage 2
+  weights.json         # Stage 3: this student's desirability weights (scoring-weights skill; sync refuses without it)
   master_list.csv      # Stages 3-4: every candidate + a "List status" column
+  score_log.jsonl      # Stage 3: append-only audit — weights_id + sub-scores + entry_margin behind each scored row
   dossiers/<uni>.md    # Stage 5a  (dossiers/<uni>.pdf — optional, on request via dossier_to_pdf.py)
   recommendation.md    # Stage 5b
   calendar.md          # Stage 5b
@@ -92,7 +94,10 @@ These are *why this project exists* — they stop a tidy-looking list from being
 1. **Desirability ≠ admissibility.** The 0-100 desirability score deliberately excludes entry fit.
    Whether the student can actually get in lives in **`Admission likelihood`** (Reach/Match/Safety) and
    **`Warnings`**, shown next to the score. A university you can't enter must never rank highly
-   on price alone.
+   on price alone. **This rule is now enforced in code:** `validate_weights()` rejects `entry_fit`,
+   `admission_fit`, `admissibility`, and `entry_margin_fit` as weight keys.
+   Weights themselves are **per-student** (`data/students/<slug>/weights.json`, via the
+   `scoring-weights` skill) and never live in shared source — so two students can be scored in parallel.
 2. **Official sources for hard facts.** Fees, entry requirements, English, deadlines, and intake must be
    verified against the **official** university / UCAS / Common App page before a row becomes `Shortlist`.
    Aggregators (StudyPortals, rankings, Niche) are for *discovery only*. Record `Info source` +

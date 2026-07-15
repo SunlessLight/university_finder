@@ -14,6 +14,12 @@ Excel / Google Sheets / LibreOffice. It is created with a header row on first ru
 This tool NEVER demotes or overwrites existing rows — promotion (Longlist -> Shortlist
 -> Finalist) and rejection are agent edits, not a side-effect of syncing.
 
+Scoring weights are per-student: data/students/<slug>/weights.json is REQUIRED and this
+tool refuses to run without it (see the 'scoring-weights' skill). Because no student
+state is shared, two students can be synced concurrently. Each scored candidate is
+appended to data/students/<slug>/score_log.jsonl — the sub-scores, entry_margin, and
+weights_id behind a row, none of which the CSV has room to keep.
+
 Usage:
     python tools/sync_shortlist.py --student aisyah-rahman
     python tools/sync_shortlist.py --student aisyah-rahman --dry-run
@@ -26,6 +32,7 @@ import argparse
 import csv
 import json
 import sys
+from datetime import datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -38,6 +45,7 @@ from shortlist_schema import (  # noqa: E402
     compute_score,
     course_key,
     feasibility_flags,
+    load_weights,
     tier_for,
 )
 
@@ -141,6 +149,30 @@ def candidate_to_row(c, score, tier, admission, flags):
     return [values.get(h, "") for h in SHORTLIST_HEADERS]
 
 
+def append_score_log(log_path, weights_id, scored):
+    """Append one JSON line per scored candidate: the audit trail the CSV can't hold.
+
+    Recovers which weights produced a row, the sub-scores behind it, and the entry_margin
+    (the only input to Admission likelihood, otherwise discarded). Append-only, so a
+    re-sync leaves a history instead of overwriting one. Per-student file: parallel-safe.
+    """
+    ts = datetime.now().isoformat(timespec="seconds")
+    with log_path.open("a", encoding="utf-8", newline="\n") as f:
+        for score, tier, admission, flags, c in scored:
+            uni, course = course_key(c.get("university"), c.get("course"))
+            f.write(json.dumps({
+                "ts": ts,
+                "weights_id": weights_id,
+                "course_key": f"{uni}|{course}",
+                "scores": c.get("scores", {}),
+                "entry_margin": c.get("entry_margin"),
+                "desirability": score,
+                "tier": tier,
+                "admission": admission,
+                "warnings": flags,
+            }, ensure_ascii=False) + "\n")
+
+
 def needs_leading_newline(csv_path):
     """True if the file exists, is non-empty, and its last byte isn't a newline.
     Appending to such a file would fuse the first new row onto the last row."""
@@ -205,6 +237,22 @@ def main():
     if not student_dir.exists():
         sys.exit(f"ERROR: {student_dir} not found. Run init_student.py first.")
 
+    try:
+        weights, wmeta = load_weights(slug)
+    except FileNotFoundError:
+        sys.exit(
+            f"ERROR: {student_dir / 'weights.json'} not found.\n"
+            f"Scoring weights are PER-STUDENT and must be derived from preferences.json before syncing.\n"
+            f"Ask Claude to derive them (the 'scoring-weights' skill).\n"
+            f"Never hand-edit weights in tools/shortlist_schema.py — that file is shared and "
+            f"collides across concurrent sessions."
+        )
+    except ValueError as exc:
+        sys.exit(f"ERROR: invalid {student_dir / 'weights.json'}: {exc}")
+    if wmeta.get("student") not in (None, "", slug):
+        sys.exit(f"ERROR: weights.json is for {wmeta['student']!r}, not {slug!r}. Wrong file copied?")
+    weights_id = wmeta.get("weights_id", "(unset)")
+
     input_path = Path(args.input) if args.input else REPO_ROOT / ".tmp" / slug / "uni_candidates.json"
     if not input_path.is_absolute():
         input_path = REPO_ROOT / input_path
@@ -235,7 +283,7 @@ def main():
             skipped += 1
             continue
         seen.add(key)
-        score = compute_score(c.get("scores", {}))
+        score = compute_score(c.get("scores", {}), weights)
         admission = classify_admission(c.get("entry_margin"))
         flags = feasibility_flags(c, profile)
         scored.append((score, tier_for(score), admission, flags, c))
@@ -243,6 +291,7 @@ def main():
     scored.sort(key=lambda t: t[0], reverse=True)
     rows = [candidate_to_row(c, score, tier, admission, flags) for score, tier, admission, flags, c in scored]
 
+    print(f"student: {slug} | weights: {weights_id}")
     print(f"{len(candidates)} candidates in file | {skipped} duplicates skipped | {len(rows)} new")
     for score, tier, admission, flags, c in scored:
         flag_str = f"  ⚑ {'; '.join(flags)}" if flags else ""
@@ -256,6 +305,7 @@ def main():
         return
 
     write_rows(output_path, rows)
+    append_score_log(student_dir / "score_log.jsonl", weights_id, scored)
     print(f"\nAppended {len(rows)} rows to {output_path} (as Longlist)")
 
 

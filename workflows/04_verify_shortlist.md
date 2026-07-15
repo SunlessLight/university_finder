@@ -43,8 +43,10 @@ new columns in **complete, plain-English sentences** (no jargon — this is what
 - **`Student life`** — a short plain-English run-through of what studying this course there is like, with
   links to YouTube "day in the life" videos, student vlogs, or Instagram pages where you find them.
 
-Also **re-score** the row under the current `SCORE_WEIGHTS` (scholarship + `experiential_fit` now carry the
-most weight) and rewrite `Desirability`/`Tier` — the Longlist scores were computed under the old weights.
+Also **re-score** the row under the student's `weights.json` (`data/students/<slug>/weights.json` — see the
+`scoring-weights` skill) and rewrite `Desirability`/`Tier`, since verification usually changes the facts the
+sub-scores were judged from. No weight ordering is stated here on purpose: it is per-student data, and a
+shared doc naming one student's ordering is how the old drift started.
 
 ### 2. Re-judge admissibility & feasibility
 With verified facts, re-confirm each row's:

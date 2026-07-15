@@ -57,8 +57,11 @@ the workflows and drives all 5 stages, asking before any paid Firecrawl run. Or 
 python tools/init_student.py "Aisyah Rahman"
 #   ...Stage 1-2: fill profile.json / preferences.json in conversation...
 
-python tools/firecrawl_search.py "BSc Computer Science UK entry requirements" --limit 6 --scrape-top 2
-#   ...review .tmp/search_results.json, write .tmp/<slug>/uni_candidates.json (schema in workflow 03)...
+#   ...Stage 3: ask Claude to derive data/students/<slug>/weights.json (the 'scoring-weights' skill)
+#      — per-student scoring weights; sync refuses to run without them...
+
+python tools/firecrawl_search.py --student aisyah-rahman "BSc Computer Science UK entry requirements" --limit 6 --scrape-top 2
+#   ...review .tmp/<slug>/search_results.json, write .tmp/<slug>/uni_candidates.json (schema in workflow 03)...
 python tools/sync_shortlist.py --student aisyah-rahman          # add --dry-run to preview
 
 python tools/compare_universities.py --student aisyah-rahman --status Shortlist --dimensions all

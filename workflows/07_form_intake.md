@@ -119,10 +119,13 @@ For every student the tool flagged in `profile.json`'s **`_needs_review`**:
 
 ## Before Stage 3 — per-student scoring weights (important)
 
-`SCORE_WEIGHTS` in `tools/shortlist_schema.py` is a **single global** weighting. When you longlist
-several form students in a row, **re-tune `SCORE_WEIGHTS` from that student's `preferences.priorities`
-before each `sync_shortlist.py` run**, and process **one student at a time**. (A per-student weights
-file is a planned upgrade; until then, don't batch the *scoring* — only the intake is batched.)
+Each student needs their own **`data/students/<slug>/weights.json`**, derived from their
+`preferences.priorities` with the **`scoring-weights` skill**. `sync_shortlist.py` hard-errors without
+one — it will not guess.
+
+**Scoring is now safe to parallelise.** Weights are per-student data, not shared source, so longlisting
+several form students concurrently is fine: no student's scoring can overwrite another's. Never hand-edit
+weights into `tools/shortlist_schema.py` — that shared file is exactly what made batching unsafe before.
 
 ## Edge cases & rules
 

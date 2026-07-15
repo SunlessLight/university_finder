@@ -3,21 +3,27 @@ firecrawl_search.py — web discovery for the university finder workflow.
 
 Runs one or more search queries through Firecrawl's /search endpoint and,
 optionally, scrapes the top result URLs for clean markdown the agent can read.
-Normalized results are written to .tmp/search_results.json.
+Normalized results are written to .tmp/<student-slug>/search_results.json.
+
+The output path is per-student and REQUIRED (--student or --out): a shared default
+path means two concurrent Stage 3 sessions silently overwrite each other's results.
 
 (Copied from the guest_speakers WAT project — same proven discovery logic.)
 
 Usage:
     # one or more queries as positional args
-    python tools/firecrawl_search.py "BSc Computer Science UK entry requirements" "QS computer science ranking"
+    python tools/firecrawl_search.py --student lai-zheng-yi "BSc Biomedical Engineering UK entry requirements"
 
     # queries from a JSON file (a list of strings)
-    python tools/firecrawl_search.py --queries-file .tmp/queries.json
+    python tools/firecrawl_search.py --student lai-zheng-yi --queries-file .tmp/lai-zheng-yi/queries.json
 
     # control how many results per query, and how many to scrape for full text
-    python tools/firecrawl_search.py "University of Manchester CS fees" --limit 8 --scrape-top 3
+    python tools/firecrawl_search.py --student ong-kyan "Manchester CS fees" --limit 8 --scrape-top 3
 
-Output (.tmp/search_results.json):
+    # or send results somewhere explicit
+    python tools/firecrawl_search.py --out .tmp/scratch/results.json "QS computer science ranking"
+
+Output (.tmp/<student-slug>/search_results.json):
     [
       {
         "query": "...",
@@ -43,7 +49,6 @@ from dotenv import load_dotenv
 # Resolve repo paths relative to this file so the tool works from any cwd.
 REPO_ROOT = Path(__file__).resolve().parent.parent
 TMP_DIR = REPO_ROOT / ".tmp"
-OUTPUT_PATH = TMP_DIR / "search_results.json"
 
 # Firecrawl returns "Website Not Supported" for these domains, so scraping them
 # burns a credit and a scrape slot for nothing. We still keep them in the results
@@ -192,6 +197,8 @@ def main():
     parser = argparse.ArgumentParser(description="Firecrawl web discovery for the university finder workflow.")
     parser.add_argument("queries", nargs="*", help="One or more search queries.")
     parser.add_argument("--queries-file", help="Path to a JSON file containing a list of queries.")
+    parser.add_argument("--student", help="Student slug — results go to .tmp/<slug>/search_results.json.")
+    parser.add_argument("--out", help="Explicit output path (overrides --student).")
     parser.add_argument("--limit", type=int, default=6, help="Results per query (default 6).")
     parser.add_argument(
         "--scrape-top",
@@ -205,8 +212,19 @@ def main():
     if not queries:
         parser.error("provide at least one query, or use --queries-file")
 
+    # No shared default: a default path that still collides isn't a fix. This tool is
+    # credit-gated, so it's never run absent-mindedly enough for the prompt to be a burden.
+    if args.out:
+        output_path = Path(args.out)
+        if not output_path.is_absolute():
+            output_path = REPO_ROOT / output_path
+    elif args.student:
+        output_path = TMP_DIR / args.student / "search_results.json"
+    else:
+        parser.error("pass --student <slug> (results go to .tmp/<slug>/search_results.json) or --out <path>")
+
     client = get_client()
-    TMP_DIR.mkdir(exist_ok=True)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
 
     output = []
     for query in queries:
@@ -227,9 +245,9 @@ def main():
         output.append({"query": query, "results": results})
         print(f"  -> {len(results)} results")
 
-    OUTPUT_PATH.write_text(json.dumps(output, indent=2, ensure_ascii=False), encoding="utf-8")
+    output_path.write_text(json.dumps(output, indent=2, ensure_ascii=False), encoding="utf-8")
     total = sum(len(o["results"]) for o in output)
-    print(f"\nWrote {total} results across {len(output)} queries to {OUTPUT_PATH}")
+    print(f"\nWrote {total} results across {len(output)} queries to {output_path}")
 
 
 if __name__ == "__main__":
