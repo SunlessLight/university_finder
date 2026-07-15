@@ -19,21 +19,16 @@ distinctive **substring** (see `QUESTION_MAP` in `tools/ingest_form_csv.py`), so
 fine — but keep the substring in bold intact.
 
 **Section 0 — Consent & identity (required)**
-- **Turn "Collect email addresses" ON.** This is the *only* contact channel for the follow-ups that
-  finalize almost always needs (English test, budget, field-vs-recognition). A form with no email is
-  a dead end — you can't close the gaps. Treat it as required, not optional.
-- **Your full name** — short text → folder slug. The tool matches this column by the substring
-  **"full name"** *or* **"your name"** (Forms often merges the section title into the first question's
-  header, e.g. `"Section 1: About You … Your Name"`, which still matches "your name"). Keep one of
-  those two phrasings in the question title.
-- **I consent** to my grades, finances, and nationality being stored locally and used only to research
-  universities for me. — required checkbox. *(A row that explicitly answers **No** is always skipped.
+- **"Collect email addresses" turned ON.** 
+- **I consent** 'Cool for me to store your answers and use them to research unis for you 👍?'. — required checkbox. *(A row that explicitly answers **No** is always skipped.
   A **blank/absent** consent is also skipped **unless** you pass `--assume-consent` — see below.)*
 
 **Section 1 — About you → `profile.json`**
-- **Your age**; **Gender**; **Nationality**; where you **live in now**; where you plan to **live and
+- **Name**; **Your age**; **Gender**; **Nationality**; where you **live in now**; where you plan to **live and
   work after** graduating (a post-study *aspiration* → recorded in `notes` + `intent_to_migrate`;
   it does **not** become `home_country`, which stays "Malaysia").
+
+**Section 2 - Your Studies**
 - What are you **studying now** (A-Level / STPM / UEC / IB / Foundation / Matriculation / Diploma /
   Other); **which college**/school; **when do you finish** / get results.
 - **List each subject** and your grade — paragraph (e.g. "Maths A*, Physics A, Chemistry B").
@@ -54,9 +49,7 @@ fine — but keep the substring in bold intact.
   / Pharmacy / Dentistry / Architecture / Nursing / None). *(Should match the intended career — see the
   Engineering-vs-CS edge case below.)*
 - Any **support & belonging needs** (optional; PDPA-sensitive) — checkboxes, broad and faith/culture-
-  neutral: **Halal food** / **Vegetarian or vegan** / **Other dietary** / **Worship facilities (any
-  faith)** / **A community from home nearby** / **Stay close to family** / **Disability / accessibility
-  support** / **Mental-health / wellbeing support** / **LGBTQ+ friendly** / **Personal safety** /
+  neutral: **Halal food** / **Prayer facilities** / **Malaysian community nearby** / **Stay close to family** / **Personal safety** /
   **Climate / weather** — plus **Other**.
 
 **Section 2 — What you want → `preferences.json`**

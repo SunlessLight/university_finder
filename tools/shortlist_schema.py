@@ -84,19 +84,26 @@ DEFAULT_DOSSIER_STATUS = "Not started"
 # 0-100. NOTE the deliberate absence of an "entry_fit" weight (see module docstring).
 # --------------------------------------------------------------------------- #
 # Weights are PER-STUDENT — re-tuned before each sync_shortlist.py run (one student at a time).
-# CURRENT: Zafri (2026-07-12): employability > scholarship > ranking, with course ACCREDITATION
-# elevated (he explicitly values accreditation over pure ranking) and cost near-zero (no budget given,
-# so cost is not a screening factor). This overwrites the previous student's tuning — the accepted
+# CURRENT: Lai Zheng Yi (2026-07-13): Biomedical Engineering, ranking (importance 5/5) tied with a
+# scholarship HARD GATE at the top, then recognition = cost. Biomedical Engineering IS a regulated
+# profession (BEM/EAC via Washington Accord), so recognition_fit carries real weight; he has an explicit
+# post-study-work preference + intent to migrate (post_study_work_fit elevated over the flexible
+# location_pref). Real ~RM500k total budget makes total_cost_fit a genuine factor. Stays set to Lai Zheng
+# Yi for ALL his per-country sessions (UK done -> Australia -> USA -> Singapore/Malaysia) so the shared
+# master_list.csv scores stay comparable. This overwrites the previous student's tuning — the accepted
 # pattern: an already-synced student's master_list.csv scores are baked in and only change on re-sync.
+# (This set was reconstructed from his UK candidates' sub-scores; it reproduces 9/11 stored UK scores
+# exactly and the other 2 within +/-1 rounding. Previous tunings this session: Zafri, Ong Kyan —
+# restore per-student before re-syncing them.)
 SCORE_WEIGHTS = {
-    "post_study_work_fit": 0.20,     # #1 employability: visa / post-study work + graduate outcomes
-    "scholarship_opportunity": 0.17, # #2: realistic funding available to this student
-    "subject_reputation": 0.16,      # #3 ranking: subject-specific rank + graduate outcomes
-    "course_match": 0.15,            # baseline: is it genuinely naval architecture / marine engineering
-    "recognition_fit": 0.13,         # elevated: accreditation (RINA/IMarEST -> Washington Accord -> BEM)
-    "location_pref_fit": 0.08,       # rural / campus-based + close to public transport
-    "experiential_fit": 0.07,        # engineering is hands-on but the student didn't emphasise it
-    "total_cost_fit": 0.04,          # cost is NOT a screening factor this round (no budget given)
+    "subject_reputation": 0.20,      # #1 ranking (importance 5/5): subject-specific rank + graduate outcomes
+    "scholarship_opportunity": 0.20, # scholarship is a hard gate for him -> elevated, ties ranking at the top
+    "course_match": 0.15,            # baseline: how well the course matches Biomedical Engineering
+    "post_study_work_fit": 0.13,     # explicit post-study-work preference + intent to migrate
+    "total_cost_fit": 0.10,          # real ~RM500k budget -> full-programme cost (MYR) vs budget matters
+    "recognition_fit": 0.10,         # Biomedical Eng is regulated (BEM/EAC via Washington Accord) -> matters
+    "location_pref_fit": 0.07,       # flexible (Urban + Rural/Campus + near-family all ticked)
+    "experiential_fit": 0.05,        # not emphasised by this student
 }
 
 # Priority tiers by normalized desirability score (same thresholds as the speaker tool).

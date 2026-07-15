@@ -23,6 +23,36 @@ application-strategy section, pulled out and made repeatable per region. Like `b
 2. *(agent step)* assemble `.tmp/<slug>/apply_prep_<region>.json` (shape below / in the tool header).
 3. `build_application_prep.py --student <slug> --input .tmp/<slug>/apply_prep_<region>.json` — renders
    `data/students/<slug>/application_prep/<region>.md`, grouped by application system. **No CSV writes.**
+4. `apply_prep_to_pdf.py --student <slug> --region <region>` — exports a clean student-facing PDF
+   beside the `.md` (WeasyPrint; on Windows needs MSYS2 GTK — see the tool header). Also **read-only**.
+
+### Voice — use the `application-guide` skill
+Invoke the **`application-guide`** skill when authoring/regenerating a guide. It sets the admissions-
+guide persona and the writing rules (checklists over prose runs, use-jargon-freely-the-glossary-defines-it,
+warm second person, honesty about Reach odds). The persona is the wrapper; the readability comes from
+these rules + the renderer's auto-formatting below.
+
+### What the renderer auto-adds (do NOT hand-write these)
+`build_application_prep.py` post-processes every guide so you only write the substance:
+- a constant **"How to use this guide"** intro, an auto-generated **Contents** list, and a **Key terms**
+  glossary listing only the jargon the guide actually uses (from `tools/apply_glossary.py`);
+- **jargon auto-links** — the first mention per section of each glossary term links to its definition;
+- **numbered scaffolding** — universities are numbered **1, 2, 3… continuously across the whole region**
+  (not restarted per application system), and each university's subsections are lettered **a, b, c…**
+  (`a. Deadlines`, `b. Tests`, `c. Essays`, `d. Application fee`, `e. Financial aid`, `f. What to
+  gather / do`) as bold sub-headings, with the content indented beneath each;
+- **checklists** — the `shared_checklist`, per-university `application_checklist`, and
+  `consolidated_checklist` render as tickable `- [ ]` items; long ones (≥7 items — the "Filed once" and
+  region-wide "Gather once" lists) auto-flow into **two columns** in the PDF.
+
+**Write checklist fields as JSON arrays (one action per item).** Legacy `·`-joined strings are still
+split automatically, but arrays are the convention. **Write the info fields (`tests`, `essays`, `fees`)
+as short Markdown sub-bullets, not paragraphs** — one point per `- ` line; the renderer indents them
+under the lettered section title. **Write `financial_aid` as an object** with the fixed keys `model`,
+`covers`, `forms`, `documents`, `dates` (any you can't fill are skipped) — the renderer lays them out as
+labelled sub-rows so aid reads consistently across universities. A legacy `financial_aid` string still
+renders (as prose) for back-compat. **If you use a term not in the glossary, add it to `GLOSSARY` in
+`tools/apply_glossary.py`** (term → one-line definition + aliases) so it gets defined and linked everywhere.
 
 ### Which scraper (spend credits where they matter)
 - **Claude WebSearch / WebFetch (free) — the default.** Deadlines, test policy, aid forms/dates, fees and
@@ -42,10 +72,10 @@ For each Shortlist/Finalist uni in the region, from official sources:
   Australia).
 - **Essays** — the shared essay (Common App / UCAS personal statement) + this uni's supplements/count.
 - **Fees** — application fee + international **fee-waiver** eligibility.
-- **Financial aid** — the need model (need-blind vs need-aware for internationals), what it covers, the
-  **forms** (CSS Profile / IDOC / school-specific like PFAA / ISAFA / the with-application rule), the
-  **documents** (parent income/tax, translated), and the **dates**. This is the load-bearing part for a
-  scholarship-required student — get it exact and official.
+- **Financial aid** — capture it into the object's fixed keys: **`model`** (need-blind vs need-aware for
+  internationals), **`covers`** (what the aid pays for), **`forms`** (CSS Profile / IDOC / school-specific
+  like PFAA / ISAFA / the with-application rule), **`documents`** (parent income/tax, translated), and
+  **`dates`**. This is the load-bearing part for a scholarship-required student — get it exact and official.
 - **Portal** URLs (application + aid).
 
 Then write the region-level **overview** (the cross-cutting strategy): early-application constraints,
@@ -62,33 +92,39 @@ Write `.tmp/<slug>/apply_prep_<region>.json` (exact shape in `build_application_
   "overview": "markdown — the cross-cutting apply strategy",
   "systems": [
     {"system": "Common App", "universities": ["Princeton University", "..."],
-     "shared_checklist": "markdown — filed once across these schools"},
+     "shared_checklist": ["one action per item", "filed once across these schools"]},
     {"system": "MIT application (own portal, NOT Common App)", "universities": ["...(MIT)"],
-     "shared_checklist": "markdown"}
+     "shared_checklist": ["..."]}
   ],
   "universities": [
     {"name": "Princeton University", "system": "Common App", "admission_likelihood": "Reach",
      "deadlines": {"application": "...", "aid": "..."},
-     "tests": "md", "essays": "md", "fees": "md",
-     "financial_aid": "md — model, forms, docs, dates",
-     "application_checklist": "md", "portal": "https://..."}
+     "tests": "- sub-bullet\n- sub-bullet", "essays": "- sub-bullet\n- sub-bullet", "fees": "- sub-bullet",
+     "financial_aid": {"model": "need-blind — asking can't hurt you", "covers": "100% of need, no loans",
+       "forms": "PFAA + CSS Profile", "documents": "parent income/tax docs", "dates": "file with the app"},
+     "application_checklist": ["Common App + Princeton supplement", "counselor + 2 teacher recs",
+       "PFAA + CSS Profile + parent tax docs"], "portal": "https://..."}
   ],
-  "consolidated_checklist": "markdown — gather once across the region",
+  "consolidated_checklist": ["gather-once action per item", "across the region"],
   "dated_items": [{"date": "2027-01-01", "label": "...", "action": "..."}],
   "sources": [{"title": "...", "url": "...", "authority": "Official", "as_of": "2027"}]
 }
 ```
 
 **Validation (fails the build):** `region`, non-empty `overview`, ≥1 `systems`, and every university with
-non-empty `deadlines` + `application_checklist` + `financial_aid`, plus ≥1 `sources`. A name in a
-system's `universities` list is matched to the full entry in `universities` by exact `name`.
+non-empty `deadlines` + `application_checklist` + `financial_aid` (the aid object needs ≥1 non-empty key),
+plus ≥1 `sources`. A name in a system's `universities` list is matched to the full entry in `universities`
+by exact `name`.
 
 ## Render
 
 ```powershell
 python tools/build_application_prep.py --student toru --input .tmp/toru/apply_prep_us.json
+python tools/apply_prep_to_pdf.py --student toru --region us
 ```
-Output: `data/students/<slug>/application_prep/<region>.md`. Repeat per region.
+Output: `data/students/<slug>/application_prep/<region>.md` (+ `.pdf`). Repeat per region. The `.md` is
+regenerable from the `.tmp/<slug>/apply_prep_<region>.json` — keep that JSON so a re-render costs no
+research. `checklist` fields as arrays are back-compatible: old string guides re-render into checklists.
 
 ## Edge cases & rules
 
@@ -110,6 +146,7 @@ Output: `data/students/<slug>/application_prep/<region>.md`. Repeat per region.
 Every Shortlist/Finalist uni in the region appears in `application_prep/<region>.md`, correctly grouped by
 application system, each with deadlines + tests + essays + fees + financial-aid forms/docs/dates +
 checklist + portal; the overview carries the cross-cutting strategy; the gather-once list and the
-chronological deadline calendar render; every hard fact has an official source stamped with its cycle
-year; and `master_list.csv` is unchanged. Update `status.md` with the region done and the next region to
-run. Repeat for the remaining regions.
+chronological deadline calendar render; the guide has the auto-added intro + Contents + Key terms +
+linked jargon + tickable checklists; the **PDF** exports cleanly (clickable Contents/glossary jumps);
+every hard fact has an official source stamped with its cycle year; and `master_list.csv` is unchanged.
+Update `status.md` with the region done and the next region to run. Repeat for the remaining regions.

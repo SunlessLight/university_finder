@@ -53,10 +53,12 @@ Input JSON shape (see workflows/08_application_prep.md for the full spec):
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import apply_glossary  # noqa: E402
 from shortlist_schema import _parse_iso_date, slugify  # noqa: E402
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -66,7 +68,8 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 STUDENTS_DIR = REPO_ROOT / "data" / "students"
 
 # Per-university subsection order. deadlines/application_checklist/financial_aid are
-# required (enforced in validate); the rest are optional-but-recommended.
+# required (enforced in validate); the rest are optional-but-recommended. Deadlines is
+# rendered first as its own lettered section (see render_systems), so it isn't listed here.
 UNI_FIELDS = [
     ("tests", "Tests"),
     ("essays", "Essays"),
@@ -75,6 +78,135 @@ UNI_FIELDS = [
     ("application_checklist", "What to gather / do"),
 ]
 REQUIRED_UNI_FIELDS = ("application_checklist", "financial_aid")
+
+# Financial aid renders as fixed sub-labels (in this order) when authored as an object,
+# so the densest field is scannable and consistent across universities. A legacy string
+# is passed through unchanged. See render_financial_aid.
+FINANCIAL_AID_FIELDS = [
+    ("model", "Model"),
+    ("covers", "Covers"),
+    ("forms", "Forms"),
+    ("documents", "Documents"),
+    ("dates", "Dates"),
+]
+
+# Region-agnostic preamble, prepended to every guide so the student knows what they're
+# looking at (and how the jump-links work) without an agent hand-writing it each time.
+INTRO = """> **How to use this guide.** This is your **action list** for applying to these universities —
+> the deadlines, tests, essays, fees, and financial-aid forms, with the shared work grouped so you do it
+> once. It is *not* a "which university is best for me?" guide (that's your dossiers). Work top to bottom:
+> read the strategy, skim **[Key terms](#sec-key-terms)** if the shorthand is new, then work each
+> checklist. **Tap any linked term to jump to its plain-English meaning, and use the Contents to jump
+> around.**"""
+
+# Checklist-style fields get rendered as tickable `- [ ]` items instead of prose runs.
+_BULLET_RE = re.compile(r"^(\s*)[-*]\s+(.*)$")
+
+
+def as_checklist(value):
+    """
+    Render a checklist field as tickable `- [ ]` items.
+
+    Accepts either a list (preferred, new convention — one action per item) or a
+    legacy markdown string. For strings: existing top-level `-`/`*` bullets become
+    `- [ ]` (lead paragraphs and indented continuations are left as-is), and a plain
+    ` · `-separated line is split into one checkbox per item. Returns markdown.
+    """
+    if isinstance(value, list):
+        items = [str(v).strip() for v in value if str(v).strip()]
+        return "\n".join(f"- [ ] {it}" for it in items)
+
+    text = (value or "").strip()
+    if not text:
+        return ""
+
+    lines = text.splitlines()
+    has_bullets = any(_BULLET_RE.match(ln) for ln in lines)
+    if has_bullets:
+        out = []
+        for ln in lines:
+            m = _BULLET_RE.match(ln)
+            if m and not m.group(1):          # top-level bullet only
+                out.append(f"- [ ] {m.group(2)}")
+            else:
+                out.append(ln)                 # lead sentence / indented continuation
+        return "\n".join(out)
+
+    # Plain prose. A ` · `-separated line is really a jammed-together checklist.
+    if " · " in text:
+        items = [it.strip().rstrip(".") for it in text.split(" · ") if it.strip()]
+        return "\n".join(f"- [ ] {it}" for it in items)
+    return text
+
+
+def checklist_block(value, twocol_min=7):
+    """
+    Render a checklist and, when it's long, wrap it in a `.cols2` div so the PDF lays it
+    out in two columns (used for the "Filed once" and region-wide "Gather once" lists).
+    Short lists stay single-column rows. Returns '' for an empty checklist.
+    """
+    md = as_checklist(value)
+    if not md.strip():
+        return ""
+    items = sum(1 for ln in md.splitlines() if ln.lstrip().startswith("- [ ]"))
+    if items >= twocol_min:
+        return f'<div class="cols2" markdown="1">\n{md}\n</div>'
+    return md
+
+
+def render_financial_aid(value):
+    """
+    Financial aid as fixed, scannable sub-labels (Model / Covers / Forms / Documents /
+    Dates) when authored as an object; a legacy markdown string is passed through as-is.
+    """
+    if isinstance(value, dict):
+        lines = [f"- **{label}** — {str(value[key]).strip()}"
+                 for key, label in FINANCIAL_AID_FIELDS if str(value.get(key) or "").strip()]
+        return "\n".join(lines)
+    return (value or "").strip()
+
+
+def anchorize_and_toc(body):
+    """
+    Inject an explicit `<a id>` anchor before every ## / ### / #### heading and build
+    a nested Contents list linking to them. Returns (toc_markdown, body_with_anchors).
+
+    Explicit HTML anchors (rather than relying on auto-slugging) make the jump-links
+    resolve identically in GitHub/VS Code *and* in the PDF renderer.
+    """
+    out_lines, toc, used = [], [], set()
+    in_fence = False
+    for line in body.splitlines():
+        stripped = line.lstrip()
+        if stripped.startswith("```"):
+            in_fence = not in_fence
+            out_lines.append(line)
+            continue
+        m = None if in_fence else re.match(r"(#{2,4})\s+(.*)$", stripped)
+        if not m:
+            out_lines.append(line)
+            continue
+        level = len(m.group(1))
+        display = re.sub(r"[*_`]", "", m.group(2)).strip()
+        anchor = "sec-" + (slugify(display) or "x")
+        n, base = 2, anchor
+        while anchor in used:
+            anchor, n = f"{base}-{n}", n + 1
+        used.add(anchor)
+        toc.append(f"{'  ' * (level - 2)}- [{display}](#{anchor})")
+        out_lines.append(f'<a id="{anchor}"></a>')
+        out_lines.append(line)
+    toc_md = "## Contents\n\n" + "\n".join(toc) if toc else ""
+    return toc_md, "\n".join(out_lines)
+
+
+def _is_empty(val):
+    """True if a field carries no content — handles list, dict (aid object), or string."""
+    if isinstance(val, list):
+        return not [x for x in val if str(x).strip()]
+    if isinstance(val, dict):
+        return not [x for x in val.values() if str(x).strip()]
+    return not (val or "").strip()
 
 
 def validate(data):
@@ -97,7 +229,7 @@ def validate(data):
         if not (u.get("deadlines") or {}):
             problems.append(f"{name}: missing 'deadlines'")
         for key in REQUIRED_UNI_FIELDS:
-            if not (u.get(key) or "").strip():
+            if _is_empty(u.get(key)):
                 problems.append(f"{name}: empty '{key}'")
     if problems:
         sys.exit(
@@ -133,8 +265,19 @@ def render_snapshot(data, unis):
     return "\n".join(lines)
 
 
+def _render_field(key, value):
+    """Render one per-university field to markdown. Checklist and financial-aid fields
+    get their structured treatment; everything else is prose (authored as sub-bullets)."""
+    if key == "application_checklist":
+        return as_checklist(value)
+    if key == "financial_aid":
+        return render_financial_aid(value)
+    return (value or "").strip()
+
+
 def render_systems(data, unis_by_name):
     parts = []
+    uni_no = 0  # continuous 1..N across every system group (see 08_application_prep.md)
     for s in data.get("systems") or []:
         system = s.get("system", "Application system")
         parts.append(f"### {system}")
@@ -142,9 +285,10 @@ def render_systems(data, unis_by_name):
         if members:
             parts.append(f"_Universities: {', '.join(members)}._")
             parts.append("")
-        shared = (s.get("shared_checklist") or "").strip()
+        shared = checklist_block(s.get("shared_checklist"))
         if shared:
             parts.append("**Filed once across these schools:**")
+            parts.append("")
             parts.append(shared)
             parts.append("")
         # Per-university subsections, in the order the system lists them.
@@ -153,20 +297,30 @@ def render_systems(data, unis_by_name):
         ordered += [u for u in data.get("universities", [])
                     if u.get("system") == system and u not in ordered]
         for u in ordered:
-            heading = u.get("name", "University")
+            uni_no += 1
+            heading = f"{uni_no}. {u.get('name', 'University')}"
             likelihood = (u.get("admission_likelihood") or "").strip()
             if likelihood:
                 heading += f" — {likelihood}"
             parts.append(f"#### {heading}")
-            parts.append(render_deadlines(u.get("deadlines") or {}))
-            parts.append("")
-            for key, label in UNI_FIELDS:
-                value = (u.get(key) or "").strip()
-                if not value:
+
+            # Gather the sections that actually have content, then letter them a, b, c…
+            # (contiguously) and render each as a bold sub-heading + an indented body.
+            sections = [("Deadlines", render_deadlines(u.get("deadlines") or {}))]
+            sections += [(label, _render_field(key, u.get(key))) for key, label in UNI_FIELDS]
+            letter = ord("a")
+            for label, value in sections:
+                if not value.strip():
                     continue
-                parts.append(f"**{label}**")
+                parts.append(f"##### {chr(letter)}. {label}")
+                parts.append("")
+                parts.append('<div class="apply-body" markdown="1">')
+                parts.append("")
                 parts.append(value)
                 parts.append("")
+                parts.append("</div>")
+                parts.append("")
+                letter += 1
             portal = (u.get("portal") or "").strip()
             if portal:
                 parts.append(f"**Portal:** {portal}")
@@ -214,28 +368,33 @@ def render_guide(data):
     unis_by_name = {u.get("name"): u for u in unis if u.get("name")}
     region_title = data.get("region_title") or data.get("region")
 
-    parts = [f"# Application prep — {region_title}: {len(unis)} universities", ""]
-    parts.append("## Snapshot")
-    parts.append(render_snapshot(data, unis))
-    parts.append("")
-    parts.append(f"## {region_title} application strategy")
-    parts.append(data["overview"].strip())
-    parts.append("")
-    parts.append("## Grouped by application system")
-    parts.append(render_systems(data, unis_by_name))
-    parts.append("")
-    gather = (data.get("consolidated_checklist") or "").strip()
+    # --- The "middle": the substantive content (Snapshot → Deadline calendar). ---
+    middle = ["## Snapshot", render_snapshot(data, unis), "",
+              f"## {region_title} application strategy", data["overview"].strip(), "",
+              "## Grouped by application system", render_systems(data, unis_by_name), ""]
+    gather = checklist_block(data.get("consolidated_checklist"))
     if gather:
-        parts.append("## Gather once (across the whole region)")
-        parts.append(gather)
-        parts.append("")
-    parts.append("## Deadline calendar")
-    parts.append(render_calendar(data.get("dated_items") or []))
-    parts.append("")
-    parts.append("## Sources")
-    parts.append(render_sources(data.get("sources") or []))
-    parts.append("")
-    return "\n".join(parts)
+        middle += ["## Gather once (across the whole region)", "", gather, ""]
+    middle += ["## Deadline calendar", render_calendar(data.get("dated_items") or []), ""]
+    middle_md = "\n".join(middle)
+
+    # Glossary is built from the raw middle (so it lists terms actually used); the
+    # middle then gets its jargon auto-linked to those anchors.
+    glossary_md = apply_glossary.build_glossary_section(middle_md, title="Key terms")
+    linked_middle = apply_glossary.link_terms(middle_md)
+
+    sources_md = "## Sources\n" + render_sources(data.get("sources") or [])
+
+    # Body = Key terms + linked middle + Sources, then anchors + a Contents list.
+    body_sections = [s for s in (glossary_md, linked_middle, sources_md) if s.strip()]
+    toc_md, body_with_anchors = anchorize_and_toc("\n\n".join(body_sections))
+
+    doc = [f"# Application prep — {region_title}: {len(unis)} universities", "",
+           INTRO, ""]
+    if toc_md:
+        doc += [toc_md, ""]
+    doc += [body_with_anchors, ""]
+    return "\n".join(doc)
 
 
 def main():

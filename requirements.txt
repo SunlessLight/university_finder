@@ -13,3 +13,10 @@ firecrawl-py
 # Markdown -> PDF export of dossiers (tools/dossier_to_pdf.py) — pure-pip, no native libs
 markdown
 xhtml2pdf
+
+# Markdown -> PDF export of application-prep guides (tools/apply_prep_to_pdf.py).
+# WeasyPrint gives real CSS: reliable internal links for the Contents/glossary jumps,
+# paged footers, proper checkbox/list styling. On Windows it needs native GTK/Pango/Cairo
+# libs (NOT pip): install MSYS2 then `pacman -S mingw-w64-ucrt-x86_64-gtk3`; the tool adds
+# C:\msys64\ucrt64\bin at import (override with WEASYPRINT_DLL_DIRECTORIES). See the tool header.
+weasyprint
