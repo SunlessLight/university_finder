@@ -16,7 +16,8 @@ This is the most research-intensive stage — do it only for finalists, A-tier a
    + forums/video/social — capture their URLs + snippets without scraping them.
 2. *(agent step)* assemble `.tmp/<slug>/dossier_<uni>.json`.
 3. `build_dossier.py --student <slug> --input .tmp/<slug>/dossier_<uni>.json` — renders the dossier and
-   flips that row to `List status = Finalist`, `Dossier status = Done`.
+   flips that row to `List status = Finalist`. (There is no `Dossier status` column — the dossier file
+   under `dossiers/` *is* the record that it was built.)
 
 ### Which scraper for which section (spend credits where they matter)
 
@@ -63,6 +64,10 @@ Ordered decision-first. **Snapshot (1)** and **Sources (16)** are rendered by th
     personality archetype** (collaborative vs competitive, hands-on vs theoretical), **what a newcomer
     needs to blend in**, **first-year / orientation activities** (freshers, signature first-year projects),
     and **real student voices** (Reddit / The Student Room / YouTube — links + snippets, not scraped).
+    This is the **only** home for student-life research since the master-list columns were removed on
+    2026-07-16 — it needs paragraphs, which is exactly what a spreadsheet cell can't hold. **For Toru,
+    read `data/students/toru/student_life_research.md` first**: 30 rows of this was already researched at
+    Stage 4 under the old schema and migrated there. Don't pay for it twice.
 12. **The city, the area & belonging** — the **city/area feel, safety, transport, and things to do /
     sightseeing**, plus the **Malaysian / halal / prayer / religious-community** angle. Surface
     `needs`-flagged items prominently; otherwise treat as reassuring background, not a decision driver.

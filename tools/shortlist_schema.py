@@ -46,15 +46,12 @@ SHORTLIST_HEADERS = [
     "Student grades",
     "Fits grades?",
     "English req",
-    "Meets English?",
     "Backup entry route",   # foundation / INTO-Kaplan-Navitas / transfer if direct entry is a Reach (was "Pathway option")
     # Money
     "Annual tuition",
     "Total tuition",
     "Est. living/yr",
     "Duration (yrs)",
-    "Total cost (programme)",
-    "Currency",
     "Approx total (MYR)",   # rough normalization for apples-to-apples comparison
     # Scholarships — the student's #1 priority; expanded from a single free-text column.
     # Write these as complete, plain-English sentences with real portal links + any statistics.
@@ -62,9 +59,6 @@ SHORTLIST_HEADERS = [
     "Scholarship coverage",         # how much it covers: full / tuition-only / % / fixed amount
     "Scholarship competitiveness",  # how hard to win + any published statistics (say so if unknown)
     "How to get the scholarship",   # eligibility + steps + separate deadline if any
-    # People & student life (readable research the student asked for)
-    "Student community links",      # student society / Discord / Reddit / Facebook group links
-    "Student life",                 # brief plain-English run-through + YouTube / Instagram links
     # Visa / recognition
     "Money to show (visa)",         # was "Funds proof"
     "Work rights after graduating", # was "Post-study work"
@@ -73,18 +67,20 @@ SHORTLIST_HEADERS = [
     "How to apply",         # UCAS / Common App / Direct portal (was "Application system")
     "Key deadline",
     "Intake",
+    "Notes",
     # Provenance
     "Course URL",
-    "Info source",          # Official / Aggregator — hard facts must become Official by Stage 4 (was "Source authority")
-    "Data as-of",           # cycle year the facts were valid for
-    "Dossier status",       # internal: whether the full deep-profile has been built (Not started / Done)
-    "Notes",
+    "Info source",          # Not verified / Official page — hard facts must become "Official page" by Stage 4
 ]
 
 # Allowed values for the "List status" column (first is the default for new rows).
 LIST_STATUSES = ["Longlist", "Shortlist", "Finalist", "Rejected"]
 DEFAULT_LIST_STATUS = LIST_STATUSES[0]
-DEFAULT_DOSSIER_STATUS = "Not started"
+
+# Allowed values for "Info source". A row starts unverified and Stage 4 flips it once the
+# fact has been confirmed on the university's own page (see workflows/04_verify_shortlist.md).
+INFO_SOURCE_UNVERIFIED = "Not verified"
+INFO_SOURCE_OFFICIAL = "Official page"
 
 # --------------------------------------------------------------------------- #
 # Desirability scoring. Each sub-score is 0-5; the weighted sum is normalized to
@@ -275,12 +271,12 @@ def feasibility_flags(candidate, profile=None, today=None):
     budget = None
     if isinstance(profile, dict):
         budget = (profile.get("financial") or {}).get("total_budget")
-    if myr is not None and budget:
-        try:
-            if float(myr) > float(budget):
-                flags.append("Over budget")
-        except (TypeError, ValueError):
-            pass
+    # budget_ceiling handles a range ('400000-800000' -> 800000); a bare float() here
+    # threw on any range and the swallowed error left this check silently dead.
+    ceiling = budget_ceiling(budget)
+    if myr is not None and ceiling:
+        if float(myr) > ceiling:
+            flags.append("Over budget")
 
     return flags
 
@@ -317,6 +313,22 @@ def parse_amount(value):
         return None
 
 
+def budget_ceiling(value):
+    """Return the upper bound of a stated budget, or None.
+
+    Accepts a number, a single amount ('500000', 'MYR 500,000'), or a range
+    ('400000-800000') — for a range the ceiling is the TOP, which is what an
+    'Over budget' test must compare against. parse_amount() can't do this: it
+    strips the separator and fuses '400000-800000' into 400000800000.
+    """
+    if value is None or isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)):
+        return float(value)
+    amounts = [float(m) for m in re.findall(r"\d+(?:\.\d+)?", str(value).replace(",", ""))]
+    return max(amounts) if amounts else None
+
+
 def to_myr(amount, currency):
     """Convert an amount in `currency` to approximate MYR using FX_TO_MYR. None if unknown."""
     amt = parse_amount(amount)
@@ -333,6 +345,11 @@ def candidate_total_myr(candidate):
 
     Prefers an explicit total_cost_programme; otherwise total_tuition + living*years.
     Returns an int (MYR) or None if there isn't enough to compute.
+
+    `currency` and `total_cost_programme` are candidate-JSON fields with no CSV column of
+    their own — "Approx total (MYR)" is what the student sees. Still REQUIRED in the JSON:
+    to_myr() returns None on an unknown/blank currency, which blanks the MYR total and, via
+    feasibility_flags(), silently drops the "Over budget" warning with it.
     """
     currency = candidate.get("currency")
     explicit = candidate.get("total_cost_programme")

@@ -42,6 +42,37 @@ US News best <field> programs
 OPT STEM <field> post study work
 ```
 
+> **For the USA, FUNDING is the real axis — not sticker price.** A 4-year US degree runs ~840k-1.8M MYR,
+> so for most Malaysian budgets *every* US row busts the ceiling at sticker and the list is meaningless
+> unless built around aid. Always add these queries:
+> ```
+> US universities that meet full financial need for international students undergraduate
+> need-blind admissions for international students US universities list
+> <university> international students financial aid CSS Profile
+> ```
+> **Need-BLIND vs need-AWARE for internationals is the distinction that matters** — at a need-aware
+> school, *requesting aid actively lowers admission odds*, so it belongs in `entry_margin` and `Notes`,
+> not just the scholarship columns. As of 2026 the need-blind-for-internationals list is only ~10 schools
+> (Harvard, Yale, Princeton, MIT, Amherst, Dartmouth, Bowdoin, Washington & Lee, + Brown and Notre Dame
+> from the Class of 2029) — and a sub-5%-acceptance deal-breaker removes the first four.
+>
+> **Headline admit rates lie for aid-seeking internationals.** Duke publishes ~6% but funds only **20-25
+> international students a year** university-wide, in a *separate* pool — the effective rate is far lower.
+> Read the aid page, not the admissions brochure.
+>
+> **Expect the US list to be all Reach**, and say so rather than manufacturing a fake Safety: meets-full-need
+> ∩ >5% admit ∩ good ranking is a tiny set with no safe end. The balanced-shortlist rule applies **across
+> the whole list, not per country** — source the Safety from the UK/Australia/local instead.
+>
+> **The liberal-arts trap:** the most aid-generous schools (Amherst, Grinnell, Richmond, Bowdoin, W&L) have
+> **no QS rank** and little Malaysian employer recognition, and often offer data science only as a *minor*.
+> They score badly on ranking-led priorities despite being strongest on funding. Surface the trade-off and
+> ask the student what "the name" means to them — QS rank or US reputation. Don't silently drop or inflate them.
+>
+> **Check the testing policy per school.** Test-optional is receding: Cornell, Dartmouth, Brown, Yale and
+> Penn have all reinstated the SAT/ACT. If the student has no score, flag it — it's an action item with a
+> deadline, not a disqualifier.
+
 **Australia** → course catalogs + visa:
 ```
 <course> bachelor Australia university course
@@ -49,6 +80,54 @@ QS Australia <field>
 Australia 485 graduate visa <field>
 <university> international tuition <course>
 ```
+
+> **Australia is the SAFETY end of the list — expect it, don't fight it.** Australian entry is
+> **cutoff-based, not holistic**: unis publish an explicit A-Level/ATAR bar per course, so
+> `entry_margin` is a *measurement* here, not a guess. A strong A-Level student will legitimately
+> come out Safety on nearly every row — that is a real result, the mirror image of the US all-Reach
+> finding, and it is usually what makes the balanced-shortlist rule satisfiable **across** the list.
+> The common deal-breakers (no Oxbridge, no sub-5% admit) are **non-binding** in Australia.
+>
+> **The A-Level aggregate scale is the unlock.** UNSW and UQ both score **A\*=6, A=5, B=4, C=3, D=2,
+> E=1** — UNSW on the best **four** A2 subjects, UQ on the best **three**. Published cutoffs are far
+> lower than they look: UNSW's Bachelor of Data Science and Decisions sits at **13.0 of a possible
+> 24**, i.e. roughly BBBC. Convert the student's grades to the aggregate and compare — it turns
+> "well-ranked but can I get in?" into arithmetic.
+>
+> **THE DOMESTIC-FEE TRAP — this one will silently destroy a budget column.** Australian course pages
+> show the **Commonwealth Supported Place** (domestic) fee *right next to* the international fee, in
+> the same visual block. UNSW's page reads "first year full fee **$8,500** / full fee to complete
+> degree **$27,000**" — those are domestic. The international figures on the same page are
+> **$60,000** and **$189,000**. Aggregators scrape the wrong one constantly (one quoted ANU's
+> Applied Data Analytics at ~A$12,240/yr against a real ~A$56,120). **If an Australian annual fee
+> looks under ~A$25,000, it is domestic. Do not use it.**
+>
+> **Duration drives cost more than fee level does.** An Australian bachelor is **3 years**, but an
+> **honours** year makes it 4 and is often what's advertised. Sydney's 4-year Bachelor of Advanced
+> Computing runs ~1.05M MYR while Melbourne's 3-year BSc runs ~746k on a *similar annual fee* — the
+> extra year, not the price, busts the budget. Set `duration_years` to what the course actually runs.
+>
+> **There is NO September intake.** Semesters start **February** (Sem 1) and **late July** (Sem 2). A
+> student whose `preferences.intake` says "Sept" cannot mean Australia — settle which semester before
+> Stage 4, because it moves every deadline. For a Malaysian A-Level student finishing in December,
+> Sem 1 (Feb) is tight but starts them ~7 months earlier than the UK/US; Sem 2 (July) is the safe fit.
+> **Don't invent a `key_deadline`** — leave it blank and verify at Stage 4; a fabricated date is worse
+> than an empty cell.
+>
+> **Scholarships are Australia's weak spot** — partial fee remission (20-30%), not the US
+> meets-full-need model. If the student ranks scholarship highly, say so plainly. The best structure
+> found is **automatic consideration with no application** (e.g. Melbourne's 25% remission, ≥110
+> awarded), which is worth more than a bigger award the student must win.
+>
+> **Subject rank and overall rank disagree sharply in Australia.** UTS is **4th in the country** for
+> QS Data Science & AI (76.9) while sitting ~#88 overall; UNSW is ~#19 overall but scores *below*
+> Monash and UTS on the subject. `subject_reputation` is scored on the **subject**, so surface the
+> split rather than quietly resolving it — for a ranking-led student it's a real question.
+>
+> Use the official visa living-cost benchmark (**AUD 29,710/yr**, subclass 500, 2026) for
+> `est_living_per_year`; Sydney/Melbourne run ~20-40% above it. Adelaide and Wollongong are
+> **designated regional areas** — a possible extra year on the 485, which matters if
+> `intent_to_migrate` is true.
 
 **Singapore/Malaysia (local)** → NUS/NTU/SMU + MQA:
 ```
@@ -104,8 +183,6 @@ Read `.tmp/<slug>/search_results.json`. For each plausible university+course, bu
     "scholarship_coverage": "",
     "scholarship_competitiveness": "",
     "scholarship_how_to": "",
-    "community_links": "",
-    "student_life": "",
     "funds_proof": "~GBP 12000 shown for visa",
     "post_study_work": "Graduate Route 2 yrs",
     "recognised_back_home": "MQA recognised; n/a professional body",
@@ -113,8 +190,7 @@ Read `.tmp/<slug>/search_results.json`. For each plausible university+course, bu
     "key_deadline": "2027-01-15",
     "intake": "2027 Sept",
     "course_url": "https://www.manchester.ac.uk/...",
-    "source_authority": "Aggregator",
-    "data_as_of": "2026",
+    "source_authority": "Not verified",
     "entry_margin": 0,
     "pathway_option": "INTO Manchester Foundation if below AAA",
     "fits_grades": "",
@@ -134,13 +210,23 @@ Read `.tmp/<slug>/search_results.json`. For each plausible university+course, bu
 ```
 
 **Field notes:**
-- Leave `total_cost_programme` empty to let the tool compute it from `total_tuition` + `est_living_per_year`
-  × `duration_years` (in `currency`) and convert to approximate MYR. Put a date in `key_deadline` as
-  `YYYY-MM-DD` so it parses (extra text after the date is fine).
-- `meets_english`: `true`/`false` (drives the "English short" feasibility flag); `null`/omit if unknown.
+- **Some JSON fields have no CSV column of their own — they are inputs, not display.** Filling them is
+  still mandatory; the master list shows what they *produce*:
+  - **`currency`** ⇒ `Approx total (MYR)`. **This one is a silent-failure trap:** `to_myr()` returns
+    `None` on a blank or unrecognised currency, which empties the MYR total *and* takes the
+    `Over budget` warning down with it — an unaffordable row then looks clean. Always set it, and use a
+    code from `FX_TO_MYR` (MYR/GBP/USD/AUD/SGD/CNY/EUR).
+  - **`total_cost_programme`** ⇒ also `Approx total (MYR)`. Leave it empty to let the tool compute
+    `total_tuition` + `est_living_per_year` × `duration_years`; set it explicitly only when that model
+    can't express the cost (e.g. a mixed-currency 2+2 — see the branch-campus note below).
+  - **`meets_english`** ⇒ the `English short` warning. `true`/`false` only; `null`/omit if unknown. It is
+    a strict identity check, so the string `"No"` does **not** trigger the flag. The requirement itself
+    goes in `english_req`, which *is* a column.
+- Put a date in `key_deadline` as `YYYY-MM-DD` so it parses (extra text after the date is fine).
 - `entry_margin` is your honest read of the student's grades vs the requirement: **+2** well above … **0**
   borderline/meets … **−2** well below. This maps to Reach/Match/Safety. Don't fold it into the sub-scores.
-- `source_authority` stays `"Aggregator"` at this stage — Stage 4 flips verified rows to `"Official"`.
+- `source_authority` stays `"Not verified"` at this stage — Stage 4 flips verified rows to
+  `"Official page"`. These are the only two values the `Info source` column takes.
 
 **Scoring guide (each 0-5 — these are DESIRABILITY only, never admissibility):**
 - `course_match` — how well the course matches the field/goal.
@@ -152,12 +238,77 @@ Read `.tmp/<slug>/search_results.json`. For each plausible university+course, bu
 - `location_pref_fit` — matches stated location/lifestyle preferences.
 - `recognition_fit` — recognised back home (MQA + professional body) where it matters.
 
+> **Scoring `recognition_fit` for HOME-COUNTRY (Malaysian) rows — MQA is a floor, not a distinction.**
+> Every Malaysian programme is MQA-registered, so scoring MQA as recognition makes *every* domestic row
+> max out and Malaysia sweeps the list for a reason that means nothing. Score the **professional ladder**
+> the degree actually sits on, **per programme, not per university**:
+>
+> | Degree title says | Accreditor | Register | Accord |
+> |---|---|---|---|
+> | "Bachelor of **Engineering**" | **EAC** | **BEM** Professional Engineer (**Ir.**) | **Washington** |
+> | "Bachelor of Engineering **Technology**" | **ETAC** | **MBOT** Professional Technologist (**Ts.**) | **Sydney** |
+> | "Bachelor of Applied **Science**" | — | none | — |
+>
+> The two ladders are **not interchangeable**, and for a regulated profession this is a gate, not a
+> preference. Check `profile.recognition_targets`: if it names **BEM / Washington Accord**, an ETAC row
+> **fails the student's own gate even when the course title matches perfectly** — that's a real negative
+> finding worth keeping on the list, not a row to quietly score well.
+>
+> **Tell-tales when the page doesn't name the accreditor** (common — programme pages often omit it):
+> - The **degree title** is the strongest signal: "Engineering **Technology**" ⇒ ETAC.
+> - The **PLO wording** gives it away: Washington Accord programmes say "**complex** engineering problems"
+>   (WK1-WK7); Sydney/ETAC ones say "**broadly-defined** Engineering Technology problems" (SK1-SK4).
+> - Registers to check: `eac.org.my` and `etac.org.my` (accredited-programme lists), `bem.org.my`, MQR.
+> - If you can only **infer** the ladder, say so in `notes` and flag it for Stage 4 — never let an inferred
+>   accreditation reach Shortlist unverified.
+>
+> **The EAC register is Cloudflare-protected — plan around it (learned 2026-07-16).** The *index* page
+> (`eac.org.my/v2/list-of-accredited-engineering-programme-malaysia/`) scrapes fine with Firecrawl and gives
+> you the list of accredited **institutions**, each linking to a per-university PDF of its accredited
+> **programmes**. Those **PDFs 403 to both WebFetch and curl** (Cloudflare "Just a moment..." — a browser UA
+> and Referer do not help), so you cannot confirm a *specific programme* from the register for free. Work
+> around it in this order, which is free and was sufficient for all 6 Malaysian rows:
+> 1. **The university's own programme page** — often names the accreditor outright ("Professional or
+>    Statutory Body of Accreditation: ... Engineering Accreditation Council") and, better, exposes the
+>    **PLO wording** tell-tale above. UTM's page did both.
+> 2. **The university's FAQ / accreditation page** — UM's states "Board of Engineers Malaysia" + "Washington
+>    Accord" explicitly.
+> 3. **MQR** (`www2.mqa.gov.my/mqr`) — gives the professional body **and the accreditation window**; check the
+>    end date, it may be expired on its face (UniMAP's read 2019-2024) and needs a renewal check at Stage 4.
+> Note the institution list is **necessary but not sufficient**: a university on it has *some* accredited
+> programme, not necessarily the one you want. Absence, though, is strong evidence — University of Cyberjaya
+> is missing from it, matching its ETAC/Sydney-Accord status.
+
+> **A "local" branch-campus row may be a 2+2 in disguise — check before costing it (learned 2026-07-16).**
+> Monash Malaysia's Bachelor of Biomedical Engineering is *"a four-year degree where you'll study your first
+> two years in Malaysia and your final years at our Clayton campus in Melbourne"* — the transfer is
+> **mandatory**. That inverts three things at once, so catch it at discovery, not Stage 4:
+> - **Cost** is mixed-currency and roughly 4x the local rate. The `total_tuition` + `living` × `duration`
+>   model cannot express it — compute the total yourself and set **`total_cost_programme` explicitly** (in
+>   MYR, with `currency: "MYR"`); the tool prefers an explicit value over the computed one.
+> - **`post_study_work_fit` flips from floor to high** — the student graduates *in* the destination country
+>   and gets its post-study visa (485), so a "Malaysia" row can carry a full migration pathway.
+> - **The comparison changes**: score it against the parent university's home row, not the domestic rows.
+> Also check **scholarship eligibility by qualification** — Monash Malaysia's RM8,000/yr waiver is UEC-only,
+> so an A-Level student gets nothing from it.
+> Conversely, don't trust an aggregator that a branch campus offers the field at all: Nottingham Malaysia has
+> only Biomedical **Sciences** (BSc), and MMU Cyberjaya has no biomedical programme despite aggregator claims.
+
+> **Home-country rows: price them at the LOCAL rate, not the international one.** Aggregators quote the
+> international fee by default (eduadvisor listed UM Biomedical at RM111,400). A domestic student pays the
+> subsidised local rate — often 4-10x less at a public university — which is usually what decides whether the
+> row clears the budget. The local route also has its **own English requirement**: Malaysian publics take
+> **MUET** (via UPU), not IELTS, so a student with no formal test still has an action item, just a different one.
+>
+> Watch the mirror-image trap too: an **RINA / IMarEST / MARDEP** stamp is genuine and worth noting, but it
+> is *not* a substitute for the BEM route if that's what the student asked for.
+
 > **Weights are per-student and live in `data/students/<slug>/weights.json`** — never in
 > `tools/shortlist_schema.py`, which is shared source that concurrent sessions would fight over.
 > Derive them from the student's `preferences.priorities` with the **`scoring-weights` skill** before
 > syncing; `sync_shortlist.py` refuses to run without a valid file. Because no student state is shared,
-> two students can be discovered and synced **in parallel**. The rich scholarship/community/student-life
-> detail columns are usually left blank at discovery and filled during Stage 4.
+> two students can be discovered and synced **in parallel**. The rich scholarship detail columns are
+> usually left blank at discovery and filled during Stage 4.
 
 ## Sync to the master list
 
@@ -174,7 +325,7 @@ university+course, and appends new rows as **Longlist**. The CSV is created on f
 - **Don't over-scrape** — tune `--limit` / `--scrape-top` to control credit use; scraping costs more than
   searching. Only scrape the most promising official pages.
 - **Provisional facts** — snippet-level fees/requirements are often wrong or out of date. That's fine here;
-  Stage 4 verifies. Keep `source_authority = Aggregator` until then.
+  Stage 4 verifies. Keep `source_authority = Not verified` until then.
 - **CSV append needs a trailing newline** — `sync_shortlist.py` appends rows. If the existing
   `master_list.csv` doesn't end in a newline (e.g. it was hand-edited, or renamed from another file), the
   first appended row used to fuse onto the last existing row, corrupting it into one physical line. The tool
@@ -187,8 +338,28 @@ university+course, and appends new rows as **Longlist**. The CSV is created on f
   The tool now reorders appended rows to the *existing file's* header (`reorder_to_header`) and refuses
   if the column *set* differs (a real schema change → migrate first). If you find a drifted file, rewrite
   it once into `SHORTLIST_HEADERS` order (keyed by column name) so it matches the schema and the sibling
-  students. Sanity-check after a sync that a spot-checked row's `Approx total (MYR)`/`City`/`Currency`
+  students. Sanity-check after a sync that a spot-checked row's `Approx total (MYR)`/`City`/`Intake`
   line up under their headers.
+- **The schema was slimmed 41 → 34 columns on 2026-07-16** — the master list is read in Google Sheets, and
+  seven columns were blank, duplicated another column, or were internal bookkeeping: `Meets English?`,
+  `Total cost (programme)`, `Currency`, `Student community links`, `Student life`, `Data as-of`,
+  `Dossier status`. All five student CSVs were migrated in one pass (a disposable script, not a `tools/`
+  entry — same rationale as the budget backfill below). **The columns went, the candidate-JSON fields
+  stayed**: `currency`, `total_cost_programme` and `meets_english` are still required inputs (see Field
+  notes above). If you are reading an old dossier or `.bak` that references the dropped columns, that's
+  why. Toru's Stage-4 student-life research was rescued to
+  `data/students/toru/student_life_research.md` — fold it into a dossier rather than re-researching it.
+- **Budget stated as a RANGE silently killed the `Over budget` flag** (fixed 2026-07-16, keep in mind when
+  reading older rows). `ingest_form_csv.py` passes the form's budget answer straight through, so a student
+  who types `400000-800000` lands a *range string* in `profile.financial.total_budget`. `feasibility_flags()`
+  used to do `float(budget)` inside a swallowing `except: pass` — the parse threw and the check silently
+  never ran, so over-budget rows looked clean (it worked only for single-number budgets). `budget_ceiling()`
+  now parses a range to its **upper bound**. Because sync only *appends*, **rows synced before the fix were
+  never retro-flagged**. Don't trust the absence of `Over budget` on an old row; re-check against the ceiling.
+  Ong's UK rows were backfilled on 2026-07-16 (UCL 893,850 / Manchester 885,000 / Warwick 841,281) and are
+  now clean — worth knowing that the first status note of this named only two of the three, so **re-derive
+  which rows are over from the CSV, don't trust a prose list of them.** Backfill is a small one-off script
+  reusing `budget_ceiling()`: only range-budget students are affected, so it doesn't belong in `tools/`.
 - **Stale `.tmp/<slug>/uni_candidates.json`** — this file is disposable and may carry leftovers from an
   earlier round (different unis, old scoring). Overwrite it fresh each discovery run rather than appending —
   `sync_shortlist.py` syncs whatever is in it.

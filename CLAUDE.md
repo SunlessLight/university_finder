@@ -67,7 +67,7 @@ These stop a tidy-looking list from being quietly wrong:
   so concurrent sessions silently overwrite each other. Sync hard-errors if a student's file is missing.
 - **Official sources for hard facts.** Verify fees/requirements/deadlines against the official uni /
   UCAS / Common App page before a row becomes Shortlist; aggregators are discovery only. Stamp
-  `Info source` + `Data as-of`.
+  `Info source` (`Not verified` → `Official page`).
 - **Total cost in MYR**, not annual tuition (3-yr UK vs 4-yr US must be comparable). MYR is approximate.
 - **Balanced shortlist** — a Reach/Match/Safety spread, not top-N by score.
 - **Recognition back home** (MQA + professional body) is a gate for regulated professions.

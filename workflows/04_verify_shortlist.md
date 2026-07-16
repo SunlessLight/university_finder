@@ -22,14 +22,14 @@ For the top Longlist rows (work down by desirability, but keep a spread — see 
 - **Key deadline** + **intake** → is the intake offered, and is the deadline still open?
 - **Scholarships** the student is realistically eligible for.
 
-Update each verified row: set **`Info source = Official`** and **`Data as-of`** to the cycle year.
-Where the official page disagrees with what an aggregator said, **the official figure wins** — put the
+Update each verified row: set **`Info source = Official page`** (it starts as `Not verified`). Where the
+official page disagrees with what a web-search result said, **the official figure wins** — put the
 discrepancy in `Notes`. (Verifying may need a couple of Firecrawl scrapes of clean official pages —
 **ask the user before running**, per `00_overview.md`.)
 
-### 1b. Research the scholarship + student-life columns (Toru's request, 2026-07-05)
-The master list now leads with **scholarships** and **student life**. For each row you're keeping, fill the
-new columns in **complete, plain-English sentences** (no jargon — this is what the student reads):
+### 1b. Research the scholarship columns (Toru's request, 2026-07-05)
+The master list leads with **scholarships**. For each row you're keeping, fill these columns in
+**complete, plain-English sentences** (no jargon — this is what the student reads):
 
 - **`Scholarship & portal`** — which scholarship(s) apply + the exact page to apply on (link). Scholarship
   is now a **required** priority: every kept university must have a realistic route documented. But a
@@ -38,10 +38,14 @@ new columns in **complete, plain-English sentences** (no jargon — this is what
 - **`Scholarship competitiveness`** — how hard it is to win, with **statistics where they exist** (award
   rate, number of awards, typical profile). If no stats are published, say so — never invent numbers.
 - **`How to get the scholarship`** — eligibility + steps + any separate scholarship deadline.
-- **`Student community links`** — links to student society / Discord / Reddit / Facebook groups for the
-  course or uni (these pages don't scrape via Firecrawl — capture the URL from free web search).
-- **`Student life`** — a short plain-English run-through of what studying this course there is like, with
-  links to YouTube "day in the life" videos, student vlogs, or Instagram pages where you find them.
+
+> **Student life / community research belongs in the DOSSIER, not the master list (changed 2026-07-16).**
+> It used to live in two master-list columns; they were removed because they hold paragraphs, and a
+> paragraph in a spreadsheet cell is unreadable in Google Sheets. Stage 5's dossier already has the right
+> homes for it — **`student_life_culture`** and **`city_and_belonging`**. So don't research it here: it's
+> deep-research depth, and at Stage 4 you're still cutting rows that will never need it. Toru's existing
+> research was rescued to `data/students/toru/student_life_research.md` — **read it before re-researching
+> a Toru finalist.**
 
 Also **re-score** the row under the student's `weights.json` (`data/students/<slug>/weights.json` — see the
 `scoring-weights` skill) and rewrite `Desirability`/`Tier`, since verification usually changes the facts the
@@ -73,9 +77,9 @@ Render comparison tables and discuss trade-offs:
 python tools/compare_universities.py --student <slug> --country Australia --status Longlist --dimensions summary,scholarship,fit
 python tools/compare_universities.py --student <slug> --status Shortlist --dimensions all --save
 ```
-Presets: `summary, cost, scholarship, life, quality, fit, visa, deadline, all`. Use `--country <name>` to
-work one destination at a time. Show `scholarship` to compare funding (Toru's #1 priority), `life` for
-community/student-life, `fit` to explain a Reach. Iterate: the student may want to keep or re-add a row;
+Presets: `summary, cost, scholarship, quality, fit, visa, deadline, all`. Use `--country <name>` to
+work one destination at a time. Show `scholarship` to compare funding (Toru's #1 priority), `fit` to
+explain a Reach. Iterate: the student may want to keep or re-add a row;
 that's the narrowing loop working.
 
 ### 5. Record pathway options for kept Reaches
@@ -87,13 +91,13 @@ still has a route, instead of just being told "no".
 
 - **Predicted grades** — be explicit that admissibility is provisional until actual results; lean toward
   labelling borderline cases Reach.
-- **Conflicting fees/deadlines** — official source wins; always stamp `Data as-of` so staleness is visible
-  next cycle.
+- **Conflicting fees/deadlines** — official source wins; record the figure you rejected in `Notes` so the
+  discrepancy stays visible.
 - **Too few survivors** — if the cut leaves <6, go back to Stage 3 and widen discovery (more countries or
   safer options) rather than promoting weak rows.
 
 ## Done when
 
-`master_list.csv` has 8-12 **Shortlist** rows with `Info source = Official` on their hard facts, the
-scholarship + student-life columns filled in plain English, a healthy Reach/Match/Safety spread, and
-rejected rows annotated. Then proceed to **Stage 5a** (`05_university_dossier.md`).
+`master_list.csv` has 8-12 **Shortlist** rows with `Info source = Official page` on their hard facts, the
+scholarship columns filled in plain English, a healthy Reach/Match/Safety spread, and rejected rows
+annotated. Then proceed to **Stage 5a** (`05_university_dossier.md`).

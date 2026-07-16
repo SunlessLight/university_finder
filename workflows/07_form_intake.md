@@ -36,8 +36,9 @@ fine — but keep the substring in bold intact.
 - **English proficiency — a capability snapshot only.** Ask just: **which English test** have you taken
   (IELTS / TOEFL / MUET / PTE / Duolingo / **Not yet** / Other) and your **English test score** (blank
   if none). *Do NOT ask "when will you take it".* Each university sets its own English bar; the required
-  test + score per uni is filled during research (`English req` / `Meets English?`), and the definitive
-  "tests you must sit" list is produced at the apply stage — not here.
+  test + score per uni is filled during research (the `English req` column, plus the `meets_english`
+  candidate field behind the `English short` warning), and the definitive "tests you must sit" list is
+  produced at the apply stage — not here.
 - **Total budget** for the whole degree in MYR (blank = "research everything, I'll decide" — the
   intended default; a rough ceiling only powers the "Over budget" flag); **per-year budget** (optional).
 - **How will you fund this degree?** — ONE question (replaces the old "how will you pay" + "only if

@@ -20,7 +20,7 @@ Usage:
     # save a copy alongside the run
     python tools/compare_universities.py --student aisyah-rahman --status Finalist --dimensions all --save
 
-Dimension presets: summary, cost, quality, fit, visa, deadline, all.
+Dimension presets: summary, cost, scholarship, quality, fit, visa, deadline, all.
 """
 
 import argparse
@@ -41,12 +41,11 @@ STUDENTS_DIR = REPO_ROOT / "data" / "students"
 # Each preset is an ordered list of master-list columns to show as comparison rows.
 DIMENSION_PRESETS = {
     "summary": ["List status", "Desirability", "Tier", "Admission likelihood", "Warnings"],
-    "cost": ["Total cost (programme)", "Approx total (MYR)", "Annual tuition", "Duration (yrs)"],
+    "cost": ["Approx total (MYR)", "Annual tuition", "Duration (yrs)"],
     "scholarship": ["Scholarship & portal", "Scholarship coverage", "Scholarship competitiveness",
                     "How to get the scholarship"],
-    "life": ["Student community links", "Student life"],
     "quality": ["Subject rank", "Overall rank"],
-    "fit": ["Student grades", "Entry requirements", "Fits grades?", "English req", "Meets English?",
+    "fit": ["Student grades", "Entry requirements", "Fits grades?", "English req",
             "Admission likelihood", "Backup entry route"],
     "visa": ["Money to show (visa)", "Work rights after graduating", "Recognised in Malaysia?"],
     "deadline": ["How to apply", "Key deadline", "Intake"],

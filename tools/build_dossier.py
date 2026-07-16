@@ -6,7 +6,7 @@ Reads a research JSON the agent assembles in Stage 5 and renders a fixed-order,
 answer three decision questions — can I get in? will I belong & thrive? what will
 it take to apply? — so the student can decide, not just compare. Writes it to
 data/students/<slug>/dossiers/<uni-course-slug>.md and flips that row in
-master_list.csv to Dossier status = Done (and List status = Finalist).
+master_list.csv to List status = Finalist.
 
 The fixed section order is enforced: every content section must be present and
 non-empty, or the build fails loudly — this is what keeps dossiers comparable and
@@ -80,7 +80,6 @@ CONTENT_SECTIONS = [
 ]
 
 STATUS_COL = SHORTLIST_HEADERS.index("List status")
-DOSSIER_COL = SHORTLIST_HEADERS.index("Dossier status")
 UNI_COL = SHORTLIST_HEADERS.index("University")
 COURSE_COL = SHORTLIST_HEADERS.index("Course")
 
@@ -146,7 +145,11 @@ def render_dossier(data):
 
 
 def update_master_list(csv_path, university, course):
-    """Flip the matching row to Dossier status = Done and List status = Finalist."""
+    """Flip the matching row to List status = Finalist.
+
+    There is no "Dossier status" column: the dossier file existing under dossiers/ is the
+    fact, and a column duplicating it just goes stale when a file is deleted or renamed.
+    """
     if not csv_path.exists():
         print(f"  ! {csv_path.name} not found — dossier written, but no row to update.")
         return
@@ -157,10 +160,9 @@ def update_master_list(csv_path, university, course):
     target = course_key(university, course)
     matched = False
     for row in rows[1:]:
-        if len(row) <= max(UNI_COL, COURSE_COL, STATUS_COL, DOSSIER_COL):
+        if len(row) <= max(UNI_COL, COURSE_COL, STATUS_COL):
             continue
         if course_key(row[UNI_COL], row[COURSE_COL]) == target:
-            row[DOSSIER_COL] = "Done"
             if row[STATUS_COL] != "Finalist":
                 row[STATUS_COL] = "Finalist"
             matched = True
@@ -170,7 +172,7 @@ def update_master_list(csv_path, university, course):
         return
     with csv_path.open("w", newline="", encoding="utf-8") as f:
         csv.writer(f).writerows(rows)
-    print(f"  master_list.csv: {university} — {course} -> Finalist / Dossier Done")
+    print(f"  master_list.csv: {university} — {course} -> Finalist")
 
 
 def main():

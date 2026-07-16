@@ -32,7 +32,8 @@ starts talking about ongoing work, offer it.
    - Do the **`List status`** counts in the CSV match what `status.md` claims (Longlist / Shortlist /
      Finalist / Rejected)?
    - Do any **`Notes`** cells contradict current scope/decisions (leftover text from an earlier round)?
-   - Are hard facts still `Info source = Aggregator` / `Data as-of` old? (⇒ Stage 4 not done.)
+   - Do rows still read `Info source = Not verified`? (⇒ Stage 4 not done for them. A row reads
+     `Official page` once its hard facts have been confirmed at the source.)
 
    > **Why this step is non-negotiable:** in the session that created this workflow, two separate
    > cold reads of Toru's files were stale — leading to wrong advice ("demote the China rows") and a
@@ -52,7 +53,7 @@ every stage and every working session.** Capture:
 - any open questions / drift left to reconcile.
 
 A stale note is worse than none — it lies with confidence. Treat updating it as part of finishing
-any piece of work, the same way you'd stamp `Data as-of` on a verified row.
+any piece of work, the same way you'd flip `Info source` on a row you just verified.
 
 ## The status.md template
 

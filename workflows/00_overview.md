@@ -63,18 +63,25 @@ rows — promotion/rejection is an agent edit to the CSV, never a sync side-effe
 
 The columns are defined once in `shortlist_schema.py` (`SHORTLIST_HEADERS`). Cell **values** should be
 plain-English sentences, not jargon. Quick glossary of the less-obvious columns:
-- **`Info source`** — where a fact came from: `Official` (the uni's own page / UCAS / Common App) or
-  `Aggregator` (rankings sites, StudyPortals — discovery only). Hard facts must be `Official` by Stage 4.
-- **`Dossier status`** — internal pipeline flag: whether the full 16-section deep-profile has been built
-  yet (`Not started` / `Done`). The student can ignore it.
+- **`Info source`** — how far a row's hard facts have been checked: `Not verified` (found via web search /
+  rankings sites — discovery only) or `Official page` (confirmed on the uni's own page / UCAS / Common
+  App). Every row must read `Official page` by Stage 4.
 - **`Backup entry route`** — a way in if direct entry is a stretch (foundation year / INTO-Kaplan-Navitas
   pathway / community-college transfer).
 - **Scholarship columns** — `Scholarship & portal`, `Scholarship coverage`, `Scholarship competitiveness`
   (with stats where they exist — never invented), `How to get the scholarship`.
-- **`Student community links` / `Student life`** — student society / Discord / Reddit links, and a short
-  run-through of student life with YouTube/Instagram links.
+- **`Approx total (MYR)`** — the whole-programme cost, roughly converted. Computed from the candidate
+  JSON's `currency` + `total_cost_programme`/`total_tuition`, none of which have columns of their own.
 - Jargon to explain in cells, not headers: *"honours entry"* = a 4-year degree with a final research/
   project year; *"need-blind"* = the uni admits you without considering your ability to pay.
+
+> **The schema was slimmed 41 → 34 columns on 2026-07-16.** It is read in Google Sheets, and seven columns
+> were blank in practice, duplicated another column, or were internal bookkeeping: `Meets English?`,
+> `Total cost (programme)`, `Currency`, `Student community links`, `Student life`, `Data as-of`,
+> `Dossier status`. **Removing a column ≠ removing the fact** — `currency` and `meets_english` are still
+> required candidate-JSON fields feeding `Approx total (MYR)` and the `English short` warning, and
+> student-life research now lives in the Stage 5 dossier where paragraphs belong. `Info source` values were
+> renamed `Aggregator`→`Not verified` and `Official`→`Official page` at the same time.
 
 ## How to start
 
@@ -100,8 +107,8 @@ These are *why this project exists* — they stop a tidy-looking list from being
    `scoring-weights` skill) and never live in shared source — so two students can be scored in parallel.
 2. **Official sources for hard facts.** Fees, entry requirements, English, deadlines, and intake must be
    verified against the **official** university / UCAS / Common App page before a row becomes `Shortlist`.
-   Aggregators (StudyPortals, rankings, Niche) are for *discovery only*. Record `Info source` +
-   `Data as-of` (cycle year) on every row. Where sources conflict, the official one wins; note the conflict.
+   Aggregators (StudyPortals, rankings, Niche) are for *discovery only*. Record `Info source` on every
+   row. Where sources conflict, the official one wins; note the conflict in `Notes`.
 3. **Total cost, not annual.** Compare full-programme **total cost in MYR** (3-yr UK vs 4-yr US are not
    comparable per year). `Approx total (MYR)` is a rough offline conversion — flag it as approximate.
 4. **Balanced list.** A shortlist is a spread of Reach/Match/Safety, not the top-N by score.

@@ -37,8 +37,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from shortlist_schema import (  # noqa: E402
-    DEFAULT_DOSSIER_STATUS,
     DEFAULT_LIST_STATUS,
+    INFO_SOURCE_UNVERIFIED,
     SHORTLIST_HEADERS,
     candidate_total_myr,
     classify_admission,
@@ -100,7 +100,12 @@ def fits_grades_label(candidate, admission):
 
 
 def candidate_to_row(c, score, tier, admission, flags):
-    """Build a CSV row in SHORTLIST_HEADERS order from a scored candidate."""
+    """Build a CSV row in SHORTLIST_HEADERS order from a scored candidate.
+
+    Several candidate fields deliberately have no column: `currency` and `total_cost_programme`
+    feed "Approx total (MYR)" (see candidate_total_myr), and `meets_english` feeds the
+    "English short" warning. They stay in the JSON; the CSV shows the result, not the input.
+    """
     myr = candidate_total_myr(c)
     values = {
         "List status": DEFAULT_LIST_STATUS,
@@ -118,33 +123,26 @@ def candidate_to_row(c, score, tier, admission, flags):
         "Student grades": c.get("student_grades", ""),
         "Fits grades?": fits_grades_label(c, admission),
         "English req": c.get("english_req", ""),
-        "Meets English?": _yn(c.get("meets_english")),
         "Backup entry route": c.get("pathway_option", ""),
         "Annual tuition": c.get("annual_tuition", ""),
         "Total tuition": c.get("total_tuition", ""),
         "Est. living/yr": c.get("est_living_per_year", ""),
         "Duration (yrs)": c.get("duration_years", ""),
-        "Total cost (programme)": c.get("total_cost_programme", ""),
-        "Currency": c.get("currency", ""),
         "Approx total (MYR)": "" if myr is None else str(myr),
         # Scholarship detail (Toru's #1 priority). Fall back to a legacy single "scholarships" field.
         "Scholarship & portal": c.get("scholarship_portal", c.get("scholarships", "")),
         "Scholarship coverage": c.get("scholarship_coverage", ""),
         "Scholarship competitiveness": c.get("scholarship_competitiveness", ""),
         "How to get the scholarship": c.get("scholarship_how_to", ""),
-        "Student community links": c.get("community_links", ""),
-        "Student life": c.get("student_life", ""),
         "Money to show (visa)": c.get("funds_proof", ""),
         "Work rights after graduating": c.get("post_study_work", ""),
         "Recognised in Malaysia?": c.get("recognised_back_home", ""),
         "How to apply": c.get("application_system", ""),
         "Key deadline": c.get("key_deadline", ""),
         "Intake": c.get("intake", ""),
-        "Course URL": c.get("course_url", ""),
-        "Info source": c.get("source_authority", "Aggregator"),
-        "Data as-of": c.get("data_as_of", ""),
-        "Dossier status": DEFAULT_DOSSIER_STATUS,
         "Notes": c.get("notes", ""),
+        "Course URL": c.get("course_url", ""),
+        "Info source": c.get("source_authority", INFO_SOURCE_UNVERIFIED),
     }
     return [values.get(h, "") for h in SHORTLIST_HEADERS]
 
