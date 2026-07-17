@@ -61,7 +61,12 @@ The form's priority dropdown normalizes to these tokens (`PRIORITY_NORMALIZE` in
 | `employability` | `post_study_work_fit` |
 | `location` | `location_pref_fit` |
 | `hands-on experience` | `experiential_fit` |
-| `course_quality` *(non-form students only)* | `course_match` |
+| `course_quality` | `course_match` |
+
+The current form's **eight 1-7 priority sliders** produce a full 8-way ranking (not just 3), including a
+**Course Ranking** slider → `course_quality` → `course_match`. So `course_quality` is no longer
+non-form-only — form students now supply it directly. With all eight ranked, the top *band* is better
+anchored, but the modifiers below still do the heavy lifting (unlisted ≠ zero, gates override rank).
 
 ## Procedure — judgement, not arithmetic
 

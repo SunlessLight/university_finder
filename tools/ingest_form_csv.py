@@ -67,6 +67,7 @@ QUESTION_MAP = [
     ("english test score", "english_score"),
     ("will you take it", "english_date"),
     ("total budget", "total_budget"),
+    ("whole degree", "total_budget"),  # this form's wording: "your budget (RM) for the whole degree"
     ("per-year budget", "budget_per_year"),
     ("how will you fund", "funding_plan"),  # merged funding-reality question (preferred)
     ("how will you pay", "funding_source"),  # legacy fallback (older form)
@@ -96,7 +97,7 @@ QUESTION_MAP = [
     ("constraints", "id_constraints"),
 ]
 
-# The five supported destination sets (preferences.target_countries). Normalize
+# The six supported destination sets (preferences.target_countries). Normalize
 # the form's checkbox labels onto these exact tokens.
 COUNTRY_NORMALIZE = {
     "uk": "UK",
@@ -110,6 +111,7 @@ COUNTRY_NORMALIZE = {
     "singapore": "Singapore/Malaysia",
     "malaysia": "Singapore/Malaysia",
     "china": "China",
+    "japan": "Japan",
 }
 
 # Priority dropdown labels -> short tokens used in preferences.priorities.
@@ -123,6 +125,28 @@ PRIORITY_NORMALIZE = {
     "location": "location",
     "hands-on experience": "hands-on experience",
 }
+
+# Per-category priority SLIDERS (the current form). Instead of three #1/#2/#3 dropdowns, the form asks
+# "Rank Your Priorities (1 = least important, 7 = Most important) ... [<Category>]" as eight linear-scale
+# columns. We detect them by the shared "rank your priorities" marker in the header + the bracketed
+# category, map each category to a priority token, then order tokens by their numeric value (descending)
+# to produce the same ordered `priorities` list the dropdown form produced. CANONICAL_SLIDER_ORDER breaks
+# ties deterministically (form column order) so equal slider values yield a stable ranking.
+SLIDER_MARKER = "rank your priorities"
+SLIDER_CATEGORY_MAP = {
+    "cost": "cost",
+    "scholarship": "scholarship",
+    "university ranking": "ranking",
+    "course ranking": "course_quality",  # course-level standing -> course_match (scoring-weights skill)
+    "employability": "employability",
+    "recognition": "recognition",
+    "location": "location",
+    "hands-on": "hands-on experience",
+}
+CANONICAL_SLIDER_ORDER = [
+    "cost", "scholarship", "ranking", "course_quality",
+    "employability", "recognition", "location", "hands-on experience",
+]
 
 # "Support & belonging" checkbox labels -> needs.* boolean keys. Matched by substring, so
 # reworded labels still land as long as the keyword survives. Order matters only where one
@@ -256,7 +280,7 @@ def get(row, col_index, key):
 # --------------------------------------------------------------------------- #
 # Row -> (profile, preferences) mapping.
 # --------------------------------------------------------------------------- #
-def map_row(row, col_index, assume_consent=False):
+def map_row(row, col_index, slider_cols=None, assume_consent=False):
     """Turn one CSV row into (slug, profile_dict, preferences_dict, needs_review).
 
     Returns (None, ...) with a reason if the row should be skipped.
@@ -281,6 +305,7 @@ def map_row(row, col_index, assume_consent=False):
     prefs = preferences_template()
     needs_review = []
     intake_raw = {}
+    slider_cols = slider_cols or {}
 
     email = get(row, col_index, "email")
 
@@ -307,6 +332,14 @@ def map_row(row, col_index, assume_consent=False):
         profile["grade_status"] = "actual"
     elif grade_status.startswith("predict"):
         profile["grade_status"] = "predicted"
+    elif profile["grade_status"] is None:
+        # No dedicated "actual vs predicted" column (this form dropped it) — infer from the grades
+        # question wording, e.g. "List each subject and your PREDICTED grades". Agent sanity-checks.
+        grades_header = (col_index.get("grades_raw") or "").lower()
+        if "predict" in grades_header:
+            profile["grade_status"] = "predicted"
+        elif "actual" in grades_header:
+            profile["grade_status"] = "actual"
     grades_raw = get(row, col_index, "grades_raw")
     if grades_raw:
         intake_raw["grades"] = grades_raw
@@ -373,13 +406,21 @@ def map_row(row, col_index, assume_consent=False):
                 profile["needs"][key] = True
 
     # --- preferences: what they want --------------------------------------- #
-    prefs["target_countries"] = _normalize_countries(get(row, col_index, "target_countries"))
+    kept_countries, dropped_countries = _normalize_countries(get(row, col_index, "target_countries"))
+    prefs["target_countries"] = kept_countries
     prefs["fields_of_interest"] = _as_list(get(row, col_index, "fields_of_interest"))
     prefs["specific_courses"] = _split_multi(get(row, col_index, "specific_courses"))
     prefs["degree_level"] = get(row, col_index, "degree_level").lower() or None
     prefs["intake"] = _normalize_intake(get(row, col_index, "intake"))
-    prefs["priorities"] = _build_priorities(row, col_index)
-    prefs["ranking_importance"] = get(row, col_index, "ranking_importance") or None
+
+    # Priorities: prefer the per-category sliders (current form); fall back to #1/#2/#3 dropdowns.
+    prefs["priorities"] = _build_priorities_from_sliders(row, slider_cols) or _build_priorities(row, col_index)
+
+    ranking_importance = get(row, col_index, "ranking_importance") or None
+    if not ranking_importance and "ranking" in slider_cols:
+        # No dedicated 1-5 ranking-importance question — read the [University Ranking] slider value.
+        ranking_importance = _clean(row.get(slider_cols["ranking"])) or None
+    prefs["ranking_importance"] = ranking_importance
     prefs["deal_breakers"] = _as_list(get(row, col_index, "deal_breakers"))
     prefs["location_prefs"] = _split_multi(get(row, col_index, "location_prefs"))
 
@@ -401,6 +442,16 @@ def map_row(row, col_index, assume_consent=False):
         needs_review.append("undecided student — confirm interest_discovery, then run Stage 2 career-backwards")
     else:
         profile["interest_discovery"]["decided"] = True
+
+    # --- dropped target countries (don't lose them silently) --------------- #
+    if dropped_countries:
+        joined = ", ".join(dropped_countries)
+        prefs["notes"] = (
+            f"Requested target countries not in the 6 supported destination sets (UK / Australia / USA / "
+            f"Singapore-Malaysia / China / Japan), so NOT in target_countries: {joined}. "
+            f"Decide with the student whether to research them out-of-band."
+        )
+        needs_review.append(f"target_countries dropped unsupported destination(s): {joined}")
 
     # --- provenance + staging ---------------------------------------------- #
     note_bits = ["Ingested from Google Form."]
@@ -429,12 +480,20 @@ def _normalize_intake(value):
 
 
 def _normalize_countries(value):
-    out = []
+    """Map the checkbox labels onto the 6 supported destination sets.
+
+    Returns (kept_tokens, dropped_labels): dropped_labels are answers we couldn't map (e.g. "Canada",
+    which isn't one of the 6 sets) so the caller can report them instead of losing them silently.
+    """
+    out, dropped = [], []
     for label in _split_multi(value):
         token = COUNTRY_NORMALIZE.get(label.strip().lower())
-        if token and token not in out:
-            out.append(token)
-    return out
+        if token:
+            if token not in out:
+                out.append(token)
+        elif label not in dropped:
+            dropped.append(label)
+    return out, dropped
 
 
 def _build_priorities(row, col_index):
@@ -445,6 +504,44 @@ def _build_priorities(row, col_index):
         if token and token not in out:
             out.append(token)
     return out
+
+
+def _slider_columns(fieldnames):
+    """Return {priority_token: header} for the per-category priority sliders present in this form.
+
+    A slider header contains the shared marker ("rank your priorities") plus a bracketed category
+    ("... [Cost]"). Matched by substring so light rewording survives. Empty if the form uses the
+    legacy #1/#2/#3 dropdowns instead.
+    """
+    cols = {}
+    for header in fieldnames or []:
+        low = (header or "").lower()
+        if SLIDER_MARKER not in low:
+            continue
+        for cat_substr, token in SLIDER_CATEGORY_MAP.items():
+            if cat_substr in low and token not in cols:
+                cols[token] = header
+                break
+    return cols
+
+
+def _build_priorities_from_sliders(row, slider_cols):
+    """Order the slider tokens by their numeric value (desc), tie-broken by CANONICAL_SLIDER_ORDER.
+
+    Blank or non-numeric slider cells are skipped. Returns [] if no usable values (caller falls back
+    to the legacy dropdown builder).
+    """
+    scored = []
+    for token, header in slider_cols.items():
+        raw = _clean(row.get(header))
+        try:
+            value = float(raw)
+        except (TypeError, ValueError):
+            continue
+        tie = CANONICAL_SLIDER_ORDER.index(token) if token in CANONICAL_SLIDER_ORDER else len(CANONICAL_SLIDER_ORDER)
+        scored.append((-value, tie, token))
+    scored.sort()
+    return [token for _, _, token in scored]
 
 
 # --------------------------------------------------------------------------- #
@@ -470,6 +567,7 @@ def main():
     with csv_path.open(newline="", encoding="utf-8-sig") as fh:
         reader = csv.DictReader(fh)
         col_index = build_col_index(reader.fieldnames)
+        slider_cols = _slider_columns(reader.fieldnames)
         rows = list(reader)
 
     if "name" not in col_index:
@@ -482,7 +580,7 @@ def main():
     seen_slugs = set()
 
     for i, row in enumerate(rows, start=1):
-        slug, profile, prefs, needs_review, skip_reason = map_row(row, col_index, args.assume_consent)
+        slug, profile, prefs, needs_review, skip_reason = map_row(row, col_index, slider_cols, args.assume_consent)
         if skip_reason:
             skipped.append((i, get(row, col_index, "name") or "(no name)", skip_reason))
             continue

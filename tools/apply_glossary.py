@@ -53,6 +53,27 @@ GLOSSARY = {
                       "you from applying early to other private schools.",
     },
     # --- Financial aid --------------------------------------------------------
+    # NOTE: no "need" alias on demonstrated need / no "cost" alias on cost of attendance —
+    # surface matching is case-insensitive and word-boundary only, so a bare common word
+    # would link every innocent "you need to..." in the guide.
+    "cost of attendance": {
+        "aliases": ["COA"],
+        "definition": "The university's official all-in yearly price — tuition **plus** housing, food, "
+                      "fees, books and personal expenses. This is the number financial aid is measured "
+                      "against, not the tuition figure alone.",
+    },
+    "demonstrated need": {
+        "aliases": ["financial need"],
+        "definition": "Your cost of attendance minus what the university calculates your family can "
+                      "pay. \"Meets 100% of need\" means it covers that gap — it does not automatically "
+                      "mean you pay nothing, so check what's left for you.",
+    },
+    "student contribution": {
+        "aliases": ["summer work expectation"],
+        "definition": "The amount a US aid package expects *you* (not your parents) to contribute each "
+                      "year, usually from summer or term-time campus work. It is part of the package, "
+                      "so it is not covered by the grant.",
+    },
     "need-blind": {
         "aliases": [],
         "definition": "The university decides admission *without* looking at whether you asked for "

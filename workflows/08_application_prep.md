@@ -49,9 +49,18 @@ these rules + the renderer's auto-formatting below.
 split automatically, but arrays are the convention. **Write the info fields (`tests`, `essays`, `fees`)
 as short Markdown sub-bullets, not paragraphs** — one point per `- ` line; the renderer indents them
 under the lettered section title. **Write `financial_aid` as an object** with the fixed keys `model`,
-`covers`, `forms`, `documents`, `dates` (any you can't fill are skipped) — the renderer lays them out as
-labelled sub-rows so aid reads consistently across universities. A legacy `financial_aid` string still
-renders (as prose) for back-compat. **If you use a term not in the glossary, add it to `GLOSSARY` in
+`cost`, `covers`, `your_share`, `forms`, `documents`, `dates` (any you can't fill are skipped) — the
+renderer lays them out as labelled sub-rows so aid reads consistently across universities. Any aid key
+may itself be written as `- ` sub-bullets; they nest under the label. A legacy `financial_aid` string
+still renders (as prose) for back-compat.
+
+> **The rule that earned `cost` + `your_share` (2026-07-16).** The R2 fixed-label object made the US
+> guide *tidier and thinner*: every university said "meets 100% of need" and not one said what the
+> 100% was **of**. **A fixed label must never license a terser answer.** `cost` states the sticker
+> cost of attendance (USD **+ approximate MYR** + line items) so "100%" has a denominator;
+> `your_share` states the residual aid does *not* pay. Both are load-bearing for a scholarship-required
+> student — the research turned up that Stanford expects ~USD 5,000/yr from the student while Princeton
+> abolished its contribution entirely, a difference "100% of need" completely hides. **If you use a term not in the glossary, add it to `GLOSSARY` in
 `tools/apply_glossary.py`** (term → one-line definition + aliases) so it gets defined and linked everywhere.
 
 ### Which scraper (spend credits where they matter)
@@ -73,9 +82,15 @@ For each Shortlist/Finalist uni in the region, from official sources:
 - **Essays** — the shared essay (Common App / UCAS personal statement) + this uni's supplements/count.
 - **Fees** — application fee + international **fee-waiver** eligibility.
 - **Financial aid** — capture it into the object's fixed keys: **`model`** (need-blind vs need-aware for
-  internationals), **`covers`** (what the aid pays for), **`forms`** (CSS Profile / IDOC / school-specific
-  like PFAA / ISAFA / the with-application rule), **`documents`** (parent income/tax, translated), and
-  **`dates`**. This is the load-bearing part for a scholarship-required student — get it exact and official.
+  internationals), **`cost`** (the official **cost of attendance** — not tuition alone — in USD **and
+  approximate MYR**, with the line-item split; this is the denominator "100% of need" is measured
+  against), **`covers`** (what the aid pays for *against that number*, for this student's income band),
+  **`your_share`** (the residual aid does **not** pay: the **student contribution** / summer-work or
+  term-time-work expectation, flights, visa + SEVIS, health insurance, personal spending),
+  **`forms`** (CSS Profile / IDOC / school-specific like PFAA / ISAFA / the with-application rule),
+  **`documents`** (parent income/tax, translated), and **`dates`**. This is the load-bearing part for a
+  scholarship-required student — get it exact and official. **Never write a bare "100%"**: if you can't
+  state the cost it's 100% of, you haven't finished the research.
 - **Portal** URLs (application + aid).
 
 Then write the region-level **overview** (the cross-cutting strategy): early-application constraints,
@@ -100,7 +115,10 @@ Write `.tmp/<slug>/apply_prep_<region>.json` (exact shape in `build_application_
     {"name": "Princeton University", "system": "Common App", "admission_likelihood": "Reach",
      "deadlines": {"application": "...", "aid": "..."},
      "tests": "- sub-bullet\n- sub-bullet", "essays": "- sub-bullet\n- sub-bullet", "fees": "- sub-bullet",
-     "financial_aid": {"model": "need-blind — asking can't hurt you", "covers": "100% of need, no loans",
+     "financial_aid": {"model": "need-blind — asking can't hurt you",
+       "cost": "USD 94,624/yr all-in (~RM 386,000/yr) — tuition 68,140 · housing 13,010 · food 9,110",
+       "covers": "all of it for your band — zero family contribution, grants, no loans",
+       "your_share": "- nothing from you — the student contribution was abolished in 2022\n- Still yours: visa + SEVIS fees",
        "forms": "PFAA + CSS Profile", "documents": "parent income/tax docs", "dates": "file with the app"},
      "application_checklist": ["Common App + Princeton supplement", "counselor + 2 teacher recs",
        "PFAA + CSS Profile + parent tax docs"], "portal": "https://..."}

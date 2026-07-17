@@ -295,6 +295,7 @@ FX_TO_MYR = {
     "CNY": 0.65,
     "EUR": 5.1,
     "RMB": 0.65,  # alias for CNY
+    "JPY": 0.031,  # ~100 JPY -> 3.1 MYR
 }
 
 

@@ -38,8 +38,13 @@ Input JSON shape (see workflows/08_application_prep.md for the full spec):
          "admission_likelihood": "Reach",
          "deadlines": {"application": "2027-01-01 (RD; SCEA 2026-11-01)", "aid": "..."},
          "tests": "markdown", "essays": "markdown", "fees": "markdown",
-         "financial_aid": "markdown — need model, forms, income docs, dates",
-         "application_checklist": "markdown", "portal": "https://..."}
+         "financial_aid": {"model": "need-blind — asking can't hurt you",
+                           "cost": "USD 90k/yr all-in (~RM 425k) — tuition 62k · housing+food 22k",
+                           "covers": "100% of that 90k for your band — you pay 0",
+                           "your_share": "~USD 3.5k/yr summer-work contribution + flights + visa",
+                           "forms": "CSS Profile + IDOC", "documents": "parents' tax/income docs",
+                           "dates": "file with the application"},
+         "application_checklist": ["one action per item"], "portal": "https://..."}
       ],
       "consolidated_checklist": "markdown — the gather-once list across the region",
       "dated_items": [
@@ -74,7 +79,7 @@ UNI_FIELDS = [
     ("tests", "Tests"),
     ("essays", "Essays"),
     ("fees", "Application fee"),
-    ("financial_aid", "Financial aid — forms, documents, dates"),
+    ("financial_aid", "Financial aid — cost, what's covered, forms, dates"),
     ("application_checklist", "What to gather / do"),
 ]
 REQUIRED_UNI_FIELDS = ("application_checklist", "financial_aid")
@@ -82,9 +87,15 @@ REQUIRED_UNI_FIELDS = ("application_checklist", "financial_aid")
 # Financial aid renders as fixed sub-labels (in this order) when authored as an object,
 # so the densest field is scannable and consistent across universities. A legacy string
 # is passed through unchanged. See render_financial_aid.
+#
+# `cost` precedes `covers` on purpose: "meets 100% of need" is meaningless until the
+# student has seen the number it is 100% *of*. `your_share` follows it so the residual
+# the aid does NOT pay (student contribution, flights, visa) can't be skipped either.
 FINANCIAL_AID_FIELDS = [
     ("model", "Model"),
+    ("cost", "Cost"),
     ("covers", "Covers"),
+    ("your_share", "Your share"),
     ("forms", "Forms"),
     ("documents", "Documents"),
     ("dates", "Dates"),
@@ -156,14 +167,32 @@ def checklist_block(value, twocol_min=7):
 
 def render_financial_aid(value):
     """
-    Financial aid as fixed, scannable sub-labels (Model / Covers / Forms / Documents /
-    Dates) when authored as an object; a legacy markdown string is passed through as-is.
+    Financial aid as fixed, scannable sub-labels (Model / Cost / Covers / Your share /
+    Forms / Documents / Dates) when authored as an object; a legacy markdown string is
+    passed through as-is.
+
+    A value may be a single line ("- **Label** — text") or its own list of `- ` bullets,
+    which nest *under* the label instead of flattening to sibling level — the denser aid
+    fields (`your_share`, `covers`) need the breakdown room.
     """
-    if isinstance(value, dict):
-        lines = [f"- **{label}** — {str(value[key]).strip()}"
-                 for key, label in FINANCIAL_AID_FIELDS if str(value.get(key) or "").strip()]
-        return "\n".join(lines)
-    return (value or "").strip()
+    if not isinstance(value, dict):
+        return (value or "").strip()
+
+    lines = []
+    for key, label in FINANCIAL_AID_FIELDS:
+        text = str(value.get(key) or "").strip()
+        if not text:
+            continue
+        if text.startswith("- "):
+            # Authored as sub-bullets: label on its own row, bullets indented beneath it.
+            # 4 spaces, not 2 — python-markdown (the PDF path, with `sane_lists`) only
+            # nests at 4; at 2 the sub-points silently flatten to sibling level in the
+            # PDF while still looking correct in the .md.
+            lines.append(f"- **{label}**")
+            lines.extend(f"    {ln.strip()}" for ln in text.splitlines() if ln.strip())
+        else:
+            lines.append(f"- **{label}** — {text}")
+    return "\n".join(lines)
 
 
 def anchorize_and_toc(body):

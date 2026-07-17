@@ -46,11 +46,25 @@ Both tools are **read-only against `master_list.csv`** — never let a guide fli
   Markdown sub-bullets (one point per `- ` line), not a dense run-on sentence. The renderer gives
   each its own lettered, indented section — let the bullets do the structuring.
 - **Financial aid as a fixed-label object.** Write `financial_aid` as an object with the keys
-  `model` (need-blind vs need-aware for internationals + whether asking hurts you), `covers` (what
-  the aid pays for, for this student's band), `forms` (CSS Profile / IDOC / PFAA / ISAFA / the
-  with-application rule), `documents` (parent income/tax, translated), and `dates` (any aid-specific
-  timing not already in `deadlines`). Skip a key you genuinely can't fill. This is the load-bearing
-  field for a scholarship-required student — keep it exact and officially sourced.
+  `model` (need-blind vs need-aware for internationals + whether asking hurts you), `cost` (the
+  official **cost of attendance** in USD **+ approximate MYR**, with the line-item split), `covers`
+  (what the aid pays for, for this student's band, *stated against that cost*), `your_share` (what
+  aid does **not** pay — the student contribution / work expectation, flights, visa + SEVIS, health
+  insurance), `forms` (CSS Profile / IDOC / PFAA / ISAFA / the with-application rule), `documents`
+  (parent income/tax, translated), and `dates` (any aid-specific timing not already in `deadlines`).
+  Skip a key you genuinely can't fill. Any key may be written as `- ` sub-bullets — they nest under
+  the label. This is the load-bearing field for a scholarship-required student — keep it exact and
+  officially sourced.
+- **Never write a bare "100%" — a fixed label must not license a terser answer.** This rule exists
+  because the first fixed-label pass made the US guide *tidier and thinner*: six universities each
+  said "meets 100% of need" and none said what the 100% was **of**. Always state the denominator
+  (`cost`) and the residual (`your_share`). "Free" is almost never literally free — Stanford expects
+  ~USD 5,000/yr from the student, Yale USD 3,700, while Princeton abolished its contribution
+  outright. If you can't state the cost a percentage refers to, the research isn't done.
+- **Flag conflicts and gaps; never split the difference.** Where two official pages disagree (Harvard
+  states its term-time work expectation as both USD 2,700 and ~USD 3,500) or a figure simply isn't
+  published (Penn's student contribution), say so with a ⚠️ and tell the student who to ask. An
+  honest gap beats a confident guess.
 - **Use the jargon freely — the glossary defines it.** `tools/apply_glossary.py` holds the
   plain-English definitions and auto-links the first mention per section. Write "SCEA",
   "need-blind", "CSS Profile" normally; don't stop to define them inline. **If you introduce a

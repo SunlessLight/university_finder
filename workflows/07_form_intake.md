@@ -55,7 +55,7 @@ fine — but keep the substring in bold intact.
 
 **Section 2 — What you want → `preferences.json`**
 - **Which countries** would you consider — checkboxes (UK / Australia / USA / Singapore-Malaysia /
-  China). Picking several is fine (research-first breadth). *(Optional follow-up: **which country
+  China / Japan). Picking several is fine (research-first breadth). *(Optional follow-up: **which country
   matters most?** — the agent records it in `preferences.notes` so research goes deepest where it
   counts.)*
 - What **field or subject**; do you **already know the exact course** (Yes → next section / No →
@@ -63,11 +63,18 @@ fine — but keep the substring in bold intact.
 - **Degree level**; **when do you want to start** — pick a **year + season** (e.g. "Sept 2027") **or**
   *"Flexible / show me all intakes"*. Intake only selects the application *cycle* to research — it never
   filters or scores, so "Flexible" is a perfectly good answer (stored as `Flexible`).
-- Your **#1 priority** / **#2 priority** / **#3 priority** — three dropdowns from: Cost / Scholarship /
-  Ranking / Employability / Recognition back home / Location / Hands-on experience.
-- **How much does the university's strength in *your subject* matter** — linear scale 1-5. *(Steers the
-  `subject_reputation` sub-score — subject-specific standing + graduate outcomes, not overall vanity
-  rank.)*
+- **Rank your priorities** — the current form asks this as **eight per-category 1-7 sliders** (1 = least
+  important, 7 = most), one each for: **Cost / Scholarship / University Ranking / Course Ranking /
+  Employability / Recognition back home / Location / Hands-On Experience**. The tool detects them by the
+  shared *"rank your priorities"* marker + the bracketed category, then orders the categories by slider
+  value (highest first, ties broken by the form's column order) into `preferences.priorities`. This gives
+  a full 8-way ranking, richer than the old three dropdowns — including the new **Course Ranking**
+  (`course_quality` → `course_match`), which used to be non-form-only. *(Legacy forms with **#1/#2/#3
+  priority** dropdowns still work — the tool falls back automatically when no sliders are present.)*
+- **`ranking_importance`** steers the `subject_reputation` sub-score (subject-specific standing +
+  graduate outcomes, not overall vanity rank). If the form has a dedicated *"how much does your subject's
+  strength matter"* 1-5 question the tool uses it; otherwise it reads the **[University Ranking]** slider
+  value (1-7).
 - Do you want to **work abroad** after graduating — Yes / No / Unsure.
 - Any **deal-breaker**s (optional); **location preference**s (optional checkboxes); **prefered universities** (optional).
 
@@ -130,6 +137,22 @@ weights into `tools/shortlist_schema.py` — that shared file is exactly what ma
 
 ## Edge cases & rules
 
+- **Priority sliders — ties & scale.** The 1-7 sliders can tie (a student may rate several categories the
+  same, or push the top value beyond 7). The tool orders equal values by the form's column order
+  (Cost → Scholarship → University Ranking → Course Ranking → Employability → Recognition → Location →
+  Hands-On), which is deterministic but arbitrary among ties — **sanity-check the ordering** against any
+  free-text notes before deriving `weights.json`, since the top band drives the weights.
+- **Unsupported target countries are reported, not dropped.** A picked country outside the 6 sets
+  (UK / Australia / USA / Singapore-Malaysia / China / Japan) — e.g. **Canada** or **Germany** — is left
+  out of `target_countries` but recorded in a `_needs_review` line **and** `preferences.notes`, so
+  nothing is lost silently. Decide with the student whether to research it out-of-band.
+- **Budget unit ambiguity.** A bare number like **`500`** for a whole degree is almost certainly *in
+  thousands* (RM 500,000), not RM 500. The tool captures the raw cell verbatim; **you** interpret the unit
+  at finalize and note the assumption — confirm the real ceiling with the student.
+- **`grade_status` / `degree_level` may be absent columns.** This form has no "actual vs predicted" or
+  "degree level" question. The tool infers `grade_status` from the grades question wording
+  ("...your **predicted** grades" → `predicted`); `degree_level` stays null → **you** set it at finalize
+  (a "Degree ..." answer → `undergraduate`).
 - **No consent / no name** → row skipped (reported in the summary). This is the PDPA gate — respect it.
 - **Duplicate names** → same slug; the second is skipped rather than clobbering the first. Disambiguate
   the name (or `--force` deliberately) if two real people share a name.

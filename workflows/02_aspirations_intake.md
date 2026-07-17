@@ -8,8 +8,8 @@ Output is `data/students/<slug>/preferences.json`.
 
 ## Conversational checklist (map answers to preferences.json)
 
-- **Target countries** — `target_countries`, a subset of the five supported sets:
-  `["UK","Australia","USA","Singapore/Malaysia","China"]`. Don't accept destinations outside these in v1.
+- **Target countries** — `target_countries`, a subset of the six supported sets:
+  `["UK","Australia","USA","Singapore/Malaysia","China","Japan"]`. Don't accept destinations outside these in v1.
 - **Field & course** — `fields_of_interest` and `specific_courses`. If they can name exact courses, great.
   **If `specific_courses` stays empty, run interest-discovery (below) before Stage 3.**
 - **Level & intake** — `degree_level` (undergrad / foundation / …) and `intake` (e.g. `"2027 Sept"`). The
@@ -42,7 +42,7 @@ Never silently pick a field for an undecided student — surface options and let
 
 ## Edge cases & rules
 
-- **Too many countries** — if they pick all five, gently suggest prioritising 2-3 so research stays deep
+- **Too many countries** — if they pick all six, gently suggest prioritising 2-3 so research stays deep
   rather than shallow. Record the rest in `notes`.
 - **Scholarship-dependent + expensive destinations** — flag the tension now (e.g. USA private universities
   vs a tight budget) so Stage 3 weights cost and scholarships heavily.

@@ -136,12 +136,111 @@ NUS OR NTU OR SMU <course> admissions
 MQA recognised programme <course>
 ```
 
+> **SINGAPORE — for an ASEAN student, the funded public unis are a genuine mid-band, not a Reach wall
+> (learned 2026-07-16, Ong).** The playbook that worked: 10 queries covering NUS / NTU / SMU / SUTD / SIT
+> (public) **plus** a private/foreign campus (JCU / Curtin / SIM) for the Safety end, **plus** three
+> structural queries — the MOE Tuition Grant bond, the with-grant-vs-without fee split, and the ASEAN
+> Undergraduate Scholarship. Add a post-study-work query too (see below). Traps, in order of how badly
+> each bites:
+>
+> **The fee table has FIVE tiers, not two — and the one you want is buried in the middle.** NUS/NTU/SMU
+> pages (and NUS's official fee PDF) show, left to right: **Singapore Citizen · Singapore PR · International
+> WITH Tuition Grant (ASEAN) · International WITH Tuition Grant (all other) · International WITHOUT Grant.**
+> For a **Malaysian (ASEAN) student the correct column is the third**, and it is roughly *half* the
+> no-grant column. NUS Computing/Science AY2026/27: ASEAN-with-grant **S$18,050** vs no-grant **S$36,650-39,700**.
+> The citizen rate (~S$8,300) is the Australian-domestic-fee trap all over again — **if a Singapore fee
+> looks like ~S$8-10k it is the citizen rate; do not use it.** Pick the tier deliberately and say which in
+> `notes`. MOE sets the subsidised tiers, so NUS and NTU's ASEAN-with-grant figures match to the dollar —
+> a useful cross-check when one page's column labels are ambiguous (NTU's fee page returned *different*
+> labels on two fetches; the S$18,050 held because it matched NUS's PDF).
+>
+> **The Tuition Grant is the row's real story, and its "cost" is a feature for a migration-minded student.**
+> ~50% fee cut in exchange for a **3-year bond working for a Singapore-registered company** after
+> graduating. For `intent_to_migrate: true`, that bond is close to a guaranteed graduate pathway — it
+> should *lift* `post_study_work_fit`, not lower it. The **ASEAN Undergraduate Scholarship** stacks on top:
+> **automatic consideration on the admission application (no separate form)**, 100% of post-grant tuition +
+> living/accommodation allowances, interview-selected. That auto-consideration structure is worth more than
+> a bigger award you must separately win — score it well. Private/foreign campuses (JCU etc.) get **neither**
+> the Grant nor the scholarship — their listed fee is the full fee.
+>
+> **Admissibility is the mirror of Australia — measured, and often a Reach.** NUS/NTU publish an
+> **Indicative Grade Profile (IGP)**, but note two things: (1) it is for **Singapore-Cambridge** A-Levels,
+> not international A-Levels, and international places are capped — so treat it as *indicative*, not the
+> arithmetic Australia gives you; (2) the direct-admit data courses are so oversubscribed the profile is
+> **AAA/A at BOTH the 10th and 90th percentile** (no spread) — a single B (Ong's Physics) pushes a student
+> into Reach. **The escape hatch is the entry door:** at NUS, applying to the **Faculty of Science** and
+> declaring the Data Science major *after* admission has a far softer published profile (ABB/C → AAA/A) than
+> the direct-admit courses. Finding the soft door can turn a Reach into a Match at the same university —
+> protect it. Don't invent an acceptance rate to test a sub-5% deal-breaker against; NUS/NTU don't publish
+> one, and the IGP is not a rate. NTU's IGP is a **PDF that Firecrawl/WebFetch won't render** — if you can't
+> get the real bar, say the entry margin is inferred and flag it for Stage 4, don't fake precision.
+>
+> **Singapore's intake is August — it maps cleanly to a "Sept" preference** (unlike Australia, which has no
+> September intake). One intake a year. Public degrees are **4 years** (direct honours). A private
+> trimester campus can run a bachelor's in **2 years** (JCU Singapore) — the inverse of the Australian
+> honours trap, and usually the cheapest row on the list; but a 2-year BSc raises **two real Stage-4
+> checks: MQA recognition, and whether it qualifies for Employment Pass COMPASS points.**
+>
+> **There is NO post-study work visa.** The Student's Pass lapses at graduation (~30-day grace); staying
+> needs an **Employment Pass** — a job offer at **S$6,000/month (non-financial) or S$6,600 (financial)
+> from 1 Jan 2027**, plus COMPASS points. Put this in `post_study_work` honestly: the *bond* guarantees
+> three years of work, but a *long-term* stay still runs through the EP salary bar.
+>
+> **The SMU name-collision trap (cost a scrape this session):** `datascience.smu.edu` and `smu.edu` are
+> **Southern Methodist University in Dallas, Texas** — not Singapore Management University (`smu.edu.sg`).
+> A scrape of the Texas site returned US fees. Any `smu.edu`-without-`.sg` result is the wrong SMU. Also:
+> SMU offers data science as a **second major on an Economics/Computing degree**, not a standalone DS
+> degree — score `course_match` for what it actually is.
+
 **China** → English-taught + CSC:
 ```
 <course> English-taught bachelor China university
 CSC scholarship <field> bachelor
 <university> international admissions <course>
 ```
+
+**Japan** → English-taught (G30/SGU) + MEXT:
+```
+<course> English-taught bachelor Japan university G30
+SGU Super Global University <field> undergraduate English
+<university> undergraduate international admission English program
+MEXT scholarship undergraduate <field>
+<university> international tuition admission fee
+```
+
+> **Japan is a real Safety-side / affordability play — the mirror of the US, and the reason it earns a
+> place in a RM500k budget.** National and public universities run a **near-flat tuition** (national
+> standard **~¥535,800/yr**, ~RM 17k) plus a one-off **admission fee ~¥282,000** — an order of magnitude
+> under US sticker. Private engineering universities run **~¥1.5-1.8M/yr** (~RM 47-56k), still well
+> inside budget. Set `currency: "JPY"` (now in `FX_TO_MYR`) or the MYR total silently blanks.
+>
+> **English-taught engineering is a NARROW set — this is the real constraint, not cost.** The vast
+> majority of Japanese bachelor's are taught in Japanese and gate on **EJU + JLPT N1/N2**. The
+> discoverable English-medium (EMI) pool is the **G30 / SGU (Super Global University)** programs: e.g.
+> UTokyo (PEAK — humanities/science, very limited), Tokyo Institute of Science, Kyushu, Nagoya, Tohoku,
+> Waseda, Sophia, and Ritsumeikan APU. **For mechanical/engineering specifically the EMI list is
+> thin** — search per-university rather than trusting an aggregator, and flag any Japanese-language
+> requirement honestly in `notes`; it's a real barrier, not a footnote.
+>
+> **Intake ≠ September.** The Japanese academic year starts in **April**; many EMI/G30 programs *also*
+> run an **autumn (Sept/Oct)** intake, but not all. Reconcile against `preferences.intake` (Sept 2027)
+> per program rather than assuming — and **don't fabricate a `key_deadline`**; leave it blank and verify
+> at Stage 4.
+>
+> **MEXT is the scholarship story** — the government scholarship (embassy-recommended or
+> university-recommended) can cover tuition + a monthly stipend + airfare, but it is **highly
+> competitive and application-heavy**; treat it like the US meets-full-need schools — score
+> `scholarship_opportunity` for the *opportunity*, put the competitiveness in `notes`/`entry_margin`,
+> don't inflate.
+>
+> **Recognition:** Japan is a **Washington Accord** signatory via **JABEE** — relevant to Murugaa's
+> `recognition_targets` (MQA + BEM + Washington Accord). But **not every program is JABEE-accredited**;
+> record it as a Stage-4 verify, not an assumption.
+>
+> **Post-study work:** graduates switch from the student visa to a work visa ("Engineer/Specialist in
+> Humanities" or the "Designated Activities" job-hunting extension, ~1 yr). Japanese-language ability
+> heavily shapes actual employability — note it in `post_study_work` rather than treating the visa
+> route as the whole answer.
 
 ## Run discovery
 
@@ -215,7 +314,7 @@ Read `.tmp/<slug>/search_results.json`. For each plausible university+course, bu
   - **`currency`** ⇒ `Approx total (MYR)`. **This one is a silent-failure trap:** `to_myr()` returns
     `None` on a blank or unrecognised currency, which empties the MYR total *and* takes the
     `Over budget` warning down with it — an unaffordable row then looks clean. Always set it, and use a
-    code from `FX_TO_MYR` (MYR/GBP/USD/AUD/SGD/CNY/EUR).
+    code from `FX_TO_MYR` (MYR/GBP/USD/AUD/SGD/CNY/EUR/JPY).
   - **`total_cost_programme`** ⇒ also `Approx total (MYR)`. Leave it empty to let the tool compute
     `total_tuition` + `est_living_per_year` × `duration_years`; set it explicitly only when that model
     can't express the cost (e.g. a mixed-currency 2+2 — see the branch-campus note below).

@@ -84,7 +84,7 @@ def profile_template(slug, name):
 def preferences_template():
     """Stage-2 preferences.json template."""
     return {
-        "target_countries": [],  # subset of UK / Australia / USA / Singapore/Malaysia / China
+        "target_countries": [],  # subset of UK / Australia / USA / Singapore/Malaysia / China / Japan
         "fields_of_interest": [],
         "specific_courses": [],  # may stay empty -> triggers interest-discovery mode
         "degree_level": None,    # undergrad | foundation | ...

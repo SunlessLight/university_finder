@@ -59,6 +59,7 @@ COUNTRY_ALIASES = {
     "uk": "uk", "united kingdom": "uk", "britain": "uk",
     "sg": "singapore", "singapore": "singapore",
     "cn": "china", "china": "china",
+    "jp": "japan", "jpn": "japan", "japan": "japan",
 }
 
 
@@ -148,7 +149,7 @@ def main():
     parser.add_argument("--status", default="Shortlist",
                         help="List status to compare (Longlist/Shortlist/Finalist/all). Default Shortlist.")
     parser.add_argument("--rows", help="Explicit 'University|Course, University|Course' pairs to compare.")
-    parser.add_argument("--country", help="Narrow to one destination (name or alias: Australia/AU, USA/US, UK, Singapore/SG, China/CN).")
+    parser.add_argument("--country", help="Narrow to one destination (name or alias: Australia/AU, USA/US, UK, Singapore/SG, China/CN, Japan/JP).")
     parser.add_argument("--dimensions", default=",".join(DEFAULT_DIMENSIONS),
                         help="Comma list of presets: summary,cost,scholarship,life,quality,fit,visa,deadline,all.")
     parser.add_argument("--save", action="store_true", help="Also write the table to .tmp/<slug>/.")
