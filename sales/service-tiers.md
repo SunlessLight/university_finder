@@ -60,7 +60,7 @@ table. The decision happens in Tiers 2–3.
 
 ## Tier 2 — The Dossiers
 
-*Stage 5a · `dossiers/<uni>.pdf` · a deep file per finalist*
+*Stage 4 · `dossiers/<uni>.pdf` · a deep file per finalist*
 
 **One line:** *For your 3–5 favourites: can I get in, will I belong, and what will it take?*
 

@@ -1,12 +1,67 @@
-# Workflow: Stage 5a — University Dossier (deep research per finalist)
+# Workflow: Stage 4 — Verify & Dossier (per finalist)
 
 ## Objective
 
-For each **finalist** (the 3-5 strongest Shortlist rows), produce a deep, standardized **16-section
-dossier** (Snapshot + 14 content sections + Sources) that answers three decision questions — **can I get
-in? · will I belong & thrive? · what will it take to apply?** — so the student can *decide*, not just
-compare. Lead with texture that determines whether they apply; keep the hard-fact sections as guardrails.
-This is the most research-intensive stage — do it only for finalists, A-tier and best-fit first.
+For each **finalist** (the 3-5 universities the student picks from the Longlist), produce a deep,
+standardized **16-section dossier** (Snapshot + 14 content sections + Sources) that answers three decision
+questions — **can I get in? · will I belong & thrive? · what will it take to apply?** — so the student can
+*decide*, not just compare. Lead with texture that determines whether they apply; keep the hard-fact
+sections as guardrails. This is the most research-intensive stage — do it only for finalists, A-tier and
+best-fit first.
+
+> **This stage absorbs the old "verify → shortlist" step.** There is no longer a separate 8-12 Shortlist
+> tier: the student picks their finalists straight off the Longlist, and you **verify each pick's hard
+> facts before you deep-research it**. Do the pre-flight cut below *first* — it's cheap, and it stops you
+> sinking a full dossier into a university that turns out to be over budget or past its deadline.
+
+## Before you research: pick, verify, and cut (the pre-flight)
+
+Longlist facts are *provisional* (snippet-level, often wrong or stale). Run this cheap cut on the
+student's picks **before** any deep dossier research:
+
+**1. Pick the finalists.** The student promotes their picks from the Longlist to
+**`List status = Shortlist`** (an agent edit to `master_list.csv`) — aim for ~3-5 they genuinely want to
+apply to. Render the trade-offs first so the choice is informed:
+```powershell
+python tools/compare_universities.py --student <slug> --status Longlist --dimensions summary,scholarship,fit
+```
+Use `--country <name>` to work one destination at a time on a large list. This is the narrowing surface —
+the student may keep, drop, or re-add rows; that iteration *is* the cut working.
+
+**2. Verify each pick's hard facts against OFFICIAL sources** — the university's own course page, UCAS, or
+Common App, never an aggregator:
+- **Tuition** (per year + full programme) + **living cost** → recompute the total; sanity-check `Approx total (MYR)`.
+- **Entry requirements** (academic + English) → does the student actually meet them?
+- **Key deadline** + **intake** → is the intake offered, and is the deadline still open?
+- **Recognition back home** (MQA + the relevant professional body) for regulated professions — a gate, not a footnote.
+
+Set **`Info source = Official page`** on each verified row (it starts `Not verified`). Where the official
+page disagrees with a search result, **the official figure wins** — put the discrepancy in `Notes`.
+Verifying may need a couple of Firecrawl scrapes of clean official pages — **ask the user before running**,
+per `00_overview.md`.
+
+**3. Re-judge admissibility & warnings on the verified facts.** Re-confirm **`Admission likelihood`**
+(Reach/Match/Safety) and the hard **`Warnings`** (`Over budget`, `English short`, `Deadline passed`) —
+these were computed at Stage 3 from provisional data and often move once real facts land. Predicted grades
+keep borderline cases Reach until results come in. To update an existing row's facts, **edit
+`master_list.csv` directly** — re-running `sync_shortlist.py` is only for *new* candidates.
+
+**4. Check the set is balanced, and swap out any dud.** Across the picks, confirm a Reach/Match/Safety
+spread — at least one **Safety** the student clears comfortably, not five long-shots. If verification kills
+a pick (over budget even with scholarship, deadline passed, entry unreachable), demote it to
+**`Rejected`** with a one-line reason in `Notes` and have the student pick a replacement from the
+Longlist — *before* you sink dossier research into it. For a kept Reach where direct entry is a stretch,
+record the **`Backup entry route`** (foundation year / INTO-Kaplan-Navitas / community-college transfer)
+and its rough entry bar, so a grades-short student still has a route.
+
+> **Too few survivors?** If the cut leaves fewer than ~3 workable picks, go back to **Stage 3**
+> (`03_discover_longlist.md`) and widen discovery (more countries or safer options) rather than
+> dossiering weak rows.
+
+Only once a pick survives this cut do you build its dossier below. The dossier's own deep research (Costs,
+Scholarships, Visa, Recognition sections) is where the *full* funding and fit detail gets written — you
+don't also need to write paragraphs into the master-list scholarship cells; the make-or-break facts above
+are enough to earn a dossier.
 
 ## Two dossier paths — course vs university (pick with `--mode`)
 
@@ -86,8 +141,8 @@ Ordered decision-first. **Snapshot (1)** and **Sources (16)** are rendered by th
     and **real student voices** (Reddit / The Student Room / YouTube — links + snippets, not scraped).
     This is the **only** home for student-life research since the master-list columns were removed on
     2026-07-16 — it needs paragraphs, which is exactly what a spreadsheet cell can't hold. **For Toru,
-    read `data/students/toru/student_life_research.md` first**: 30 rows of this was already researched at
-    Stage 4 under the old schema and migrated there. Don't pay for it twice.
+    read `data/students/toru/student_life_research.md` first**: 30 rows of this was already researched
+    under the old verify-shortlist step and migrated there. Don't pay for it twice.
 12. **The city, the area & belonging** — the **city/area feel, safety, transport, and things to do /
     sightseeing**, plus the **Malaysian / halal / prayer / religious-community** angle. Surface
     `needs`-flagged items prominently; otherwise treat as reassuring background, not a decision driver.
@@ -321,4 +376,4 @@ a **"Key terms"** glossary built from the acronyms the dossier uses, with each t
 ## Done when
 
 Every finalist has a complete dossier and the master list shows them as Finalist / Dossier Done. Then
-proceed to **Stage 5b** (`06_decide_and_apply.md`).
+proceed to **Stage 5** (`05_decide_and_apply.md`).

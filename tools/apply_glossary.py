@@ -257,6 +257,58 @@ GLOSSARY = {
         "definition": "Electrical & Computer Engineering — a common name for the university "
                       "department covering electrical engineering and computer hardware.",
     },
+    # --- Naval architecture / marine engineering + UK routes (dossier terms) ---
+    "RINA": {
+        "aliases": ["Royal Institution of Naval Architects"],
+        "definition": "**Royal Institution of Naval Architects** — the UK professional body for "
+                      "naval architects; a RINA-accredited degree counts toward Chartered/Incorporated "
+                      "Engineer status.",
+    },
+    "IMarEST": {
+        "aliases": ["Institute of Marine Engineering, Science and Technology"],
+        "definition": "**Institute of Marine Engineering, Science & Technology** — the UK professional "
+                      "body for marine engineers; accredits degrees toward Chartered/Incorporated "
+                      "Engineer status.",
+    },
+    "CEng": {
+        "aliases": ["Chartered Engineer"],
+        "definition": "**Chartered Engineer** — the UK's full professional-engineer status; it usually "
+                      "needs an accredited MEng (or a BEng plus further learning) and maps to the "
+                      "Washington Accord, so it's the route Malaysia's BEM recognises for Ir. registration.",
+    },
+    "IEng": {
+        "aliases": ["Incorporated Engineer"],
+        "definition": "**Incorporated Engineer** — a UK professional grade below Chartered. A BEng on "
+                      "its own typically meets IEng, which maps to the Sydney Accord — a lower tier than "
+                      "the Washington Accord chartered route.",
+    },
+    "Sydney Accord": {
+        "aliases": [],
+        "definition": "An international agreement recognising engineering-technologist / Incorporated-"
+                      "Engineer qualifications between member countries — a separate, lower tier than the "
+                      "Washington Accord for chartered engineers.",
+    },
+    "EAC": {
+        "aliases": ["Engineering Accreditation Council"],
+        "definition": "**Engineering Accreditation Council** — the Malaysian body that accredits "
+                      "engineering degrees for the Washington Accord and for BEM Professional Engineer "
+                      "(Ir.) registration.",
+    },
+    "UCAS": {
+        "aliases": [],
+        "definition": "The UK's central undergraduate application service — one form to apply to up to "
+                      "five UK universities, with a mid-January equal-consideration deadline.",
+    },
+    "Graduate Route": {
+        "aliases": [],
+        "definition": "The UK's post-study work visa — lets graduates stay and work after their degree "
+                      "(18 months for bachelor's/master's applying from 1 January 2027).",
+    },
+    "NAOME": {
+        "aliases": [],
+        "definition": "Naval Architecture, Ocean & Marine Engineering — the name of Strathclyde's "
+                      "department for these degrees.",
+    },
 }
 
 

@@ -134,7 +134,7 @@ def main():
     print(f"Created student data bank: {student_dir}")
     print(f"  - {profile_path.name}     (Stage 1: run student intake to fill)")
     print(f"  - {prefs_path.name} (Stage 2: run aspirations intake to fill)")
-    print(f"  - dossiers/         (Stage 5: per-finalist deep dossiers land here)")
+    print(f"  - dossiers/         (Stage 4: per-finalist deep dossiers land here)")
     print(f"\nNext: tell Claude \"run student intake for {args.name}\".")
 
 

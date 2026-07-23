@@ -5,14 +5,14 @@
 Turn a student's **Shortlist/Finalist** into an **action-only apply guide** for one region at a time:
 *exactly what to prepare and do to get every application in*, with the shared work grouped so it's done
 once. It answers one question — **"what do I need to apply?"** — and deliberately skips the "is this uni
-right for me?" texture (that's the dossier's job, `05_university_dossier.md`).
+right for me?" texture (that's the dossier's job, `04_university_dossier.md`).
 
 Use it when a student has decided to **apply and compare offers first, research fit later** — i.e. they
 don't want more dossiers, they want a checklist + deadlines + financial-aid mechanics they can act on.
 Produce it **one region at a time** (US, then UK, Australia, Singapore, China) — each region is a lot of
 official verification.
 
-This is a decision-support / how-to-apply deliverable, a sibling of Stage-5b's `06_decide_and_apply.md`
+This is a decision-support / how-to-apply deliverable, a sibling of Stage 5's `05_decide_and_apply.md`
 application-strategy section, pulled out and made repeatable per region. Like `build_calendar.py`, it is
 **read-only against `master_list.csv`** — it never changes `List status` or flips rows.
 
@@ -153,7 +153,7 @@ research. `checklist` fields as arrays are back-compatible: old string guides re
 - **Cycle-timing caveat.** For a Fall-20XX intake you're often researching the *previous* year's cycle
   before the new one opens (e.g. Common App supplement prompts publish ~1 Aug). State the figure with a
   "confirm when the 20XX-YY cycle opens" flag rather than guessing.
-- **Overlap with `06_decide_and_apply.md`.** Stage 5b's `recommendation.md` also groups an apply strategy
+- **Overlap with `05_decide_and_apply.md`.** Stage 5's `recommendation.md` also groups an apply strategy
   by system; this workflow is the standalone, per-region, dossier-free version. Use 5b when the student
   wants a ranked *decision*; use this when they've decided to apply broadly and just need the mechanics.
 - **Credits gated / PDPA** — free search by default (ask before Firecrawl); output lives in the

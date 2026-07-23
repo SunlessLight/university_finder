@@ -77,8 +77,8 @@ SHORTLIST_HEADERS = [
 LIST_STATUSES = ["Longlist", "Shortlist", "Finalist", "Rejected"]
 DEFAULT_LIST_STATUS = LIST_STATUSES[0]
 
-# Allowed values for "Info source". A row starts unverified and Stage 4 flips it once the
-# fact has been confirmed on the university's own page (see workflows/04_verify_shortlist.md).
+# Allowed values for "Info source". A row starts unverified and the Stage 4 pre-flight flips it once the
+# fact has been confirmed on the university's own page (see workflows/04_university_dossier.md).
 INFO_SOURCE_UNVERIFIED = "Not verified"
 INFO_SOURCE_OFFICIAL = "Official page"
 

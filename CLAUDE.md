@@ -44,7 +44,7 @@ Every failure is a chance to make the system stronger: (1) identify what broke, 
 
 Take a **Malaysian student** from *"who am I / what do I want"* to *"here is exactly how I apply to
 these specific universities"* — via a **5-stage narrowing pipeline** (intake → aspirations →
-discover/longlist → verify/shortlist → dossier + decide), with research depth escalating as options
+discover/longlist → verify + dossier → decide), with research depth escalating as options
 survive each cut. Sibling of the `guest_speakers/` WAT project; reuses its Firecrawl-discovery +
 single-source-schema + score/dedupe/append-into-CSV patterns.
 
@@ -53,7 +53,7 @@ single-source-schema + score/dedupe/append-into-CSV patterns.
 promotion/rejection is an agent edit to the CSV, never a sync side-effect.
 
 **Read `workflows/00_overview.md` first** — the master SOP. It holds the full stage-by-stage
-pipeline, the per-stage workflow files (`01`–`06` + the `resume.md` utility), and the complete tool
+pipeline, the per-stage workflow files (`01`–`05` + the `resume.md` utility), and the complete tool
 reference. `README.md` has the human-facing setup/run guide.
 
 ### Non-negotiable rules (the guardrails)
@@ -66,8 +66,9 @@ These stop a tidy-looking list from being quietly wrong:
   `scoring-weights` skill. **Never hardcode weights in `tools/shortlist_schema.py`**: it's shared source,
   so concurrent sessions silently overwrite each other. Sync hard-errors if a student's file is missing.
 - **Official sources for hard facts.** Verify fees/requirements/deadlines against the official uni /
-  UCAS / Common App page before a row becomes Shortlist; aggregators are discovery only. Stamp
-  `Info source` (`Not verified` → `Official page`).
+  UCAS / Common App page before you build a row's dossier (the Stage 4 pre-flight — a row can't become
+  Finalist on unverified facts); aggregators are discovery only. Stamp `Info source`
+  (`Not verified` → `Official page`).
 - **Total cost in MYR**, not annual tuition (3-yr UK vs 4-yr US must be comparable). MYR is approximate.
 - **Balanced shortlist** — a Reach/Match/Safety spread, not top-N by score.
 - **Recognition back home** (MQA + professional body) is a gate for regulated professions.

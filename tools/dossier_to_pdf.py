@@ -1,7 +1,7 @@
 """
 dossier_to_pdf.py — export a rendered dossier Markdown file to a clean, readable PDF.
 
-The student-facing deliverable of Stage 5a is the per-finalist dossier, which
+The student-facing deliverable of Stage 4 is the per-finalist dossier, which
 build_dossier.py writes as Markdown to data/students/<slug>/dossiers/<uni>.md. That's
 great for the pipeline but awkward to hand to a student. This tool converts an existing
 dossier .md into a document-style .pdf (styled headings/tables/lists/links, a warning

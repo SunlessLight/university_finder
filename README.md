@@ -14,7 +14,7 @@ See [CLAUDE.md](CLAUDE.md) for the agent operating instructions, and
 ## Layout
 
 ```
-workflows/   Markdown SOPs (00_overview … 06_decide_and_apply, + 07_form_intake)
+workflows/   Markdown SOPs (00_overview … 05_decide_and_apply, + 07_form_intake, 08_application_prep)
 tools/       Python execution scripts (firecrawl_search, init_student, ingest_form_csv,
              shortlist_schema, sync_shortlist, compare_universities, build_dossier, build_calendar)
 data/students/   One private data bank per student (gitignored — PII)
@@ -30,9 +30,8 @@ data/form/       Google Form CSV exports dropped here for batch intake (gitignor
 | 1 Intake | `profile.json` | Grades, budget, English, recognition needs |
 | 2 Aspirations | `preferences.json` | Countries, field, priorities (interest-discovery if undecided) |
 | 3 Discover | `master_list.csv` (Longlist) | 20-40 candidates, scored |
-| 4 Verify | `master_list.csv` (Shortlist) | 8-12, official facts, Reach/Match/Safety, comparison tables |
-| 5a Dossier | `dossiers/<uni>.md` | 3-5 deep 16-section decision dossiers |
-| 5b Decide | `recommendation.md` + `calendar.md` | Ranked picks, application strategy, deadlines |
+| 4 Verify + Dossier | `dossiers/<uni>.md` | Student picks 3-5 finalists; verify their facts against official sources (Reach/Match/Safety), then a deep 16-section dossier each |
+| 5 Decide | `recommendation.md` + `calendar.md` | Ranked picks, application strategy, deadlines |
 
 ## Setup (first time)
 

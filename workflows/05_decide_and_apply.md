@@ -1,4 +1,4 @@
-# Workflow: Stage 5b — Decide & Apply (recommendation + strategy + calendar)
+# Workflow: Stage 5 — Decide & Apply (recommendation + strategy + calendar)
 
 ## Objective
 
@@ -49,7 +49,7 @@ state in v1.
 ## Edge cases & rules
 
 - **Predicted grades** — make the strategy conditional: which choices hold if results come in lower, and
-  where the pathway/foundation fallbacks (from Stage 4/5a) kick in.
+  where the pathway/foundation fallbacks (from Stage 4) kick in.
 - **Scholarship-dependent students** — sequence scholarship deadlines *before* the student commits deposits;
   the calendar should make those the earliest items.
 - **Don't over-promise** — present a recommendation and the trade-offs; the decision is the student's.

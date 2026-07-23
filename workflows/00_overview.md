@@ -20,9 +20,8 @@ university that hasn't passed the cheap cut first.
 | 1 | `01_student_intake.md` | `profile.json` | Who the student is (grades, budget, English, recognition needs) |
 | 2 | `02_aspirations_intake.md` | `preferences.json` | What they want (countries, field, priorities) — incl. *interest-discovery* if undecided |
 | 3 | `03_discover_longlist.md` | `master_list.csv` (Longlist) | Broad, cheap, snippet-level discovery — 20-40 candidates |
-| 4 | `04_verify_shortlist.md` | `master_list.csv` (Shortlist) | Verify hard facts from official sources; Reach/Match/Safety; feasibility gates; comparison tables — cut to 8-12 |
-| 5a | `05_university_dossier.md` | `dossiers/<uni>.md` | Full 16-section decision dossier per finalist — 3-5. Two paths (`--mode`): course-specific (default) or **university-general (US-only)** for whole-institution fit |
-| 5b | `06_decide_and_apply.md` | `recommendation.md` + `calendar.md` | Recommendation, application strategy, one deadline calendar |
+| 4 | `04_university_dossier.md` | `dossiers/<uni>.md` | Student picks 3-5 finalists off the Longlist; **verify their hard facts from official sources** (Reach/Match/Safety, feasibility gates), then a full 16-section decision dossier per finalist. Two paths (`--mode`): course-specific (default) or **university-general (US-only)** for whole-institution fit |
+| 5 | `05_decide_and_apply.md` | `recommendation.md` + `calendar.md` | Recommendation, application strategy, one deadline calendar |
 
 **Cross-cutting:** `resume.md` (utility, not a stage) — when a returning student says **"resume
 &lt;name&gt;"**, it reconstructs state from `status.md` (cross-checked against the files) so a fresh
@@ -49,9 +48,9 @@ data/students/<student-slug>/
   weights.json         # Stage 3: this student's desirability weights (scoring-weights skill; sync refuses without it)
   master_list.csv      # Stages 3-4: every candidate + a "List status" column
   score_log.jsonl      # Stage 3: append-only audit — weights_id + sub-scores + entry_margin behind each scored row
-  dossiers/<uni>.md    # Stage 5a  (dossiers/<uni>.pdf — optional, on request via dossier_to_pdf.py)
-  recommendation.md    # Stage 5b
-  calendar.md          # Stage 5b
+  dossiers/<uni>.md    # Stage 4  (dossiers/<uni>.pdf — optional, on request via dossier_to_pdf.py)
+  recommendation.md    # Stage 5
+  calendar.md          # Stage 5
   application_prep/<region>.md  # 08_application_prep.md — per-region "how to apply" guide (optional)
 ```
 
@@ -80,7 +79,7 @@ plain-English sentences, not jargon. Quick glossary of the less-obvious columns:
 > `Total cost (programme)`, `Currency`, `Student community links`, `Student life`, `Data as-of`,
 > `Dossier status`. **Removing a column ≠ removing the fact** — `currency` and `meets_english` are still
 > required candidate-JSON fields feeding `Approx total (MYR)` and the `English short` warning, and
-> student-life research now lives in the Stage 5 dossier where paragraphs belong. `Info source` values were
+> student-life research now lives in the Stage 4 dossier where paragraphs belong. `Info source` values were
 > renamed `Aggregator`→`Not verified` and `Official`→`Official page` at the same time.
 
 ## How to start
@@ -106,9 +105,10 @@ These are *why this project exists* — they stop a tidy-looking list from being
    Weights themselves are **per-student** (`data/students/<slug>/weights.json`, via the
    `scoring-weights` skill) and never live in shared source — so two students can be scored in parallel.
 2. **Official sources for hard facts.** Fees, entry requirements, English, deadlines, and intake must be
-   verified against the **official** university / UCAS / Common App page before a row becomes `Shortlist`.
-   Aggregators (StudyPortals, rankings, Niche) are for *discovery only*. Record `Info source` on every
-   row. Where sources conflict, the official one wins; note the conflict in `Notes`.
+   verified against the **official** university / UCAS / Common App page before you build a row's dossier
+   (the Stage 4 pre-flight — a row can't become `Finalist` on unverified facts). Aggregators (StudyPortals,
+   rankings, Niche) are for *discovery only*. Record `Info source` on every row. Where sources conflict,
+   the official one wins; note the conflict in `Notes`.
 3. **Total cost, not annual.** Compare full-programme **total cost in MYR** (3-yr UK vs 4-yr US are not
    comparable per year). `Approx total (MYR)` is a rough offline conversion — flag it as approximate.
 4. **Balanced list.** A shortlist is a spread of Reach/Match/Safety, not the top-N by score.

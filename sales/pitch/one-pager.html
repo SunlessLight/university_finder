@@ -42,10 +42,7 @@
 
     .page {
       width: 210mm;
-      height: 297mm;
-      padding: 12mm 13mm 9mm;
-      display: flex;
-      flex-direction: column;
+      padding: 12mm 13mm 10mm;
     }
 
     .serif {
@@ -70,16 +67,6 @@
       letter-spacing: -.01em;
     }
 
-    .lede {
-      font-size: 10.5pt;
-      color: var(--navy2);
-      max-width: 170mm;
-    }
-
-    .lede b {
-      color: var(--navy);
-    }
-
     .rule {
       height: 3px;
       width: 26mm;
@@ -88,27 +75,70 @@
       border-radius: 2px;
     }
 
+    /* how-it-works flow strip */
+    .flow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px 9px;
+      margin: 11px 0 2px;
+      font-size: 9.2pt;
+      color: var(--navy2);
+    }
+
+    .flow .step {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .flow .sn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: #fff;
+      font-size: 7.6pt;
+      font-weight: 800;
+      flex: none;
+    }
+
+    .flow .arr {
+      color: var(--gray);
+      font-weight: 700;
+    }
+
     .sectlabel {
       font-size: 8pt;
       letter-spacing: .14em;
       text-transform: uppercase;
       color: var(--gray);
       font-weight: 700;
-      margin: 13px 0 6px;
+      margin: 15px 0 7px;
     }
 
-    /* tiers */
+    /* tiers — vertical stack, full-width cards */
     .tiers {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      display: flex;
+      flex-direction: column;
       gap: 5mm;
     }
 
     .tier {
+      display: flex;
+      gap: 8mm;
       border: 1px solid var(--line);
       border-top: 3px solid var(--navy);
       background: #fff;
-      padding: 7px 9px 8px;
+      padding: 10px 12px 11px;
+      break-inside: avoid;
+    }
+
+    .tier .trail {
+      flex: 0 0 45mm;
     }
 
     .tier .tnum {
@@ -121,27 +151,30 @@
 
     .tier h3 {
       font-family: Georgia, serif;
-      font-size: 13pt;
+      font-size: 15pt;
       color: var(--navy);
-      margin: 2px 0 3px;
+      margin: 2px 0 4px;
     }
 
     .tier .one {
       color: var(--navy2);
       font-size: 9pt;
-      margin-bottom: 6px;
       font-style: italic;
     }
 
     .tier ul {
+      flex: 1;
       list-style: none;
+      columns: 2;
+      column-gap: 8mm;
     }
 
     .tier li {
       position: relative;
-      padding-left: 11px;
-      margin-bottom: 3px;
-      font-size: 8.8pt;
+      padding-left: 12px;
+      margin-bottom: 4px;
+      font-size: 8.9pt;
+      break-inside: avoid;
     }
 
     .tier li::before {
@@ -163,15 +196,15 @@
     .gem {
       background: var(--wash);
       border-left: 3px solid var(--navy);
-      padding: 9px 11px 8px;
-      margin-top: 2px;
+      padding: 10px 12px 9px;
+      break-inside: avoid;
     }
 
     .gemhead {
       font-size: 9.6pt;
       font-weight: 700;
       color: var(--navy);
-      margin-bottom: 6px;
+      margin-bottom: 7px;
     }
 
     .gemhead span {
@@ -196,49 +229,12 @@
       color: var(--ink);
     }
 
-    /* bottom two-up */
-    .bottom {
-      display: grid;
-      grid-template-columns: 1.15fr 1fr;
-      gap: 5mm;
-      margin-top: 12px;
-    }
-
-    .offer {
+    /* when you don't need me */
+    .notfor {
       border: 1px solid var(--line);
-      padding: 9px 11px;
-    }
-
-    .price {
-      display: flex;
-      align-items: baseline;
-      gap: 9px;
-      margin-bottom: 4px;
-    }
-
-    .price .rm {
-      font-family: Georgia, serif;
-      font-size: 22pt;
-      color: var(--navy);
-      line-height: 1;
-    }
-
-    .price .free {
-      font-size: 9pt;
-      font-weight: 700;
-      color: var(--gold);
-      text-transform: uppercase;
-      letter-spacing: .04em;
-    }
-
-    .offer p {
-      font-size: 8.8pt;
-      color: var(--ink);
-    }
-
-    .offer p.disarm {
-      color: var(--navy2);
-      margin-top: 5px;
+      padding: 10px 12px;
+      margin-top: 5mm;
+      break-inside: avoid;
     }
 
     .notfor h4 {
@@ -248,7 +244,7 @@
     }
 
     .notfor p {
-      font-size: 8.7pt;
+      font-size: 8.8pt;
       color: var(--ink);
     }
 
@@ -260,20 +256,20 @@
       color: var(--navy);
     }
 
-    /* footer */
     /* columns band */
     .cols {
-      margin-top: 13px;
+      margin-top: 15px;
     }
 
     .cols .sectlabel {
-      margin: 0 0 5px;
+      margin: 0 0 6px;
     }
 
     .colbox {
       border: 1px solid var(--line);
       background: var(--wash);
       padding: 8px 10px;
+      break-inside: avoid;
     }
 
     .colbox .names {
@@ -293,7 +289,7 @@
     }
 
     .foot {
-      margin-top: auto;
+      margin-top: 14px;
       padding-top: 8px;
       border-top: 1px solid var(--line);
       display: flex;
@@ -318,47 +314,78 @@
 
     <div class="kicker">University &amp; course research · for Malaysian students</div>
     <h1>Know exactly where to apply — and why.</h1>
-    <p class="lede">You get a <b>spreadsheet</b>, deep <b>dossiers</b> on your top picks, and a step-by-step
-      <b>apply guide</b> per country — files you keep for the whole application season, not a chat log that scrolls
-      away.
-    </p>
     <div class="rule"></div>
+
+    <div class="flow">
+      <span class="step"><span class="sn">1</span> Build your longlist</span>
+      <span class="arr">→</span>
+      <span class="step"><span class="sn">2</span> You pick your shortlist</span>
+      <span class="arr">→</span>
+      <span class="step"><span class="sn">3</span> I build a deep dossier — one university at a time</span>
+    </div>
 
     <div class="sectlabel">What you actually get — three parts</div>
     <div class="tiers">
+
       <div class="tier">
-        <div class="tnum">Tier 1 — The List</div>
-        <h3>The shortlist</h3>
-        <div class="one">Your real options, costed in ringgit.</div>
+        <div class="trail">
+          <div class="tnum">Tier 1 — The List</div>
+          <h3>The shortlist</h3>
+          <div class="one">Your real options, costed in ringgit.</div>
+        </div>
         <ul>
-          <li><b>20–40 unis</b> that fit your grades &amp; budget, cut to a verified <b>8–12</b></li>
-          <li><b>34 columns</b> per uni, opens in Excel / Google Sheets</li>
-          <li><b>Reach / Match / Safety</b> kept separate from the quality score</li>
-          <li><b>Total cost of the whole degree in MYR</b> — not per year</li>
-          <li>Recognised in Malaysia? flagged for regulated careers</li>
+          <li><b>20–40 uni + course matches</b> to your grades, budget &amp; target countries — then you pick 3–5 to
+            go deep on</li>
+          <li>One spreadsheet, <b>34 columns</b> per uni, opens in Excel / Google Sheets</li>
+          <li>Two scores kept <b>separate</b>: a 0–100 quality score vs <b>Reach / Match / Safety</b> — a uni you
+            can’t get into never ranks #1</li>
+          <li><b>Total cost of the whole degree in MYR</b> — not per year, so a 3-yr UK and 4-yr US degree compare
+            fairly</li>
+          <li><b>Recognised in Malaysia?</b> flagged (MQA + professional body) — the gate for regulated careers</li>
+          <li>Every row stamped <b>verified / not-yet</b>, so you know which numbers are actually checked</li>
         </ul>
       </div>
+
       <div class="tier">
-        <div class="tnum">Tier 2 — The Dossiers</div>
-        <h3>The deep dive</h3>
-        <div class="one">Can I get in, will I belong, what will it take?</div>
+        <div class="trail">
+          <div class="tnum">Tier 2 — The Dossiers</div>
+          <h3>The deep dive</h3>
+          <div class="one">Can I get in, will I belong, what will it take?</div>
+        </div>
         <ul>
-          <li><b>3–5 deep dossiers</b>, 16 sections each, as PDFs</li>
-          <li><b>Who actually gets in</b> — real admitted-student grades &amp; essay angles</li>
-          <li>Full cost, scholarships, visa, work rights</li>
-          <li>Honest <b>reasons to hesitate</b> on every uni</li>
+          <li>A deep <b>PDF dossier</b> for each uni you shortlist — built one university at a time</li>
+          <li><b>16 sections</b> each, every one filled in — nothing left blank</li>
+          <li><b>“Who actually gets in”</b> — real admitted-student grades, activities &amp; essay angles (offer-holder
+            threads, US Common Data Set, NUS cutoffs)</li>
+          <li>Full cost + scholarships — <b>government and company sponsors</b> (JPA / MARA / Yayasan <i>and</i>
+            Petronas, Shell, Khazanah, Bank Negara…), visa &amp; post-study work rights</li>
+          <li><b>“Will I belong”</b> — study intensity, student vibe, city feel, plus the halal / prayer / Malaysian-
+            community angle</li>
+          <li>Honest <b>“why hesitate”</b> on every uni — where it’s weak <i>for you</i>, checked against the official
+            page first</li>
         </ul>
       </div>
+
       <div class="tier">
-        <div class="tnum">Tier 3 — The Apply Pack</div>
-        <h3>The how-to-apply</h3>
-        <div class="one">Now go do it — nothing missed.</div>
+        <div class="trail">
+          <div class="tnum">Tier 3 — The Apply Pack</div>
+          <h3>The how-to-apply</h3>
+          <div class="one">Now go do it — nothing missed.</div>
+        </div>
         <ul>
-          <li><b>One deadline calendar</b> across every country</li>
-          <li>A <b>per-region apply guide</b> (PDF), grouped by system so shared work is done once</li>
-          <li>Exact <b>scholarship &amp; financial-aid</b> mechanics — forms, dates, what aid really covers</li>
+          <li>A <b>ranked recommendation</b> of your finalists + a realistic apply strategy (UCAS’s 5-choice cap,
+            Oxbridge either/or, app-fee budget)</li>
+          <li><b>One deadline calendar</b> across every country — applications, scholarships, tests, visa lead times,
+            in order</li>
+          <li>A <b>per-region apply guide (PDF)</b> — US / UK / Australia / Singapore / China, grouped by system so
+            shared work is done once</li>
+          <li>Per uni: deadlines (incl. EA/ED + the separate aid deadline), tests, essays, fees + fee waivers,
+            checklist, portal links</li>
+          <li><b>Real financial aid</b> — what it covers and what you still pay (flights, visa, the student
+            contribution “100% of need” hides), in USD + approx MYR</li>
         </ul>
       </div>
+
     </div>
 
     <div class="sectlabel">“Can’t I just use Gemini?”</div>
@@ -384,25 +411,15 @@
       </div>
     </div>
 
-    <div class="bottom">
-      <div class="offer">
-        <div class="price"><span class="rm">RM 30</span><span class="free">First few free</span></div>
-        <p>For the value I'm providing with this price, you decide whether its worth it or not.</p>
-        <p class="disarm">Straight with you: I’ve done this properly, end to end, for <b>one</b> student so far. I want
-          a handful of
-          examples I can show people — so it’s <b>free</b> for the next few. If it’s rubbish, tell me and pay nothing.
-          RM&nbsp;30 after that.</p>
-      </div>
-      <div class="notfor">
-        <h4>When you don’t need me</h4>
-        <p>If you already know your course, know your country, and have your 3–4 unis picked — use Gemini or the UCAS
-          site. Genuinely.</p>
-        <div class="yes">
-          <p>Where it earns its keep: <b>comparing across countries</b> in ringgit · <b>course still undecided</b> ·
-            <b>budget is the deciding factor</b> · a <b>regulated career</b> (medicine / engineering / law) that must be
-            recognised back home.
-          </p>
-        </div>
+    <div class="notfor">
+      <h4>When you don’t need me</h4>
+      <p>If you already know your course, know your country, and have your 3–4 unis picked — use Gemini or the UCAS
+        site. Genuinely.</p>
+      <div class="yes">
+        <p>Where it earns its keep: <b>comparing across countries</b> in ringgit · <b>course still undecided</b> ·
+          <b>budget is the deciding factor</b> · a <b>regulated career</b> (medicine / engineering / law) that must be
+          recognised back home.
+        </p>
       </div>
     </div>
 

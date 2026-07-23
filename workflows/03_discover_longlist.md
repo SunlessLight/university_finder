@@ -466,4 +466,5 @@ university+course, and appends new rows as **Longlist**. The CSV is created on f
 ## Done when
 
 `master_list.csv` holds a broad Longlist with sensible scores and flags. Then proceed to **Stage 4**
-(`04_verify_shortlist.md`) — the first real narrowing cut.
+(`04_university_dossier.md`) — where the student picks finalists, you verify their hard facts against
+official sources, and build a dossier for each survivor.

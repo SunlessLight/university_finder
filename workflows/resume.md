@@ -8,7 +8,7 @@ who they are and beg you to re-read the data bank. This workflow lets the studen
 brief — reconstructed from the student's own files, **cross-checked so stale notes don't mislead
 you**. Output/state lives in `data/students/<slug>/status.md`.
 
-This is a **utility** workflow, not a pipeline stage. It wraps around Stages 1-6; it doesn't
+This is a **utility** workflow, not a pipeline stage. It wraps around Stages 1-5; it doesn't
 replace them.
 
 ## When to run

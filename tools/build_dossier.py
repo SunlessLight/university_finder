@@ -1,14 +1,14 @@
 """
 build_dossier.py — render a standardized deep-research dossier for one finalist.
 
-Reads a research JSON the agent assembles in Stage 5 and renders a fixed-order,
+Reads a research JSON the agent assembles in Stage 4 and renders a fixed-order,
 16-section Markdown dossier (Snapshot + 14 content sections + Sources) built to
 answer three decision questions — can I get in? will I belong & thrive? what will
 it take to apply? — so the student can decide, not just compare. Writes it to
 data/students/<slug>/dossiers/<slug>.md and flips the matching row(s) in
 master_list.csv to List status = Finalist.
 
-Two paths, chosen with --mode (see workflows/05_university_dossier.md):
+Two paths, chosen with --mode (see workflows/04_university_dossier.md):
   * course      (default) — the course-specific dossier: "should I do THIS course
                 here?". Every master_list row is a University+Course pair, so it
                 matches/flips the row by course_key(university, course).
