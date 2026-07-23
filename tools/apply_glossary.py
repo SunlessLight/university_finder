@@ -199,6 +199,64 @@ GLOSSARY = {
                       "Year-12 students; international applicants usually apply to each university "
                       "directly instead.",
     },
+    # --- Recognition, outcomes & academic structure (dossier terms) -----------
+    # These surface mostly in the dossiers (build_dossier.py) rather than the apply
+    # guides — recognition-back-home, post-study work, and department shorthand.
+    "OPT": {
+        "aliases": ["Optional Practical Training"],
+        "definition": "**Optional Practical Training** — US work permission that lets you work in "
+                      "your field for up to 12 months after graduating on a student visa.",
+    },
+    "STEM OPT": {
+        "aliases": ["STEM-OPT", "STEM extension", "STEM OPT extension"],
+        "definition": "**STEM OPT extension** — a 24-month extension of OPT for science/engineering "
+                      "degrees, giving up to 36 months of US work authorisation after you graduate.",
+    },
+    "ABET": {
+        "aliases": [],
+        "definition": "The US accreditation board for engineering and technology degrees. An "
+                      "ABET-accredited degree is recognised internationally and eases professional "
+                      "registration back home.",
+    },
+    "Washington Accord": {
+        "aliases": [],
+        "definition": "An international agreement that mutually recognises engineering degrees "
+                      "between member countries (the US, UK, Australia and Malaysia all belong), so "
+                      "an accredited degree carries over.",
+    },
+    "BEM": {
+        "aliases": ["Board of Engineers Malaysia"],
+        "definition": "**Board of Engineers Malaysia** — the body you register with to practise as "
+                      "an engineer in Malaysia; it recognises accredited degrees via the Washington "
+                      "Accord.",
+    },
+    "MQA": {
+        "aliases": ["Malaysian Qualifications Agency"],
+        "definition": "**Malaysian Qualifications Agency** — the Malaysian body that recognises "
+                      "foreign qualifications; check its register to confirm your degree counts back "
+                      "home.",
+    },
+    "Common Data Set": {
+        "aliases": ["CDS"],
+        "definition": "A standardised set of admissions and enrolment statistics each US university "
+                      "publishes — the reliable place to check real admit rates and what admitted "
+                      "students look like.",
+    },
+    "land-grant": {
+        "aliases": [],
+        "definition": "A US university originally funded by federal land grants to teach practical "
+                      "fields like agriculture and engineering alongside the liberal arts.",
+    },
+    "MAE": {
+        "aliases": [],
+        "definition": "Mechanical & Aerospace Engineering — a common name for the university "
+                      "department or school that houses mechanical engineering degrees.",
+    },
+    "ECE": {
+        "aliases": [],
+        "definition": "Electrical & Computer Engineering — a common name for the university "
+                      "department covering electrical engineering and computer hardware.",
+    },
 }
 
 

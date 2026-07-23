@@ -10,13 +10,13 @@ firecrawl-py
 # The master list, comparisons, dossiers, and calendar are local CSV/markdown,
 # written with the stdlib `csv` / `json` modules — no extra dependency needed.
 
-# Markdown -> PDF export of dossiers (tools/dossier_to_pdf.py) — pure-pip, no native libs
+# Markdown -> HTML, the first step of every PDF export (dossiers + application-prep guides).
 markdown
-xhtml2pdf
 
-# Markdown -> PDF export of application-prep guides (tools/apply_prep_to_pdf.py).
-# WeasyPrint gives real CSS: reliable internal links for the Contents/glossary jumps,
-# paged footers, proper checkbox/list styling. On Windows it needs native GTK/Pango/Cairo
-# libs (NOT pip): install MSYS2 then `pacman -S mingw-w64-ucrt-x86_64-gtk3`; the tool adds
+# Markdown -> PDF export of dossiers (tools/dossier_to_pdf.py) AND application-prep guides
+# (tools/apply_prep_to_pdf.py) — both render with WeasyPrint (dossiers migrated off xhtml2pdf
+# 2026-07 for styled callouts, a glossary, and reliable internal links). WeasyPrint gives real
+# CSS: paged footers, proper checkbox/list styling. On Windows it needs native GTK/Pango/Cairo
+# libs (NOT pip): install MSYS2 then `pacman -S mingw-w64-ucrt-x86_64-gtk3`; the tools add
 # C:\msys64\ucrt64\bin at import (override with WEASYPRINT_DLL_DIRECTORIES). See the tool header.
 weasyprint

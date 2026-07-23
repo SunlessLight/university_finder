@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>University research — what you get</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --navy: #10233f;
+      --navy2: #123a66;
+      --ink: #1a1a1a;
+      --gray: #5b6b7f;
+      --line: #d7dee7;
+      --wash: #f4f6f9;
+      --accent: #1157b8;
+      --gold: #b07407;
+    }
+
+    html,
+    body {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    body {
+      font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      color: var(--ink);
+      font-size: 9.4pt;
+      line-height: 1.42;
+    }
+
+    .page {
+      width: 210mm;
+      height: 297mm;
+      padding: 12mm 13mm 9mm;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .serif {
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    /* header */
+    .kicker {
+      font-size: 8pt;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--gray);
+      font-weight: 600;
+    }
+
+    h1 {
+      font-family: Georgia, serif;
+      font-size: 25pt;
+      line-height: 1.06;
+      color: var(--navy);
+      margin: 5px 0 6px;
+      letter-spacing: -.01em;
+    }
+
+    .lede {
+      font-size: 10.5pt;
+      color: var(--navy2);
+      max-width: 170mm;
+    }
+
+    .lede b {
+      color: var(--navy);
+    }
+
+    .rule {
+      height: 3px;
+      width: 26mm;
+      background: var(--navy);
+      margin: 9px 0 0;
+      border-radius: 2px;
+    }
+
+    .sectlabel {
+      font-size: 8pt;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--gray);
+      font-weight: 700;
+      margin: 13px 0 6px;
+    }
+
+    /* tiers */
+    .tiers {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 5mm;
+    }
+
+    .tier {
+      border: 1px solid var(--line);
+      border-top: 3px solid var(--navy);
+      background: #fff;
+      padding: 7px 9px 8px;
+    }
+
+    .tier .tnum {
+      font-size: 7.6pt;
+      font-weight: 800;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .tier h3 {
+      font-family: Georgia, serif;
+      font-size: 13pt;
+      color: var(--navy);
+      margin: 2px 0 3px;
+    }
+
+    .tier .one {
+      color: var(--navy2);
+      font-size: 9pt;
+      margin-bottom: 6px;
+      font-style: italic;
+    }
+
+    .tier ul {
+      list-style: none;
+    }
+
+    .tier li {
+      position: relative;
+      padding-left: 11px;
+      margin-bottom: 3px;
+      font-size: 8.8pt;
+    }
+
+    .tier li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 6px;
+      width: 4px;
+      height: 4px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+
+    .tier li b {
+      color: var(--navy);
+    }
+
+    /* gemini strip */
+    .gem {
+      background: var(--wash);
+      border-left: 3px solid var(--navy);
+      padding: 9px 11px 8px;
+      margin-top: 2px;
+    }
+
+    .gemhead {
+      font-size: 9.6pt;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 6px;
+    }
+
+    .gemhead span {
+      font-weight: 400;
+      color: var(--gray);
+    }
+
+    .gemcols {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6mm;
+    }
+
+    .gemcols h4 {
+      font-size: 9pt;
+      color: var(--navy);
+      margin-bottom: 2px;
+    }
+
+    .gemcols p {
+      font-size: 8.6pt;
+      color: var(--ink);
+    }
+
+    /* bottom two-up */
+    .bottom {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 5mm;
+      margin-top: 12px;
+    }
+
+    .offer {
+      border: 1px solid var(--line);
+      padding: 9px 11px;
+    }
+
+    .price {
+      display: flex;
+      align-items: baseline;
+      gap: 9px;
+      margin-bottom: 4px;
+    }
+
+    .price .rm {
+      font-family: Georgia, serif;
+      font-size: 22pt;
+      color: var(--navy);
+      line-height: 1;
+    }
+
+    .price .free {
+      font-size: 9pt;
+      font-weight: 700;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .offer p {
+      font-size: 8.8pt;
+      color: var(--ink);
+    }
+
+    .offer p.disarm {
+      color: var(--navy2);
+      margin-top: 5px;
+    }
+
+    .notfor h4 {
+      font-size: 9pt;
+      color: var(--navy);
+      margin-bottom: 3px;
+    }
+
+    .notfor p {
+      font-size: 8.7pt;
+      color: var(--ink);
+    }
+
+    .notfor .yes {
+      margin-top: 6px;
+    }
+
+    .notfor .yes b {
+      color: var(--navy);
+    }
+
+    /* footer */
+    /* columns band */
+    .cols {
+      margin-top: 13px;
+    }
+
+    .cols .sectlabel {
+      margin: 0 0 5px;
+    }
+
+    .colbox {
+      border: 1px solid var(--line);
+      background: var(--wash);
+      padding: 8px 10px;
+    }
+
+    .colbox .names {
+      font-size: 8.1pt;
+      color: var(--navy2);
+      line-height: 1.7;
+    }
+
+    .colbox .names b {
+      color: var(--navy);
+    }
+
+    .colbox .cap {
+      font-size: 8pt;
+      color: var(--gray);
+      margin-top: 4px;
+    }
+
+    .foot {
+      margin-top: auto;
+      padding-top: 8px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      font-size: 8.4pt;
+      color: var(--gray);
+    }
+
+    .foot b {
+      color: var(--navy);
+    }
+
+    .foot .contact {
+      text-align: right;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+
+    <div class="kicker">University &amp; course research · for Malaysian students</div>
+    <h1>Know exactly where to apply — and why.</h1>
+    <p class="lede">You get a <b>spreadsheet</b>, deep <b>dossiers</b> on your top picks, and a step-by-step
+      <b>apply guide</b> per country — files you keep for the whole application season, not a chat log that scrolls
+      away.
+    </p>
+    <div class="rule"></div>
+
+    <div class="sectlabel">What you actually get — three parts</div>
+    <div class="tiers">
+      <div class="tier">
+        <div class="tnum">Tier 1 — The List</div>
+        <h3>The shortlist</h3>
+        <div class="one">Your real options, costed in ringgit.</div>
+        <ul>
+          <li><b>20–40 unis</b> that fit your grades &amp; budget, cut to a verified <b>8–12</b></li>
+          <li><b>34 columns</b> per uni, opens in Excel / Google Sheets</li>
+          <li><b>Reach / Match / Safety</b> kept separate from the quality score</li>
+          <li><b>Total cost of the whole degree in MYR</b> — not per year</li>
+          <li>Recognised in Malaysia? flagged for regulated careers</li>
+        </ul>
+      </div>
+      <div class="tier">
+        <div class="tnum">Tier 2 — The Dossiers</div>
+        <h3>The deep dive</h3>
+        <div class="one">Can I get in, will I belong, what will it take?</div>
+        <ul>
+          <li><b>3–5 deep dossiers</b>, 16 sections each, as PDFs</li>
+          <li><b>Who actually gets in</b> — real admitted-student grades &amp; essay angles</li>
+          <li>Full cost, scholarships, visa, work rights</li>
+          <li>Honest <b>reasons to hesitate</b> on every uni</li>
+        </ul>
+      </div>
+      <div class="tier">
+        <div class="tnum">Tier 3 — The Apply Pack</div>
+        <h3>The how-to-apply</h3>
+        <div class="one">Now go do it — nothing missed.</div>
+        <ul>
+          <li><b>One deadline calendar</b> across every country</li>
+          <li>A <b>per-region apply guide</b> (PDF), grouped by system so shared work is done once</li>
+          <li>Exact <b>scholarship &amp; financial-aid</b> mechanics — forms, dates, what aid really covers</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sectlabel">“Can’t I just use Gemini?”</div>
+    <div class="gem">
+      <div class="gemhead">Honestly, for a lot of it — yes. Three things it won’t do, and it’s not a prompting skill you
+        can fix: <span>&nbsp;</span></div>
+      <div class="gemcols">
+        <div>
+          <h4>1. It ranks unis you can’t get into as #1</h4>
+          <p>It can’t tell “great uni” apart from “you can actually get in.” Mine keeps those in two separate columns —
+            did your list tell you which ones were reaches?</p>
+        </div>
+        <div>
+          <h4>2. It won’t say when it’s guessing</h4>
+          <p>It’ll give you a 2022 tuition fee as current fact. Every number here is checked against the official page —
+            and each row is stamped with whether it’s been verified yet.</p>
+        </div>
+        <div>
+          <h4>3. It forgets you</h4>
+          <p>Applications take six months. Next week it starts cold and gives a different answer. This is written into
+            files you keep — grades, budget, dealbreakers and all.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom">
+      <div class="offer">
+        <div class="price"><span class="rm">RM 30</span><span class="free">First few free</span></div>
+        <p>For the value I'm providing with this price, you decide whether its worth it or not.</p>
+        <p class="disarm">Straight with you: I’ve done this properly, end to end, for <b>one</b> student so far. I want
+          a handful of
+          examples I can show people — so it’s <b>free</b> for the next few. If it’s rubbish, tell me and pay nothing.
+          RM&nbsp;30 after that.</p>
+      </div>
+      <div class="notfor">
+        <h4>When you don’t need me</h4>
+        <p>If you already know your course, know your country, and have your 3–4 unis picked — use Gemini or the UCAS
+          site. Genuinely.</p>
+        <div class="yes">
+          <p>Where it earns its keep: <b>comparing across countries</b> in ringgit · <b>course still undecided</b> ·
+            <b>budget is the deciding factor</b> · a <b>regulated career</b> (medicine / engineering / law) that must be
+            recognised back home.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cols">
+      <div class="sectlabel">The 34 columns — for every uni on the list</div>
+      <div class="colbox">
+        <div class="names">List status&nbsp;· Desirability&nbsp;· Tier&nbsp;· <b>Admission likelihood</b>&nbsp;·
+          Warnings&nbsp;· University&nbsp;· Course&nbsp;·
+          Country&nbsp;· City&nbsp;· Subject rank&nbsp;· Overall rank&nbsp;· Entry requirements&nbsp;· Student
+          grades&nbsp;· <b>Fits grades?</b>&nbsp;·
+          English req&nbsp;· Backup entry route&nbsp;· Annual tuition&nbsp;· Total tuition&nbsp;· Est. living/yr&nbsp;·
+          Duration (yrs)&nbsp;·
+          <b>Approx total (MYR)</b>&nbsp;· Scholarship &amp; portal&nbsp;· Scholarship coverage&nbsp;· Scholarship
+          competitiveness&nbsp;·
+          How to get the scholarship&nbsp;· Money to show (visa)&nbsp;· Work rights after graduating&nbsp;·
+          <b>Recognised in Malaysia?</b>&nbsp;·
+          How to apply&nbsp;· Key deadline&nbsp;· Intake&nbsp;· Notes&nbsp;· Course URL&nbsp;· <b>Info source</b>
+        </div>
+        <div class="cap">This is the list — paste it to anyone who says a chatbot already gave them one, and see how
+          many columns they got.</div>
+      </div>
+    </div>
+
+    <div class="foot">
+      <div>Want to see it first? Ask for the <b>sample pack</b> — one spreadsheet, one dossier, one apply guide.<br>
+        Real work, with the student’s name and finances removed.</div>
+      <div class="contact"><b>[ Evan Yeoh ]</b><br>WhatsApp [ 60186688118 ]</div>
+    </div>
+
+  </div>
+</body>
+
+</html>

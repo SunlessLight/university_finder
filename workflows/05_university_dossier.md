@@ -8,6 +8,25 @@ in? · will I belong & thrive? · what will it take to apply?** — so the stude
 compare. Lead with texture that determines whether they apply; keep the hard-fact sections as guardrails.
 This is the most research-intensive stage — do it only for finalists, A-tier and best-fit first.
 
+## Two dossier paths — course vs university (pick with `--mode`)
+
+`build_dossier.py` renders **two** dossier shapes; choose per finalist:
+
+- **`--mode course` (default) — the course-specific dossier.** *"Should I do THIS course here?"* Every
+  `master_list.csv` row is a `University + Course` pair, so it matches/flips the row by
+  `course_key(university, course)`. Use it for **UK · Australia · Singapore · China** — anywhere you
+  apply to a named degree. The 16-section spec below is this path.
+- **`--mode university` — the whole-institution dossier. US-only.** *"Should I GO to this university?"*
+  US undergrads apply to the **institution** and typically **declare a major in year 2**, so a
+  course-anchored dossier asks the wrong question. This path swaps the course lens for institutional
+  fit — character, the "type" of student it wants, curriculum shape, culture, aid, setting. It matches/
+  flips by **university name only** (ignoring `Course`) and **hard-errors if a matched row's `Country`
+  isn't `USA`**. Filename is slugged on the university alone (`stanford-university.md`), so it never
+  collides with a course dossier for the same uni — both can coexist. See **"The US university path"** below.
+
+Everything else — the free-search-vs-Firecrawl split, "capture social links, don't scrape", official
+sources for hard facts, enforced non-empty sections, the PDF export — is **identical for both paths**.
+
 ## Tools used
 
 1. *(agent research)* gather the facts for the 14 content sections. **Hard facts** (fees, requirements,
@@ -37,8 +56,9 @@ This is the most research-intensive stage — do it only for finalists, A-tier a
 
 Ordered decision-first. **Snapshot (1)** and **Sources (16)** are rendered by the tool; you fill 2–15.
 
-1. **Snapshot** *(auto-rendered from the JSON's top-level fields)* — uni · course · country/city · overall
-   rank · subject rank · application system · admission likelihood.
+1. **Snapshot** *(auto-rendered as a fact table from the JSON's top-level fields)* — uni · course ·
+   country/city · overall rank · subject rank · application system · admission likelihood, plus the
+   student's ranked **`priorities`** (set this field — it's where the priorities get stated once, up front).
 2. **Entry requirements & this student's fit** — academic + English, the grade margin → Reach/Match/Safety,
    and the **pathway/foundation route** if direct entry is short.
 3. **Who actually gets in** — real admitted-student texture: the **extracurriculars, awards, academic
@@ -83,6 +103,167 @@ Ordered decision-first. **Snapshot (1)** and **Sources (16)** are rendered by th
     don't sell.
 16. **Sources** — each with **authority (Official/Aggregator) + as-of cycle year**.
 
+## The US university path (`--mode university`)
+
+For US finalists, build the whole-institution dossier instead of (or alongside) a course one. It answers
+*"is this the right **place** for me?"* — the question US admissions actually turns on.
+
+### What US fit-qualities to look for (the lens)
+
+US universities differ far more in **character** than in course catalogue. Research each through these,
+and frame every one as a **"does THIS student fit?"** check — not a brochure:
+
+- **Institutional archetype / "who it's for."** Every top US school has a recognisable type it recruits
+  and shapes: **Stanford → founders/builders**, **MIT → makers/hands-on problem-solvers**, **Princeton →
+  scholars/researchers** (undergrad research, the senior thesis), **Harvard → future leaders/humanities +
+  breadth**, **Caltech → pure scientists**, an LAC → discussion-driven generalists. Name it, then say
+  honestly whether the student *is* that person.
+- **Curriculum shape.** **Open curriculum** (Brown — almost no requirements) vs **core** (Columbia,
+  Chicago — a fixed great-books/science core) vs **distribution** (most — breadth across areas). **When
+  you declare a major** (usually end of year 2), how easy it is to switch, and whether **double
+  majors / minors / self-designed majors** are normal. This is the single biggest US-vs-elsewhere
+  difference — lead with it.
+- **Size & setting.** Large research university vs small liberal-arts college; **urban / college-town /
+  rural**. Affects class size, teaching (professors vs TAs), and daily life.
+- **Culture.** Collaborative vs competitive (P/F first semester? no first-year grades?), intellectual vs
+  pre-professional, **Greek life** presence, **sports** (D1 spectacle vs D3), traditions, and how
+  **undergrad-focused** it is vs graduate/research-heavy.
+- **Aid model — the money reality for an international.** **Need-blind vs need-aware for internationals**,
+  **meets-full-need** or not, and **merit** scholarships. (For Malaysian students this is often the gate —
+  keep it honest and in MYR.)
+- **Support & advising** for internationals, and **outcomes/network** (OPT → STEM-OPT, alumni pull in the
+  student's field).
+
+Same scraper split as the course path: **decision-texture** (archetype, culture, student life, city,
+food, sentiment) → **free WebSearch + social/forum/video** (Reddit / YouTube / student-society pages —
+links + snippets, don't scrape); **hard facts** (aid policy, cost of attendance, deadlines, test
+requirements) → **official pages** (Firecrawl gated — ask before spending). If a student already has
+`student_life_research.md`, read it first; don't pay for it twice.
+
+### The 14 university sections (the tool enforces all 14 — empty = build fails)
+
+Ordered institution-first. **Snapshot** and **Sources** are rendered by the tool; you fill 1–14.
+
+1. **Identity & mission** — the aim, values, what the place stands for.
+2. **Who it's for — the archetype & this student's fit** — the signature "type" (founders/makers/
+   scholars/…) + an honest fit check against the student's `profile` / `preferences`.
+3. **Getting in — admissions & this student's fit** — holistic profile, admit rate, tests (SAT/ACT +
+   whether required this cycle), the grade margin → Reach/Match/Safety, what admits actually look like.
+4. **Academic structure & the four years** — open/core/distribution curriculum, gen-ed, **when you
+   declare a major**, how years 1–4 split, room to explore before committing. *(Scope: the shape of
+   the degree and the timeline. Don't re-explain major-affiliation mechanics in 5 as well — cover
+   it once here.)*
+5. **Majors, minors & flexibility** — fields it's known for, double-major/minor/self-design, ease of
+   switching, and its strength in the student's area of interest. *(Scope: the menu of fields and how
+   freely you move between them — not the year-by-year timeline, that's 4.)*
+6. **Signature academic experiences** — undergrad research (e.g. MIT's UROP), co-op, study abroad,
+   makerspaces/labs, first-year signature projects — the hands-on texture. *(Scope: named programmes
+   and hands-on opportunities — not curriculum structure, that's 4/5.)*
+7. **Culture & vibe** — collaborative vs competitive, intellectual tone, Greek life, sports (D1/D3),
+   traditions, the student personality.
+8. **Student life & food** — housing (residential-college system?), clubs, weekends, social scene,
+   dining/meal plans, and **halal/dietary options**.
+9. **The city, the area & belonging** — setting, safety, transport, weather, things to do, plus the
+   **Malaysian / halal / prayer / Muslim-community** angle. Surface `needs`-flagged items prominently.
+10. **Costs & financial aid** — cost of attendance, **need-blind vs need-aware for internationals**,
+    meets-full-need, merit awards + Malaysian sponsors (JPA/MARA/Yayasan), and the realistic **your-share
+    in MYR** (not the sticker — the residual after aid).
+11. **How to apply** — Common App / Coalition / own app, **EA / ED / REA / RD** and which single early
+    shot to spend, essays/supplements, recommenders, application + deposit fees / waivers.
+12. **Outcomes & network** — graduate outcomes, **OPT + 24-month STEM-OPT**, alumni network, careers.
+13. **Unique facts & quirks** — traditions, notable alumni *in the student's field*, fun/quirky facts —
+    the colour that makes it real.
+14. **Why here / why hesitate** — an honest synthesis tied to the student's `priorities` / `needs`:
+    2–4 reasons to choose **and** an explicit "reasons to hesitate". Inform conviction — don't sell.
+
+### The university-mode JSON shape
+
+Write `.tmp/<slug>/uni_<uni-slug>.json` (see `build_dossier.py`'s header for the exact shape). No
+`course`; the snapshot uses institution fields, and `sections` are the 14 keys above:
+
+```json
+{
+  "university": "Massachusetts Institute of Technology",
+  "country": "USA", "city": "Cambridge, Massachusetts",
+  "setting": "urban (Boston metro)",
+  "type": "private research university",
+  "size": "~4,500 undergraduates",
+  "overall_rank": "QS #1 / US News ~#2",
+  "application_system": "MIT's own portal (not Common App)",
+  "admission_likelihood": "Reach",
+  "net_cost": "~RM 0-40k/yr after aid (income-band dependent; approx)",
+  "priorities": "1. Funding · 2. Hands-on · 3. Safe/nature setting",
+  "sections": {
+    "identity_mission": "markdown...", "who_its_for": "markdown...",
+    "admissions_fit": "markdown...", "academic_structure": "markdown...",
+    "majors_minors": "markdown...", "signature_experiences": "markdown...",
+    "culture_vibe": "markdown...", "student_life_food": "markdown...",
+    "city_belonging": "markdown...", "costs_aid": "markdown...",
+    "how_to_apply": "markdown...", "outcomes_network": "markdown...",
+    "unique_facts": "markdown...", "why_here": "markdown..."
+  },
+  "sources": [ {"title": "...", "url": "...", "authority": "Official", "as_of": "2026"} ]
+}
+```
+
+Render it:
+```powershell
+python tools/build_dossier.py --student <slug> --input .tmp/<slug>/uni_mit.json --mode university
+```
+Output: `data/students/<slug>/dossiers/<uni-slug>.md`; every `master_list.csv` row for that university
+flips to `Finalist` (the tool prints which, and refuses if any matched row isn't a US row). Export to PDF
+exactly as below — `dossier_to_pdf.py` reads either dossier unchanged.
+
+## Writing rules — make it skimmable (non-negotiable, both modes)
+
+A readability review (`tools/report.md`) found the old dossiers were well-researched but **fought
+the reader**: walls of bold prose, the same facts repeated 3-4×, the one make-or-break warning
+buried mid-paragraph, and unexplained acronyms. The student opens a dossier to answer three
+questions — *can I get in? · can I afford it? · what do I actually do?* — and must be able to
+**skim** to each answer. Write to that:
+
+- **Second person.** Write *to* the student ("**you**"), never *about* them — no student name, no
+  third-person "his/her/their". It's their guide, not an internal report.
+- **State the ranked priorities once, up front.** Fill the Snapshot's `priorities` field (e.g.
+  `"1. Funding · 2. Hands-on · 3. Safe/nature setting"`). After that, refer to a priority by name —
+  don't re-rank it every section, and never write "#1 priority" without the list being visible.
+- **Say each key fact once.** Pick the section that owns a fact (funding → Costs; test-not-yet-sat →
+  Application checklist / Getting in) and state it there. `why_here` is **net-new synthesis**
+  (the standout hook + honest hesitations), *not* a re-read of the whole dossier — keep it short.
+- **Bold budget.** Bold only genuinely key figures and actions. If half a paragraph is bold, nothing
+  stands out — prefer a short lead phrase or a table over bolding every clause.
+- **Tables and checklists beat prose** for anything structured. Write these sections **as Markdown**
+  (the renderer styles them):
+  - **Costs** — a small table (row per line item: tuition / COA / net-cost-in-MYR / aid structure).
+  - **Getting in / admitted profile** — a stats table (admit rate, RD vs ED, intl, test range).
+  - **Application checklist & key dates** — a checklist (`- [ ] …`) with deadlines, not a paragraph.
+  - **Halal / dining** — a table (location · what's served · hours) when there are 3+ options.
+  - **`why_here`** — a **key-value table matching the Snapshot**: column 1 = the topic/priority,
+    column 2 = the honest read for it. One row per theme, and **fold each hesitation into its
+    topic's verdict** (lead with the strength, then name the caveat with "But…/trade-off") rather
+    than a separate pros/cons column — keeps the format consistent with the Snapshot/cost tables and
+    lets long verdicts wrap cleanly. Still cover the real strengths *and* explicit hesitations;
+    inform, don't sell. Don't use ⚠️ in cells — that glyph is reserved for the red callouts below.
+- **Critical warnings are a callout, not a sentence in a wall.** For a make-or-break rule (e.g. "an
+  international who doesn't request aid at application is barred from applying later"), write a
+  **blockquote** so it renders as an unmissable red callout:
+  ```markdown
+  > ⚠️ **Must request aid at application.** If you don't file the CSS Profile with the Common App,
+  > you are permanently barred from applying for aid later. This is irreversible.
+  ```
+  Reserve blockquotes for these — don't use them for ordinary notes. For a softer neutral aside use
+  `<div class="callout-note" markdown="1"> … </div>`.
+- **Collect every "confirm this yourself" task into the Application checklist** — one place, as
+  checklist items — instead of scattering "confirm the 4-year English record" across five sections.
+- **Acronyms are auto-glossaried — don't hand-expand every one.** `dossier_to_pdf.py` builds a
+  "Key terms" block from the acronyms you actually use (via `apply_glossary.py`) and links each
+  term's first use to it. So write `MAE`, `OPT`, `CSS Profile`, `MQA`, `ABET`, `BEM` normally — the
+  PDF explains them. **If you use an acronym the glossary doesn't know, add it to
+  `tools/apply_glossary.py`** (one plain-English line) rather than expanding it inline every time.
+- **No nested parentheticals; keep numbers tight.** Never `(college town (rural Finger Lakes, NY))` —
+  the Snapshot has separate `city` and `setting` fields, use them. Give one figure or a tight range
+  with MYR shown (not a 2.5× spread), and don't flip between USD and MYR without a conversion.
+
 ## Assemble the dossier JSON
 
 Write `.tmp/<slug>/dossier_<uni>.json` (see `build_dossier.py`'s header for the exact shape). Each of the
@@ -119,6 +300,11 @@ python tools/dossier_to_pdf.py --student <slug> --all                     # ever
 This is a delivery step, not a pipeline stage — it only reads the existing `.md` (no research, no CSV
 changes). Output: `data/students/<slug>/dossiers/<uni-course-slug>.pdf` (gitignored, like the rest of
 the student's data bank).
+
+The PDF renders with **WeasyPrint** and adds three things at render time (nothing to do in the `.md`):
+a **"Key terms"** glossary built from the acronyms the dossier uses, with each term's first use
+**tap-linked** to it; **red callouts** for blockquote warnings; and **tickable checkboxes** for
+`- [ ]` items. So follow the *Writing rules* above and the presentation comes for free.
 
 ## Edge cases & rules
 
