@@ -8,7 +8,8 @@ spreadsheet,"* you send one of these files and stop typing. The gap argues for y
 
 | File | Tier it shows | What the prospect sees |
 |---|---|---|
-| `sample_master_list.csv` | **Tier 1 — The List** | 15 real universities × the full **34 columns** — Reach/Match/Safety separate from Desirability, total cost in ringgit, "Recognised in Malaysia?", verified-vs-not. Opens in Excel / Google Sheets. |
+| `sample_master_list.csv` | **Tier 1 — The List** | 15 real universities × the full **35 columns** — Reach/Match/Safety separate from Desirability *and* from whether your grades clear the bar, total cost in ringgit, "Recognised in Malaysia?", verified-vs-not. Opens in Excel / Google Sheets. |
+| `sample_glossary.csv` | **Tier 1 — The Glossary tab** | Plain-English definitions of every acronym the list actually uses, generated from the list itself. Import as a second sheet. |
 | `sample_dossier_MIT.pdf` | **Tier 2 — The Dossiers** | One full **16-section decision dossier** (6 pages) — who actually gets in, aid maths, and honest *reasons to hesitate*. |
 | `sample_apply-guide_US.pdf` | **Tier 3 — The Apply Pack** | One **per-region apply guide** (15 pages) — grouped by application system, every deadline, the exact financial-aid mechanics. |
 

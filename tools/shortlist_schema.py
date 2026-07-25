@@ -31,22 +31,23 @@ SHORTLIST_HEADERS = [
     "List status",          # Longlist / Shortlist / Finalist / Rejected
     "Desirability",         # 0-100 weighted score (computed)
     "Tier",                 # A / B / C (computed)
-    "Admission likelihood", # Reach / Match / Safety (computed from entry_margin)
+    "Admission likelihood", # Reach / Match / Safety, optionally "Reach (very selective)" (see classify_admission)
     "Warnings",             # hard warnings, e.g. "Deadline passed; English short" (was "Feasibility flags")
     # Identity
     "University",
     "Course",
+    "Course at a glance",   # ONE tight sentence: shape of the degree, e.g. "3-yr, broad first year then pick a DS major"
     "Country",
     "City",
+    "Student life",         # ONE tight sentence: what living/studying there is like. Depth belongs in the dossier.
     # Quality
     "Subject rank",
     "Overall rank",
     # Fit
     "Entry requirements",
     "Student grades",
-    "Fits grades?",
+    "Grades vs entry bar",  # Well above / Above / Meets / Below / Well below — GRADES ONLY (was "Fits grades?")
     "English req",
-    "Backup entry route",   # foundation / INTO-Kaplan-Navitas / transfer if direct entry is a Reach (was "Pathway option")
     # Money
     "Annual tuition",
     "Total tuition",
@@ -76,6 +77,43 @@ SHORTLIST_HEADERS = [
 # Allowed values for the "List status" column (first is the default for new rows).
 LIST_STATUSES = ["Longlist", "Shortlist", "Finalist", "Rejected"]
 DEFAULT_LIST_STATUS = LIST_STATUSES[0]
+
+# --------------------------------------------------------------------------- #
+# Cell length budgets — the master list is a SCANNING surface, not a dossier.
+#
+# It is read in Google Sheets, where a 500-word cell either truncates or blows the
+# row height up and makes the whole list unscannable. Enforced by
+# tools/check_master_list.py, never by silent truncation: a budget that quietly
+# deletes verified research is worse than one that complains.
+#
+# The overflow has a home. Deep prose goes to data/students/<slug>/research_notes.md
+# (the candidate JSON's `research_notes` field), which sync_shortlist.py writes
+# alongside the short `notes` headline. Columns absent from this map are short by
+# nature (ranks, amounts, dates) and are not budgeted.
+# --------------------------------------------------------------------------- #
+CELL_BUDGETS = {
+    "Notes": 200,
+    "Scholarship & portal": 200,
+    "How to get the scholarship": 200,
+    "Entry requirements": 160,
+    "Recognised in Malaysia?": 160,
+    "Work rights after graduating": 160,
+    "Scholarship competitiveness": 160,
+    "Course at a glance": 120,
+    "Student life": 120,
+    "Scholarship coverage": 120,
+    "Warnings": 120,
+    # These two were set to 100/80 and then raised once measured against the real data:
+    # a visa figure ("AUD 29,710/yr living costs + first-year tuition + return airfare")
+    # runs ~92 chars of pure fact, and the essential English statement ("TOEFL 105 /
+    # IELTS 7.5 normally required, but waived for English-medium secondary instruction")
+    # runs ~106. The tighter numbers were forcing mid-sentence cuts on cells that had
+    # nothing to trim — a budget should catch bloat, not shred facts.
+    "English req": 120,
+    "Money to show (visa)": 100,
+    "Admission likelihood": 40,
+    "Grades vs entry bar": 40,
+}
 
 # Allowed values for "Info source". A row starts unverified and the Stage 4 pre-flight flips it once the
 # fact has been confirmed on the university's own page (see workflows/04_university_dossier.md).
@@ -222,22 +260,110 @@ def tier_for(score):
 
 # --------------------------------------------------------------------------- #
 # Admissibility — kept separate from desirability on purpose.
-# entry_margin is the agent's honest judgement of the student's grades vs the
-# course's requirement: +2 well above ... 0 borderline/meets ... -2 well below.
+#
+# entry_margin means ONE thing: the student's grades vs the course's published
+# academic bar. +2 well above ... 0 borderline/meets ... -2 well below.
+#
+# It used to mean two things at once, and that was a real bug (fixed 2026-07-25).
+# Agents set entry_margin = -2 on US holistic Reaches to express "unlikely to get
+# in", not "grades fall short" — so "Fits grades?" rendered "No" for a student with
+# A*A*A*A at Duke, Vanderbilt and Georgia Tech, while the same student's other file
+# read "Exceeds academic bar" at MIT and Princeton. Same grades, contradictory
+# answers, and a quiet violation of the desirability-vs-admissibility guardrail.
+#
+# The two questions now have two inputs:
+#   entry_margin          -> "Grades vs entry bar"    (measured against the bar)
+#   admission_likelihood  -> "Admission likelihood"   (optional override; holistic
+#                            selectivity, capped international quotas, aid-aware
+#                            admission — anything that is not the grade bar)
 # --------------------------------------------------------------------------- #
-def classify_admission(entry_margin):
-    """Map an entry_margin (-2..+2) to Reach / Match / Safety. Unknown -> ''."""
+ADMISSION_LEVELS = ("Reach", "Match", "Safety")
+
+# Rendered values of "Grades vs entry bar", from strongest to weakest.
+#
+# "Not published" is a real answer, not a missing one: a holistic US university sets no
+# academic cutoff, and NTU's grade profile is a PDF that won't render. Saying so beats
+# manufacturing a comparison against a bar that does not exist — which is the same class
+# of mistake as the bug this column was rebuilt to fix. An EMPTY cell is different: it
+# means nobody judged the row yet, and check_master_list.py flags it.
+GRADE_FIT_LABELS = ("Well above", "Above", "Meets", "Below", "Well below", "Not published")
+
+# Cap on the parenthetical reason so the cell stays inside its 40-char budget.
+ADMISSION_REASON_MAX = 24
+
+
+def _margin(entry_margin):
+    """entry_margin as a float, or None if absent/unparseable."""
     if entry_margin is None or entry_margin == "":
-        return ""
+        return None
     try:
-        m = float(entry_margin)
+        return float(entry_margin)
     except (TypeError, ValueError):
+        return None
+
+
+def grade_fit_label(entry_margin):
+    """Render entry_margin as the "Grades vs entry bar" cell. Unknown -> ''.
+
+    Thresholds (not equality) so a fractional margin still lands somewhere sensible.
+    This is the ONLY producer of that column — there is deliberately no free-text
+    override, because a hand-typed value is exactly how two of this student's files
+    ended up giving contradictory answers for the same grades.
+    """
+    m = _margin(entry_margin)
+    if m is None:
         return ""
-    if m >= 1:
-        return "Safety"
-    if m <= -1:
-        return "Reach"
-    return "Match"
+    if m >= 1.5:
+        return "Well above"
+    if m >= 0.5:
+        return "Above"
+    if m > -0.5:
+        return "Meets"
+    if m > -1.5:
+        return "Below"
+    return "Well below"
+
+
+def classify_admission(entry_margin, override=None, reason=None):
+    """Map an entry_margin (-2..+2) to Reach / Match / Safety. Unknown -> ''.
+
+    `override` lets the agent state an admission likelihood the grade bar cannot
+    express — a school that is a Reach on holistic selectivity or a capped
+    international quota even though the grades clear the bar. `reason` is a short
+    phrase rendered in brackets ("Reach (very selective)") so the student can see
+    WHY a row they qualify for is still a long shot. Use admission_base() to read
+    the bare level back out.
+    """
+    if override:
+        level = str(override).strip().capitalize()
+        if level not in ADMISSION_LEVELS:
+            raise ValueError(
+                f"admission_likelihood override must be one of {', '.join(ADMISSION_LEVELS)}, got {override!r}."
+            )
+    else:
+        m = _margin(entry_margin)
+        if m is None:
+            return ""
+        level = "Safety" if m >= 1 else ("Reach" if m <= -1 else "Match")
+
+    note = str(reason or "").strip()
+    if not note:
+        return level
+    if len(note) > ADMISSION_REASON_MAX:
+        raise ValueError(
+            f"admission_reason {note!r} is {len(note)} chars, over the {ADMISSION_REASON_MAX} cap — "
+            "keep it to a short phrase like 'very selective'; the detail belongs in research_notes."
+        )
+    return f"{level} ({note})"
+
+
+def admission_base(value):
+    """The bare Reach/Match/Safety out of an 'Admission likelihood' cell.
+
+    'Reach (very selective)' -> 'Reach'. Use this for the balanced-shortlist check
+    and any filtering, so the explanatory bracket never breaks an equality test.
+    """
+    return str(value or "").split("(")[0].strip()
 
 
 def _parse_iso_date(text):
@@ -266,6 +392,11 @@ def feasibility_flags(candidate, profile=None, today=None):
 
     if candidate.get("meets_english") is False:
         flags.append("English short")
+
+    # Provisional grades: when the student's grades are self-predicted ("confident of getting"),
+    # every admission judgement is provisional — flag it so the longlist never reads as settled.
+    if isinstance(profile, dict) and profile.get("grade_status") == "expected":
+        flags.append("Grades unverified (self-predicted)")
 
     myr = candidate_total_myr(candidate)
     budget = None

@@ -45,12 +45,13 @@ DIMENSION_PRESETS = {
     "scholarship": ["Scholarship & portal", "Scholarship coverage", "Scholarship competitiveness",
                     "How to get the scholarship"],
     "quality": ["Subject rank", "Overall rank"],
-    "fit": ["Student grades", "Entry requirements", "Fits grades?", "English req",
-            "Admission likelihood", "Backup entry route"],
+    "fit": ["Student grades", "Entry requirements", "Grades vs entry bar", "English req",
+            "Admission likelihood"],
+    "life": ["Course at a glance", "Student life"],
     "visa": ["Money to show (visa)", "Work rights after graduating", "Recognised in Malaysia?"],
     "deadline": ["How to apply", "Key deadline", "Intake"],
 }
-DEFAULT_DIMENSIONS = ["summary", "cost", "scholarship", "quality", "fit", "visa", "deadline"]
+DEFAULT_DIMENSIONS = ["summary", "cost", "scholarship", "quality", "fit", "life", "visa", "deadline"]
 
 # Country aliases so "--country AU" and "--country Australia" both work.
 COUNTRY_ALIASES = {

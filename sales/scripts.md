@@ -19,15 +19,16 @@ This is the workhorse. Not really a script — you just paste the columns and st
 >
 > ```
 > List status · Desirability · Tier · Admission likelihood · Warnings · University · Course ·
-> Country · City · Subject rank · Overall rank · Entry requirements · Student grades · Fits grades? ·
-> English req · Backup entry route · Annual tuition · Total tuition · Est. living/yr ·
-> Duration (yrs) · Approx total (MYR) · Scholarship & portal · Scholarship coverage ·
-> Scholarship competitiveness · How to get the scholarship · Money to show (visa) ·
-> Work rights after graduating · Recognised in Malaysia? · How to apply · Key deadline ·
-> Intake · Notes · Course URL · Info source
+> Course at a glance · Country · City · Student life · Subject rank · Overall rank ·
+> Entry requirements · Student grades · Grades vs entry bar · English req · Annual tuition ·
+> Total tuition · Est. living/yr · Duration (yrs) · Approx total (MYR) · Scholarship & portal ·
+> Scholarship coverage · Scholarship competitiveness · How to get the scholarship ·
+> Money to show (visa) · Work rights after graduating · Recognised in Malaysia? · How to apply ·
+> Key deadline · Intake · Notes · Course URL · Info source
 > ```
 >
-> 34 columns, for every uni on the list
+> 35 columns, for every uni on the list. plus a Glossary tab that explains every bit of
+> shorthand your list actually uses
 
 Then **nothing**. Do not add "see, Gemini can't do that." Let them arrive at it.
 

@@ -56,20 +56,25 @@ QUESTION_MAP = [
     ("your age", "age"),
     ("gender", "gender"),
     ("nationality", "nationality"),
+    ("race", "ethnicity"),  # PDPA-sensitive; used for scholarship-eligibility research only
     ("live in now", "country_of_residence"),
     ("live and work after", "post_grad_location"),  # aspiration, NOT home_country (stays Malaysia)
     ("studying now", "current_type"),
     ("which college", "current_institution"),
-    ("when do you finish", "current_completion"),
-    ("list each subject", "grades_raw"),
+    ("when do you graduate", "current_completion"),  # current form's wording
+    ("when do you finish", "current_completion"),    # legacy fallback (older form)
+    ("list each subject", "grades_raw"),             # legacy paragraph-grades form; structured subjects handled separately
     ("actual results or predicted", "grade_status"),
     ("which english test", "english_test"),
     ("english test score", "english_score"),
+    ("english score", "english_score"),  # current form: "write down english score"
     ("will you take it", "english_date"),
     ("total budget", "total_budget"),
     ("whole degree", "total_budget"),  # this form's wording: "your budget (RM) for the whole degree"
     ("per-year budget", "budget_per_year"),
-    ("how will you fund", "funding_plan"),  # merged funding-reality question (preferred)
+    ("scholarship a must", "scholarship_gate"),  # current form: Yes/No -> scholarship_required (clean gate)
+    ("planning to apply", "scholarship_interests"),  # current form: which scholarships to research (a hint)
+    ("how will you fund", "funding_plan"),  # merged funding-reality question (legacy)
     ("how will you pay", "funding_source"),  # legacy fallback (older form)
     ("win a scholarship", "scholarship_dependent"),  # legacy fallback (older form)
     ("regulated profession", "regulated_profession"),
@@ -77,7 +82,8 @@ QUESTION_MAP = [
     ("personal needs", "needs"),   # legacy fallback (older form)
     # preferences
     ("which countries", "target_countries"),
-    ("field or subject", "fields_of_interest"),
+    ("broad area", "fields_of_interest"),   # current form: "Broad Area of Study" dropdown
+    ("field or subject", "fields_of_interest"),  # legacy fallback (older form)
     ("already know the exact course", "decided"),
     ("name the course", "specific_courses"),
     ("degree level", "degree_level"),
@@ -146,6 +152,62 @@ SLIDER_CATEGORY_MAP = {
 CANONICAL_SLIDER_ORDER = [
     "cost", "scholarship", "ranking", "course_quality",
     "employability", "recognition", "location", "hands-on experience",
+]
+
+# NOTE: priority sliders are now a 1-8 linear scale (were 1-7). The ordering below is scale-agnostic
+# (it sorts by value), so nothing breaks; but `ranking_importance` now carries a 1-8 value — the
+# scoring-weights skill should read it on that scale.
+
+# Subject dropdown labels -> canonical subject names. The form's subject dropdowns use short/quirky
+# labels (e.g. "Physic", "Math"); normalise them to clean names for profile.subjects[]. Keyed by the
+# lowercased dropdown label; an unlisted label passes through verbatim (extend this map with any new
+# dropdown option). "None" is handled upstream (a skipped subject), so it isn't listed here.
+SUBJECT_NORMALIZE = {
+    "physic": "Physics",
+    "physics": "Physics",
+    "math": "Mathematics",
+    "maths": "Mathematics",
+    "mathematics": "Mathematics",
+    "further math": "Further Mathematics",
+    "further maths": "Further Mathematics",
+    "further mathematics": "Further Mathematics",
+    "add math": "Additional Mathematics",
+    "add maths": "Additional Mathematics",
+    "additional math": "Additional Mathematics",
+    "additional mathematics": "Additional Mathematics",
+    "chemistry": "Chemistry",
+    "biology": "Biology",
+    "econs": "Economics",
+    "economic": "Economics",
+    "economics": "Economics",
+    "account": "Accounting",
+    "accounting": "Accounting",
+    "computing": "Computer Science",
+    "computer science": "Computer Science",
+    "business": "Business",
+    "business studies": "Business",
+}
+
+
+def _normalize_subject(name):
+    """Map a subject dropdown label to its canonical name; pass through unknown labels verbatim."""
+    cleaned = _clean(name)
+    return SUBJECT_NORMALIZE.get(cleaned.lower(), cleaned)
+
+
+# "Broad Area of Study" grid — the form renders eight per-area columns; only the column matching the
+# chosen broad area holds the specific course (e.g. "Engineering & Built Environment" = "Mechanical
+# Engineering"). We detect these columns by a distinctive substring of each area label, then collect
+# any non-empty cell across them as preferences.specific_courses.
+GRID_CATEGORY_SUBSTRINGS = [
+    "arts, humanities",
+    "media, communication",
+    "business, finance",
+    "computer science",
+    "engineering & built",
+    "pure & applied",
+    "health & medical",
+    "education & teaching",
 ]
 
 # "Support & belonging" checkbox labels -> needs.* boolean keys. Matched by substring, so
@@ -280,7 +342,7 @@ def get(row, col_index, key):
 # --------------------------------------------------------------------------- #
 # Row -> (profile, preferences) mapping.
 # --------------------------------------------------------------------------- #
-def map_row(row, col_index, slider_cols=None, assume_consent=False):
+def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None, assume_consent=False):
     """Turn one CSV row into (slug, profile_dict, preferences_dict, needs_review).
 
     Returns (None, ...) with a reason if the row should be skipped.
@@ -306,6 +368,8 @@ def map_row(row, col_index, slider_cols=None, assume_consent=False):
     needs_review = []
     intake_raw = {}
     slider_cols = slider_cols or {}
+    subject_cols = subject_cols or []
+    grid_cols = grid_cols or []
 
     email = get(row, col_index, "email")
 
@@ -313,6 +377,7 @@ def map_row(row, col_index, slider_cols=None, assume_consent=False):
     profile["age"] = get(row, col_index, "age") or None
     profile["gender"] = get(row, col_index, "gender") or None
     profile["nationality"] = get(row, col_index, "nationality") or None
+    profile["ethnicity"] = get(row, col_index, "ethnicity") or None  # scholarship-eligibility research only
     profile["country_of_residence"] = get(row, col_index, "country_of_residence") or None
     # NOTE: home_country stays the template default ("Malaysia"). The "where do you want to live
     # and work after graduating" answer is a post-study *aspiration* (captured in notes below +
@@ -326,24 +391,36 @@ def map_row(row, col_index, slider_cols=None, assume_consent=False):
         "expected_completion": get(row, col_index, "current_completion") or None,
     }
 
-    # --- profile: grades (staged for the agent to parse into subjects[]) ---- #
+    # --- profile: grades ---------------------------------------------------- #
+    # Current form: structured dropdown pairs -> build subjects[] deterministically here. The grade
+    # question asks what the student is "confident of getting" (a self-prediction), so grade_status
+    # is "expected" — provisional, surfaced as a warning in the longlist until real/official grades.
+    subjects, saw_confident = _build_subjects(row, subject_cols)
+    if subjects:
+        profile["subjects"] = subjects
+        if saw_confident:
+            profile["grade_status"] = "expected"
+        needs_review.append(
+            "grades are self-predicted (grade_status=expected) — provisional until actual/official predicted results"
+        )
+    # Explicit "actual vs predicted" column (legacy) still wins if present.
     grade_status = get(row, col_index, "grade_status").lower()
     if grade_status.startswith("actual"):
         profile["grade_status"] = "actual"
     elif grade_status.startswith("predict"):
         profile["grade_status"] = "predicted"
-    elif profile["grade_status"] is None:
-        # No dedicated "actual vs predicted" column (this form dropped it) — infer from the grades
-        # question wording, e.g. "List each subject and your PREDICTED grades". Agent sanity-checks.
-        grades_header = (col_index.get("grades_raw") or "").lower()
-        if "predict" in grades_header:
-            profile["grade_status"] = "predicted"
-        elif "actual" in grades_header:
-            profile["grade_status"] = "actual"
-    grades_raw = get(row, col_index, "grades_raw")
-    if grades_raw:
-        intake_raw["grades"] = grades_raw
-        needs_review.append("parse '_intake_raw.grades' into subjects[] (grade_status already set)")
+    # Legacy paragraph-grades form (no structured columns) — stage the free-text for the agent.
+    if not subjects:
+        if profile["grade_status"] is None:
+            grades_header = (col_index.get("grades_raw") or "").lower()
+            if "predict" in grades_header:
+                profile["grade_status"] = "predicted"
+            elif "actual" in grades_header:
+                profile["grade_status"] = "actual"
+        grades_raw = get(row, col_index, "grades_raw")
+        if grades_raw:
+            intake_raw["grades"] = grades_raw
+            needs_review.append("parse '_intake_raw.grades' into subjects[] (grade_status already set)")
 
     # --- profile: english -------------------------------------------------- #
     english_test = get(row, col_index, "english_test")
@@ -357,15 +434,21 @@ def map_row(row, col_index, slider_cols=None, assume_consent=False):
     total_budget = get(row, col_index, "total_budget") or None
     budget_per_year = get(row, col_index, "budget_per_year") or None
 
-    # Funding: prefer the merged "how will you fund this degree?" question; fall back to the legacy
-    # separate "how will you pay" + "can you only go if you win a scholarship" pair (older forms).
-    funding = _funding_from_plan(get(row, col_index, "funding_plan"))
-    if funding:
-        funding_source, scholarship_required, scholarship_dep = funding
+    # Scholarship gate: prefer the dedicated "Is scholarship a must?" Yes/No (current form) — a clean
+    # gate. Else fall back to the merged "how will you fund" question, then the legacy pay/win pair.
+    gate = _yes(get(row, col_index, "scholarship_gate"))
+    if gate is not None:
+        funding_source = None
+        scholarship_required = gate
+        scholarship_dep = gate
     else:
-        funding_source = get(row, col_index, "funding_source") or None
-        scholarship_dep = _yes(get(row, col_index, "scholarship_dependent"))
-        scholarship_required = scholarship_dep
+        funding = _funding_from_plan(get(row, col_index, "funding_plan"))
+        if funding:
+            funding_source, scholarship_required, scholarship_dep = funding
+        else:
+            funding_source = get(row, col_index, "funding_source") or None
+            scholarship_dep = _yes(get(row, col_index, "scholarship_dependent"))
+            scholarship_required = scholarship_dep
 
     profile["financial"] = {
         "budget_per_year": budget_per_year,
@@ -378,6 +461,7 @@ def map_row(row, col_index, slider_cols=None, assume_consent=False):
     prefs["total_budget_ceiling"] = total_budget
     prefs["budget_ceiling_per_year"] = budget_per_year
     prefs["scholarship_required"] = scholarship_required
+    prefs["scholarship_interests"] = get(row, col_index, "scholarship_interests") or None
 
     # --- profile: recognition (best-effort; agent verifies) ---------------- #
     professions = _split_multi(get(row, col_index, "regulated_profession"))
@@ -409,7 +493,10 @@ def map_row(row, col_index, slider_cols=None, assume_consent=False):
     kept_countries, dropped_countries = _normalize_countries(get(row, col_index, "target_countries"))
     prefs["target_countries"] = kept_countries
     prefs["fields_of_interest"] = _as_list(get(row, col_index, "fields_of_interest"))
-    prefs["specific_courses"] = _split_multi(get(row, col_index, "specific_courses"))
+    # specific_courses: current form encodes the exact course in the "Broad Area of Study" grid (only the
+    # column matching the chosen area is filled). Collect non-empty grid cells; else legacy free-text.
+    grid_courses = [c for c in (_clean(row.get(h)) for h in grid_cols) if c]
+    prefs["specific_courses"] = grid_courses or _split_multi(get(row, col_index, "specific_courses"))
     prefs["degree_level"] = get(row, col_index, "degree_level").lower() or None
     prefs["intake"] = _normalize_intake(get(row, col_index, "intake"))
 
@@ -544,6 +631,54 @@ def _build_priorities_from_sliders(row, slider_cols):
     return [token for _, _, token in scored]
 
 
+def _subject_columns(fieldnames):
+    """Return ordered (subject_header, grade_header) pairs for the structured subject dropdowns.
+
+    The current form asks each subject as a pair of adjacent columns: "N. List your ... subject" and
+    "N. Select the grade you are confident of getting ...". We collect the subject-name headers and
+    grade headers separately (in CSV column order, which alternates subject, grade, subject, grade)
+    and zip them. Empty for the legacy paragraph-grades form (caller falls back to grades_raw).
+    """
+    subject_headers, grade_headers = [], []
+    for header in fieldnames or []:
+        low = (header or "").lower()
+        if "grade" in low and ("confident" in low or "select the grade" in low):
+            grade_headers.append(header)
+        elif "list your" in low and "subject" in low:
+            subject_headers.append(header)
+    return list(zip(subject_headers, grade_headers))
+
+
+def _grid_columns(fieldnames):
+    """Return the headers of the "Broad Area of Study" grid (the eight per-area course columns)."""
+    cols = []
+    for header in fieldnames or []:
+        low = (header or "").lower()
+        if any(sub in low for sub in GRID_CATEGORY_SUBSTRINGS):
+            cols.append(header)
+    return cols
+
+
+def _build_subjects(row, subject_cols):
+    """Build subjects[] from the structured dropdown pairs, skipping empty / 'None' subject cells.
+
+    Returns (subjects, saw_confident): saw_confident is True when a grade header used the
+    "confident of getting" wording, so the caller can stamp grade_status = "expected".
+    """
+    subjects, saw_confident = [], False
+    for subject_header, grade_header in subject_cols:
+        if "confident" in (grade_header or "").lower():
+            saw_confident = True
+        name = _clean(row.get(subject_header))
+        if not name or name.lower() == "none":
+            continue
+        subjects.append({
+            "subject": _normalize_subject(name),
+            "grade_or_predicted": _clean(row.get(grade_header)) or None,
+        })
+    return subjects, saw_confident
+
+
 # --------------------------------------------------------------------------- #
 # Main.
 # --------------------------------------------------------------------------- #
@@ -568,6 +703,8 @@ def main():
         reader = csv.DictReader(fh)
         col_index = build_col_index(reader.fieldnames)
         slider_cols = _slider_columns(reader.fieldnames)
+        subject_cols = _subject_columns(reader.fieldnames)
+        grid_cols = _grid_columns(reader.fieldnames)
         rows = list(reader)
 
     if "name" not in col_index:
@@ -580,7 +717,9 @@ def main():
     seen_slugs = set()
 
     for i, row in enumerate(rows, start=1):
-        slug, profile, prefs, needs_review, skip_reason = map_row(row, col_index, slider_cols, args.assume_consent)
+        slug, profile, prefs, needs_review, skip_reason = map_row(
+            row, col_index, slider_cols, subject_cols, grid_cols, args.assume_consent
+        )
         if skip_reason:
             skipped.append((i, get(row, col_index, "name") or "(no name)", skip_reason))
             continue

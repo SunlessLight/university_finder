@@ -78,11 +78,11 @@
     /* how-it-works flow strip */
     .flow {
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       align-items: center;
       gap: 6px 9px;
       margin: 11px 0 2px;
-      font-size: 9.2pt;
+      font-size: 9pt;
       color: var(--navy2);
     }
 
@@ -90,6 +90,7 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      white-space: nowrap;
     }
 
     .flow .sn {
@@ -124,21 +125,21 @@
     .tiers {
       display: flex;
       flex-direction: column;
-      gap: 5mm;
+      gap: 3mm;
     }
 
     .tier {
       display: flex;
-      gap: 8mm;
+      gap: 5mm;
       border: 1px solid var(--line);
       border-top: 3px solid var(--navy);
       background: #fff;
-      padding: 10px 12px 11px;
+      padding: 8px 12px 9px;
       break-inside: avoid;
     }
 
     .tier .trail {
-      flex: 0 0 45mm;
+      flex: 0 0 20%;
     }
 
     .tier .tnum {
@@ -166,7 +167,7 @@
       flex: 1;
       list-style: none;
       columns: 2;
-      column-gap: 8mm;
+      column-gap: 6mm;
     }
 
     .tier li {
@@ -189,70 +190,6 @@
     }
 
     .tier li b {
-      color: var(--navy);
-    }
-
-    /* gemini strip */
-    .gem {
-      background: var(--wash);
-      border-left: 3px solid var(--navy);
-      padding: 10px 12px 9px;
-      break-inside: avoid;
-    }
-
-    .gemhead {
-      font-size: 9.6pt;
-      font-weight: 700;
-      color: var(--navy);
-      margin-bottom: 7px;
-    }
-
-    .gemhead span {
-      font-weight: 400;
-      color: var(--gray);
-    }
-
-    .gemcols {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 6mm;
-    }
-
-    .gemcols h4 {
-      font-size: 9pt;
-      color: var(--navy);
-      margin-bottom: 2px;
-    }
-
-    .gemcols p {
-      font-size: 8.6pt;
-      color: var(--ink);
-    }
-
-    /* when you don't need me */
-    .notfor {
-      border: 1px solid var(--line);
-      padding: 10px 12px;
-      margin-top: 5mm;
-      break-inside: avoid;
-    }
-
-    .notfor h4 {
-      font-size: 9pt;
-      color: var(--navy);
-      margin-bottom: 3px;
-    }
-
-    .notfor p {
-      font-size: 8.8pt;
-      color: var(--ink);
-    }
-
-    .notfor .yes {
-      margin-top: 6px;
-    }
-
-    .notfor .yes b {
       color: var(--navy);
     }
 
@@ -282,6 +219,11 @@
       color: var(--navy);
     }
 
+    .colbox .names .more {
+      color: var(--gray);
+      font-style: italic;
+    }
+
     .colbox .cap {
       font-size: 8pt;
       color: var(--gray);
@@ -290,21 +232,15 @@
 
     .foot {
       margin-top: 14px;
-      padding-top: 8px;
+      padding-top: 9px;
       border-top: 1px solid var(--line);
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      font-size: 8.4pt;
-      color: var(--gray);
-    }
-
-    .foot b {
+      font-size: 11pt;
+      font-weight: 600;
       color: var(--navy);
     }
 
-    .foot .contact {
-      text-align: right;
+    .foot b {
+      color: var(--accent);
     }
   </style>
 </head>
@@ -321,7 +257,7 @@
       <span class="arr">→</span>
       <span class="step"><span class="sn">2</span> You pick your shortlist</span>
       <span class="arr">→</span>
-      <span class="step"><span class="sn">3</span> I build a deep dossier — one university at a time</span>
+      <span class="step"><span class="sn">3</span> I build a deep report — one university at a time</span>
     </div>
 
     <div class="sectlabel">What you actually get — three parts</div>
@@ -336,7 +272,7 @@
         <ul>
           <li><b>20–40 uni + course matches</b> to your grades, budget &amp; target countries — then you pick 3–5 to
             go deep on</li>
-          <li>One spreadsheet, <b>34 columns</b> per uni, opens in Excel / Google Sheets</li>
+          <li>One spreadsheet, <b>35 columns</b> per uni, opens in Google Sheets</li>
           <li>Two scores kept <b>separate</b>: a 0–100 quality score vs <b>Reach / Match / Safety</b> — a uni you
             can’t get into never ranks #1</li>
           <li><b>Total cost of the whole degree in MYR</b> — not per year, so a 3-yr UK and 4-yr US degree compare
@@ -353,8 +289,8 @@
           <div class="one">Can I get in, will I belong, what will it take?</div>
         </div>
         <ul>
-          <li>A deep <b>PDF dossier</b> for each uni you shortlist — built one university at a time</li>
-          <li><b>16 sections</b> each, every one filled in — nothing left blank</li>
+          <li>A deep <b>PDF report</b> for each uni you shortlisted — built one university at a time</li>
+          <li><b>16 sections</b> each, with all the information you need</li>
           <li><b>“Who actually gets in”</b> — real admitted-student grades, activities &amp; essay angles (offer-holder
             threads, US Common Data Set, NUS cutoffs)</li>
           <li>Full cost + scholarships — <b>government and company sponsors</b> (JPA / MARA / Yayasan <i>and</i>
@@ -388,65 +324,20 @@
 
     </div>
 
-    <div class="sectlabel">“Can’t I just use Gemini?”</div>
-    <div class="gem">
-      <div class="gemhead">Honestly, for a lot of it — yes. Three things it won’t do, and it’s not a prompting skill you
-        can fix: <span>&nbsp;</span></div>
-      <div class="gemcols">
-        <div>
-          <h4>1. It ranks unis you can’t get into as #1</h4>
-          <p>It can’t tell “great uni” apart from “you can actually get in.” Mine keeps those in two separate columns —
-            did your list tell you which ones were reaches?</p>
-        </div>
-        <div>
-          <h4>2. It won’t say when it’s guessing</h4>
-          <p>It’ll give you a 2022 tuition fee as current fact. Every number here is checked against the official page —
-            and each row is stamped with whether it’s been verified yet.</p>
-        </div>
-        <div>
-          <h4>3. It forgets you</h4>
-          <p>Applications take six months. Next week it starts cold and gives a different answer. This is written into
-            files you keep — grades, budget, dealbreakers and all.</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="notfor">
-      <h4>When you don’t need me</h4>
-      <p>If you already know your course, know your country, and have your 3–4 unis picked — use Gemini or the UCAS
-        site. Genuinely.</p>
-      <div class="yes">
-        <p>Where it earns its keep: <b>comparing across countries</b> in ringgit · <b>course still undecided</b> ·
-          <b>budget is the deciding factor</b> · a <b>regulated career</b> (medicine / engineering / law) that must be
-          recognised back home.
-        </p>
-      </div>
-    </div>
-
     <div class="cols">
-      <div class="sectlabel">The 34 columns — for every uni on the list</div>
+      <div class="sectlabel">The columns that decide it — for every uni on the list</div>
       <div class="colbox">
-        <div class="names">List status&nbsp;· Desirability&nbsp;· Tier&nbsp;· <b>Admission likelihood</b>&nbsp;·
-          Warnings&nbsp;· University&nbsp;· Course&nbsp;·
-          Country&nbsp;· City&nbsp;· Subject rank&nbsp;· Overall rank&nbsp;· Entry requirements&nbsp;· Student
-          grades&nbsp;· <b>Fits grades?</b>&nbsp;·
-          English req&nbsp;· Backup entry route&nbsp;· Annual tuition&nbsp;· Total tuition&nbsp;· Est. living/yr&nbsp;·
-          Duration (yrs)&nbsp;·
-          <b>Approx total (MYR)</b>&nbsp;· Scholarship &amp; portal&nbsp;· Scholarship coverage&nbsp;· Scholarship
-          competitiveness&nbsp;·
-          How to get the scholarship&nbsp;· Money to show (visa)&nbsp;· Work rights after graduating&nbsp;·
-          <b>Recognised in Malaysia?</b>&nbsp;·
-          How to apply&nbsp;· Key deadline&nbsp;· Intake&nbsp;· Notes&nbsp;· Course URL&nbsp;· <b>Info source</b>
+        <div class="names">University&nbsp;· Course&nbsp;· Location&nbsp;· Desirability (0–100)&nbsp;·
+          <b>Admission likelihood</b>&nbsp;· <b>Entry requirements</b>&nbsp;· University & Subject rank&nbsp;·
+          <b>Approx total (MYR)</b>&nbsp;· Scholarship coverage&nbsp;· <b>Recognised in Malaysia?</b>&nbsp;·
+          Key deadline&nbsp;· <b>Info source</b>&nbsp; <span class="more">+ 22 more columns</span>
         </div>
-        <div class="cap">This is the list — paste it to anyone who says a chatbot already gave them one, and see how
-          many columns they got.</div>
+        <div class="cap">These are the columns that actually decide it — plus 22 more behind every row.</div>
       </div>
     </div>
 
     <div class="foot">
-      <div>Want to see it first? Ask for the <b>sample pack</b> — one spreadsheet, one dossier, one apply guide.<br>
-        Real work, with the student’s name and finances removed.</div>
-      <div class="contact"><b>[ Evan Yeoh ]</b><br>WhatsApp [ 60186688118 ]</div>
+      Interested? Contact me at WhatsApp <b>60186688118</b> — Evan!
     </div>
 
   </div>

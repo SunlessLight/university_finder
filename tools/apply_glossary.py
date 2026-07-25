@@ -204,6 +204,10 @@ GLOSSARY = {
     # guides — recognition-back-home, post-study work, and department shorthand.
     "OPT": {
         "aliases": ["Optional Practical Training"],
+        # "OPT" is also the English verb, and it is matched case-sensitively, so a cell
+        # that shouts "you must OPT IN on the application" looked like the visa acronym
+        # and was rewritten to "you must post-study work permit IN". Excluded by context.
+        "not_followed_by": r"\s+(?:in|out)\b",
         "definition": "**Optional Practical Training** — US work permission that lets you work in "
                       "your field for up to 12 months after graduating on a student visa.",
     },
@@ -309,6 +313,220 @@ GLOSSARY = {
         "definition": "Naval Architecture, Ocean & Marine Engineering — the name of Strathclyde's "
                       "department for these degrees.",
     },
+    # --- Master-list terms: Malaysian recognition ladder ----------------------
+    # These surface in the master list's "Recognised in Malaysia?" column. The two
+    # accreditation ladders (EAC/BEM/Washington vs ETAC/MBOT/Sydney) are NOT
+    # interchangeable — see the table in workflows/03_discover_longlist.md.
+    "ETAC": {
+        "aliases": ["Engineering Technology Accreditation Council"],
+        "definition": "**Engineering Technology Accreditation Council** — the Malaysian body that "
+                      "accredits *engineering technology* degrees. A separate, lower ladder than EAC: "
+                      "it leads to MBOT, not to BEM Professional Engineer registration.",
+    },
+    "MBOT": {
+        "aliases": ["Malaysia Board of Technologists"],
+        "definition": "**Malaysia Board of Technologists** — the register for Professional Technologists "
+                      "(Ts.), the counterpart to BEM's engineer register (Ir.).",
+    },
+    "Ir.": {
+        "aliases": [],
+        "definition": "The title of a **Professional Engineer** registered with BEM — the qualification "
+                      "you need to sign off engineering work in Malaysia.",
+    },
+    "Ts.": {
+        "aliases": [],
+        "definition": "The title of a **Professional Technologist** registered with MBOT — a separate "
+                      "(and, for regulated engineering roles, lower) status than Ir.",
+    },
+    "MQR": {
+        "aliases": ["Malaysian Qualifications Register"],
+        "definition": "**Malaysian Qualifications Register** — the public list of MQA-recognised "
+                      "programmes, showing the professional body and the accreditation dates. Check the "
+                      "end date: an entry can be expired on its face.",
+    },
+    "PLO": {
+        "aliases": ["Programme Learning Outcomes"],
+        "definition": "**Programme Learning Outcomes** — what a degree promises you'll be able to do on "
+                      "graduating. The wording gives the accreditation ladder away: \"complex engineering "
+                      "problems\" means the Washington Accord, \"broadly-defined\" means the Sydney one.",
+    },
+    "UPU": {
+        "aliases": [],
+        "definition": "The central application system for Malaysian public universities — one form, "
+                      "used instead of applying to each university directly.",
+    },
+    "MUET": {
+        "aliases": ["Malaysian University English Test"],
+        "definition": "**Malaysian University English Test** — the English test Malaysian public "
+                      "universities require through UPU, in place of IELTS.",
+    },
+    "STPM": {
+        "aliases": [],
+        "definition": "Malaysia's national pre-university qualification (Sijil Tinggi Persekolahan "
+                      "Malaysia), the local route into a degree alongside A-Levels.",
+    },
+    "UEC": {
+        "aliases": ["Unified Examination Certificate"],
+        "definition": "**Unified Examination Certificate** — the Malaysian independent-Chinese-school "
+                      "qualification. Some scholarships are UEC-only, so an A-Level student can't claim them.",
+    },
+    # --- Master-list terms: destination-specific ------------------------------
+    "H-1B": {
+        "aliases": [],
+        "definition": "The US employer-sponsored work visa most graduates need after their post-study "
+                      "work permit runs out. It is allocated by lottery, so it is not guaranteed.",
+    },
+    "F-1": {
+        # "F-1 visa" is listed so the longest-surface-first ordering swallows the trailing
+        # noun too; matching bare "F-1" alone turned "F-1 visa" into "student visa visa".
+        "aliases": ["F-1 visa", "F-1 student visa"],
+        "definition": "The standard US student visa.",
+    },
+    "OOS": {
+        "aliases": ["out-of-state"],
+        "definition": "**Out-of-state** — the higher tuition rate a US public university charges students "
+                      "from outside its state. International students pay this rate.",
+    },
+    "ATAR": {
+        "aliases": [],
+        "definition": "Australian Tertiary Admission Rank — the score Australian universities admit on. "
+                      "A-Levels are converted to it, so published cutoffs are arithmetic, not a guess.",
+    },
+    "WAM": {
+        "aliases": ["Weighted Average Mark"],
+        "definition": "**Weighted Average Mark** — the Australian grade average, used for honours entry "
+                      "and scholarships.",
+    },
+    "subclass 485": {
+        # "485 Temporary Graduate visa" is listed first so the longest-surface-first
+        # ordering consumes the bare number too, rather than stranding it.
+        "aliases": ["485 Temporary Graduate visa", "Temporary Graduate visa (subclass 485)",
+                    "485 visa", "Temporary Graduate visa"],
+        "definition": "Australia's post-study work visa — lets you stay and work for a few years after "
+                      "graduating. Regional campuses can qualify for an extra year.",
+    },
+    "IGP": {
+        "aliases": ["Indicative Grade Profile"],
+        "definition": "**Indicative Grade Profile** — the grade range Singapore universities publish for "
+                      "students they admitted last year. It is based on Singapore-Cambridge A-Levels and "
+                      "international places are capped, so treat it as indicative, not a cutoff.",
+    },
+    "COMPASS": {
+        "aliases": [],
+        "definition": "Singapore's points system for approving an Employment Pass — it scores your "
+                      "salary, qualifications and the employer's hiring mix.",
+    },
+    "Employment Pass": {
+        "aliases": [],
+        "definition": "Singapore's work visa for professionals. There is no post-study work visa there, "
+                      "so staying on means landing a job above a set salary bar and clearing COMPASS.",
+    },
+    "EAB": {
+        "aliases": ["Engineering Accreditation Board"],
+        "definition": "**Engineering Accreditation Board** — Singapore's engineering accreditor. Its "
+                      "degrees carry the Washington Accord, so they map onto Malaysia's BEM route.",
+    },
+    "IES": {
+        "aliases": ["Institution of Engineers Singapore"],
+        "definition": "**Institution of Engineers, Singapore** — the professional body behind EAB "
+                      "accreditation.",
+    },
+    "G30": {
+        "aliases": [],
+        "definition": "A Japanese government programme of degrees taught entirely in English — one of "
+                      "the few routes in without Japanese-language qualifications.",
+    },
+    "SGU": {
+        "aliases": ["Super Global University"],
+        "definition": "**Super Global University** — the Japanese government's successor to G30, funding "
+                      "universities to run English-taught degrees.",
+    },
+    "MEXT": {
+        "aliases": [],
+        "definition": "Japan's government scholarship — can cover tuition, a monthly living allowance and "
+                      "airfare, but it is highly competitive and application-heavy.",
+    },
+    "JASSO": {
+        "aliases": [],
+        "definition": "Japan Student Services Organisation — runs smaller monthly stipends for "
+                      "international students, separate from MEXT.",
+    },
+    "JABEE": {
+        "aliases": [],
+        "definition": "Japan's engineering accreditor. Japan signs the Washington Accord through JABEE, "
+                      "but not every Japanese programme is accredited — check the specific degree.",
+    },
+    "EJU": {
+        "aliases": [],
+        "definition": "Examination for Japanese University Admission — the entrance exam for "
+                      "Japanese-taught degrees. English-taught programmes usually skip it.",
+    },
+    "JLPT": {
+        "aliases": [],
+        "definition": "Japanese-Language Proficiency Test — Japanese-taught degrees typically want the "
+                      "top levels (N1/N2). It also shapes how employable you are after graduating.",
+    },
+    "RU11": {
+        "aliases": [],
+        "definition": "A group of 11 leading Japanese research universities — a rough marker of research "
+                      "strength, like Australia's Group of Eight.",
+    },
+    "Go8": {
+        "aliases": ["Group of Eight"],
+        "definition": "**Group of Eight** — Australia's eight oldest research-intensive universities; "
+                      "the closest thing the country has to an Ivy League label.",
+    },
+    "Commonwealth Supported Place": {
+        "aliases": ["CSP"],
+        "definition": "A government-subsidised university place in Australia, open to **domestic students "
+                      "only**. Its fee is printed next to the international one — if an Australian annual "
+                      "fee looks under about A$25,000, this is the number you are reading.",
+    },
+    "GES": {
+        "aliases": ["Graduate Employment Survey"],
+        "definition": "**Graduate Employment Survey** — Singapore's official annual survey of what "
+                      "graduates earn and how fast they find work, published per university and degree.",
+    },
+}
+
+
+# --------------------------------------------------------------------------- #
+# Plain-English alternatives — the master list's readability rule.
+#
+# A master_list cell has to be readable on its own, WITHOUT the glossary sheet; the
+# glossary is a safety net, not a prerequisite. So the rule is not "expand every
+# acronym" (that makes cells longer, which is the other complaint) — it is:
+#
+#   * If a shorter plain phrase says the same thing, use the phrase. Those terms are
+#     listed here, and check_master_list.py flags them wherever they appear bare.
+#   * If the term is a proper noun the student will have to search for on an official
+#     page — UCAS, MQA, BEM, Washington Accord, CSS Profile, MEXT — keep it. Replacing
+#     it would leave the student unable to find the thing. The glossary sheet
+#     (build_glossary_sheet.py) is what explains those.
+#
+# Terms absent from this map are the second category: deliberately kept as-is.
+# --------------------------------------------------------------------------- #
+PLAIN_ALTERNATIVES = {
+    # Keep these substitutable in place: they must read correctly when swapped straight
+    # into an existing sentence, so no trailing parentheticals and no repeated head nouns
+    # ("H-1B lottery" must not become "...work visa (by lottery) lottery").
+    "OPT": "post-study work permit",
+    "STEM OPT": "science post-study work extension",
+    "H-1B": "employer-sponsored work visa",
+    "I-20": "student visa form",
+    "F-1": "student visa",
+    "OOS": "out-of-state",
+    "subclass 485": "post-study work visa",
+    "ATAR": "Australian entry score",
+    "WAM": "grade average",
+    "IGP": "published grade profile",
+    "COMPASS": "work-pass points test",
+    "PLO": "programme learning outcomes",
+    "MQR": "the MQA register",
+    "EJU": "Japanese university entrance exam",
+    "JLPT": "Japanese language test",
+    "Commonwealth Supported Place": "subsidised place for domestic students only",
+    "GES": "Singapore's graduate employment survey",
 }
 
 
@@ -322,29 +540,47 @@ def slug(term):
 
 
 def _is_acronym(surface):
-    """Acronyms (all-caps letters/digits/hyphens) match case-sensitively; phrases don't."""
-    return re.fullmatch(r"[A-Z0-9][A-Z0-9\-]*", surface) is not None
+    """Acronyms match case-sensitively; ordinary phrases match case-insensitively.
+
+    Two shapes count as an acronym: all-caps letters/digits/hyphens (ABET, H-1B), and a
+    single capitalised token containing a digit (Go8, RU11). The second case matters —
+    matched case-insensitively, "Go8" also hits a stray "go8" in running prose, which is
+    the false-positive class the module docstring warns about.
+    """
+    if re.fullmatch(r"[A-Z0-9][A-Z0-9\-]*", surface):
+        return True
+    return re.fullmatch(r"[A-Z][A-Za-z]*\d[A-Za-z0-9]*", surface) is not None
 
 
 def _surface_forms():
-    """All (surface, canonical) pairs, longest surface first so 'CSS Profile' beats 'CSS'."""
-    pairs = []
+    """All (surface, canonical, exclusion) triples, longest surface first so 'CSS Profile'
+    beats 'CSS' — and so an alias that swallows a trailing noun ('F-1 visa') wins over the
+    bare acronym, which would otherwise leave the noun stranded."""
+    triples = []
     for term, meta in GLOSSARY.items():
         for surface in [term, *meta.get("aliases", [])]:
-            pairs.append((surface, term))
-    pairs.sort(key=lambda p: len(p[0]), reverse=True)
-    return pairs
+            triples.append((surface, term, meta.get("not_followed_by")))
+    triples.sort(key=lambda t: len(t[0]), reverse=True)
+    return triples
 
 
-def _pattern_for(surface):
-    """Word-boundary regex for a surface form; case-sensitive only for acronyms."""
+def _pattern_for(surface, not_followed_by=None):
+    """Word-boundary regex for a surface form; case-sensitive only for acronyms.
+
+    `not_followed_by` excludes a context where the surface is not really the term — a few
+    acronyms collide with ordinary words (OPT / "opt in").
+    """
     flags = 0 if _is_acronym(surface) else re.IGNORECASE
-    return re.compile(rf"(?<![\w-]){re.escape(surface)}(?![\w-])", flags)
+    # The guard is always case-insensitive, even when the surface is not: the collision
+    # that motivated it was a SHOUTED "OPT IN", so matching only lowercase "in" would
+    # miss exactly the case it exists for.
+    guard = f"(?!(?i:{not_followed_by}))" if not_followed_by else ""
+    return re.compile(rf"(?<![\w-]){re.escape(surface)}(?![\w-]){guard}", flags)
 
 
 # Precompute once.
-_SURFACES = _surface_forms()
-_COMPILED = [(surface, canonical, _pattern_for(surface)) for surface, canonical in _SURFACES]
+_SURFACES = [(s, c) for s, c, _ in _surface_forms()]
+_COMPILED = [(s, c, _pattern_for(s, x)) for s, c, x in _surface_forms()]
 
 
 def present_terms(text):

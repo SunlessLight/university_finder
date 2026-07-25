@@ -31,7 +31,12 @@ the student may keep, drop, or re-add rows; that iteration *is* the cut working.
 **2. Verify each pick's hard facts against OFFICIAL sources** — the university's own course page, UCAS, or
 Common App, never an aggregator:
 - **Tuition** (per year + full programme) + **living cost** → recompute the total; sanity-check `Approx total (MYR)`.
-- **Entry requirements** (academic + English) → does the student actually meet them?
+- **Entry requirements** (academic + English) → does the student actually meet them? **And what the
+  application itself makes you submit** — personal statement / short-response essays, an achievements /
+  co-curricular list, admissions tests. **A "grades-based" system is not necessarily grades-only:** e.g.
+  NUS's *Aptitude-Based Admissions* requires *every* applicant to list achievements/CCA **and** answer
+  short-response questions. A required component the student can't evidence is an **admission** risk
+  (feeds `Admission likelihood`), not just a scholarship one — don't file it away as funding-only.
 - **Key deadline** + **intake** → is the intake offered, and is the deadline still open?
 - **Recognition back home** (MQA + the relevant professional body) for regulated professions — a gate, not a footnote.
 
@@ -51,8 +56,19 @@ spread — at least one **Safety** the student clears comfortably, not five long
 a pick (over budget even with scholarship, deadline passed, entry unreachable), demote it to
 **`Rejected`** with a one-line reason in `Notes` and have the student pick a replacement from the
 Longlist — *before* you sink dossier research into it. For a kept Reach where direct entry is a stretch,
-record the **`Backup entry route`** (foundation year / INTO-Kaplan-Navitas / community-college transfer)
-and its rough entry bar, so a grades-short student still has a route.
+research the **backup entry route** (foundation year / INTO-Kaplan-Navitas / community-college transfer)
+and its rough entry bar, so a grades-short student still has a route. **This is a dossier section, not a
+column** (it left the CSV on 2026-07-25): on a longlist the student is still scanning to cut, and most
+cells just restated the obvious — "direct entry is a Safety on his grades" tells them nothing. It earns
+its space once a row survives to Shortlist, where the detail is actually actionable.
+
+**Fill `Course at a glance` and `Student life` when you promote a row.** They are one tight sentence
+each — the shape of the degree ("3-yr, broad first year then pick a major") and what living there is
+like ("large suburban campus, strong industry-placement culture") — condensed from the dossier's
+*Course details & structure* and *Student life & culture* sections. They stay blank on unresearched
+rows on purpose; a plausible-sounding invented sentence about campus culture is a fabricated fact.
+Campus and city facts are course-independent, so reuse them across students rather than re-researching
+(e.g. `data/students/toru/student_life_research.md`).
 
 > **Too few survivors?** If the cut leaves fewer than ~3 workable picks, go back to **Stage 3**
 > (`03_discover_longlist.md`) and widen discovery (more countries or safer options) rather than
@@ -119,7 +135,14 @@ Ordered decision-first. **Snapshot (1)** and **Sources (16)** are rendered by th
 3. **Who actually gets in** — real admitted-student texture: the **extracurriculars, awards, academic
    profile, and essay/interview angles** of people who got in. Sources: results/decision threads (Reddit,
    The Student Room offer-holder threads), "how I got into X" blogs/YouTube, the US **Common Data Set** /
-   acceptance-rate, or the grades-based **IGP / cutoff** (NUS, China). **Fallback when thin:** admit-rate /
+   acceptance-rate, or the grades-based **IGP / cutoff** (NUS, China).
+   > **"Grades-based" ≠ grades-only.** Systems that publish a cutoff/IGP increasingly *also* require a
+   > personal statement / short-response essays and an achievements/CCA list from **every** applicant
+   > (e.g. NUS's Aptitude-Based Admissions). Verify the real required components on the official
+   > application page before writing "admission is just the grades" — and if the student can't yet
+   > evidence a required one, reflect it in the Section-2 admissibility read, not only in Scholarships.
+
+   **Fallback when thin:** admit-rate /
    cutoff stats **plus official *and* unofficial social channels** (subreddit, IG, Discord, student-society
    pages) as leads for the student to dig further. If genuinely nothing exists, write `Not found — <why>`.
 4. **Course details & structure** — modules, duration, intake, placement/sandwich/co-op, flexibility to

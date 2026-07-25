@@ -20,6 +20,11 @@ state is shared, two students can be synced concurrently. Each scored candidate 
 appended to data/students/<slug>/score_log.jsonl — the sub-scores, entry_margin, and
 weights_id behind a row, none of which the CSV has room to keep.
 
+The CSV is a SCANNING surface, so a candidate's long-form research does not go in it:
+`notes` (short, budgeted) becomes the "Notes" cell, while `research_notes` (free length)
+is appended to data/students/<slug>/research_notes.md. Cells over CELL_BUDGETS are
+reported after a sync and never silently truncated.
+
 Usage:
     python tools/sync_shortlist.py --student aisyah-rahman
     python tools/sync_shortlist.py --student aisyah-rahman --dry-run
@@ -37,6 +42,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from shortlist_schema import (  # noqa: E402
+    CELL_BUDGETS,
     DEFAULT_LIST_STATUS,
     INFO_SOURCE_UNVERIFIED,
     SHORTLIST_HEADERS,
@@ -45,6 +51,7 @@ from shortlist_schema import (  # noqa: E402
     compute_score,
     course_key,
     feasibility_flags,
+    grade_fit_label,
     load_weights,
     tier_for,
 )
@@ -57,15 +64,6 @@ STUDENTS_DIR = REPO_ROOT / "data" / "students"
 
 UNI_COL = SHORTLIST_HEADERS.index("University")
 COURSE_COL = SHORTLIST_HEADERS.index("Course")
-
-
-def _yn(value):
-    """Render a tri-state (True/False/None) as Yes/No/blank."""
-    if value is True:
-        return "Yes"
-    if value is False:
-        return "No"
-    return ""
 
 
 def read_existing(csv_path):
@@ -87,24 +85,18 @@ def existing_keys(rows):
     return keys
 
 
-def fits_grades_label(candidate, admission):
-    """Prefer an explicit fits_grades; otherwise derive from admission likelihood."""
-    explicit = candidate.get("fits_grades")
-    if explicit not in (None, ""):
-        return explicit if isinstance(explicit, str) else _yn(explicit)
-    if admission in ("Safety", "Match"):
-        return "Yes"
-    if admission == "Reach":
-        return "No"
-    return ""
-
-
 def candidate_to_row(c, score, tier, admission, flags):
     """Build a CSV row in SHORTLIST_HEADERS order from a scored candidate.
 
     Several candidate fields deliberately have no column: `currency` and `total_cost_programme`
-    feed "Approx total (MYR)" (see candidate_total_myr), and `meets_english` feeds the
-    "English short" warning. They stay in the JSON; the CSV shows the result, not the input.
+    feed "Approx total (MYR)" (see candidate_total_myr), `meets_english` feeds the
+    "English short" warning, and `research_notes` goes to research_notes.md. They stay in
+    the JSON; the CSV shows the result, not the input.
+
+    "Grades vs entry bar" is derived from entry_margin alone (grade_fit_label) — there is no
+    per-candidate override, and no caveat for self-predicted grades: feasibility_flags()
+    already stamps "Grades unverified (self-predicted)" in Warnings for such a student, and
+    repeating it in a second column just costs 45 chars a row.
     """
     myr = candidate_total_myr(c)
     values = {
@@ -115,15 +107,16 @@ def candidate_to_row(c, score, tier, admission, flags):
         "Warnings": "; ".join(flags),
         "University": c.get("university", ""),
         "Course": c.get("course", ""),
+        "Course at a glance": c.get("course_at_a_glance", ""),
         "Country": c.get("country", ""),
         "City": c.get("city", ""),
+        "Student life": c.get("student_life", ""),
         "Subject rank": c.get("subject_rank", ""),
         "Overall rank": c.get("overall_rank", ""),
         "Entry requirements": c.get("entry_requirements", ""),
         "Student grades": c.get("student_grades", ""),
-        "Fits grades?": fits_grades_label(c, admission),
+        "Grades vs entry bar": grade_fit_label(c.get("entry_margin")),
         "English req": c.get("english_req", ""),
-        "Backup entry route": c.get("pathway_option", ""),
         "Annual tuition": c.get("annual_tuition", ""),
         "Total tuition": c.get("total_tuition", ""),
         "Est. living/yr": c.get("est_living_per_year", ""),
@@ -145,6 +138,65 @@ def candidate_to_row(c, score, tier, admission, flags):
         "Info source": c.get("source_authority", INFO_SOURCE_UNVERIFIED),
     }
     return [values.get(h, "") for h in SHORTLIST_HEADERS]
+
+
+def append_research_notes(notes_path, scored):
+    """Append each candidate's long-form `research_notes` to research_notes.md.
+
+    This is the other half of the cell budget (CELL_BUDGETS). The CSV's "Notes" column
+    holds a <=200-char headline the student can scan; the verification stamps, source
+    conflicts and cost traps that used to bloat that cell to 2900 chars live here, under
+    a "## <University> - <Course>" heading. Nothing is truncated and nothing is lost —
+    the two are separate candidate-JSON fields, so there is no splitting logic to get wrong.
+
+    Skips a candidate whose heading is already present, so a re-sync doesn't duplicate it.
+    Returns the number of sections written.
+    """
+    sections = [(c, str(c.get("research_notes") or "").strip()) for _, _, _, _, c in scored]
+    sections = [(c, text) for c, text in sections if text]
+    if not sections:
+        return 0
+
+    existing = notes_path.read_text(encoding="utf-8") if notes_path.exists() else ""
+    have = {course_key(*_heading_parts(line)) for line in existing.splitlines() if line.startswith("## ")}
+
+    written = 0
+    with notes_path.open("a", encoding="utf-8", newline="\n") as f:
+        if not existing:
+            f.write("# Research notes\n\nThe long-form research behind each master_list row — the "
+                    "verification stamps, source conflicts and cost traps that are too long for a "
+                    "spreadsheet cell. The CSV's `Notes` column carries the one-line headline.\n")
+        for c, text in sections:
+            uni, course = c.get("university", ""), c.get("course", "")
+            if course_key(uni, course) in have:
+                continue
+            f.write(f"\n## {uni} - {course}\n\n{text}\n")
+            have.add(course_key(uni, course))
+            written += 1
+    return written
+
+
+def _heading_parts(line):
+    """Split a '## University - Course' heading back into (university, course)."""
+    body = line[3:].strip()
+    uni, _, course = body.partition(" - ")
+    return uni, course
+
+
+def over_budget_cells(rows):
+    """[(University, column, length, budget)] for cells exceeding CELL_BUDGETS.
+
+    Reported, never trimmed: silently truncating a cell would delete verified research.
+    check_master_list.py runs the same rule over the whole file.
+    """
+    uni_col = SHORTLIST_HEADERS.index("University")
+    findings = []
+    for row in rows:
+        for column, budget in CELL_BUDGETS.items():
+            value = row[SHORTLIST_HEADERS.index(column)]
+            if len(value or "") > budget:
+                findings.append((row[uni_col], column, len(value), budget))
+    return findings
 
 
 def append_score_log(log_path, weights_id, scored):
@@ -282,7 +334,12 @@ def main():
             continue
         seen.add(key)
         score = compute_score(c.get("scores", {}), weights)
-        admission = classify_admission(c.get("entry_margin"))
+        try:
+            admission = classify_admission(
+                c.get("entry_margin"), c.get("admission_likelihood"), c.get("admission_reason")
+            )
+        except ValueError as exc:
+            sys.exit(f"ERROR: {c.get('university', '?')} — {c.get('course', '?')}: {exc}")
         flags = feasibility_flags(c, profile)
         scored.append((score, tier_for(score), admission, flags, c))
 
@@ -295,6 +352,14 @@ def main():
         flag_str = f"  ⚑ {'; '.join(flags)}" if flags else ""
         print(f"  [{tier}] {score:>3}  {admission or '-':<7} {c.get('university','?')} — {c.get('course','?')}{flag_str}")
 
+    over = over_budget_cells(rows)
+    if over:
+        print(f"\n{len(over)} cell(s) over the length budget — the master list is a scanning surface:")
+        for uni, column, length, budget in over[:10]:
+            print(f"  ! {uni} — {column}: {length} chars (budget {budget})")
+        print("  Move the depth into the candidate's 'research_notes' field; run "
+              "tools/check_master_list.py for the full report.")
+
     if args.dry_run:
         print("\n(dry run — nothing written)")
         return
@@ -304,7 +369,10 @@ def main():
 
     write_rows(output_path, rows)
     append_score_log(student_dir / "score_log.jsonl", weights_id, scored)
+    written = append_research_notes(student_dir / "research_notes.md", scored)
     print(f"\nAppended {len(rows)} rows to {output_path} (as Longlist)")
+    if written:
+        print(f"Wrote {written} section(s) to {student_dir / 'research_notes.md'}")
 
 
 if __name__ == "__main__":

@@ -291,9 +291,13 @@ Read `.tmp/<slug>/search_results.json`. For each plausible university+course, bu
     "course_url": "https://www.manchester.ac.uk/...",
     "source_authority": "Not verified",
     "entry_margin": 0,
+    "admission_likelihood": "",
+    "admission_reason": "",
     "pathway_option": "INTO Manchester Foundation if below AAA",
-    "fits_grades": "",
+    "course_at_a_glance": "3-yr BSc, broad first year then pick a specialism",
+    "student_life": "Large city campus, strong industry-placement culture",
     "notes": "",
+    "research_notes": "",
     "scores": {
       "course_match": 5,
       "subject_reputation": 4,
@@ -322,10 +326,51 @@ Read `.tmp/<slug>/search_results.json`. For each plausible university+course, bu
     a strict identity check, so the string `"No"` does **not** trigger the flag. The requirement itself
     goes in `english_req`, which *is* a column.
 - Put a date in `key_deadline` as `YYYY-MM-DD` so it parses (extra text after the date is fine).
-- `entry_margin` is your honest read of the student's grades vs the requirement: **+2** well above … **0**
-  borderline/meets … **−2** well below. This maps to Reach/Match/Safety. Don't fold it into the sub-scores.
 - `source_authority` stays `"Not verified"` at this stage — Stage 4 flips verified rows to
   `"Official page"`. These are the only two values the `Info source` column takes.
+
+> **`entry_margin` means ONE thing: grades vs the published academic bar.** **+2** well above …
+> **0** borderline/meets … **−2** well below. It produces the **`Grades vs entry bar`** column
+> (`Well above`/`Above`/`Meets`/`Below`/`Well below`) and, by default, `Admission likelihood`.
+> Don't fold it into the sub-scores.
+>
+> **Do NOT push a holistic Reach through `entry_margin` — that was a real bug (fixed 2026-07-25).**
+> Agents were setting `entry_margin: -2` on selective US schools to express "unlikely to get in",
+> so the grade column printed "No" for a student with A\*A\*A\*A at Duke, Vanderbilt and Georgia
+> Tech — while the same student's other file read "Exceeds academic bar" at MIT. Same grades,
+> contradictory answers, and a quiet breach of the desirability-vs-admissibility guardrail.
+> Anything that is **not** the grade bar — holistic selection, a capped international quota,
+> need-aware admission, an interview or admissions test — goes in the override instead:
+> ```json
+> "entry_margin": 2, "admission_likelihood": "Reach", "admission_reason": "very selective"
+> ```
+> which renders **`Reach (very selective)`** and answers the student's real question: *why is a
+> university I qualify for still a long shot?* Keep `admission_reason` under 24 characters.
+> Where a university publishes **no** academic bar at all (holistic US admission, or a profile
+> you genuinely could not retrieve), set `Grades vs entry bar` to **`Not published`** — saying so
+> beats inventing a comparison. There is no `fits_grades` field any more; the column is derived.
+
+> **Write cells for a scanning student, not for a dossier (the 2026-07-25 readability fix).**
+> The master list is read in Google Sheets, where a 500-word cell truncates or blows the row
+> height up. Three rules, all enforced by **`python tools/check_master_list.py --student <slug>`**
+> — run it after every sync:
+> 1. **Length budgets per column** (`CELL_BUDGETS` in `shortlist_schema.py`; `Notes` 200 chars,
+>    most prose 120-200). Nothing is ever silently truncated — you say it shorter.
+> 2. **`notes` vs `research_notes` — two fields, two destinations.** `notes` is the ≤200-char
+>    headline that lands in the CSV; **`research_notes`** is free-length and is appended to
+>    `data/students/<slug>/research_notes.md` under a `## University - Course` heading. Put the
+>    verification stamps, source conflicts and cost traps there. This is what makes the budget
+>    survivable — depth is preserved, just not in a spreadsheet cell.
+> 3. **Plain English first.** Prefer the plain phrase over the acronym outright — it is *shorter
+>    and* clearer (`3 yrs post-study work` beats `OPT + 24mo STEM OPT`). The replaceable terms
+>    live in `apply_glossary.PLAIN_ALTERNATIVES`, and the linter flags them with their fix.
+>    **Keep** the proper nouns the student must search for on an official page — UCAS, MQA, BEM,
+>    Washington Accord, CSS Profile, IELTS; `tools/build_glossary_sheet.py` generates a per-student
+>    `glossary.csv` explaining exactly the terms that student's list uses, to import as a second tab.
+> - `course_at_a_glance` and `student_life` are **one tight sentence each** — the shape of the
+>   degree, and what living there is like. Leave them **blank** unless you actually researched it:
+>   an invented sentence about campus culture is a fabricated fact like any other. Stage 4 fills
+>   them when a row is promoted.
 
 **Scoring guide (each 0-5 — these are DESIRABILITY only, never admissibility):**
 - `course_match` — how well the course matches the field/goal.
@@ -413,9 +458,18 @@ Read `.tmp/<slug>/search_results.json`. For each plausible university+course, bu
 
 ```powershell
 python tools/sync_shortlist.py --student <slug>          # add --dry-run to preview first
+python tools/check_master_list.py --student <slug>       # readability + honesty gate
+python tools/build_glossary_sheet.py --student <slug>    # refresh the Glossary tab
 ```
-This computes desirability + A/B/C tier, Reach/Match/Safety, feasibility flags, dedupes by canonical
-university+course, and appends new rows as **Longlist**. The CSV is created on first run.
+`sync_shortlist.py` computes desirability + A/B/C tier, Reach/Match/Safety, feasibility flags, dedupes
+by canonical university+course, and appends new rows as **Longlist**. It also writes each candidate's
+`research_notes` to `research_notes.md`. The CSV is created on first run.
+
+`check_master_list.py` is the gate — it must come back clean before you hand a list to a student. It
+checks the header against the schema, the length budgets, bare jargon that has a plain equivalent,
+the allowed values per column, and contradictions between `Grades vs entry bar` and
+`Admission likelihood` (grades below the bar can't be a Safety; grades above it that are still a Reach
+must say why).
 
 ## Edge cases & rules
 
@@ -439,6 +493,12 @@ university+course, and appends new rows as **Longlist**. The CSV is created on f
   it once into `SHORTLIST_HEADERS` order (keyed by column name) so it matches the schema and the sibling
   students. Sanity-check after a sync that a spot-checked row's `Approx total (MYR)`/`City`/`Intake`
   line up under their headers.
+- **The schema went 34 → 35 columns on 2026-07-25** (the readability fix). `Fits grades?` was renamed
+  **`Grades vs entry bar`** and is now derived from `entry_margin` alone; `Backup entry route` was
+  dropped from the CSV (it is a Stage-4 dossier section now — see `04_university_dossier.md`); and
+  **`Course at a glance`** + **`Student life`** were added, one sentence each. All ten live CSVs were
+  migrated in one disposable pass. Two new per-student files came with it: `research_notes.md` (the
+  long-form research the cells no longer hold) and `glossary.csv` (the Google Sheets Glossary tab).
 - **The schema was slimmed 41 → 34 columns on 2026-07-16** — the master list is read in Google Sheets, and
   seven columns were blank, duplicated another column, or were internal bookkeeping: `Meets English?`,
   `Total cost (programme)`, `Currency`, `Student community links`, `Student life`, `Data as-of`,

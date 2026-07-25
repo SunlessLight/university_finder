@@ -94,8 +94,12 @@ blockquote p:last-child { margin: 0; }
 table { border-collapse: collapse; margin: 6pt 0 10pt 0; width: 100%; }
 th, td { border: 0.5pt solid #b7c2d0; padding: 4pt 6pt; text-align: left; vertical-align: top; }
 th { background-color: #eef2f7; color: #10233f; }
-/* Snapshot fact table: the first column is a shaded label so it reads as a key-value card. */
-table td:first-child { background-color: #f6f8fb; white-space: nowrap; }
+/* First column holds titles/labels: bound it to ~20% and let it WRAP, so a long title
+   (e.g. section 6's route names) can't stretch the table onto one line. Short labels still
+   fit on one line and won't wrap; the remaining info columns auto-size within the rest. */
+table th:first-child,
+table td:first-child { width: 20%; }
+table td:first-child { background-color: #f6f8fb; }
 
 /* Long checklists can flow into two columns with <div class="cols2" markdown="1">. */
 .cols2 ul { column-count: 2; column-gap: 22pt; margin-top: 2pt; }

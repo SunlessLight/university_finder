@@ -61,18 +61,38 @@ to work one destination at a time on a large list). `sync_shortlist.py` only eve
 rows — promotion/rejection is an agent edit to the CSV, never a sync side-effect.
 
 The columns are defined once in `shortlist_schema.py` (`SHORTLIST_HEADERS`). Cell **values** should be
-plain-English sentences, not jargon. Quick glossary of the less-obvious columns:
+plain-English sentences, not jargon — and that is **enforced**, by
+`python tools/check_master_list.py --student <slug>`, which must come back clean before a list goes to a
+student. Quick glossary of the less-obvious columns:
 - **`Info source`** — how far a row's hard facts have been checked: `Not verified` (found via web search /
   rankings sites — discovery only) or `Official page` (confirmed on the uni's own page / UCAS / Common
   App). Every row must read `Official page` by Stage 4.
-- **`Backup entry route`** — a way in if direct entry is a stretch (foundation year / INTO-Kaplan-Navitas
-  pathway / community-college transfer).
+- **`Grades vs entry bar`** — `Well above` / `Above` / `Meets` / `Below` / `Well below`, or
+  `Not published` where the university sets no academic cutoff. It answers **grades only**. Why a row is
+  hard to get into lives next door in `Admission likelihood`, which can carry a short reason —
+  `Reach (very selective)`. Keeping those two apart is the whole point; see guardrail 1.
+- **`Course at a glance`** / **`Student life`** — one tight sentence each. Blank until someone has
+  actually researched it (Stage 4 fills them on promotion); an invented sentence is a fabricated fact.
+- **Cell length budgets** — `CELL_BUDGETS` in `shortlist_schema.py`. The list is a *scanning* surface;
+  long-form research goes to `data/students/<slug>/research_notes.md` instead, and nothing is ever
+  silently truncated.
 - **Scholarship columns** — `Scholarship & portal`, `Scholarship coverage`, `Scholarship competitiveness`
-  (with stats where they exist — never invented), `How to get the scholarship`.
+  (with stats where they exist — never invented), `How to get the scholarship`. When researching these,
+  respect **eligibility**: `preferences.scholarship_interests` says which scholarships the student wants
+  looked into, and `profile.ethnicity` gates ethnicity-restricted Malaysian funds (e.g. Bumiputra-only vs
+  open) — surface only ones the student can actually claim. Ethnicity is a research signal only, never a
+  desirability input.
 - **`Approx total (MYR)`** — the whole-programme cost, roughly converted. Computed from the candidate
   JSON's `currency` + `total_cost_programme`/`total_tuition`, none of which have columns of their own.
 - Jargon to explain in cells, not headers: *"honours entry"* = a 4-year degree with a final research/
   project year; *"need-blind"* = the uni admits you without considering your ability to pay.
+
+> **The schema went 34 → 35 columns on 2026-07-25** (a student review found the list unreadable in
+> Google Sheets). `Fits grades?` → **`Grades vs entry bar`**, now derived from `entry_margin` alone;
+> `Backup entry route` moved into the Stage-4 dossier; **`Course at a glance`** and **`Student life`**
+> added. Two companion files per student came with it: **`research_notes.md`** (the long-form research
+> the cells no longer hold) and **`glossary.csv`** (a Glossary tab explaining the shorthand that
+> student's list actually uses, from `tools/build_glossary_sheet.py`).
 
 > **The schema was slimmed 41 → 34 columns on 2026-07-16.** It is read in Google Sheets, and seven columns
 > were blank in practice, duplicated another column, or were internal bookkeeping: `Meets English?`,
@@ -104,6 +124,16 @@ These are *why this project exists* — they stop a tidy-looking list from being
    `admission_fit`, `admissibility`, and `entry_margin_fit` as weight keys.
    Weights themselves are **per-student** (`data/students/<slug>/weights.json`, via the
    `scoring-weights` skill) and never live in shared source — so two students can be scored in parallel.
+   **The same rule applies one level down, inside admissibility itself** (learned the hard way,
+   2026-07-25): *can I meet the grades?* and *will they take me?* are different questions.
+   `entry_margin` answers only the first and produces **`Grades vs entry bar`**; holistic selectivity,
+   capped international quotas and need-aware admission go in the `admission_likelihood` override, which
+   renders `Reach (very selective)`. Conflating them printed "doesn't fit the grades" for a student with
+   A\*A\*A\*A at Duke. `check_master_list.py` now fails on that contradiction.
+   **Provisional grades:** when `profile.grade_status == "expected"` (grades the student is only
+   *confident of getting*, e.g. from the form intake), admission likelihood is still computed but is
+   **provisional** — `sync_shortlist.py` stamps a "Grades unverified (self-predicted)" warning on every
+   row. The list must not read as settled until actual/official predicted results arrive.
 2. **Official sources for hard facts.** Fees, entry requirements, English, deadlines, and intake must be
    verified against the **official** university / UCAS / Common App page before you build a row's dossier
    (the Stage 4 pre-flight — a row can't become `Finalist` on unverified facts). Aggregators (StudyPortals,

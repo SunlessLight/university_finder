@@ -40,11 +40,15 @@ What you get:
 - Narrowed to a **verified shortlist of 8–12**, where every hard fact (fees, entry requirements,
   English, deadlines) has been **re-checked against the university's own page / UCAS / Common App** —
   not a rankings site.
-- **34 columns per uni**, in a spreadsheet that opens in Excel / Google Sheets.
-- Two things a normal list never separates, kept in separate columns:
+- **35 columns per uni**, in a spreadsheet that opens in Excel / Google Sheets — written to be *scanned*,
+  with a **Glossary tab** explaining every acronym your list actually uses, and the deep research kept
+  in a separate notes file instead of crammed into a cell.
+- Three things a normal list never separates, kept in separate columns:
   - **Desirability** (a 0–100 score) — how good a fit the uni is, *excluding* whether you can get in.
-  - **Admission likelihood** — **Reach / Match / Safety**, computed from your grade margin. A cheap uni
-    you can't get into can never rank #1. That separation is enforced in code, not promised.
+  - **Grades vs entry bar** — purely whether your grades clear the published requirement.
+  - **Admission likelihood** — **Reach / Match / Safety**, with the reason where it isn't about grades
+    (*"Reach (very selective)"*). A cheap uni you can't get into can never rank #1, and a uni you're
+    academically over-qualified for never reads as if your grades fell short. Enforced in code, not promised.
 - **Total cost of the whole degree in ringgit** — not annual tuition. A 3-year UK degree and a 4-year
   US one are finally comparable.
 - **`Info source`** on every row: `Not verified` until a human confirmed it on the official page,
@@ -116,5 +120,5 @@ where I want to go" and "I applied, on time, to all of them, without missing an 
 - **Show, don't list.** The [sample pack](sample_pack/) is one row of the spreadsheet, one dossier, one
   apply-guide page — the three tiers made visible. Send that, then stop typing. (See
   [positioning.md §3](positioning.md).)
-- Numbers, not adjectives: *"34 columns · 8–12 verified unis · 16-section dossiers · a deadline
+- Numbers, not adjectives: *"35 columns · 8–12 verified unis · 16-section dossiers · a deadline
   calendar across 5 countries."* Never "comprehensive."

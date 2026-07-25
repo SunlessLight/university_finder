@@ -24,28 +24,36 @@ fine — but keep the substring in bold intact.
   A **blank/absent** consent is also skipped **unless** you pass `--assume-consent` — see below.)*
 
 **Section 1 — About you → `profile.json`**
-- **Name**; **Your age**; **Gender**; **Nationality**; where you **live in now**; where you plan to **live and
-  work after** graduating (a post-study *aspiration* → recorded in `notes` + `intent_to_migrate`;
-  it does **not** become `home_country`, which stays "Malaysia").
+- **Name**; **Your age**; **Gender**; **Nationality**; **Race/ethnicity**; where you **live in now**;
+  where you plan to **live and work after** graduating (a post-study *aspiration* → recorded in `notes`
+  + `intent_to_migrate`; it does **not** become `home_country`, which stays "Malaysia").
+  - **Race/ethnicity → `profile.ethnicity`** (PDPA-sensitive). Captured because it drives
+    **scholarship eligibility** in Malaysia (e.g. Bumiputra-only vs open funds) — the agent uses it as a
+    research signal in Stage 3/4. It is **never** a desirability-score input.
 
 **Section 2 - Your Studies**
 - What are you **studying now** (A-Level / STPM / UEC / IB / Foundation / Matriculation / Diploma /
-  Other); **which college**/school; **when do you finish** / get results.
-- **List each subject** and your grade — paragraph (e.g. "Maths A*, Physics A, Chemistry B").
-- Are those grades **actual results or predicted** — Actual / Predicted.
+  Other); **which college**/school; **when do you graduate** / get results.
+- **Subjects & grades — four structured dropdown pairs.** The form asks each subject as *"List your Nth
+  subject"* + *"Select the grade you are **confident of getting**"* (subjects 1-3 required, subject 4
+  optional → *"Select None if only 3 subjects"*). The tool builds `profile.subjects[]` **deterministically**
+  from these pairs (no free-text parsing) and, because the grade question asks what the student is
+  *confident of getting*, stamps **`grade_status = "expected"`** — a self-prediction, weaker than official
+  predicted grades and than actual results. See the provisional-grades edge case below.
 - **English proficiency — a capability snapshot only.** Ask just: **which English test** have you taken
-  (IELTS / TOEFL / MUET / PTE / Duolingo / **Not yet** / Other) and your **English test score** (blank
-  if none). *Do NOT ask "when will you take it".* Each university sets its own English bar; the required
-  test + score per uni is filled during research (the `English req` column, plus the `meets_english`
-  candidate field behind the `English short` warning), and the definitive "tests you must sit" list is
-  produced at the apply stage — not here.
+  (IELTS / TOEFL / MUET / PTE / Duolingo / **None** / Other) and your **English score** (blank if none).
+  *Do NOT ask "when will you take it".* Each university sets its own English bar; the required test +
+  score per uni is filled during research (the `English req` column, plus the `meets_english` candidate
+  field behind the `English short` warning), and the definitive "tests you must sit" list is produced at
+  the apply stage — not here.
 - **Total budget** for the whole degree in MYR (blank = "research everything, I'll decide" — the
-  intended default; a rough ceiling only powers the "Over budget" flag); **per-year budget** (optional).
-- **How will you fund this degree?** — ONE question (replaces the old "how will you pay" + "only if
-  scholarship" pair). Options, most- to least-dependent: *"I can only go on a full or near-full
-  scholarship"* / *"I need a partial scholarship or financial aid to make it work"* / *"My family/I can
-  cover it — scholarships optional"*. This one answer sets both `funding_source` and whether a
-  scholarship is a hard **gate** (`scholarship_required` / `scholarship_dependent`).
+  intended default; a rough ceiling only powers the "Over budget" flag).
+- **Is scholarship a must?** — Yes/No. A clean gate: Yes sets both `preferences.scholarship_required` and
+  `financial.scholarship_dependent` true. **What scholarships are you planning to apply for?** — free text
+  → `preferences.scholarship_interests`, a *research hint* (which scholarships to dig into; "don't know /
+  all options" is a fine answer meaning research broadly). It never filters or scores. *(Legacy forms with
+  a "how will you pay" / merged "how will you fund" question still work — the tool falls back automatically
+  when the "is scholarship a must?" column is absent.)*
 - Are you aiming at a **regulated profession** — checkboxes (Medicine / Engineering / Law / Accounting
   / Pharmacy / Dentistry / Architecture / Nursing / None). *(Should match the intended career — see the
   Engineering-vs-CS edge case below.)*
@@ -58,18 +66,24 @@ fine — but keep the substring in bold intact.
   China / Japan). Picking several is fine (research-first breadth). *(Optional follow-up: **which country
   matters most?** — the agent records it in `preferences.notes` so research goes deepest where it
   counts.)*
-- What **field or subject**; do you **already know the exact course** (Yes → next section / No →
-  interest-discovery, via Forms "Go to section based on answer"); if yes, **name the course**(s).
-- **Degree level**; **when do you want to start** — pick a **year + season** (e.g. "Sept 2027") **or**
-  *"Flexible / show me all intakes"*. Intake only selects the application *cycle* to research — it never
-  filters or scores, so "Flexible" is a perfectly good answer (stored as `Flexible`).
-- **Rank your priorities** — the current form asks this as **eight per-category 1-7 sliders** (1 = least
-  important, 7 = most), one each for: **Cost / Scholarship / University Ranking / Course Ranking /
-  Employability / Recognition back home / Location / Hands-On Experience**. The tool detects them by the
-  shared *"rank your priorities"* marker + the bracketed category, then orders the categories by slider
-  value (highest first, ties broken by the form's column order) into `preferences.priorities`. This gives
-  a full 8-way ranking, richer than the old three dropdowns — including the new **Course Ranking**
-  (`course_quality` → `course_match`), which used to be non-form-only. *(Legacy forms with **#1/#2/#3
+- **Broad Area of Study + a course grid.** One **Broad Area of Study** dropdown (Arts, Humanities &
+  Design / Media, Communication & Social Sciences / Business, Finance & Management / Computer Science, IT
+  & Data / Engineering & Built Environment / Pure & Applied Sciences / Health & Medical Sciences /
+  Education & Teaching) → `preferences.fields_of_interest`. A **grid** of those same eight areas as columns
+  captures the exact course under the chosen area (e.g. Engineering & Built Environment = "Mechanical
+  Engineering") → `preferences.specific_courses` (the tool collects the one non-empty grid cell).
+- **When do you want to start** — a **year + season** (e.g. "Sept 2027") **or** *"Flexible / show me all
+  intakes"*. Intake only selects the application *cycle* to research — it never filters or scores, so
+  "Flexible" is a perfectly good answer (stored as `Flexible`). *(No separate "degree level" question →
+  the agent sets `degree_level` at finalize.)*
+- **Rank your priorities** — **eight per-category sliders**, now a **1-8 scale** (1 = least important,
+  8 = most), one each for: **Cost / Scholarship / University Ranking / Course Ranking / Employability /
+  Recognition back home / Location / Hands-On Experience**. The tool detects them by the shared *"rank
+  your priorities"* marker + the bracketed category, then orders the categories by slider value (highest
+  first, ties broken by the form's column order) into `preferences.priorities`. This gives a full 8-way
+  ranking including **Course Ranking** (`course_quality` → `course_match`). The ordering logic is
+  scale-agnostic, so the 1-7→1-8 change is transparent — but `ranking_importance` now carries a **1-8**
+  value; the `scoring-weights` skill should read it on that scale. *(Legacy forms with **#1/#2/#3
   priority** dropdowns still work — the tool falls back automatically when no sliders are present.)*
 - **`ranking_importance`** steers the `subject_reputation` sub-score (subject-specific standing +
   graduate outcomes, not overall vanity rank). If the form has a dedicated *"how much does your subject's
@@ -109,21 +123,36 @@ fine — but keep the substring in bold intact.
 
 For every student the tool flagged in `profile.json`'s **`_needs_review`**:
 
-1. **Grades** → parse `_intake_raw.grades` into `subjects[]` as `{subject, grade_or_predicted}`.
-   `grade_status` is already set from the form; sanity-check it. Then **delete `_intake_raw`**.
-2. **Recognition** → the tool auto-fills `recognition_targets` from the regulated-profession answer
+1. **Grades** → `subjects[]` is now built **deterministically** from the four dropdown pairs and
+   `grade_status = "expected"` (self-predicted / "confident of getting"). Subject names are normalised via
+   `SUBJECT_NORMALIZE` in `tools/ingest_form_csv.py` (dropdown label → canonical, e.g. "Physic"→"Physics",
+   "Math"→"Mathematics") — **if the form gains a new subject dropdown option, add it to that map** so it
+   doesn't pass through raw. Just sanity-check the result; leave `grade_status = "expected"` unless the
+   student volunteers these are actual/official-predicted grades (then set `actual`/`predicted`). The
+   longlist treats `expected` as **provisional** automatically (see the provisional-grades note below).
+   *(Legacy paragraph-grades forms still stage the free text under `_intake_raw.grades`; parse + delete
+   it as before.)*
+2. **Ethnicity** → `profile.ethnicity` is captured for **scholarship-eligibility** research. When you
+   research scholarships in Stage 3/4, use it to include/exclude ethnicity-gated funds (e.g. a
+   non-Bumiputra student can't claim Bumiputra-only scholarships). Never let it touch the desirability score.
+3. **Scholarship** → `scholarship_required` comes straight from the "Is scholarship a must?" gate (Yes →
+   a hard gate). `scholarship_interests` holds the free-text list of scholarships to research — feed it
+   into the Stage 3/4 scholarship columns ("all options" = research broadly).
+4. **Recognition** → the tool auto-fills `recognition_targets` from the regulated-profession answer
    (e.g. Engineering → `["MQA","BEM","Washington Accord"]`). **Verify** against the recognition
    guardrail in `00_overview.md` (MQA + the correct professional body) and correct if needed.
-3. **Undecided student** → confirm `interest_discovery`, then run the Stage 2 **career-backwards**
+5. **Undecided student** → confirm `interest_discovery`, then run the Stage 2 **career-backwards**
    branch (`02_aspirations_intake.md`) to propose candidate fields *with the requester* before
    discovery. Don't silently pick a field. *(If the **field** is already clear and only the exact
    course/university is open — e.g. "Computer Science" — leave `decided=false` but skip the full
    career-backwards pass; Stage 3 can discover courses directly.)*
-4. **Delete the `_needs_review` key** once done, so the finished `profile.json` matches the standard
+6. **Degree level** → no form question sets it; the agent sets `degree_level` at finalize
+   (an A-Level / STPM / Foundation student heading to a bachelor's → `undergraduate`).
+7. **Delete the `_needs_review` key** once done, so the finished `profile.json` matches the standard
    schema shape (no stray keys — compare against the current `profile_template()` in
    `tools/init_student.py`, the source of truth for the shape; note the `needs` block is the broad
    "support & belonging" set, so older students like `toru` carry a now-outdated `needs` shape).
-5. Write the student's `status.md` (so `resume.md` works next session).
+8. Write the student's `status.md` (so `resume.md` works next session).
 
 ## Before Stage 3 — per-student scoring weights (important)
 
@@ -137,11 +166,27 @@ weights into `tools/shortlist_schema.py` — that shared file is exactly what ma
 
 ## Edge cases & rules
 
-- **Priority sliders — ties & scale.** The 1-7 sliders can tie (a student may rate several categories the
-  same, or push the top value beyond 7). The tool orders equal values by the form's column order
-  (Cost → Scholarship → University Ranking → Course Ranking → Employability → Recognition → Location →
-  Hands-On), which is deterministic but arbitrary among ties — **sanity-check the ordering** against any
-  free-text notes before deriving `weights.json`, since the top band drives the weights.
+- **Provisional (self-predicted) grades.** The form asks for grades the student is *"confident of
+  getting"* → `grade_status = "expected"`. This is weaker than official predicted grades and than actual
+  results, so the longlist surfaces it automatically: `sync_shortlist.py` adds a **"Grades unverified
+  (self-predicted)"** warning to every row. Admission likelihood is still computed (the list stays
+  actionable) — just never reads as settled. When real results / official predicted grades arrive, set
+  `grade_status` to `actual`/`predicted` and re-sync to drop the caveat.
+  (It used to *also* suffix the grade column with "(provisional — self-predicted, confirm at results)".
+  Dropped on 2026-07-25: it repeated the warning already sitting on the same row, and cost 45 characters
+  in a column that now has a 40-character budget.)
+- **Ethnicity is capture-only for scholarships.** `profile.ethnicity` (PDPA-sensitive) exists to make
+  scholarship research eligibility-aware (Bumiputra-only vs open funds), nothing else. Never feed it into
+  the desirability score or any filter.
+- **Broad-Area grid split.** `specific_courses` comes from the one non-empty cell of the eight-column
+  "Broad Area of Study" grid. If a student somehow filled more than one area's cell, the tool keeps all
+  non-empty cells — spot-check that `specific_courses` matches the chosen `fields_of_interest`.
+- **Priority sliders — ties & scale.** The sliders are a **1-8** scale (they used to be 1-7) and can tie
+  (a student may rate several categories the same). The tool orders equal values by the form's column
+  order (Cost → Scholarship → University Ranking → Course Ranking → Employability → Recognition →
+  Location → Hands-On), deterministic but arbitrary among ties — **sanity-check the ordering** against any
+  free-text notes before deriving `weights.json`, since the top band drives the weights. `ranking_importance`
+  now carries a 1-8 value; make sure the `scoring-weights` skill reads it on that scale.
 - **Unsupported target countries are reported, not dropped.** A picked country outside the 6 sets
   (UK / Australia / USA / Singapore-Malaysia / China / Japan) — e.g. **Canada** or **Germany** — is left
   out of `target_countries` but recorded in a `_needs_review` line **and** `preferences.notes`, so
@@ -149,10 +194,10 @@ weights into `tools/shortlist_schema.py` — that shared file is exactly what ma
 - **Budget unit ambiguity.** A bare number like **`500`** for a whole degree is almost certainly *in
   thousands* (RM 500,000), not RM 500. The tool captures the raw cell verbatim; **you** interpret the unit
   at finalize and note the assumption — confirm the real ceiling with the student.
-- **`grade_status` / `degree_level` may be absent columns.** This form has no "actual vs predicted" or
-  "degree level" question. The tool infers `grade_status` from the grades question wording
-  ("...your **predicted** grades" → `predicted`); `degree_level` stays null → **you** set it at finalize
-  (a "Degree ..." answer → `undergraduate`).
+- **`degree_level` is an absent column.** The form has no "degree level" question, so it stays null →
+  **you** set it at finalize (an A-Level / STPM / Foundation student heading to a bachelor's →
+  `undergraduate`). `grade_status` is set from the subject dropdowns → `expected` (see the provisional
+  grades note above); a legacy "actual vs predicted" column, if present, overrides it.
 - **No consent / no name** → row skipped (reported in the summary). This is the PDPA gate — respect it.
 - **Duplicate names** → same slug; the second is skipped rather than clobbering the first. Disambiguate
   the name (or `--force` deliberately) if two real people share a name.
@@ -160,11 +205,12 @@ weights into `tools/shortlist_schema.py` — that shared file is exactly what ma
   label; a rare answer may split oddly. Spot-check `target_countries` / `location_prefs` after ingest.
 - **Everything the form couldn't capture stays `null`/empty** — the tool never invents values. Fill
   gaps by contacting the requester, same honesty rule as `01`.
-- **"Undecided" over-triggers.** The tool flags `undecided` whenever "know the exact course?" = No OR
-  `specific_courses` is empty — but a student who clearly knows their **field** (e.g. "Computer
-  Science") just doesn't know the exact *course/university*. That is normal and needs **no** Stage-2
-  career-backwards pass; set `interest_discovery.decided=false` but note the field is known and go
-  straight to Stage 3. Only run career-backwards when the *field itself* is genuinely open.
+- **"Undecided" over-triggers.** The tool flags `undecided` whenever `specific_courses` is empty (on the
+  current form: the student picked a Broad Area but left the course grid blank) — but a student who
+  clearly knows their **field** (e.g. "Computer Science") just doesn't know the exact *course/university*.
+  That is normal and needs **no** Stage-2 career-backwards pass; set `interest_discovery.decided=false`
+  but note the field is known and go straight to Stage 3. Only run career-backwards when the *field
+  itself* is genuinely open. *(When the grid course is filled, the tool marks `decided=true` — no flag.)*
 - **English "Other" / "Not yet".** If the respondent picks "Other" without naming the test, `test` is
   unusable — confirm which test + score before it counts. "Not yet" is fine (many longlist rows won't
   need a score until Stage 4). The specific tests-to-sit come from research, not the form.
@@ -173,11 +219,12 @@ weights into `tools/shortlist_schema.py` — that shared file is exactly what ma
   improved form asks intake as **year+season or "Flexible"**; the tool collapses blank / "flexible" /
   "not sure" to `intake = "Flexible"` (never a fake date). `expected_completion` is still free text —
   normalize it by hand.
-- **Merged funding question.** The tool reads the single *"how will you fund this degree?"* answer and
-  derives `funding_source` + `scholarship_required` + `scholarship_dependent` together (full/near-full →
-  both flags true; partial/aid → required true, dependent false; family/self → both false). If the form
-  still has the **legacy** two questions instead, the tool falls back to them automatically. If the
-  answer is free-text "Other" and matches no keyword, funding stays blank → confirm at finalize.
+- **Scholarship gate + interests.** The current form asks *"Is scholarship a must?"* (Yes/No) → the tool
+  sets `scholarship_required` + `scholarship_dependent` directly, and *"What scholarships are you planning
+  to apply for?"* (free text) → `scholarship_interests` (a research hint, never a filter; `funding_source`
+  stays null here). If the gate column is absent the tool falls back, in order, to the merged *"how will
+  you fund this degree?"* question and then the legacy *"how will you pay" + "only if you win a
+  scholarship"* pair. A blank/unrecognized fallback answer leaves the gate null → confirm at finalize.
 - **Broad `needs` set.** `needs` is now the faith/culture-neutral "support & belonging" block
   (`diet_halal`, `worship_facilities`, `diaspora_community`, `disability_accessibility`,
   `wellbeing_support`, `lgbtq_friendly`, `personal_safety`, `climate_weather`, …). Only ticked options

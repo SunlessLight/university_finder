@@ -38,13 +38,14 @@ def profile_template(slug, name):
         "age": None,
         "gender": None,
         "nationality": None,
+        "ethnicity": None,           # PDPA-sensitive; informs scholarship-eligibility research (e.g. Bumiputra vs non-Bumiputra funds), never a desirability input
         "country_of_residence": None,
         "home_country": "Malaysia",
         "recognition_targets": [],  # e.g. ["MQA","MMC"] — only for regulated professions
         "education_history": [],     # [{institution, qualification, years}]
         "current_program": {"type": None, "institution": None, "expected_completion": None},
         "subjects": [],              # [{subject, grade_or_predicted}]
-        "grade_status": None,        # "actual" | "predicted"
+        "grade_status": None,        # "actual" | "predicted" | "expected" (self-predicted / "confident of getting" — provisional)
         "english_proficiency": {"test": None, "score": None, "test_date_or_planned": None},
         "financial": {
             "budget_per_year": None,
@@ -93,6 +94,7 @@ def preferences_template():
         "total_budget_ceiling": None,
         "currency": "MYR",
         "scholarship_required": None,
+        "scholarship_interests": None,  # free-text: scholarships the student wants researched (a Stage 3/4 hint, not a filter)
         "priorities": [],        # ordered, e.g. ["cost","employability","recognition","ranking","location"]
         "ranking_importance": None,
         "min_subject_rank_pref": None,
