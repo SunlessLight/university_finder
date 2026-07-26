@@ -49,8 +49,8 @@ Common App, never an aggregator:
 
 Set **`Info source = Official page`** on each verified row (it starts `Not verified`). Where the official
 page disagrees with a search result, **the official figure wins** — put the discrepancy in `Notes`.
-Verifying may need a couple of Firecrawl scrapes of clean official pages — **ask the user before running**,
-per `00_overview.md`.
+Verifying may need a couple of Firecrawl scrapes of clean official pages — just run them; no permission
+needed (guardrail #6 in `00_overview.md`).
 
 **3. Re-judge admissibility & warnings on the verified facts.** Re-confirm **`Admission likelihood`**
 (Reach/Match/Safety) and the hard **`Warnings`** (`Over budget`, `English short`, `Deadline passed`) —
@@ -123,10 +123,11 @@ sources for hard facts, enforced non-empty sections, the PDF export — is **ide
   Reddit / The Student Room / YouTube / Instagram / Discord — which Firecrawl either can't scrape (IG / FB
   / TikTok / X are hard-skipped in `firecrawl_search.py`) or handles unreliably, so paid credits buy almost
   nothing here. Capture the URL + a snippet from the search result; don't try to scrape the page.
-- **Firecrawl (paid credits) — reserve for hard-fact official pages that block Claude's plain fetch**: fee
+- **Firecrawl — reserve for hard-fact official pages that block Claude's plain fetch**: fee
   pages, fee PDFs, some scholarship/visa pages (the recurring "confirm — blocks automated fetch" gaps).
-  There the info difference is real (an exact figure vs "confirm later"). Pre-authorised for these official
-  pages during report research; don't spend credits on the culture/admit sections.
+  There the info difference is real (an exact figure vs "confirm later"). Run it freely on those pages —
+  no permission needed — but don't point it at the culture/admit sections, where it returns worse results
+  than free search.
 - Firecrawl doesn't offload the agent's reasoning — fetched content still lands in context; the win is
   reliability on protected pages + fewer failed-fetch retries.
 
@@ -222,8 +223,8 @@ and frame every one as a **"does THIS student fit?"** check — not a brochure:
 Same scraper split as the course path: **decision-texture** (archetype, culture, student life, city,
 food, sentiment) → **free WebSearch + social/forum/video** (Reddit / YouTube / student-society pages —
 links + snippets, don't scrape); **hard facts** (aid policy, cost of attendance, deadlines, test
-requirements) → **official pages** (Firecrawl gated — ask before spending). If a student already has
-`student_life_research.md`, read it first; don't pay for it twice.
+requirements) → **official pages** (Firecrawl where a page blocks a plain fetch — no permission needed).
+If a student already has `student_life_research.md`, read it first rather than re-researching it.
 
 ### The 14 university sections (the tool enforces all 14 — empty = build fails)
 

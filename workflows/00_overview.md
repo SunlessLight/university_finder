@@ -152,8 +152,14 @@ These are *why this project exists* — they stop a tidy-looking list from being
    won't let the student practise in Malaysia is a dealbreaker, not a footnote. The
    profession → body mapping (MMC / BEM+Washington Accord / LPQB / MIA+ACCA / LAM / …) lives in
    `01_intake.md`, finalize step 4 — `ingest_form_csv.py` auto-fills it best-effort, and you verify.
-6. **Credits are gated.** `firecrawl_search.py` costs money. **Ask the user before running it.** Use
-   built-in web search/fetch for quick free checks; reserve Firecrawl for scraping clean prospectus pages.
+6. **Right scraper for the job — no permission needed.** `firecrawl_search.py` costs credits; **spend
+   them, don't ask** (the gate was removed 2026-07-27 — it stalled every stage for no safety gain).
+   What survives is *routing*, and it is about what works, not what costs: **free WebSearch/WebFetch
+   for decision texture** (Reddit, The Student Room, YouTube, student societies — IG/FB/TikTok/X are
+   hard-skipped inside `firecrawl_search.py`, so credits buy nothing there), **Firecrawl for official
+   pages that block a plain fetch** (fee tables, fee PDFs, walled scholarship/visa pages), where an
+   exact figure beats "confirm later". Tune `--limit`/`--scrape-top` for signal, not for spend:
+   scraped pages land in context and dilute it.
 
 ## Privacy (PDPA)
 

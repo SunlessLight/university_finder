@@ -47,7 +47,8 @@ starts talking about ongoing work, offer it.
 4. **If `status.md` is missing,** reconstruct the state from the files, **create** `status.md` from
    the template below, and tell the student you generated it fresh.
 5. **Brief the student.** Give a concise summary: current stage, the single most important next
-   action, and any open questions or drift you found. Confirm before doing paid or destructive work.
+   action, and any open questions or drift you found. Confirm before doing **destructive** work
+   (`--force`, demoting rows) — paid research needs no confirmation.
 
 ## Updating status.md (the discipline that keeps it honest)
 
@@ -97,8 +98,8 @@ Stage <n> — <done | in progress | blocked>. <one line on where exactly>
   under "Recent actions" (keep it short — last few sessions), not by stacking whole old snapshots.
 - **PDPA.** `status.md` lives in the gitignored `data/students/<slug>/` folder like the other files.
   It may summarise grades/scope — keep it local, never commit or share.
-- **Don't burn credits to resume.** Reconstructing state is a **free** operation (reading local
-  files). Never call `firecrawl_search.py` just to figure out where you are.
+- **Never search to resume.** State lives in local files — reconstructing it is a read, not research.
+  Calling `firecrawl_search.py` to figure out where you are answers the wrong question entirely.
 
 ## Done when
 

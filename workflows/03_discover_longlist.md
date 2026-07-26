@@ -17,7 +17,7 @@ countries, score them at snippet level, and land them in `master_list.csv` as **
 ## Tools used (in order)
 
 1. `firecrawl_search.py --student <slug>` — discovery: runs search queries, saves results to
-   `.tmp/<slug>/search_results.json`. **Costs credits — ask the user before running.**
+   `.tmp/<slug>/search_results.json`. Costs credits; **run it, no permission needed.**
 2. *(agent step)* review results, extract candidates → write `.tmp/<slug>/uni_candidates.json`.
 3. `sync_shortlist.py --student <slug>` — scores, dedupes, appends Longlist rows to `master_list.csv`.
 
@@ -483,8 +483,9 @@ must say why).
 
 - **Aim wide** — a Longlist of 20-40 across countries is healthy. Include some safe options, not only
   aspirational ones.
-- **Don't over-scrape** — tune `--limit` / `--scrape-top` to control credit use; scraping costs more than
-  searching. Only scrape the most promising official pages.
+- **Don't over-scrape — for signal, not for spend.** Every scraped page lands in context and dilutes it,
+  so a wide `--scrape-top` makes the extraction step *worse*, not just pricier. Tune `--limit` /
+  `--scrape-top` to the most promising official pages; a snippet is enough for the rest at this stage.
 - **Provisional facts** — snippet-level fees/requirements are often wrong or out of date. That's fine here;
   Stage 4 verifies. Keep `source_authority = Not verified` until then.
 - **CSV append needs a trailing newline** — `sync_shortlist.py` appends rows. If the existing

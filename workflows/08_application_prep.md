@@ -76,8 +76,8 @@ still renders (as prose) for back-compat.
 - **Claude WebSearch / WebFetch (free) — the default.** Deadlines, test policy, aid forms/dates, fees and
   supplement counts live on official admissions/financial-aid pages that fetch cleanly. All of the US
   research used free search/fetch only.
-- **Firecrawl (paid, gated) — only if an official page hard-blocks a clean fetch** (a fee PDF, a
-  login-walled aid page). **Ask before spending credits** (guardrail #6 in `00_overview.md`).
+- **Firecrawl — only if an official page hard-blocks a clean fetch** (a fee PDF, a login-walled aid
+  page). Run it when that happens; no permission needed (guardrail #6 in `00_overview.md`).
 
 ## What to capture per university (the apply mechanics)
 
@@ -184,8 +184,8 @@ research. `checklist` fields as arrays are back-compatible: old string guides re
 - **Overlap with `05_decide_and_apply.md`.** Stage 5's `recommendation.md` also groups an apply strategy
   by system; this workflow is the standalone, per-region, report-free version. Use 5b when the student
   wants a ranked *decision*; use this when they've decided to apply broadly and just need the mechanics.
-- **Credits gated / PDPA** — free search by default (ask before Firecrawl); output lives in the
-  gitignored `data/students/<slug>/`, never committed.
+- **PDPA** — output lives in the gitignored `data/students/<slug>/`, never committed. (Free search is
+  the default here for coverage, not cost — most apply-mechanics pages fetch cleanly.)
 
 ## Done when
 

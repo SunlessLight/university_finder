@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(python tools/apply_prep_to_pdf.py:*)",
+      "Bash(python tools/build_application_prep.py:*)",
+      "Bash(python tools/build_calendar.py:*)",
+      "Bash(python tools/build_dossier.py:*)",
+      "Bash(python tools/build_glossary_sheet.py:*)",
+      "Bash(python tools/check_master_list.py:*)",
+      "Bash(python tools/compare_universities.py:*)",
+      "Bash(python tools/dossier_to_pdf.py:*)",
+      "Bash(python tools/firecrawl_search.py:*)",
+      "Bash(python tools/html_to_pdf.py:*)",
+      "Bash(python tools/md_to_pdf.py:*)",
+      "Bash(python tools/sync_shortlist.py:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(ls:*)",
+      "PowerShell(python tools/apply_prep_to_pdf.py:*)",
+      "PowerShell(python tools/build_application_prep.py:*)",
+      "PowerShell(python tools/build_calendar.py:*)",
+      "PowerShell(python tools/build_dossier.py:*)",
+      "PowerShell(python tools/build_glossary_sheet.py:*)",
+      "PowerShell(python tools/check_master_list.py:*)",
+      "PowerShell(python tools/compare_universities.py:*)",
+      "PowerShell(python tools/dossier_to_pdf.py:*)",
+      "PowerShell(python tools/firecrawl_search.py:*)",
+      "PowerShell(python tools/html_to_pdf.py:*)",
+      "PowerShell(python tools/md_to_pdf.py:*)",
+      "PowerShell(python tools/sync_shortlist.py:*)",
+      "PowerShell(.\\.venv\\Scripts\\Activate.ps1:*)",
+      "PowerShell(git status:*)",
+      "PowerShell(git diff:*)",
+      "PowerShell(git log:*)",
+      "PowerShell(git show:*)",
+      "PowerShell(Get-ChildItem:*)"
+    ],
+    "ask": [
+      "Bash(python tools/ingest_form_csv.py:*)",
+      "Bash(python tools/init_student.py:*)",
+      "Bash(rm:*)",
+      "Bash(git push:*)",
+      "Bash(git commit:*)",
+      "PowerShell(python tools/ingest_form_csv.py:*)",
+      "PowerShell(python tools/init_student.py:*)",
+      "PowerShell(Remove-Item:*)",
+      "PowerShell(git push:*)",
+      "PowerShell(git commit:*)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)"
+    ]
+  }
+}

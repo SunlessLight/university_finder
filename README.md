@@ -59,7 +59,7 @@ data banks in bulk. Build the form once — the exact questions, sections, and c
 
 Easiest: open this folder in VSCode and tell Claude **"ingest the form responses"** — Claude reads the
 workflows, finalizes the judgment-heavy fields per student (grades → subjects, recognition targets,
-degree level), and drives the remaining stages, asking before any paid Firecrawl run. Or by hand:
+degree level), and drives the remaining stages. Or by hand:
 
 ```powershell
 python tools/ingest_form_csv.py "data/form/responses.csv" --dry-run   # preview
@@ -86,6 +86,19 @@ schema source of truth that `ingest_form_csv.py` imports), but the form is the n
 Full instructions — the per-destination query playbook, scoring rubric, the 16-section university-report template,
 and the narrowing rules — live in [workflows/](workflows/), starting with
 [00_overview.md](workflows/00_overview.md).
+
+### Running a stage with Claude
+
+**Don't use plan mode for a normal run.** The workflow files already *are* the plan, so planning one
+re-derives what's on disk and costs a whole extra pass. Say what you want ("build Aisyah's longlist",
+"resume ong-kyan") and let Claude read the workflow and execute. Save plan mode for changing the
+*system* — a schema change, a new tool, a workflow rewrite.
+
+Run in **`acceptEdits`** mode, not `bypassPermissions`. `.claude/settings.json` allowlists every
+`tools/*.py` script and the read-only git commands, so the whole pipeline runs without prompts —
+while `--force`, `rm` and `git push` still stop and ask. That last stop matters more here than in a
+normal repo: `data/students/` is **gitignored**, so an overwritten `profile.json` or `master_list.csv`
+has no git history to restore from.
 
 ## Notes
 

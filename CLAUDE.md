@@ -28,12 +28,25 @@ anything new. Only create a new script when nothing exists.
 then brief the student on the current stage + next action. Rewrite `status.md` at the end of each
 stage/session so the next cold start is accurate.
 
-**2. Learn and adapt when things fail.** Read the full error and trace, fix the script and retest
-(if it uses paid API calls or credits, check with me before re-running), and document what you
-learned in the workflow (rate limits, timing quirks, unexpected behavior).
+**2. Learn and adapt when things fail.** Read the full error and trace, fix the script and retest,
+and document what you learned in the workflow (rate limits, timing quirks, unexpected behavior).
 
 **3. Keep workflows current.** Workflows evolve as you learn — update them when you find better
 methods, discover constraints, or hit recurring issues.
+
+**4. Running a workflow is not a planning exercise.** The files in `workflows/` **are** the plan —
+objective, tools in order, expected output, edge cases. Re-planning them wastes a whole pass. For a
+routine pipeline run (intake, longlist, university report, application prep, resume): read the
+workflow, then execute. **Don't enter plan mode.** Plan mode is for changing the *system* — a schema
+change, a new tool, a workflow rewrite — not for running it.
+
+That is about *planning overhead*, not about judgement. These checkpoints stay, and they are
+conversations with me, not permission prompts:
+- **Stage 1 finalize** — settle the `_needs_review` items with me before Stage 3 scores anything.
+- **Stage 4** — *I* pick the finalists. Render `compare_universities.py` and wait; don't self-select.
+- **Anything destructive** — `--force` on an existing student folder, or demoting/rejecting a row I
+  haven't agreed to drop. `data/students/` is **gitignored**, so there is no `git checkout` undo.
+- **`check_master_list.py` must come back clean** before a list goes to a student.
 
 ## The Self-Improvement Loop
 
@@ -77,8 +90,10 @@ These stop a tidy-looking list from being quietly wrong:
 - **Total cost in MYR**, not annual tuition (3-yr UK vs 4-yr US must be comparable). MYR is approximate.
 - **Balanced shortlist** — a Reach/Match/Safety spread, not top-N by score.
 - **Recognition back home** (MQA + professional body) is a gate for regulated professions.
-- **Credits are gated** — ask me before running `firecrawl_search.py`. Use free web search/fetch for
-  quick checks; reserve Firecrawl for clean official pages.
+- **Spend the credits — don't ask.** Run `firecrawl_search.py` when the workflow calls for it; no
+  permission needed. Free web search/fetch is still the *default* for forums, social and student-life
+  texture, because Firecrawl hard-skips those sites and buys nothing there. Reserve Firecrawl for
+  official pages that block a plain fetch — that's routing, not budget.
 
 ## Privacy & files
 
