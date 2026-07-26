@@ -2,8 +2,8 @@
 
 A self-contained **WAT** (Workflows, Agents, Tools) project: probabilistic AI handles the reasoning,
 deterministic Python handles execution. It takes a **Malaysian student** from *"who am I / what do I want"*
-to *"here is exactly how I apply to these specific universities"* — through a 5-stage narrowing pipeline
-that ends in deep per-university dossiers, a ranked recommendation, and a deadline calendar. Everything
+to *"here is exactly how I apply to these specific universities"* — through a four-stage narrowing pipeline
+that ends in deep per-university reports, a ranked recommendation, and a deadline calendar. Everything
 lives in one local data bank that opens in Excel / Google Sheets / LibreOffice.
 
 Sibling of the `guest_speakers/` project; reuses its proven discovery + scoring patterns.
@@ -14,7 +14,8 @@ See [CLAUDE.md](CLAUDE.md) for the agent operating instructions, and
 ## Layout
 
 ```
-workflows/   Markdown SOPs (00_overview … 05_decide_and_apply, + 07_form_intake, 08_application_prep)
+workflows/   Markdown SOPs (00_overview, 01_intake, 03_discover_longlist, 04_university_dossier,
+             05_decide_and_apply, + 08_application_prep, resume)
 tools/       Python execution scripts (firecrawl_search, init_student, ingest_form_csv,
              shortlist_schema, sync_shortlist, compare_universities, build_dossier, build_calendar)
 data/students/   One private data bank per student (gitignored — PII)
@@ -27,11 +28,13 @@ data/form/       Google Form CSV exports dropped here for batch intake (gitignor
 
 | Stage | Output | What you get |
 |---|---|---|
-| 1 Intake | `profile.json` | Grades, budget, English, recognition needs |
-| 2 Aspirations | `preferences.json` | Countries, field, priorities (interest-discovery if undecided) |
+| 1 Intake | `profile.json` + `preferences.json` | Grades, budget, English, recognition needs — plus countries, field and priorities. Built from the Google Form CSV |
 | 3 Discover | `master_list.csv` (Longlist) | 20-40 candidates, scored |
-| 4 Verify + Dossier | `dossiers/<uni>.md` | Student picks 3-5 finalists; verify their facts against official sources (Reach/Match/Safety), then a deep 16-section dossier each |
+| 4 Verify + Report | `dossiers/<uni>.md` | Student picks 3-5 finalists; verify their facts against official sources (Reach/Match/Safety), then a deep 16-section **university report** each |
 | 5 Decide | `recommendation.md` + `calendar.md` | Ranked picks, application strategy, deadlines |
+
+There is **no Stage 2** — intake and aspirations merged into Stage 1 on 2026-07-25, when the Google
+Form became the only on-ramp. Stages 3-5 kept their numbers rather than renumber the whole repo.
 
 ## Setup (first time)
 
@@ -49,12 +52,19 @@ pip install -r requirements.txt
 
 ## Run
 
-Easiest: open this folder in VSCode and tell Claude **"run student intake for &lt;name&gt;"** — Claude reads
-the workflows and drives all 5 stages, asking before any paid Firecrawl run. Or by hand:
+**Intake is a Google Form.** Students request a search by filling it in; the responses become student
+data banks in bulk. Build the form once — the exact questions, sections, and consent gate are in
+[workflows/01_intake.md](workflows/01_intake.md) — then export responses as CSV and drop the file in
+**`data/form/`** (gitignored — PII).
+
+Easiest: open this folder in VSCode and tell Claude **"ingest the form responses"** — Claude reads the
+workflows, finalizes the judgment-heavy fields per student (grades → subjects, recognition targets,
+degree level), and drives the remaining stages, asking before any paid Firecrawl run. Or by hand:
 
 ```powershell
-python tools/init_student.py "Aisyah Rahman"
-#   ...Stage 1-2: fill profile.json / preferences.json in conversation...
+python tools/ingest_form_csv.py "data/form/responses.csv" --dry-run   # preview
+python tools/ingest_form_csv.py "data/form/responses.csv"             # create folders
+#   ...Stage 1: finalize each student's _needs_review items, then delete the key...
 
 #   ...Stage 3: ask Claude to derive data/students/<slug>/weights.json (the 'scoring-weights' skill)
 #      — per-student scoring weights; sync refuses to run without them...
@@ -70,26 +80,12 @@ python tools/build_dossier.py --student aisyah-rahman --input .tmp/aisyah-rahman
 python tools/build_calendar.py --student aisyah-rahman
 ```
 
-Full instructions — the per-destination query playbook, scoring rubric, the 16-section dossier template,
+`tools/init_student.py` still scaffolds a single student folder by hand (and its templates are the
+schema source of truth that `ingest_form_csv.py` imports), but the form is the normal way in.
+
+Full instructions — the per-destination query playbook, scoring rubric, the 16-section university-report template,
 and the narrowing rules — live in [workflows/](workflows/), starting with
 [00_overview.md](workflows/00_overview.md).
-
-## Intake from a Google Form (help many students at once)
-
-Instead of a live conversation, others can request a search by filling a **Google Form**; the responses
-become student data banks in bulk. This replaces Stages 1-2 only — Stages 3-5 are unchanged.
-
-1. Build the form once — the exact questions, sections, and consent gate are in
-   [workflows/07_form_intake.md](workflows/07_form_intake.md).
-2. Export responses as CSV and drop the file in **`data/form/`** (gitignored — PII).
-3. Ingest:
-   ```powershell
-   python tools/ingest_form_csv.py data/form/responses.csv --dry-run   # preview
-   python tools/ingest_form_csv.py data/form/responses.csv             # create folders
-   ```
-   Or just tell Claude **"ingest the form responses"** and it follows workflow 07 — creating one
-   `profile.json` + `preferences.json` per consenting respondent, then finalizing the few
-   judgment-heavy fields (grades → subjects, recognition targets, undecided students) before Stage 3.
 
 ## Notes
 

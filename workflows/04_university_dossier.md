@@ -1,23 +1,30 @@
-# Workflow: Stage 4 — Verify & Dossier (per finalist)
+# Workflow: Stage 4 — Verify & University Report (per finalist)
 
 ## Objective
 
 For each **finalist** (the 3-5 universities the student picks from the Longlist), produce a deep,
-standardized **16-section dossier** (Snapshot + 14 content sections + Sources) that answers three decision
-questions — **can I get in? · will I belong & thrive? · what will it take to apply?** — so the student can
-*decide*, not just compare. Lead with texture that determines whether they apply; keep the hard-fact
-sections as guardrails. This is the most research-intensive stage — do it only for finalists, A-tier and
-best-fit first.
+standardized **16-section university report** (Snapshot + 14 content sections + Sources) that answers three
+decision questions — **can I get in? · will I belong & thrive? · what will it take to apply?** — so the
+student can *decide*, not just compare. Lead with texture that determines whether they apply; keep the
+hard-fact sections as guardrails. This is the most research-intensive stage — do it only for finalists,
+A-tier and best-fit first.
+
+> **The report is where depth lives — the master list stays a scan.** Stage 3 deliberately keeps
+> `master_list.csv` to one-line, budgeted cells so a student can *cut* by skimming it; everything that
+> needs a paragraph belongs here instead. Promoting a row writes back exactly **two one-sentence cells**
+> (`Course at a glance`, `Student life`) condensed from the report — never more. If you find yourself
+> wanting to put a paragraph in a cell, it belongs in a report section or in `research_notes.md`. Say a
+> word to the student and it should be "report", not "dossier" — they don't use that word.
 
 > **This stage absorbs the old "verify → shortlist" step.** There is no longer a separate 8-12 Shortlist
 > tier: the student picks their finalists straight off the Longlist, and you **verify each pick's hard
 > facts before you deep-research it**. Do the pre-flight cut below *first* — it's cheap, and it stops you
-> sinking a full dossier into a university that turns out to be over budget or past its deadline.
+> sinking a full report into a university that turns out to be over budget or past its deadline.
 
 ## Before you research: pick, verify, and cut (the pre-flight)
 
 Longlist facts are *provisional* (snippet-level, often wrong or stale). Run this cheap cut on the
-student's picks **before** any deep dossier research:
+student's picks **before** any deep report research:
 
 **1. Pick the finalists.** The student promotes their picks from the Longlist to
 **`List status = Shortlist`** (an agent edit to `master_list.csv`) — aim for ~3-5 they genuinely want to
@@ -55,16 +62,16 @@ keep borderline cases Reach until results come in. To update an existing row's f
 spread — at least one **Safety** the student clears comfortably, not five long-shots. If verification kills
 a pick (over budget even with scholarship, deadline passed, entry unreachable), demote it to
 **`Rejected`** with a one-line reason in `Notes` and have the student pick a replacement from the
-Longlist — *before* you sink dossier research into it. For a kept Reach where direct entry is a stretch,
+Longlist — *before* you sink report research into it. For a kept Reach where direct entry is a stretch,
 research the **backup entry route** (foundation year / INTO-Kaplan-Navitas / community-college transfer)
-and its rough entry bar, so a grades-short student still has a route. **This is a dossier section, not a
+and its rough entry bar, so a grades-short student still has a route. **This is a report section, not a
 column** (it left the CSV on 2026-07-25): on a longlist the student is still scanning to cut, and most
 cells just restated the obvious — "direct entry is a Safety on his grades" tells them nothing. It earns
 its space once a row survives to Shortlist, where the detail is actually actionable.
 
 **Fill `Course at a glance` and `Student life` when you promote a row.** They are one tight sentence
 each — the shape of the degree ("3-yr, broad first year then pick a major") and what living there is
-like ("large suburban campus, strong industry-placement culture") — condensed from the dossier's
+like ("large suburban campus, strong industry-placement culture") — condensed from the report's
 *Course details & structure* and *Student life & culture* sections. They stay blank on unresearched
 rows on purpose; a plausible-sounding invented sentence about campus culture is a fabricated fact.
 Campus and city facts are course-independent, so reuse them across students rather than re-researching
@@ -72,28 +79,28 @@ Campus and city facts are course-independent, so reuse them across students rath
 
 > **Too few survivors?** If the cut leaves fewer than ~3 workable picks, go back to **Stage 3**
 > (`03_discover_longlist.md`) and widen discovery (more countries or safer options) rather than
-> dossiering weak rows.
+> writing reports on weak rows.
 
-Only once a pick survives this cut do you build its dossier below. The dossier's own deep research (Costs,
+Only once a pick survives this cut do you build its report below. The report's own deep research (Costs,
 Scholarships, Visa, Recognition sections) is where the *full* funding and fit detail gets written — you
 don't also need to write paragraphs into the master-list scholarship cells; the make-or-break facts above
-are enough to earn a dossier.
+are enough to earn a report.
 
-## Two dossier paths — course vs university (pick with `--mode`)
+## Two report paths — course vs university (pick with `--mode`)
 
-`build_dossier.py` renders **two** dossier shapes; choose per finalist:
+`build_dossier.py` renders **two** report shapes; choose per finalist:
 
-- **`--mode course` (default) — the course-specific dossier.** *"Should I do THIS course here?"* Every
+- **`--mode course` (default) — the course-specific report.** *"Should I do THIS course here?"* Every
   `master_list.csv` row is a `University + Course` pair, so it matches/flips the row by
   `course_key(university, course)`. Use it for **UK · Australia · Singapore · China** — anywhere you
   apply to a named degree. The 16-section spec below is this path.
-- **`--mode university` — the whole-institution dossier. US-only.** *"Should I GO to this university?"*
+- **`--mode university` — the whole-institution report. US-only.** *"Should I GO to this university?"*
   US undergrads apply to the **institution** and typically **declare a major in year 2**, so a
-  course-anchored dossier asks the wrong question. This path swaps the course lens for institutional
+  course-anchored report asks the wrong question. This path swaps the course lens for institutional
   fit — character, the "type" of student it wants, curriculum shape, culture, aid, setting. It matches/
   flips by **university name only** (ignoring `Course`) and **hard-errors if a matched row's `Country`
   isn't `USA`**. Filename is slugged on the university alone (`stanford-university.md`), so it never
-  collides with a course dossier for the same uni — both can coexist. See **"The US university path"** below.
+  collides with a course report for the same uni — both can coexist. See **"The US university path"** below.
 
 Everything else — the free-search-vs-Firecrawl split, "capture social links, don't scrape", official
 sources for hard facts, enforced non-empty sections, the PDF export — is **identical for both paths**.
@@ -105,8 +112,8 @@ sources for hard facts, enforced non-empty sections, the PDF export — is **ide
    country's visa site, MQA). **Decision texture** (who gets in, student life, the city) comes from search
    + forums/video/social — capture their URLs + snippets without scraping them.
 2. *(agent step)* assemble `.tmp/<slug>/dossier_<uni>.json`.
-3. `build_dossier.py --student <slug> --input .tmp/<slug>/dossier_<uni>.json` — renders the dossier and
-   flips that row to `List status = Finalist`. (There is no `Dossier status` column — the dossier file
+3. `build_dossier.py --student <slug> --input .tmp/<slug>/dossier_<uni>.json` — renders the report and
+   flips that row to `List status = Finalist`. (There is no `Dossier status` column — the report file
    under `dossiers/` *is* the record that it was built.)
 
 ### Which scraper for which section (spend credits where they matter)
@@ -119,7 +126,7 @@ sources for hard facts, enforced non-empty sections, the PDF export — is **ide
 - **Firecrawl (paid credits) — reserve for hard-fact official pages that block Claude's plain fetch**: fee
   pages, fee PDFs, some scholarship/visa pages (the recurring "confirm — blocks automated fetch" gaps).
   There the info difference is real (an exact figure vs "confirm later"). Pre-authorised for these official
-  pages during dossier research; don't spend credits on the culture/admit sections.
+  pages during report research; don't spend credits on the culture/admit sections.
 - Firecrawl doesn't offload the agent's reasoning — fetched content still lands in context; the win is
   reliability on protected pages + fewer failed-fetch retries.
 
@@ -183,7 +190,7 @@ Ordered decision-first. **Snapshot (1)** and **Sources (16)** are rendered by th
 
 ## The US university path (`--mode university`)
 
-For US finalists, build the whole-institution dossier instead of (or alongside) a course one. It answers
+For US finalists, build the whole-institution report instead of (or alongside) a course one. It answers
 *"is this the right **place** for me?"* — the question US admissions actually turns on.
 
 ### What US fit-qualities to look for (the lens)
@@ -290,13 +297,13 @@ python tools/build_dossier.py --student <slug> --input .tmp/<slug>/uni_mit.json 
 ```
 Output: `data/students/<slug>/dossiers/<uni-slug>.md`; every `master_list.csv` row for that university
 flips to `Finalist` (the tool prints which, and refuses if any matched row isn't a US row). Export to PDF
-exactly as below — `dossier_to_pdf.py` reads either dossier unchanged.
+exactly as below — `dossier_to_pdf.py` reads either report unchanged.
 
 ## Writing rules — make it skimmable (non-negotiable, both modes)
 
-A readability review (`tools/report.md`) found the old dossiers were well-researched but **fought
+A readability review found the old reports were well-researched but **fought
 the reader**: walls of bold prose, the same facts repeated 3-4×, the one make-or-break warning
-buried mid-paragraph, and unexplained acronyms. The student opens a dossier to answer three
+buried mid-paragraph, and unexplained acronyms. The student opens a report to answer three
 questions — *can I get in? · can I afford it? · what do I actually do?* — and must be able to
 **skim** to each answer. Write to that:
 
@@ -307,7 +314,7 @@ questions — *can I get in? · can I afford it? · what do I actually do?* — 
   don't re-rank it every section, and never write "#1 priority" without the list being visible.
 - **Say each key fact once.** Pick the section that owns a fact (funding → Costs; test-not-yet-sat →
   Application checklist / Getting in) and state it there. `why_here` is **net-new synthesis**
-  (the standout hook + honest hesitations), *not* a re-read of the whole dossier — keep it short.
+  (the standout hook + honest hesitations), *not* a re-read of the whole report — keep it short.
 - **Bold budget.** Bold only genuinely key figures and actions. If half a paragraph is bold, nothing
   stands out — prefer a short lead phrase or a table over bolding every clause.
 - **Tables and checklists beat prose** for anything structured. Write these sections **as Markdown**
@@ -342,7 +349,7 @@ questions — *can I get in? · can I afford it? · what do I actually do?* — 
   the Snapshot has separate `city` and `setting` fields, use them. Give one figure or a tight range
   with MYR shown (not a 2.5× spread), and don't flip between USD and MYR without a conversion.
 
-## Assemble the dossier JSON
+## Assemble the report JSON
 
 Write `.tmp/<slug>/dossier_<uni>.json` (see `build_dossier.py`'s header for the exact shape). Each of the
 14 content sections is a Markdown string under `"sections"`. Two optional-but-recommended extras:
@@ -357,7 +364,7 @@ Write `.tmp/<slug>/dossier_<uni>.json` (see `build_dossier.py`'s header for the 
 - **`sources`** — required; every hard fact needs a citation with authority + `as_of`.
 
 If a fact genuinely can't be found, write `"Not found — <why>"` in that section rather than leaving it
-empty (empty sections fail the build on purpose — a half-researched dossier shouldn't pass).
+empty (empty sections fail the build on purpose — a half-researched report shouldn't pass).
 
 ## Render
 
@@ -365,22 +372,24 @@ empty (empty sections fail the build on purpose — a half-researched dossier sh
 python tools/build_dossier.py --student <slug> --input .tmp/<slug>/dossier_manchester-cs.json
 ```
 Output: `data/students/<slug>/dossiers/<uni-course-slug>.md`, and the matching `master_list.csv` row flips
-to Finalist / Dossier Done. Repeat per finalist.
+to **`Finalist`**. Repeat per finalist. (`Finalist` is the whole story — `List status` only ever takes
+`Longlist`/`Shortlist`/`Finalist`/`Rejected`, and the report file under `dossiers/` is the record that it
+was built.)
 
 ## Export to PDF (optional, on request)
 
-When a student asks for their dossier(s) to read outside the tool, convert the rendered Markdown to a
+When a student asks for their report(s) to read outside the tool, convert the rendered Markdown to a
 clean PDF (written alongside the `.md`):
 ```powershell
-python tools/dossier_to_pdf.py --student <slug> --dossier manchester-cs   # one dossier
-python tools/dossier_to_pdf.py --student <slug> --all                     # every dossier
+python tools/dossier_to_pdf.py --student <slug> --dossier manchester-cs   # one report
+python tools/dossier_to_pdf.py --student <slug> --all                     # every report
 ```
 This is a delivery step, not a pipeline stage — it only reads the existing `.md` (no research, no CSV
 changes). Output: `data/students/<slug>/dossiers/<uni-course-slug>.pdf` (gitignored, like the rest of
 the student's data bank).
 
 The PDF renders with **WeasyPrint** and adds three things at render time (nothing to do in the `.md`):
-a **"Key terms"** glossary built from the acronyms the dossier uses, with each term's first use
+a **"Key terms"** glossary built from the acronyms the report uses, with each term's first use
 **tap-linked** to it; **red callouts** for blockquote warnings; and **tickable checkboxes** for
 `- [ ]` items. So follow the *Writing rules* above and the presentation comes for free.
 
@@ -398,5 +407,5 @@ a **"Key terms"** glossary built from the acronyms the dossier uses, with each t
 
 ## Done when
 
-Every finalist has a complete dossier and the master list shows them as Finalist / Dossier Done. Then
+Every finalist has a complete university report and shows as **`Finalist`** in the master list. Then
 proceed to **Stage 5** (`05_decide_and_apply.md`).

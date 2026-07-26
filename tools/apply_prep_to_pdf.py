@@ -82,13 +82,15 @@ def _checkboxes(md_text):
 PAGE_CSS = """
 @page {
     size: A4 portrait;
-    margin: 1.9cm 1.9cm 2cm 1.9cm;
+    /* 2.25cm sides, not 1.9: at 1.9 the 17.2cm measure ran ~90-95 characters a line,
+       well past the ~75 where a long line starts costing the reader. */
+    margin: 1.9cm 2.25cm 2cm 2.25cm;
     @bottom-left  { content: string(doctitle); color: #8a97a6; font-size: 8pt; }
     @bottom-right { content: "Page " counter(page) " of " counter(pages);
                     color: #8a97a6; font-size: 8pt; }
 }
 body { font-family: "Segoe UI", "DejaVu Sans", Arial, sans-serif; font-size: 10.5pt;
-       line-height: 1.5; color: #1a1a1a; }
+       line-height: 1.5; color: #1a1a1a; orphans: 2; widows: 2; }
 
 /* Title block (cover header, not a full cover page — this is an action guide). */
 h1 { string-set: doctitle content(); font-size: 21pt; color: #10233f; margin: 0 0 2pt 0;
@@ -96,9 +98,11 @@ h1 { string-set: doctitle content(); font-size: 21pt; color: #10233f; margin: 0 
 h1::after { content: ""; display: block; width: 2.4cm; height: 3px;
             background: #c0392b; margin-top: 8pt; }
 
+/* break-after on both: without it a section heading strands alone at the foot of a
+   page with its content overleaf (dossier_to_pdf.py has guarded this since day one). */
 h2 { font-size: 14pt; color: #10233f; margin: 20pt 0 7pt 0;
-     border-bottom: 1px solid #d3dbe6; padding-bottom: 3pt; }
-h3 { font-size: 11.5pt; color: #123a66; margin: 14pt 0 4pt 0; }
+     border-bottom: 1px solid #d3dbe6; padding-bottom: 3pt; break-after: avoid; }
+h3 { font-size: 11.5pt; color: #123a66; margin: 14pt 0 4pt 0; break-after: avoid; }
 
 /* h4 = a numbered university ("1. Princeton …"). Bigger, bolder; keep its title with
    the first section below it so a number never strands at a page bottom. */
@@ -127,20 +131,28 @@ em { color: #333; }
 /* Links = the "highlighted, tappable" jargon + Contents jumps. */
 a { color: #1157b8; text-decoration: underline; }
 
-/* The "How to use this guide" intro callout (a Markdown blockquote). */
+/* Callouts (Markdown blockquotes): the "How to use this guide" intro and the
+   cost-cycle note. break-inside so the first thing the student reads is never
+   sliced across a page boundary. */
 blockquote { margin: 10pt 0 14pt 0; padding: 8pt 12pt; background: #f2f6fb;
-             border-left: 3px solid #1157b8; color: #223; }
+             border-left: 3px solid #1157b8; color: #223; break-inside: avoid; }
 blockquote p { margin: 0 0 5pt 0; }
 blockquote p:last-child { margin: 0; }
 
-/* Contents list — compact. */
-h2#toc + ul { line-height: 1.35; }
+/* Contents list — compact, so navigation doesn't eat a page and a half. */
+.toc ul { line-height: 1.3; margin: 0; }
+.toc li { margin: 0 0 1pt 0; }
 
 table { border-collapse: collapse; margin: 6pt 0 10pt 0; width: 100%; }
 th, td { border: 0.5pt solid #b7c2d0; padding: 4pt 6pt; text-align: left; vertical-align: top; }
 th { background-color: #eef2f7; color: #10233f; }
+/* Deadline calendar: pin the date column so a long Action can't squeeze it to
+   one character per line. */
+table td:first-child, table th:first-child { width: 15%; white-space: nowrap; }
 code { font-family: "DejaVu Sans Mono", Consolas, monospace; font-size: 9.5pt;
        background: #f4f6f9; padding: 0 2px; }
+pre { padding: 6pt; border: 0.5pt solid #dde3ea; background: #f4f6f9;
+      break-inside: avoid; }
 hr { border: none; border-top: 0.5pt solid #cfd8e3; margin: 10pt 0; }
 """
 

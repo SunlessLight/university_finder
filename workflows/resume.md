@@ -8,8 +8,8 @@ who they are and beg you to re-read the data bank. This workflow lets the studen
 brief — reconstructed from the student's own files, **cross-checked so stale notes don't mislead
 you**. Output/state lives in `data/students/<slug>/status.md`.
 
-This is a **utility** workflow, not a pipeline stage. It wraps around Stages 1-5; it doesn't
-replace them.
+This is a **utility** workflow, not a pipeline stage. It wraps around the whole pipeline (Stages 1,
+3, 4, 5); it doesn't replace them.
 
 ## When to run
 
@@ -34,6 +34,11 @@ starts talking about ongoing work, offer it.
    - Do any **`Notes`** cells contradict current scope/decisions (leftover text from an earlier round)?
    - Do rows still read `Info source = Not verified`? (⇒ Stage 4 not done for them. A row reads
      `Official page` once its hard facts have been confirmed at the source.)
+   - Does `profile.json` still carry **`_needs_review`** or **`_intake_raw`**? (⇒ **Stage 1 was never
+     finished.** These are staging keys the form ingest leaves behind; a student parked mid-finalize
+     looks complete otherwise. Go back to `01_intake.md`'s finalize section, work the flagged items,
+     delete the keys — *before* any discovery. Scoring a student whose `degree_level` or
+     `recognition_targets` were never settled produces a confidently wrong list.)
 
    > **Why this step is non-negotiable:** in the session that created this workflow, two separate
    > cold reads of Toru's files were stale — leading to wrong advice ("demote the China rows") and a

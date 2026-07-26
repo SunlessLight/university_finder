@@ -25,6 +25,14 @@ Input JSON shape (see workflows/08_application_prep.md for the full spec):
       "student_slug": "toru",
       "region": "us",
       "region_title": "United States",
+      # Optional. 3-6 imperative next actions, rendered as an ordered list right
+      # after the Contents so the guide opens on something to DO.
+      "start_here": ["Register for the SAT — sit it by 3 Oct 2026", "..."],
+      # Optional. Makes every "~RM" figure in the guide checkable.
+      "fx": {"rate": "USD 1 = RM 4.10", "as_of": "2026-07-25"},
+      # Optional. One line on which cycle the cost figures are from, and when the
+      # entry-year figures publish — rendered as a callout above the universities.
+      "cost_cycle_note": "These are the published 2026-27 figures ...",
       "overview": "markdown — the cross-cutting apply strategy for this region",
       "systems": [
         {"system": "Common App",
@@ -105,13 +113,52 @@ FINANCIAL_AID_FIELDS = [
 # looking at (and how the jump-links work) without an agent hand-writing it each time.
 INTRO = """> **How to use this guide.** This is your **action list** for applying to these universities —
 > the deadlines, tests, essays, fees, and financial-aid forms, with the shared work grouped so you do it
-> once. It is *not* a "which university is best for me?" guide (that's your dossiers). Work top to bottom:
-> read the strategy, skim **[Key terms](#sec-key-terms)** if the shorthand is new, then work each
-> checklist. **Tap any linked term to jump to its plain-English meaning, and use the Contents to jump
-> around.**"""
+> once. It is *not* a "which university is best for me?" guide (that's your university reports). Work top to bottom:
+> begin with **Start here**, read the strategy, then work each checklist. **Don't know a term? Tap it —
+> every piece of jargon links to its plain-English meaning in [Key terms](#sec-key-terms) at the back.**
+> Use the Contents to jump around."""
 
 # Checklist-style fields get rendered as tickable `- [ ]` items instead of prose runs.
 _BULLET_RE = re.compile(r"^(\s*)[-*]\s+(.*)$")
+
+# A top-level list item, and "a line that is already part of a list" (indented
+# continuation or another item). Used by ensure_list_spacing.
+#
+# The marker must be followed by whitespace in both: a line opening with `**Bold
+# lead:**` starts with `*` but is a paragraph, not a bullet. Without the `\s` the
+# normaliser mistook it for an open list and skipped the blank line it needed —
+# which is exactly the "**To confirm:**" heading over the calendar's undated items.
+_LIST_START = re.compile(r"^([-*+]|\d+\.)\s")
+_LIST_CONT = re.compile(r"^(\s|([-*+]|\d+\.)\s)")
+
+
+def ensure_list_spacing(md):
+    """
+    Insert a blank line before a top-level list that directly follows a paragraph.
+
+    python-markdown's `sane_lists` (which the PDF path enables) refuses to open a
+    list without a preceding blank line, so an authored "lead sentence:" butted
+    against its bullets silently collapses into one prose blob — it looks correct
+    in the .md source but renders as a wall of text with literal `-` markers in the
+    PDF. This bit the US guide three times, worst of all the region-wide "Gather
+    once" checklist (1,122 characters as a single paragraph), and it also defeated
+    the two-column layout: with no <ul> to lay out, `.cols2` had nothing to act on.
+
+    Normalising here means an author never has to remember the blank line, and every
+    existing region JSON is repaired with no re-authoring.
+    """
+    out, in_fence = [], False
+    for line in md.splitlines():
+        if line.lstrip().startswith("```"):
+            in_fence = not in_fence
+        if not in_fence and _LIST_START.match(line) and out:
+            prev = out[-1]
+            # Only when the previous line is prose: non-blank, not already part of a
+            # list, and not a heading (a list right after a heading parses fine).
+            if prev.strip() and not _LIST_CONT.match(prev) and not prev.lstrip().startswith("#"):
+                out.append("")
+        out.append(line)
+    return "\n".join(out)
 
 
 def as_checklist(value):
@@ -139,8 +186,14 @@ def as_checklist(value):
             m = _BULLET_RE.match(ln)
             if m and not m.group(1):          # top-level bullet only
                 out.append(f"- [ ] {m.group(2)}")
+            elif ln.startswith((" ", "\t")) and out and out[-1].startswith("- [ ] "):
+                # A wrapped continuation of the item above — fold it back in. Left on
+                # its own line, a continuation that happens to *begin* with "+" or "-"
+                # (e.g. "1 maths/science\n  + 1 other") parses as a bullet in its own
+                # right and splits one action into two.
+                out[-1] = f"{out[-1].rstrip()} {ln.strip()}"
             else:
-                out.append(ln)                 # lead sentence / indented continuation
+                out.append(ln)                 # lead sentence / other prose
         return "\n".join(out)
 
     # Plain prose. A ` · `-separated line is really a jammed-together checklist.
@@ -197,11 +250,17 @@ def render_financial_aid(value):
 
 def anchorize_and_toc(body):
     """
-    Inject an explicit `<a id>` anchor before every ## / ### / #### heading and build
+    Inject an explicit `<a id>` anchor into every ## / ### / #### heading and build
     a nested Contents list linking to them. Returns (toc_markdown, body_with_anchors).
 
     Explicit HTML anchors (rather than relying on auto-slugging) make the jump-links
     resolve identically in GitHub/VS Code *and* in the PDF renderer.
+
+    The anchor goes *inside* the heading line, not on its own line above it: a bare
+    `<a id="..."></a>` on its own line is parsed as a paragraph, so every heading in
+    the guide used to be preceded by an empty <p> carrying a 7pt margin — 20 of them
+    in the US guide — which added dead space and an extra page-break opportunity
+    immediately before each heading.
     """
     out_lines, toc, used = [], [], set()
     in_fence = False
@@ -223,9 +282,11 @@ def anchorize_and_toc(body):
             anchor, n = f"{base}-{n}", n + 1
         used.add(anchor)
         toc.append(f"{'  ' * (level - 2)}- [{display}](#{anchor})")
-        out_lines.append(f'<a id="{anchor}"></a>')
-        out_lines.append(line)
-    toc_md = "## Contents\n\n" + "\n".join(toc) if toc else ""
+        out_lines.append(f'{m.group(1)} <a id="{anchor}"></a>{m.group(2)}')
+    # Wrapped in a .toc div so the stylesheet can tighten it. (A `h2#toc + ul` rule
+    # can't work: no `toc` markdown extension is enabled, so headings carry no ids.)
+    toc_md = ('## Contents\n\n<div class="toc" markdown="1">\n\n'
+              + "\n".join(toc) + "\n\n</div>") if toc else ""
     return toc_md, "\n".join(out_lines)
 
 
@@ -291,7 +352,30 @@ def render_snapshot(data, unis):
     for s in systems:
         members = ", ".join(s.get("universities") or []) or "—"
         lines.append(f"- **{s.get('system', 'System')}:** {members}")
+    # Every "~RM" figure in a guide is a derived conversion. Stating the rate and the
+    # date it was taken is what makes those numbers checkable rather than assertions.
+    fx = data.get("fx") or {}
+    if isinstance(fx, dict) and (fx.get("rate") or "").strip():
+        stamp = f" (as of {fx['as_of']})" if (fx.get("as_of") or "").strip() else ""
+        lines.append(f"- **MYR conversions use:** {fx['rate'].strip()}{stamp}")
     return "\n".join(lines)
+
+
+def render_start_here(items):
+    """
+    The 'do these first' opener — a short ordered list of the next concrete actions,
+    rendered directly after the Contents.
+
+    The guide is ~15 pages; without this the student's first page of content was 27
+    glossary definitions. Ordered (not tickable) on purpose: this is a sequence, and
+    the tickable checklists live further down where the detail is.
+    """
+    if isinstance(items, str):
+        items = [ln.strip().lstrip("-*").strip() for ln in items.splitlines() if ln.strip()]
+    actions = [str(i).strip() for i in (items or []) if str(i).strip()]
+    if not actions:
+        return ""
+    return "\n".join(f"{n}. {a}" for n, a in enumerate(actions, 1))
 
 
 def _render_field(key, value):
@@ -397,10 +481,21 @@ def render_guide(data):
     unis_by_name = {u.get("name"): u for u in unis if u.get("name")}
     region_title = data.get("region_title") or data.get("region")
 
-    # --- The "middle": the substantive content (Snapshot → Deadline calendar). ---
-    middle = ["## Snapshot", render_snapshot(data, unis), "",
-              f"## {region_title} application strategy", data["overview"].strip(), "",
-              "## Grouped by application system", render_systems(data, unis_by_name), ""]
+    # --- The "middle": the substantive content (Start here → Deadline calendar). ---
+    middle = []
+    start_here = render_start_here(data.get("start_here"))
+    if start_here:
+        n = len([ln for ln in start_here.splitlines() if ln.strip()])
+        middle += [f"## Start here — your next {n} actions", "", start_here, ""]
+    middle += ["## Snapshot", render_snapshot(data, unis), "",
+               f"## {region_title} application strategy", data["overview"].strip(), "",
+               "## Grouped by application system"]
+    # Cost figures are almost always the *current* cycle's published numbers while the
+    # student is applying for the next one. Say so once, next to the money.
+    cycle_note = (data.get("cost_cycle_note") or "").strip()
+    if cycle_note:
+        middle += ["", f"> **On the cost figures.** {cycle_note}", ""]
+    middle += [render_systems(data, unis_by_name), ""]
     gather = checklist_block(data.get("consolidated_checklist"))
     if gather:
         middle += ["## Gather once (across the whole region)", "", gather, ""]
@@ -414,8 +509,11 @@ def render_guide(data):
 
     sources_md = "## Sources\n" + render_sources(data.get("sources") or [])
 
-    # Body = Key terms + linked middle + Sources, then anchors + a Contents list.
-    body_sections = [s for s in (glossary_md, linked_middle, sources_md) if s.strip()]
+    # Body = linked middle + Key terms + Sources, then anchors + a Contents list.
+    # Key terms sits at the BACK: it is a reference appendix the jump-links reach on
+    # demand, and leading with ~27 definitions meant the student's first page of
+    # content was a dictionary rather than an action.
+    body_sections = [s for s in (linked_middle, glossary_md, sources_md) if s.strip()]
     toc_md, body_with_anchors = anchorize_and_toc("\n\n".join(body_sections))
 
     doc = [f"# Application prep — {region_title}: {len(unis)} universities", "",
@@ -423,7 +521,9 @@ def render_guide(data):
     if toc_md:
         doc += [toc_md, ""]
     doc += [body_with_anchors, ""]
-    return "\n".join(doc)
+    # Normalise list spacing last, so it also catches lists inside authored prose
+    # fields (overview, tests, essays, aid) and the assembled scaffolding alike.
+    return ensure_list_spacing("\n".join(doc))
 
 
 def main():

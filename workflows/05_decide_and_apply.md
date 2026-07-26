@@ -2,7 +2,7 @@
 
 ## Objective
 
-Turn the finalist dossiers into a **decision**: a ranked recommendation with reasoning, a realistic
+Turn the finalist university reports into a **decision**: a ranked recommendation with reasoning, a realistic
 application strategy, and one consolidated deadline calendar so nothing gets missed. This stage is
 research/decision support — it documents *how* to apply and *when*; it does **not** track the actual
 application (no submission/offer state in v1).
@@ -37,11 +37,11 @@ Save to `data/students/<slug>/recommendation.md`. Include:
 python tools/build_calendar.py --student <slug>
 ```
 This aggregates every dated item across finalists — application deadlines (from `master_list.csv`) plus any
-`dated_items` in the dossier JSONs (scholarship deadlines, test dates, visa lead times) — into one
+`dated_items` in the report JSONs (scholarship deadlines, test dates, visa lead times) — into one
 chronological `calendar.md`. Review it with the student and flag the earliest actions.
 
 ### 4. Per-finalist how-to-apply recap
-In `recommendation.md` (or pointing back to each dossier's section 12), restate for each recommended
+In `recommendation.md` (or pointing back to each report's section 12), restate for each recommended
 university: the portal, the steps, and the documents needed (transcripts, personal statement/essays,
 references, English test, portfolio/interview if required). For reference and planning — not tracked as
 state in v1.

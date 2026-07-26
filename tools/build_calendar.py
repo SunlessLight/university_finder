@@ -60,16 +60,32 @@ def items_from_master(finalists):
     return items
 
 
-def items_from_dossiers(slug, finalist_unis):
-    """Pull structured dated_items from any .tmp/<slug>/dossier_*.json present."""
+def items_from_dossiers(slug, finalists):
+    """
+    Pull structured dated_items from the .tmp/<slug>/dossier_*.json files that belong
+    to the selected rows.
+
+    Scoped to `finalists` on purpose: .tmp/ accumulates a dossier JSON for every
+    university ever researched, so an unscoped sweep put Rejected and Shortlist-only
+    universities' deadlines into a Finalist calendar — `--status` filtered the
+    master-list half and silently not this one.
+    """
     items = []
     tmp_dir = REPO_ROOT / ".tmp" / slug
     if not tmp_dir.exists():
         return items
+    wanted = {
+        ((r.get("University") or "").strip().lower(), (r.get("Course") or "").strip().lower())
+        for r in finalists
+    }
     for jpath in sorted(tmp_dir.glob("dossier_*.json")):
         try:
             data = json.loads(jpath.read_text(encoding="utf-8"))
         except json.JSONDecodeError:
+            continue
+        key = ((data.get("university") or "").strip().lower(),
+               (data.get("course") or "").strip().lower())
+        if key not in wanted:
             continue
         uni = f"{data.get('university','?')} — {data.get('course','?')}"
         for it in data.get("dated_items", []) or []:

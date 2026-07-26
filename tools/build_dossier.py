@@ -246,10 +246,10 @@ def render_sources(sources):
 
 def render_dossier(data, mode):
     if mode == "university":
-        title = f"# Dossier — {data['university']}"
+        title = f"# University Report — {data['university']}"
         snapshot = render_university_snapshot(data)
     else:
-        title = f"# Dossier — {data['university']}: {data['course']}"
+        title = f"# University Report — {data['university']}: {data['course']}"
         snapshot = render_snapshot(data)
     schema = SECTIONS_BY_MODE[mode]
     parts = [title, ""]

@@ -5,10 +5,10 @@
 Turn a student's **Shortlist/Finalist** into an **action-only apply guide** for one region at a time:
 *exactly what to prepare and do to get every application in*, with the shared work grouped so it's done
 once. It answers one question — **"what do I need to apply?"** — and deliberately skips the "is this uni
-right for me?" texture (that's the dossier's job, `04_university_dossier.md`).
+right for me?" texture (that's the university report's job, `04_university_dossier.md`).
 
 Use it when a student has decided to **apply and compare offers first, research fit later** — i.e. they
-don't want more dossiers, they want a checklist + deadlines + financial-aid mechanics they can act on.
+don't want more reports, they want a checklist + deadlines + financial-aid mechanics they can act on.
 Produce it **one region at a time** (US, then UK, Australia, Singapore, China) — each region is a lot of
 official verification.
 
@@ -35,7 +35,16 @@ these rules + the renderer's auto-formatting below.
 ### What the renderer auto-adds (do NOT hand-write these)
 `build_application_prep.py` post-processes every guide so you only write the substance:
 - a constant **"How to use this guide"** intro, an auto-generated **Contents** list, and a **Key terms**
-  glossary listing only the jargon the guide actually uses (from `tools/apply_glossary.py`);
+  glossary listing only the jargon the guide actually uses (from `tools/apply_glossary.py`). **Key terms
+  renders at the *back*** — it's a reference appendix the jump-links reach on demand. Leading with ~27
+  definitions meant the student's first page of content was a dictionary instead of an action;
+- **list spacing** — a `- ` list authored directly under a lead sentence gets the blank line it needs.
+  You do **not** have to remember it. (`sane_lists` will not open a list without a preceding blank line,
+  so "Gather these once:" butted against its bullets used to collapse into one 1,100-character prose
+  blob — correct-looking in the `.md`, a wall of text with literal `-` markers in the PDF. It also
+  defeated the two-column layout: with no `<ul>`, `.cols2` had nothing to lay out.) A wrapped
+  continuation line is folded back into its item, so a line-wrapped `+ 1 other` can't split one action
+  into two;
 - **jargon auto-links** — the first mention per section of each glossary term links to its definition;
 - **numbered scaffolding** — universities are numbered **1, 2, 3… continuously across the whole region**
   (not restarted per application system), and each university's subsections are lettered **a, b, c…**
@@ -97,6 +106,17 @@ Then write the region-level **overview** (the cross-cutting strategy): early-app
 the test lead-time gate, aid-model tiers, the fee budget, and an aid-forms cheat-sheet. And a
 **consolidated "gather once"** list + **dated_items** for the deadline calendar.
 
+### Three fields that make the guide usable and checkable
+
+- **`start_here`** — 3-6 imperative next actions, longest-lead-time first, rendered as an ordered list
+  straight after the Contents. The guide runs ~15 pages; without this the student has to read it all to
+  find out what to do on Monday. Put dates in it.
+- **`fx`** — `{"rate": "USD 1 ≈ RM 4.08", "as_of": "<date>"}`. Every `~RM` figure in a guide is a derived
+  conversion; **an unstated rate makes every one of them uncheckable.** Render it once, use it everywhere.
+- **`cost_cycle_note`** — which cycle the cost figures are from, when the entry-year figures publish, and
+  roughly how much they rise. You are almost always quoting the *current* year's cost at a student
+  applying for the *next* one — say so next to the money rather than letting it read as their bill.
+
 ## Assemble the JSON
 
 Write `.tmp/<slug>/apply_prep_<region>.json` (exact shape in `build_application_prep.py`'s header):
@@ -104,6 +124,9 @@ Write `.tmp/<slug>/apply_prep_<region>.json` (exact shape in `build_application_
 ```json
 {
   "student_slug": "toru", "region": "us", "region_title": "United States",
+  "start_here": ["**Book the SAT now.** Sit it by **3 Oct 2026** …", "…3-6 imperatives"],
+  "fx": {"rate": "USD 1 ≈ RM 4.08", "as_of": "2026-07-20 (date of research)"},
+  "cost_cycle_note": "These are the published **2026-27** figures; you enter **Fall 2027** …",
   "overview": "markdown — the cross-cutting apply strategy",
   "systems": [
     {"system": "Common App", "universities": ["Princeton University", "..."],
@@ -148,13 +171,18 @@ research. `checklist` fields as arrays are back-compatible: old string guides re
 
 - **Official sources for hard facts** — deadlines, fees, aid forms/dates, test policy come from official
   admissions/financial-aid pages, not aggregators. Stamp every source with authority + as-of cycle year.
+- **Say what the `as_of` stamp means.** A region's sources are two different things — *application
+  mechanics* for the cycle the student applies in, and *money figures* from a published academic year —
+  and a bare year can't tell them apart. The US set had 11 sources stamped `2027` and 12 stamped
+  `2026-27` with nothing saying why. Use a labelled stamp: **`"Fall-2027 cycle"`** vs
+  **`"2026-27 figures"`**.
 - **Does NOT change `List status`.** This is a how-to-apply deliverable, not a pipeline cut. It reads the
   Shortlist/Finalist rows; it never promotes, demotes, or flips them (unlike `build_dossier.py`).
 - **Cycle-timing caveat.** For a Fall-20XX intake you're often researching the *previous* year's cycle
   before the new one opens (e.g. Common App supplement prompts publish ~1 Aug). State the figure with a
   "confirm when the 20XX-YY cycle opens" flag rather than guessing.
 - **Overlap with `05_decide_and_apply.md`.** Stage 5's `recommendation.md` also groups an apply strategy
-  by system; this workflow is the standalone, per-region, dossier-free version. Use 5b when the student
+  by system; this workflow is the standalone, per-region, report-free version. Use 5b when the student
   wants a ranked *decision*; use this when they've decided to apply broadly and just need the mechanics.
 - **Credits gated / PDPA** — free search by default (ask before Firecrawl); output lives in the
   gitignored `data/students/<slug>/`, never committed.
@@ -165,6 +193,12 @@ Every Shortlist/Finalist uni in the region appears in `application_prep/<region>
 application system, each with deadlines + tests + essays + fees + financial-aid forms/docs/dates +
 checklist + portal; the overview carries the cross-cutting strategy; the gather-once list and the
 chronological deadline calendar render; the guide has the auto-added intro + Contents + Key terms +
-linked jargon + tickable checklists; the **PDF** exports cleanly (clickable Contents/glossary jumps);
-every hard fact has an official source stamped with its cycle year; and `master_list.csv` is unchanged.
+linked jargon + tickable checklists; `start_here`, `fx` and `cost_cycle_note` are filled; the **PDF**
+exports cleanly (clickable Contents/glossary jumps); every hard fact has an official source stamped with
+a labelled cycle stamp; and `master_list.csv` is unchanged.
+
+**Eyeball the PDF before you hand it over.** The failure mode is a list that silently rendered as a prose
+paragraph, so check: no paragraph anywhere contains literal `-` or `☐` markers mid-sentence; the
+"Gather once" and "Filed once" lists show as two columns of tick-boxes; no `##`/`###` heading is stranded
+at the foot of a page; and no raw `[text](#term-…)` is visible in the body.
 Update `status.md` with the region done and the next region to run. Repeat for the remaining regions.

@@ -1,15 +1,20 @@
-# Workflow: Form Intake — Google Form CSV → student data banks (alternate Stage 1/2 on-ramp)
+# Workflow: Stage 1 — Intake (Google Form CSV → student data banks)
 
 ## Objective
 
-Let **other people** request a university search without you driving a live conversation. They fill a
-**Google Form**; you export the responses as CSV; this workflow batch-builds one
-`data/students/<slug>/` per respondent (filled `profile.json` + `preferences.json`), then you finalize
-a few judgment-heavy fields and hand each student off to **Stage 3** (discover longlist).
+Capture, in one pass, **who the student is** (grades, English, budget, recognition needs) and **what
+they want** (destinations, field/course, priorities) — so later stages can judge fit, cost, and
+admissibility accurately. Output is `data/students/<slug>/profile.json` + `preferences.json`.
 
-This replaces the *conversational* Stage 1 (`01_student_intake.md`) and Stage 2
-(`02_aspirations_intake.md`) with a *form-driven* intake. The downstream pipeline (Stage 3-5) is
-unchanged.
+**Every student comes in through the Google Form.** They fill it, you export the responses as CSV,
+this workflow batch-builds one `data/students/<slug>/` per respondent, then you finalize a few
+judgment-heavy fields and hand each student off to **Stage 3** (discover longlist). There is no
+conversational intake path — a student you meet in person still fills the form (or you fill it for
+them) so the data bank is built the same way every time.
+
+> **Stage 1 and Stage 2 were merged on 2026-07-25.** The form asks who-you-are and what-you-want in
+> one sitting, so the old `01_student_intake.md` / `02_aspirations_intake.md` conversational SOPs were
+> deleted. Stages 3-5 keep their file numbers — **there is no Stage 2**.
 
 ## The Google Form (build once)
 
@@ -24,14 +29,19 @@ fine — but keep the substring in bold intact.
   A **blank/absent** consent is also skipped **unless** you pass `--assume-consent` — see below.)*
 
 **Section 1 — About you → `profile.json`**
-- **Name**; **Your age**; **Gender**; **Nationality**; **Race/ethnicity**; where you **live in now**;
-  where you plan to **live and work after** graduating (a post-study *aspiration* → recorded in `notes`
-  + `intent_to_migrate`; it does **not** become `home_country`, which stays "Malaysia").
+- **Name**; **Your age**; **Gender**; **Nationality**; **Race/ethnicity**; where you **live in now**.
   - **Race/ethnicity → `profile.ethnicity`** (PDPA-sensitive). Captured because it drives
     **scholarship eligibility** in Malaysia (e.g. Bumiputra-only vs open funds) — the agent uses it as a
     research signal in Stage 3/4. It is **never** a desirability-score input.
+  - **The respondent's email is stored**, not just used to dedupe: the tool writes it into
+    `profile.notes` as `Contact: <email>` (PDPA-sensitive, same class as the rest of the data bank —
+    it stays under gitignored `data/students/`).
+  - **`home_country` always stays "Malaysia".** The tool never overwrites it. *(A legacy form asked
+    "where do you want to **live and work after** graduating"; the current form dropped it, and
+    `intent_to_migrate` comes from the "work abroad" question in Section 2 instead. If you ever
+    re-add it, it is a post-study **aspiration** → `notes` + `intent_to_migrate`, never `home_country`.)*
 
-**Section 2 - Your Studies**
+**Section 2 — Your studies, money & recognition → `profile.json`**
 - What are you **studying now** (A-Level / STPM / UEC / IB / Foundation / Matriculation / Diploma /
   Other); **which college**/school; **when do you graduate** / get results.
 - **Subjects & grades — four structured dropdown pairs.** The form asks each subject as *"List your Nth
@@ -47,7 +57,10 @@ fine — but keep the substring in bold intact.
   field behind the `English short` warning), and the definitive "tests you must sit" list is produced at
   the apply stage — not here.
 - **Total budget** for the whole degree in MYR (blank = "research everything, I'll decide" — the
-  intended default; a rough ceiling only powers the "Over budget" flag).
+  intended default; a rough ceiling only powers the "Over budget" flag). **Ask for the total, never
+  per-year** — Stage 4 compares whole-programme cost, and a 3-year UK degree against a 4-year US one
+  is not comparable per year. There is no per-year question on the form, so
+  `financial.budget_per_year` / `preferences.budget_ceiling_per_year` stay null.
 - **Is scholarship a must?** — Yes/No. A clean gate: Yes sets both `preferences.scholarship_required` and
   `financial.scholarship_dependent` true. **What scholarships are you planning to apply for?** — free text
   → `preferences.scholarship_interests`, a *research hint* (which scholarships to dig into; "don't know /
@@ -61,7 +74,7 @@ fine — but keep the substring in bold intact.
   neutral: **Halal food** / **Prayer facilities** / **Malaysian community nearby** / **Stay close to family** / **Personal safety** /
   **Climate / weather** — plus **Other**.
 
-**Section 2 — What you want → `preferences.json`**
+**Section 3 — What you want → `preferences.json`**
 - **Which countries** would you consider — checkboxes (UK / Australia / USA / Singapore-Malaysia /
   China / Japan). Picking several is fine (research-first breadth). *(Optional follow-up: **which country
   matters most?** — the agent records it in `preferences.notes` so research goes deepest where it
@@ -88,13 +101,14 @@ fine — but keep the substring in bold intact.
 - **`ranking_importance`** steers the `subject_reputation` sub-score (subject-specific standing +
   graduate outcomes, not overall vanity rank). If the form has a dedicated *"how much does your subject's
   strength matter"* 1-5 question the tool uses it; otherwise it reads the **[University Ranking]** slider
-  value (1-7).
-- Do you want to **work abroad** after graduating — Yes / No / Unsure.
-- Any **deal-breaker**s (optional); **location preference**s (optional checkboxes); **prefered universities** (optional).
-
-**Section 3 — Only if undecided → `profile.interest_discovery`**
-- What **career or life** do you want; what activities you **genuinely enjoy**; how you **like to
-  work**; what **matters to you**; any **constraints**.
+  value (**1-8** — the current slider scale; make sure the `scoring-weights` skill reads it on that scale).
+- Do you want to **work abroad** after graduating — Yes / No / Unsure. → `intent_to_migrate` (and the
+  raw answer into `post_study_work_importance`).
+- Any **deal-breaker**s (optional); **location preference**s (optional checkboxes).
+- **Preferred universities** (optional) — ⚠️ **currently discarded.** The form asks it but there is no
+  `QUESTION_MAP` entry, so the answer never reaches `preferences.json`. Until that's wired up, read the
+  column out of the CSV by hand at finalize and put it in `preferences.notes` — otherwise a student
+  naming the unis they already care about is silently ignored.
 
 ## How to run
 
@@ -114,10 +128,10 @@ fine — but keep the substring in bold intact.
      **No**, and it never writes a fabricated consent value into the CSV. When you use it, say so in the
      student's `profile.notes` (implied vs explicit consent). For anything beyond internal testing, put
      the consent checkbox back on the form instead.
-   - **`home_country` is NOT the post-grad answer.** The *"where do you want to live and work after
-     graduating"* question is a migration *aspiration* — the tool records it in `profile.notes` +
-     `preferences.intent_to_migrate` and leaves `home_country` at the "Malaysia" default. (Earlier the
-     tool wrongly overwrote `home_country` with it, mislabelling a Malaysian who wants to work abroad.)
+   - **`home_country` is never taken from a post-grad answer.** It stays at the "Malaysia" default.
+     Wanting to work abroad is a migration *aspiration* → `preferences.intent_to_migrate`, not a
+     different home country. (The tool used to overwrite `home_country` from the old "live and work
+     after graduating" question, mislabelling a Malaysian who simply wants to work overseas.)
 
 ## Finalize each student (the judgment layer — this is your job, not the tool's)
 
@@ -139,13 +153,31 @@ For every student the tool flagged in `profile.json`'s **`_needs_review`**:
    a hard gate). `scholarship_interests` holds the free-text list of scholarships to research — feed it
    into the Stage 3/4 scholarship columns ("all options" = research broadly).
 4. **Recognition** → the tool auto-fills `recognition_targets` from the regulated-profession answer
-   (e.g. Engineering → `["MQA","BEM","Washington Accord"]`). **Verify** against the recognition
-   guardrail in `00_overview.md` (MQA + the correct professional body) and correct if needed.
-5. **Undecided student** → confirm `interest_discovery`, then run the Stage 2 **career-backwards**
-   branch (`02_aspirations_intake.md`) to propose candidate fields *with the requester* before
-   discovery. Don't silently pick a field. *(If the **field** is already clear and only the exact
-   course/university is open — e.g. "Computer Science" — leave `decided=false` but skip the full
-   career-backwards pass; Stage 3 can discover courses directly.)*
+   via `PROFESSION_RECOGNITION` in `tools/ingest_form_csv.py`. **Verify it** — `MQA` is always the
+   floor, plus the correct Malaysian professional body:
+
+   | Profession | Targets beyond MQA |
+   |---|---|
+   | Medicine | MMC (Malaysian Medical Council) |
+   | Engineering | BEM + Washington Accord |
+   | Law | LPQB |
+   | Accounting | MIA — **and usually ACCA**; the tool only auto-fills MIA, add ACCA yourself |
+   | Pharmacy | Pharmacy Board Malaysia |
+   | Dentistry | MDC (Malaysian Dental Council) |
+   | Architecture | LAM |
+   | Nursing | Nursing Board Malaysia |
+
+   A non-regulated field (pure CS, business, design…) gets an **empty** `recognition_targets` — don't
+   pad it with MQA for its own sake. See guardrail 5 in `00_overview.md` for why this is a gate and
+   not a footnote.
+5. **No specific course** → this is the **normal** state, not a problem. The student picked a Broad
+   Area and left the course grid blank, so `specific_courses` is empty and
+   `interest_discovery.decided` is `false`. Stage 3 discovers courses **within that broad area** —
+   just go. Only stop and contact the student when `fields_of_interest` is **also** empty, i.e. they
+   gave no direction at all; the tool flags exactly that case in `_needs_review`.
+   *(The form no longer asks the old career/values/work-style questions, so `interest_discovery`'s
+   free-text fields are always null. The career-backwards branch that used to consume them was
+   dropped on 2026-07-25 along with `02_aspirations_intake.md`.)*
 6. **Degree level** → no form question sets it; the agent sets `degree_level` at finalize
    (an A-Level / STPM / Foundation student heading to a bachelor's → `undergraduate`).
 7. **Delete the `_needs_review` key** once done, so the finished `profile.json` matches the standard
@@ -194,23 +226,38 @@ weights into `tools/shortlist_schema.py` — that shared file is exactly what ma
 - **Budget unit ambiguity.** A bare number like **`500`** for a whole degree is almost certainly *in
   thousands* (RM 500,000), not RM 500. The tool captures the raw cell verbatim; **you** interpret the unit
   at finalize and note the assumption — confirm the real ceiling with the student.
-- **`degree_level` is an absent column.** The form has no "degree level" question, so it stays null →
-  **you** set it at finalize (an A-Level / STPM / Foundation student heading to a bachelor's →
-  `undergraduate`). `grade_status` is set from the subject dropdowns → `expected` (see the provisional
-  grades note above); a legacy "actual vs predicted" column, if present, overrides it.
+- **Fields the form never fills.** The schema (`profile_template()` / `preferences_template()` in
+  `tools/init_student.py`) is wider than the form, so some keys are *always* null after ingest. Know
+  which, so you don't mistake an absent question for a missing answer:
+  - **`degree_level`** — no question. **You** set it at finalize (an A-Level / STPM / Foundation
+    student heading to a bachelor's → `undergraduate`). This is the one you must not skip.
+  - **`budget_ceiling_per_year`** / **`financial.budget_per_year`** — no per-year question by design
+    (total cost is what Stage 4 compares).
+  - **`english_proficiency.test_date_or_planned`** — the form deliberately doesn't ask "when will you
+    take it"; the tests a student must sit come out of research at Stage 4 / apply stage.
+  - **`min_subject_rank_pref`** — no question, and the tool never touches it. Judge subject standing
+    from `ranking_importance` instead.
+  - **`education_history`**, **`financial.notes`** — no question; fill by hand only if a student
+    volunteers something that matters.
+  - **`preferences.notes`** — only written when the tool dropped an unsupported country. Anything else
+    you want recorded there (e.g. which country matters most, preferred universities) you add at finalize.
+
+  `grade_status` is set from the subject dropdowns → `expected` (see the provisional grades note above);
+  a legacy "actual vs predicted" column, if present, overrides it.
 - **No consent / no name** → row skipped (reported in the summary). This is the PDPA gate — respect it.
 - **Duplicate names** → same slug; the second is skipped rather than clobbering the first. Disambiguate
   the name (or `--force` deliberately) if two real people share a name.
 - **Messy multi-select** → Forms joins checkbox answers with commas and doesn't escape commas inside a
   label; a rare answer may split oddly. Spot-check `target_countries` / `location_prefs` after ingest.
-- **Everything the form couldn't capture stays `null`/empty** — the tool never invents values. Fill
-  gaps by contacting the requester, same honesty rule as `01`.
-- **"Undecided" over-triggers.** The tool flags `undecided` whenever `specific_courses` is empty (on the
-  current form: the student picked a Broad Area but left the course grid blank) — but a student who
-  clearly knows their **field** (e.g. "Computer Science") just doesn't know the exact *course/university*.
-  That is normal and needs **no** Stage-2 career-backwards pass; set `interest_discovery.decided=false`
-  but note the field is known and go straight to Stage 3. Only run career-backwards when the *field
-  itself* is genuinely open. *(When the grid course is filled, the tool marks `decided=true` — no flag.)*
+- **Everything the form couldn't capture stays `null`/empty** — the tool never invents values, and
+  neither do you. A `null` is more useful than a fabricated grade or budget: it's an open question, not
+  a wrong answer. Fill gaps by contacting the requester, and note what's still open in `profile.notes`.
+- **Empty `specific_courses` is not a blocker.** `interest_discovery.decided` goes `false` whenever the
+  course grid is blank, but a student who knows their **field** ("Computer Science") and not the exact
+  course is the common case — Stage 3 discovers courses inside the chosen Broad Area. The tool only
+  raises `_needs_review` when `fields_of_interest` is empty **too**; that one means contact the student,
+  because there is genuinely nothing to search on. *(It used to flag every blank grid cell, which was
+  pure noise — narrowed 2026-07-25 when career-backwards was dropped.)*
 - **English "Other" / "Not yet".** If the respondent picks "Other" without naming the test, `test` is
   unusable — confirm which test + score before it counts. "Not yet" is fine (many longlist rows won't
   need a score until Stage 4). The specific tests-to-sit come from research, not the form.

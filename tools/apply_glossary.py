@@ -664,16 +664,36 @@ def _link_line(line, seen):
 
 
 def _link_free_segment(segment, seen):
+    """
+    Link the first eligible occurrence of each unseen term in one free-text segment.
+
+    Matches are *collected against the original segment* and only then inserted, in a
+    single right-to-left pass. Inserting as we scanned used to feed the link we had
+    just written back into the search space, so a shorter surface could match inside
+    the anchor text of a longer one and nest:
+
+        Single-Choice Early Action -> [Single-Choice [Early Action](#term-ea)](#term-scea)
+
+    python-markdown renders only the outer link and leaks the inner `[...](...)` as
+    literal body text. Surfaces arrive longest-first, so keeping the first accepted
+    span and dropping any that overlaps it means the longest term wins.
+    """
     if not segment.strip():
         return segment
+
+    spans = []          # (start, end, canonical) — non-overlapping, longest-first
     for surface, canonical, pat in _COMPILED:
         if canonical in seen:
             continue
-        m = pat.search(segment)
-        if not m:
-            continue
+        for m in pat.finditer(segment):
+            start, end = m.span()
+            if any(start < e and s < end for s, e, _ in spans):
+                continue    # overlaps a term already claimed — skip this occurrence
+            spans.append((start, end, canonical))
+            seen.add(canonical)
+            break           # first occurrence only
+
+    for start, end, canonical in sorted(spans, reverse=True):
         anchor = slug(canonical)
-        start, end = m.span()
         segment = f"{segment[:start]}[{segment[start:end]}](#{anchor}){segment[end:]}"
-        seen.add(canonical)
     return segment

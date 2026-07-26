@@ -1,22 +1,22 @@
 """
 ingest_form_csv.py — batch-scaffold student data banks from a Google Forms CSV export.
 
-This is the deterministic half of the Form-intake on-ramp (see workflows/07_form_intake.md).
+This is the deterministic half of Stage 1 intake (see workflows/01_intake.md) — the only on-ramp.
 It reads a Google Forms "responses" CSV (one row per respondent), and for each row that gave
 consent it creates data/students/<slug>/ with a filled profile.json + preferences.json, using
 the SAME templates as init_student.py so the shape never drifts.
 
 The mechanically-mappable fields (name, age, budget, countries, priorities, ...) are filled
-here. The judgment-heavy bits are left for the agent (Claude) to finalize in workflow 07 and
+here. The judgment-heavy bits are left for the agent (Claude) to finalize in workflow 01 and
 are flagged in a top-level "_needs_review" list on profile.json:
-  - the free-text grades string -> parse into subjects[] (raw kept under "_intake_raw.grades")
+  - self-predicted grades -> confirm, or upgrade grade_status when real results arrive
   - the regulated-profession answer -> recognition_targets (best-effort auto-fill + verify)
-  - interest-discovery paragraphs (for undecided students)
+  - a respondent who gave no field of study at all (nothing to search on)
 
 Columns are matched by a distinctive SUBSTRING of each question title (case-insensitive), so
 light rewording of the form questions won't break the mapping. QUESTION_MAP below is the single
 source of truth for the column<->field wiring; keep it in step with the form spec in
-workflows/07_form_intake.md.
+workflows/01_intake.md.
 
 Usage:
     python tools/ingest_form_csv.py data/form/responses.csv
@@ -95,12 +95,11 @@ QUESTION_MAP = [
     ("work abroad", "work_abroad"),
     ("deal-breaker", "deal_breakers"),
     ("location preference", "location_prefs"),
-    # interest-discovery (undecided students)
-    ("career or life", "id_career_goal"),
-    ("genuinely enjoy", "id_subjects_enjoyed"),
-    ("like to work", "id_work_styles"),
-    ("matters to you", "id_values"),
-    ("constraints", "id_constraints"),
+    # NOTE: the old interest-discovery questions (career goal / what you enjoy / work styles /
+    # values / constraints) were removed from the form, and the career-backwards branch that
+    # consumed them was dropped on 2026-07-25 along with workflows/02_aspirations_intake.md.
+    # A student who names a broad area but no exact course is normal — Stage 3 discovers courses
+    # inside that area. See workflows/01_intake.md, finalize step 5.
 ]
 
 # The six supported destination sets (preferences.target_countries). Normalize
@@ -269,7 +268,7 @@ def _funding_from_plan(answer):
     return None
 
 # Best-effort recognition targets per regulated profession (MQA + the professional
-# body / accord). The agent VERIFIES these in workflow 07 — see the guardrail on
+# body / accord). The agent VERIFIES these in workflows/01_intake.md — see the guardrail on
 # recognition in 00_overview.md. "None" -> [].
 PROFESSION_RECOGNITION = {
     "medicine": ["MQA", "MMC"],
@@ -395,11 +394,15 @@ def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None,
     # Current form: structured dropdown pairs -> build subjects[] deterministically here. The grade
     # question asks what the student is "confident of getting" (a self-prediction), so grade_status
     # is "expected" — provisional, surfaced as a warning in the longlist until real/official grades.
-    subjects, saw_confident = _build_subjects(row, subject_cols)
+    subjects = _build_subjects(row, subject_cols)
     if subjects:
         profile["subjects"] = subjects
-        if saw_confident:
-            profile["grade_status"] = "expected"
+        # The dropdown path IS the self-prediction path, whatever the exact question wording, so
+        # stamp "expected" unconditionally. (This used to require the literal word "confident" in
+        # the grade header, while _subject_columns also accepted "select the grade" — a reworded
+        # form then built subjects[], left grade_status None, and still emitted the review line
+        # below asserting grade_status=expected.) A legacy explicit column still overrides, below.
+        profile["grade_status"] = "expected"
         needs_review.append(
             "grades are self-predicted (grade_status=expected) — provisional until actual/official predicted results"
         )
@@ -515,18 +518,17 @@ def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None,
     prefs["intent_to_migrate"] = _yes(work_abroad)
     prefs["post_study_work_importance"] = work_abroad or None
 
-    # --- interest-discovery (undecided students) --------------------------- #
+    # --- decided / undecided on course ------------------------------------- #
+    # An empty specific_courses is the NORMAL case: the student picked a Broad Area and left the
+    # course grid blank, and Stage 3 discovers courses inside that area. Only flag for review when
+    # there is no field of study either — then there is genuinely nothing to search on.
     decided = _yes(get(row, col_index, "decided"))
     if decided is False or not prefs["specific_courses"]:
-        profile["interest_discovery"] = {
-            "decided": False,
-            "career_goal": get(row, col_index, "id_career_goal") or None,
-            "subjects_enjoyed": _as_list(get(row, col_index, "id_subjects_enjoyed")),
-            "work_styles": _as_list(get(row, col_index, "id_work_styles")),
-            "values": _as_list(get(row, col_index, "id_values")),
-            "constraints": _as_list(get(row, col_index, "id_constraints")),
-        }
-        needs_review.append("undecided student — confirm interest_discovery, then run Stage 2 career-backwards")
+        profile["interest_discovery"]["decided"] = False
+        if not prefs["fields_of_interest"]:
+            needs_review.append(
+                "no field of study and no course given — contact the student before Stage 3"
+            )
     else:
         profile["interest_discovery"]["decided"] = True
 
@@ -662,13 +664,11 @@ def _grid_columns(fieldnames):
 def _build_subjects(row, subject_cols):
     """Build subjects[] from the structured dropdown pairs, skipping empty / 'None' subject cells.
 
-    Returns (subjects, saw_confident): saw_confident is True when a grade header used the
-    "confident of getting" wording, so the caller can stamp grade_status = "expected".
+    The caller stamps grade_status = "expected" whenever this returns anything: the dropdowns ask
+    what the student is confident of getting, i.e. a self-prediction.
     """
-    subjects, saw_confident = [], False
+    subjects = []
     for subject_header, grade_header in subject_cols:
-        if "confident" in (grade_header or "").lower():
-            saw_confident = True
         name = _clean(row.get(subject_header))
         if not name or name.lower() == "none":
             continue
@@ -676,7 +676,7 @@ def _build_subjects(row, subject_cols):
             "subject": _normalize_subject(name),
             "grade_or_predicted": _clean(row.get(grade_header)) or None,
         })
-    return subjects, saw_confident
+    return subjects
 
 
 # --------------------------------------------------------------------------- #
@@ -710,7 +710,7 @@ def main():
     if "name" not in col_index:
         sys.exit(
             "ERROR: could not find a 'full name' column. Check the CSV headers against "
-            "QUESTION_MAP / the form spec in workflows/07_form_intake.md."
+            "QUESTION_MAP / the form spec in workflows/01_intake.md."
         )
 
     created, skipped, review_flags = [], [], {}
@@ -750,7 +750,7 @@ def main():
     print(f"{prefix}Read {len(rows)} row(s) from {csv_path.name}.")
     print(f"{prefix}Created {len(created)} student folder(s): {', '.join(created) or '(none)'}")
     if review_flags:
-        print(f"\n{prefix}Needs agent review (finalize in workflow 07):")
+        print(f"\n{prefix}Needs agent review (finalize in workflows/01_intake.md):")
         for slug, items in review_flags.items():
             print(f"  - {slug}:")
             for item in items:

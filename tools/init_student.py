@@ -2,9 +2,15 @@
 init_student.py — scaffold a private data bank for one student.
 
 Creates data/students/<slug>/ with a dossiers/ subfolder and writes template
-profile.json + preferences.json pre-filled with the schema keys set to null/empty,
-so the agent fills them in conversation during Stage 1 (intake) and Stage 2
-(aspirations). Refuses to clobber an existing student folder unless --force.
+profile.json + preferences.json pre-filled with the schema keys set to null/empty.
+
+The normal way in is the Google Form (workflows/01_intake.md -> ingest_form_csv.py,
+which imports the two templates below). This CLI is the manual fallback for
+scaffolding one student's folder by hand; you then fill the JSON yourself.
+Refuses to clobber an existing student folder unless --force.
+
+profile_template() / preferences_template() are the SINGLE SOURCE OF TRUTH for the
+data-bank shape — a finalized profile.json should match this key set exactly.
 
 Usage:
     python tools/init_student.py "Aisyah Rahman"
@@ -134,10 +140,11 @@ def main():
     )
 
     print(f"Created student data bank: {student_dir}")
-    print(f"  - {profile_path.name}     (Stage 1: run student intake to fill)")
-    print(f"  - {prefs_path.name} (Stage 2: run aspirations intake to fill)")
+    print(f"  - {profile_path.name}     (Stage 1: who the student is — fill by hand)")
+    print(f"  - {prefs_path.name} (Stage 1: what they want — fill by hand)")
     print(f"  - dossiers/         (Stage 4: per-finalist deep dossiers land here)")
-    print(f"\nNext: tell Claude \"run student intake for {args.name}\".")
+    print("\nNote: the normal intake path is the Google Form — see workflows/01_intake.md.")
+    print("Filled both files by hand? Next: derive weights.json, then Stage 3 (discover longlist).")
 
 
 if __name__ == "__main__":

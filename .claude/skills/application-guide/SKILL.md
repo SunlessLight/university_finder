@@ -27,8 +27,10 @@ The guide is **generated**, not hand-written. You research official facts into
 
 1. `python tools/build_application_prep.py --student <slug> --input .tmp/<slug>/apply_prep_<region>.json`
    — renders the `.md`. It **auto-adds** the "How to use this guide" intro, the **Contents**
-   list, the **Key terms** glossary, the **jargon auto-links**, and turns checklist fields
-   into tickable `- [ ]` items. **Do not hand-write any of those** — just write good JSON.
+   list, the **Key terms** glossary (at the *back* — it's a reference appendix), the **jargon
+   auto-links**, turns checklist fields into tickable `- [ ]` items, and **fixes list spacing**
+   (a `- ` list under a lead sentence gets its blank line — you don't have to remember it).
+   **Do not hand-write any of those** — just write good JSON.
 2. `python tools/apply_prep_to_pdf.py --student <slug> --region <region>` — exports the PDF.
 
 Read `workflows/08_application_prep.md` for the full JSON shape and the official-sources rules.
@@ -36,6 +38,16 @@ Both tools are **read-only against `master_list.csv`** — never let a guide fli
 
 ## Writing rules (how to fill the JSON)
 
+- **Open with `start_here` — 3-6 imperative actions, longest-lead-time first.** The guide runs
+  ~15 pages; this is the part that tells a stressed 17-year-old what to do on Monday. Put real
+  dates in it, and lead with whatever has the longest lead time (usually a test booking).
+- **Every `~RM` figure needs a stated rate.** Fill `fx` with the rate and the date you converted
+  at. A conversion with no rate behind it is an unverifiable number, and money is the field this
+  student cares most about.
+- **Say which cycle the money is from.** Fill `cost_cycle_note`. You are nearly always quoting the
+  *current* year's cost of attendance at a student applying for the *next* year's intake — state
+  that, when the real figures publish, and roughly how fast they rise. Presenting last year's
+  number as "your cost" is the quiet way this guide becomes wrong.
 - **Checklists, not prose runs.** The `shared_checklist`, each university's
   `application_checklist`, and `consolidated_checklist` should be **JSON arrays — one action
   per item**, phrased as imperatives ("Register for the SAT", "File the CSS Profile with the
@@ -78,11 +90,19 @@ Both tools are **read-only against `master_list.csv`** — never let a guide fli
 - **Official sources for hard facts.** Deadlines, fees, test policy, and aid forms/dates come
   from official admissions/financial-aid pages, stamped with authority + cycle year — not
   aggregators. Flag anything you couldn't confirm ("confirm when the 20XX cycle opens") rather
-  than guessing.
+  than guessing. **Label what the stamp means** — `"Fall-2027 cycle"` (application mechanics) vs
+  `"2026-27 figures"` (money). A bare year can't tell a reader which of the two it is.
 - **Total cost in MYR, aid first.** For this project the student's #1 priority is scholarships —
   foreground the aid model (need-blind vs need-aware), what it covers, and the forms/deadlines.
 
 ## Done when
 
-The JSON validates and builds; the `.md` has the intro, Contents, Key terms, linked jargon, and
-checkbox action lists; every hard fact is officially sourced; and `master_list.csv` is unchanged.
+The JSON validates and builds; the `.md` has the intro, Contents, Start here, linked jargon,
+checkbox action lists, and Key terms at the back; `fx` and `cost_cycle_note` are filled; every hard
+fact is officially sourced with a labelled stamp; and `master_list.csv` is unchanged.
+
+**Then open the PDF and look at it.** The failure mode here is silent: a list that rendered as a
+prose paragraph still *looks* right in the `.md`. Check that no paragraph contains literal `-` or
+`☐` markers mid-sentence, that the "Gather once" / "Filed once" lists show as two columns of
+tick-boxes, that no heading is stranded at the foot of a page, and that no raw `[text](#term-…)`
+is visible in the body.

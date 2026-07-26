@@ -1,10 +1,10 @@
 # Service tiers — what's actually in the package
 
 The thing students don't know: they think they're buying **a spreadsheet**. The spreadsheet is the
-visible tip. Everything that makes the decision — the verified facts, the dossiers, the apply guide —
+visible tip. Everything that makes the decision — the verified facts, the university reports, the apply guide —
 sits underneath it, and they never see it because nobody's ever shown them.
 
-This file names the package so you can point at it. It sections the 5-stage pipeline into a **3-tier
+This file names the package so you can point at it. It sections the four-stage pipeline into a **3-tier
 product ladder**. The pitch ([pitch/](pitch/)) and the scripts ([scripts.md](scripts.md)) draw their
 numbers from here; the reasoning behind the pricing is in [positioning.md](positioning.md).
 
@@ -16,13 +16,15 @@ was never going to make the cut.
 
 ## Before Tier 1 — the intake (invisible, but it's where the fit comes from)
 
-*Stages 1–2 · `profile.json` + `preferences.json`*
+*Stage 1 · `profile.json` + `preferences.json`*
 
 Before any uni is on any list, we pin down **who you are and what you actually want**: grades, budget,
-English status, which countries are live, the field — and if you're **undecided on course**, a
-career-backwards interest-discovery conversation to work it out. This is unglamorous input work, but
-it's why the list that comes out is *yours* and not a generic "top unis" list. For an undecided
-student, this is a real service on its own.
+English status, which countries are live, the field, and how you rank cost against ranking against
+recognition back home. That comes off a short form, so it costs you one sitting rather than a series
+of meetings. If you know the **broad area** but not the exact course — "something in engineering", not
+"Mechanical Engineering at X" — that's fine and normal; the research covers the whole area and comes
+back with the specific courses worth your time. This is unglamorous input work, but it's why the list
+that comes out is *yours* and not a generic "top unis" list.
 
 You don't sell this tier. You mention it: *"first I figure out what actually fits you, then I go find it."*
 
@@ -62,14 +64,14 @@ table. The decision happens in Tiers 2–3.
 
 ---
 
-## Tier 2 — The Dossiers
+## Tier 2 — The University Reports
 
 *Stage 4 · `dossiers/<uni>.pdf` · a deep file per finalist*
 
 **One line:** *For your 3–5 favourites: can I get in, will I belong, and what will it take?*
 
 What you get, **as a PDF per finalist** (3–5 of them):
-- A **16-section decision dossier** — not a comparison row, a document you read to *decide*.
+- A **16-section decision report** — not a comparison row, a document you read to *decide*.
 - **"Who actually gets in"** — real admitted-student texture pulled from Reddit / The Student Room
   offer-holder threads, the Common Data Set, NUS IGP cutoffs: the grades, extracurriculars and essay
   angles of people who actually got in. Most students don't know these sources exist. This is the
@@ -79,7 +81,7 @@ What you get, **as a PDF per finalist** (3–5 of them):
 - **Full cost, scholarships and financial aid** — including Malaysian sponsors (JPA, MARA, Yayasan).
 - **Visa, work rights after graduating, recognition back home.**
 - **"Why here / why hesitate"** — and yes, it includes *reasons to hesitate*. A list that only says
-  nice things about every uni is a list nobody trusts. Every dossier tells you where a uni is weak for
+  nice things about every uni is a list nobody trusts. Every report tells you where a uni is weak for
   *you*. This is the most credibility-building thing in the whole package.
 
 **This is the biggest part of the iceberg they can't see.** When a student says "I just want the
@@ -117,8 +119,8 @@ where I want to go" and "I applied, on time, to all of them, without missing an 
 - The student thinks the product = **Tier 1**. Your job in one sentence: *"the spreadsheet is step one
   — after that you get deep files on your top picks and a step-by-step apply guide per country, all as
   PDFs you keep."*
-- **Show, don't list.** The [sample pack](sample_pack/) is one row of the spreadsheet, one dossier, one
+- **Show, don't list.** The [sample pack](sample_pack/) is one row of the spreadsheet, one report, one
   apply-guide page — the three tiers made visible. Send that, then stop typing. (See
   [positioning.md §3](positioning.md).)
-- Numbers, not adjectives: *"35 columns · 8–12 verified unis · 16-section dossiers · a deadline
+- Numbers, not adjectives: *"35 columns · 8–12 verified unis · 16-section university reports · a deadline
   calendar across 5 countries."* Never "comprehensive."

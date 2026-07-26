@@ -6,6 +6,14 @@ Cast a **wide, cheap** net: find 20-40 plausible university+course candidates ac
 countries, score them at snippet level, and land them in `master_list.csv` as **Longlist**. Facts here are
 *provisional* — they get verified against official sources in Stage 4. Don't deep-research yet.
 
+> **The longlist is a SCANNING surface, not a report.** A row carries only what the student needs in
+> order to **cut** — enough to say "keep looking at this one" or "drop it" at a glance in Google Sheets.
+> Anything that needs a paragraph belongs somewhere else: the long-form research goes to
+> `research_notes.md` now, and the real depth goes into the Stage-4 **university report**
+> (`04_university_dossier.md`), which is the document the student actually reads to *decide*. Cell
+> length budgets enforce this in code — see the readability rules below. Call it a "report" when you
+> talk to the student; "dossier" is internal vocabulary they don't use.
+
 ## Tools used (in order)
 
 1. `firecrawl_search.py --student <slug>` — discovery: runs search queries, saves results to
@@ -331,8 +339,8 @@ Read `.tmp/<slug>/search_results.json`. For each plausible university+course, bu
 
 > **`entry_margin` means ONE thing: grades vs the published academic bar.** **+2** well above …
 > **0** borderline/meets … **−2** well below. It produces the **`Grades vs entry bar`** column
-> (`Well above`/`Above`/`Meets`/`Below`/`Well below`) and, by default, `Admission likelihood`.
-> Don't fold it into the sub-scores.
+> (`Well above`/`Above`/`Meets`/`Below`/`Well below`/`Not published`) and, by default,
+> `Admission likelihood`. Don't fold it into the sub-scores.
 >
 > **Do NOT push a holistic Reach through `entry_margin` — that was a real bug (fixed 2026-07-25).**
 > Agents were setting `entry_margin: -2` on selective US schools to express "unlikely to get in",
@@ -350,7 +358,7 @@ Read `.tmp/<slug>/search_results.json`. For each plausible university+course, bu
 > you genuinely could not retrieve), set `Grades vs entry bar` to **`Not published`** — saying so
 > beats inventing a comparison. There is no `fits_grades` field any more; the column is derived.
 
-> **Write cells for a scanning student, not for a dossier (the 2026-07-25 readability fix).**
+> **Write cells for a scanning student, not for a report (the 2026-07-25 readability fix).**
 > The master list is read in Google Sheets, where a 500-word cell truncates or blows the row
 > height up. Three rules, all enforced by **`python tools/check_master_list.py --student <slug>`**
 > — run it after every sync:
@@ -495,8 +503,8 @@ must say why).
   line up under their headers.
 - **The schema went 34 → 35 columns on 2026-07-25** (the readability fix). `Fits grades?` was renamed
   **`Grades vs entry bar`** and is now derived from `entry_margin` alone; `Backup entry route` was
-  dropped from the CSV (it is a Stage-4 dossier section now — see `04_university_dossier.md`); and
-  **`Course at a glance`** + **`Student life`** were added, one sentence each. All ten live CSVs were
+  dropped from the CSV (it is a Stage-4 report section now — see `04_university_dossier.md`); and
+  **`Course at a glance`** + **`Student life`** were added, one sentence each. All five student CSVs were
   migrated in one disposable pass. Two new per-student files came with it: `research_notes.md` (the
   long-form research the cells no longer hold) and `glossary.csv` (the Google Sheets Glossary tab).
 - **The schema was slimmed 41 → 34 columns on 2026-07-16** — the master list is read in Google Sheets, and
@@ -505,9 +513,9 @@ must say why).
   `Dossier status`. All five student CSVs were migrated in one pass (a disposable script, not a `tools/`
   entry — same rationale as the budget backfill below). **The columns went, the candidate-JSON fields
   stayed**: `currency`, `total_cost_programme` and `meets_english` are still required inputs (see Field
-  notes above). If you are reading an old dossier or `.bak` that references the dropped columns, that's
+  notes above). If you are reading an old report or `.bak` that references the dropped columns, that's
   why. Toru's Stage-4 student-life research was rescued to
-  `data/students/toru/student_life_research.md` — fold it into a dossier rather than re-researching it.
+  `data/students/toru/student_life_research.md` — fold it into a report rather than re-researching it.
 - **Budget stated as a RANGE silently killed the `Over budget` flag** (fixed 2026-07-16, keep in mind when
   reading older rows). `ingest_form_csv.py` passes the form's budget answer straight through, so a student
   who types `400000-800000` lands a *range string* in `profile.financial.total_budget`. `feasibility_flags()`
@@ -525,6 +533,10 @@ must say why).
 
 ## Done when
 
-`master_list.csv` holds a broad Longlist with sensible scores and flags. Then proceed to **Stage 4**
-(`04_university_dossier.md`) — where the student picks finalists, you verify their hard facts against
-official sources, and build a dossier for each survivor.
+`master_list.csv` holds a broad Longlist with sensible scores and flags, and
+`python tools/check_master_list.py --student <slug>` comes back clean.
+
+What carries forward is **candidates, not research**. The Longlist hands Stage 4 a scannable set of
+plausible rows on *provisional* facts; verification and all the depth happen there. Proceed to
+**Stage 4** (`04_university_dossier.md`) — the student picks finalists, you verify their hard facts
+against official sources, and build a **university report** for each survivor.

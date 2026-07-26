@@ -190,4 +190,4 @@ each other.
 | "AI-powered / comprehensive solution" | Instantly reads as a scam. You're a guy with a spreadsheet who did the work. That's stronger. |
 | "It's worth way more than RM50" | Justifies price with value. Justify with your stage instead: "I'm early, I need examples." |
 | "I've helped loads of students" | You've completed one. Somebody will ask. "One" is fine as a confession, fatal as a caught lie. |
-| "This uni is perfect for you" | The dossiers include *reasons to hesitate*. Say that instead — it's the most credible thing you have. |
+| "This uni is perfect for you" | The university reports include *reasons to hesitate*. Say that instead — it's the most credible thing you have. |

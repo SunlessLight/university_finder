@@ -13,7 +13,7 @@ copy-paste messages).
 
 The student thinks they're buying a spreadsheet, so at RM50 they think *"Gemini can make me a
 spreadsheet."* They're not wrong about that — and arguing with them just tells them they've been using
-their tool wrong. The real gap is that **they've never seen the dossiers or the apply guide**, so they
+their tool wrong. The real gap is that **they've never seen the university reports or the apply guide**, so they
 can't value them. You can't out-argue an invisible product. You can only show it.
 
 Your own [positioning.md §3](positioning.md) already says this is the single highest-converting move:
@@ -27,7 +27,7 @@ Full detail in [service-tiers.md](service-tiers.md). In one screen:
 | Tier | Name | What they get | The line |
 |---|---|---|---|
 | **1** | **The List** | 20–40 → verified **8–12** unis · 34-col spreadsheet · Reach/Match/Safety · total cost in MYR | *Know your real options, costed in ringgit* |
-| **2** | **The Dossiers** | 3–5 deep **16-section dossier PDFs** · "who actually gets in" · reasons to hesitate | *Can I get in, will I belong, what will it take* |
+| **2** | **The University Reports** | 3–5 deep **16-section report PDFs** · "who actually gets in" · reasons to hesitate | *Can I get in, will I belong, what will it take* |
 | **3** | **The Apply Pack** | recommendation · one **deadline calendar** · per-region **apply-guide PDFs** grouped by system | *Now go do it — nothing missed* |
 
 Why tier it rather than sell one blob: (a) it makes the invisible part (Tiers 2–3) **nameable**, which
@@ -38,11 +38,11 @@ works (depth escalates as the list narrows).
 ## 3. Should you make a sample PDF? **Yes — it's the priority, above everything else here.**
 
 Not a brochure of features — a **real, redacted output the student can flip through.** The
-[sample pack](sample_pack/) is exactly this: one row of the spreadsheet, one full dossier PDF, one
+[sample pack](sample_pack/) is exactly this: one row of the spreadsheet, one full university-report PDF, one
 apply-guide page. Redacted from the one student who's been through the whole pipeline end-to-end.
 
 Why the sample beats a designed pitch document: a brochure makes *claims*, which is the exact thing
-they don't believe. A real dossier PDF makes them go *"oh — Gemini didn't give me any of this."* They
+they don't believe. A real university-report PDF makes them go *"oh — Gemini didn't give me any of this."* They
 sell themselves and you didn't spend a word. The one-page pitch ([pitch/](pitch/)) still exists — but
 its job is just the cover/menu that *points at* the sample. The sample does the selling.
 

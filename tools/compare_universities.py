@@ -177,7 +177,7 @@ def main():
         f"{'explicit selection' if wanted_pairs else 'List status: ' + args.status} · "
         f"{('country: ' + args.country + ' · ') if args.country else ''}"
         f"dimensions: {args.dimensions}_\n\n"
-        f"> Approx total (MYR) is a rough offline conversion for comparison only — verify exact figures in each dossier."
+        f"> Approx total (MYR) is a rough offline conversion for comparison only — verify exact figures in each university report."
     )
     table = render_table(selected, columns)
     output = f"{title}\n\n{subtitle}\n\n{table}\n"

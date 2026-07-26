@@ -4,23 +4,22 @@
 
 Take a (Malaysian) student from *"who am I / what do I want"* all the way to *"here is exactly how I
 apply to these specific universities"* — producing a ranked, **narrowed**, decision-ready set of
-options with deep per-university dossiers, in one local data bank that opens in Excel / Google Sheets.
+options with deep per-university reports, in one local data bank that opens in Excel / Google Sheets.
 
 This is **agent-driven**. You (Claude) read these workflows, run the deterministic tools in `tools/`
 in the right order, exercise judgement where research is needed, and recover from errors. The student
 just talks to you.
 
-## The 5-stage narrowing pipeline
+## The four-stage narrowing pipeline (numbered 1, 3, 4, 5)
 
 Research depth **escalates** as options survive each cut. Never burn deep-research effort on a
 university that hasn't passed the cheap cut first.
 
 | Stage | Workflow | Output | What it does |
 |---|---|---|---|
-| 1 | `01_student_intake.md` | `profile.json` | Who the student is (grades, budget, English, recognition needs) |
-| 2 | `02_aspirations_intake.md` | `preferences.json` | What they want (countries, field, priorities) — incl. *interest-discovery* if undecided |
+| 1 | `01_intake.md` | `profile.json` + `preferences.json` | Who the student is (grades, budget, English, recognition needs) **and** what they want (countries, field, priorities) — batch-built from the Google Form CSV, then finalized by you |
 | 3 | `03_discover_longlist.md` | `master_list.csv` (Longlist) | Broad, cheap, snippet-level discovery — 20-40 candidates |
-| 4 | `04_university_dossier.md` | `dossiers/<uni>.md` | Student picks 3-5 finalists off the Longlist; **verify their hard facts from official sources** (Reach/Match/Safety, feasibility gates), then a full 16-section decision dossier per finalist. Two paths (`--mode`): course-specific (default) or **university-general (US-only)** for whole-institution fit |
+| 4 | `04_university_dossier.md` | `dossiers/<uni>.md` | Student picks 3-5 finalists off the Longlist; **verify their hard facts from official sources** (Reach/Match/Safety, feasibility gates), then a full 16-section decision **university report** per finalist. Two paths (`--mode`): course-specific (default) or **university-general (US-only)** for whole-institution fit |
 | 5 | `05_decide_and_apply.md` | `recommendation.md` + `calendar.md` | Recommendation, application strategy, one deadline calendar |
 
 **Cross-cutting:** `resume.md` (utility, not a stage) — when a returning student says **"resume
@@ -30,13 +29,14 @@ session skips the cold start. Update each student's `status.md` at the end of ev
 **Apply-prep deliverable:** `08_application_prep.md` (utility, not a stage) — when a student has decided
 to **apply broadly and compare offers first, research fit later**, this produces a per-region, action-only
 "how to apply" guide grouped by application system (checklist + fees + tests + financial-aid forms/dates +
-deadlines) via `build_application_prep.py`. Dossier-free and **read-only** (never changes `List status`).
+deadlines) via `build_application_prep.py`. Report-free and **read-only** (never changes `List status`).
 
-**Alternate on-ramp:** `07_form_intake.md` replaces the conversational Stages 1-2 with a **Google
-Form**. Others fill the form; you export the CSV to `data/form/` and run `ingest_form_csv.py`, which
-batch-creates `profile.json` + `preferences.json` per respondent. You then finalize a few
-judgment-heavy fields (grades → subjects, recognition targets, undecided students) and continue at
-Stage 3. Use this to help many students without driving each intake by hand.
+> **Stage 2 was merged into Stage 1 on 2026-07-25.** Every student now arrives through the **Google
+> Form**, which captures who-they-are and what-they-want in one sitting — so the two conversational
+> SOPs (`01_student_intake.md`, `02_aspirations_intake.md`) were deleted and `07_form_intake.md`
+> became `01_intake.md`. Stages 3-5 keep their file numbers, so **there is no Stage 2** — that gap is
+> deliberate, not a missing file. The career-backwards interest-discovery branch went with them: the
+> form stopped asking those questions, so the branch had no input data.
 
 ## The data bank (one folder per student)
 
@@ -44,7 +44,7 @@ Stage 3. Use this to help many students without driving each intake by hand.
 data/students/<student-slug>/
   status.md            # Session-handoff note — where we are / next action (resume.md; updated each stage)
   profile.json         # Stage 1
-  preferences.json     # Stage 2
+  preferences.json     # Stage 1
   weights.json         # Stage 3: this student's desirability weights (scoring-weights skill; sync refuses without it)
   master_list.csv      # Stages 3-4: every candidate + a "List status" column
   score_log.jsonl      # Stage 3: append-only audit — weights_id + sub-scores + entry_margin behind each scored row
@@ -89,7 +89,7 @@ student. Quick glossary of the less-obvious columns:
 
 > **The schema went 34 → 35 columns on 2026-07-25** (a student review found the list unreadable in
 > Google Sheets). `Fits grades?` → **`Grades vs entry bar`**, now derived from `entry_margin` alone;
-> `Backup entry route` moved into the Stage-4 dossier; **`Course at a glance`** and **`Student life`**
+> `Backup entry route` moved into the Stage-4 university report; **`Course at a glance`** and **`Student life`**
 > added. Two companion files per student came with it: **`research_notes.md`** (the long-form research
 > the cells no longer hold) and **`glossary.csv`** (a Glossary tab explaining the shorthand that
 > student's list actually uses, from `tools/build_glossary_sheet.py`).
@@ -99,19 +99,24 @@ student. Quick glossary of the less-obvious columns:
 > `Total cost (programme)`, `Currency`, `Student community links`, `Student life`, `Data as-of`,
 > `Dossier status`. **Removing a column ≠ removing the fact** — `currency` and `meets_english` are still
 > required candidate-JSON fields feeding `Approx total (MYR)` and the `English short` warning, and
-> student-life research now lives in the Stage 4 dossier where paragraphs belong. `Info source` values were
+> student-life research now lives in the Stage 4 university report where paragraphs belong. `Info source` values were
 > renamed `Aggregator`→`Not verified` and `Official`→`Official page` at the same time.
 
 ## How to start
 
-Tell Claude the student's name and say **"run student intake."** Claude runs `init_student.py`, then
-walks Stage 1 → 2 → 3 → 4 → 5. Or by hand from the repo root with the venv active:
+Export the Google Form responses to CSV, drop it in `data/form/` (gitignored — PII), and tell Claude
+**"ingest the form responses."** Claude runs `ingest_form_csv.py`, finalizes the judgment-heavy fields
+per student (Stage 1), then walks Stage 3 → 4 → 5. Or by hand from the repo root with the venv active:
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
-python tools/init_student.py "Aisyah Rahman"
-#   ...then follow workflows 01 -> 06...
+python tools/ingest_form_csv.py "data/form/responses.csv" --dry-run   # preview first
+python tools/ingest_form_csv.py "data/form/responses.csv"
+#   ...then follow workflows 01 -> 03 -> 04 -> 05 (there is no 02)...
 ```
+
+`init_student.py` still exists for scaffolding one student's folder by hand, and its templates are the
+schema source of truth — but the normal path is the form.
 
 ## Non-negotiable design rules (the anti-loophole guardrails)
 
@@ -135,7 +140,7 @@ These are *why this project exists* — they stop a tidy-looking list from being
    **provisional** — `sync_shortlist.py` stamps a "Grades unverified (self-predicted)" warning on every
    row. The list must not read as settled until actual/official predicted results arrive.
 2. **Official sources for hard facts.** Fees, entry requirements, English, deadlines, and intake must be
-   verified against the **official** university / UCAS / Common App page before you build a row's dossier
+   verified against the **official** university / UCAS / Common App page before you build a row's report
    (the Stage 4 pre-flight — a row can't become `Finalist` on unverified facts). Aggregators (StudyPortals,
    rankings, Niche) are for *discovery only*. Record `Info source` on every row. Where sources conflict,
    the official one wins; note the conflict in `Notes`.
@@ -144,7 +149,9 @@ These are *why this project exists* — they stop a tidy-looking list from being
 4. **Balanced list.** A shortlist is a spread of Reach/Match/Safety, not the top-N by score.
 5. **Recognition back home matters.** For regulated professions (medicine, engineering, law, accounting,
    pharmacy, etc.), check **MQA recognition + the relevant Malaysian professional body**. A degree that
-   won't let the student practise in Malaysia is a dealbreaker, not a footnote.
+   won't let the student practise in Malaysia is a dealbreaker, not a footnote. The
+   profession → body mapping (MMC / BEM+Washington Accord / LPQB / MIA+ACCA / LAM / …) lives in
+   `01_intake.md`, finalize step 4 — `ingest_form_csv.py` auto-fills it best-effort, and you verify.
 6. **Credits are gated.** `firecrawl_search.py` costs money. **Ask the user before running it.** Use
    built-in web search/fetch for quick free checks; reserve Firecrawl for scraping clean prospectus pages.
 
@@ -159,6 +166,6 @@ The student's data bank holds personal data (grades, finances, nationality). `da
 `firecrawl_search.py` (discovery) · `init_student.py` (scaffold) · `ingest_form_csv.py` (batch-scaffold
 from a Google Form CSV) · `shortlist_schema.py` (single source of truth) · `sync_shortlist.py`
 (score/dedupe/append) · `compare_universities.py` (comparison tables) · `build_dossier.py` (16-section
-dossier; `--mode course` default or `--mode university` for US whole-institution) · `dossier_to_pdf.py`
-(export a dossier to PDF for the student) · `build_calendar.py`
+university report; `--mode course` default or `--mode university` for US whole-institution) · `dossier_to_pdf.py`
+(export a report to PDF for the student) · `build_calendar.py`
 (deadline calendar) · `build_application_prep.py` (per-region apply guide grouped by application system).

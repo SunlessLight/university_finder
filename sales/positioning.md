@@ -146,7 +146,8 @@ Your product earns its keep when at least one of these is true:
 
 - **Multiple countries are live.** Comparing a 3-year UK degree against a 4-year US one honestly, in
   MYR, total — not annual tuition — is the genuinely hard part, and the part everyone gets wrong.
-- **The course is undecided.** The career-backwards interest discovery is a real service in itself.
+- **The course is undecided.** Knowing the broad area is enough to start — the research narrows a
+  whole field down to the specific courses worth applying to.
 - **Budget is tight enough that total cost decides it.** Then `Approx total (MYR)` *is* the answer.
 - **A regulated profession is involved.** Medicine/MMC, engineering/BEM, law/LPQB, accounting/MIA.
   Getting recognition wrong doesn't mean a worse degree — it means **can't practise in Malaysia**.
@@ -161,6 +162,6 @@ true, which matters more — these are your friends, and you'll see them next se
   who did the work. That's more credible than any adjective.
 - **Never** oversell the research. "I checked the official pages" beats "extensively researched."
 - **Show numbers, not claims.** "41 columns" > "very detailed." "16 sections, 6 pages" > "in-depth."
-- **The dossiers include reasons to hesitate.** Say that. A list that only says nice things about
+- **The university reports include reasons to hesitate.** Say that. A list that only says nice things about
   every uni is a list nobody trusts. This is the single most credibility-building fact you have:
   *"inform conviction, don't sell"* is literally the rule the workflow runs on.
