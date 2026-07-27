@@ -1,30 +1,30 @@
 """
-build_dossier.py — render a standardized deep-research dossier for one finalist.
+build_report.py — render a standardized deep-research report for one finalist.
 
 Reads a research JSON the agent assembles in Stage 4 and renders a fixed-order,
-16-section Markdown dossier (Snapshot + 14 content sections + Sources) built to
+16-section Markdown report (Snapshot + 14 content sections + Sources) built to
 answer three decision questions — can I get in? will I belong & thrive? what will
 it take to apply? — so the student can decide, not just compare. Writes it to
-data/students/<slug>/dossiers/<slug>.md and flips the matching row(s) in
+data/students/<slug>/reports/<slug>.md and flips the matching row(s) in
 master_list.csv to List status = Finalist.
 
-Two paths, chosen with --mode (see workflows/04_university_dossier.md):
-  * course      (default) — the course-specific dossier: "should I do THIS course
+Two paths, chosen with --mode (see workflows/04_university_report.md):
+  * course      (default) — the course-specific report: "should I do THIS course
                 here?". Every master_list row is a University+Course pair, so it
                 matches/flips the row by course_key(university, course).
-  * university  — US-only. The whole-institution dossier: "should I go to THIS
+  * university  — US-only. The whole-institution report: "should I go to THIS
                 university?", because US undergrads apply to the institution and
                 declare a major in year 2. It matches/flips by UNIVERSITY NAME
                 only (ignoring Course) and refuses any matched row whose Country
                 is not USA.
 
 The fixed section order is enforced per mode: every content section must be present
-and non-empty, or the build fails loudly — this is what keeps dossiers comparable
+and non-empty, or the build fails loudly — this is what keeps reports comparable
 and stops half-researched finalists slipping through.
 
 Usage:
-    python tools/build_dossier.py --student aisyah-rahman --input .tmp/aisyah-rahman/dossier_manchester-cs.json
-    python tools/build_dossier.py --student toru --input .tmp/toru/uni_mit.json --mode university
+    python tools/build_report.py --student aisyah-rahman --input .tmp/aisyah-rahman/report_manchester-cs.json
+    python tools/build_report.py --student toru --input .tmp/toru/uni_mit.json --mode university
 
 Course-mode JSON shape (see the workflow for the full spec):
     {
@@ -144,19 +144,19 @@ def validate(data, mode):
     required = ("university", "course") if mode == "course" else ("university",)
     for field in required:
         if not (data.get(field) or "").strip():
-            sys.exit(f"ERROR: dossier JSON is missing required field '{field}'.")
+            sys.exit(f"ERROR: report JSON is missing required field '{field}'.")
     sections = data.get("sections") or {}
     schema = SECTIONS_BY_MODE[mode]
     missing = [key for key, _ in schema if not (sections.get(key) or "").strip()]
     if missing:
         sys.exit(
-            "ERROR: dossier is incomplete — these sections are empty: "
+            "ERROR: report is incomplete — these sections are empty: "
             + ", ".join(missing)
-            + f".\nEvery {mode} dossier must fill all {len(schema)} content sections "
+            + f".\nEvery {mode} report must fill all {len(schema)} content sections "
             "(research them, or write 'Not found — <why>')."
         )
     if not data.get("sources"):
-        sys.exit("ERROR: dossier has no sources. Every hard fact needs a citation.")
+        sys.exit("ERROR: report has no sources. Every hard fact needs a citation.")
 
 
 def _fact_table(rows):
@@ -244,7 +244,7 @@ def render_sources(sources):
     return "\n".join(lines)
 
 
-def render_dossier(data, mode):
+def render_report(data, mode):
     if mode == "university":
         title = f"# University Report — {data['university']}"
         snapshot = render_university_snapshot(data)
@@ -271,15 +271,15 @@ def update_master_list(csv_path, university, course, mode):
     """Flip the matching row(s) to List status = Finalist.
 
     Course mode matches one row by course_key(university, course). University mode
-    (US-only) matches by UNIVERSITY NAME only — a US general dossier certifies the
+    (US-only) matches by UNIVERSITY NAME only — a US general report certifies the
     whole institution, and the student applies undeclared — so it flips every row for
     that university, after asserting each is a US row.
 
-    There is no "Dossier status" column: the dossier file existing under dossiers/ is the
+    There is no "Report status" column: the report file existing under reports/ is the
     fact, and a column duplicating it just goes stale when a file is deleted or renamed.
     """
     if not csv_path.exists():
-        print(f"  ! {csv_path.name} not found — dossier written, but no row to update.")
+        print(f"  ! {csv_path.name} not found — report written, but no row to update.")
         return
     with csv_path.open(newline="", encoding="utf-8") as f:
         rows = list(csv.reader(f))
@@ -294,7 +294,7 @@ def update_master_list(csv_path, university, course, mode):
             if len(row) > max_col and canonical_uni(row[UNI_COL]) == target
         ]
         if not matches:
-            print(f"  ! No master_list row matched university '{university}'. Dossier written; CSV unchanged.")
+            print(f"  ! No master_list row matched university '{university}'. Report written; CSV unchanged.")
             return
         # US-only guard: the whole-institution path is defined for US admissions only.
         non_us = sorted({row[COUNTRY_COL] for row in matches
@@ -323,7 +323,7 @@ def update_master_list(csv_path, university, course, mode):
             matched = True
             break
     if not matched:
-        print(f"  ! No master_list row matched {university} — {course}. Dossier written; CSV unchanged.")
+        print(f"  ! No master_list row matched {university} — {course}. Report written; CSV unchanged.")
         return
     with csv_path.open("w", newline="", encoding="utf-8") as f:
         csv.writer(f).writerows(rows)
@@ -331,12 +331,12 @@ def update_master_list(csv_path, university, course, mode):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Render a standardized finalist dossier.")
+    parser = argparse.ArgumentParser(description="Render a standardized finalist report.")
     parser.add_argument("--student", required=True, help="Student slug (folder under data/students/).")
-    parser.add_argument("--input", required=True, help="Path to the dossier research JSON.")
+    parser.add_argument("--input", required=True, help="Path to the report research JSON.")
     parser.add_argument(
         "--mode", choices=("course", "university"), default="course",
-        help="course (default) = course-specific dossier; university = US-only whole-institution dossier.",
+        help="course (default) = course-specific report; university = US-only whole-institution report.",
     )
     args = parser.parse_args()
 
@@ -354,17 +354,17 @@ def main():
     validate(data, args.mode)
 
     if args.mode == "university":
-        # Slug on the university alone so a general dossier (massachusetts-institute-of-technology.md)
-        # never collides with a course dossier (mit-bs-mechanical.md) — both can coexist for one uni.
+        # Slug on the university alone so a general report (massachusetts-institute-of-technology.md)
+        # never collides with a course report (mit-bs-mechanical.md) — both can coexist for one uni.
         default_slug = slugify(data["university"])
     else:
         default_slug = slugify(f"{data['university']} {data['course']}")
     slug = data.get("slug") or default_slug
-    dossiers_dir = student_dir / "dossiers"
-    dossiers_dir.mkdir(parents=True, exist_ok=True)
-    out_path = dossiers_dir / f"{slug}.md"
-    out_path.write_text(render_dossier(data, args.mode), encoding="utf-8")
-    print(f"Wrote dossier: {out_path}")
+    reports_dir = student_dir / "reports"
+    reports_dir.mkdir(parents=True, exist_ok=True)
+    out_path = reports_dir / f"{slug}.md"
+    out_path.write_text(render_report(data, args.mode), encoding="utf-8")
+    print(f"Wrote report: {out_path}")
 
     update_master_list(student_dir / "master_list.csv", data["university"], data.get("course"), args.mode)
 

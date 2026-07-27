@@ -5,7 +5,7 @@
 Turn a student's **Shortlist/Finalist** into an **action-only apply guide** for one region at a time:
 *exactly what to prepare and do to get every application in*, with the shared work grouped so it's done
 once. It answers one question — **"what do I need to apply?"** — and deliberately skips the "is this uni
-right for me?" texture (that's the university report's job, `04_university_dossier.md`).
+right for me?" texture (that's the university report's job, `04_university_report.md`).
 
 Use it when a student has decided to **apply and compare offers first, research fit later** — i.e. they
 don't want more reports, they want a checklist + deadlines + financial-aid mechanics they can act on.
@@ -177,7 +177,7 @@ research. `checklist` fields as arrays are back-compatible: old string guides re
   `2026-27` with nothing saying why. Use a labelled stamp: **`"Fall-2027 cycle"`** vs
   **`"2026-27 figures"`**.
 - **Does NOT change `List status`.** This is a how-to-apply deliverable, not a pipeline cut. It reads the
-  Shortlist/Finalist rows; it never promotes, demotes, or flips them (unlike `build_dossier.py`).
+  Shortlist/Finalist rows; it never promotes, demotes, or flips them (unlike `build_report.py`).
 - **Cycle-timing caveat.** For a Fall-20XX intake you're often researching the *previous* year's cycle
   before the new one opens (e.g. Common App supplement prompts publish ~1 Aug). State the figure with a
   "confirm when the 20XX-YY cycle opens" flag rather than guessing.

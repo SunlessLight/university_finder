@@ -1,16 +1,16 @@
 """
-dossier_to_pdf.py — export a rendered dossier Markdown file to a clean, readable PDF.
+report_to_pdf.py — export a rendered report Markdown file to a clean, readable PDF.
 
-The student-facing deliverable of Stage 4 is the per-finalist dossier, which
-build_dossier.py writes as Markdown to data/students/<slug>/dossiers/<uni>.md. That's
+The student-facing deliverable of Stage 4 is the per-finalist report, which
+build_report.py writes as Markdown to data/students/<slug>/reports/<uni>.md. That's
 great for the pipeline but awkward to hand to a student. This tool converts an existing
-dossier .md into a document-style .pdf (styled headings/tables/lists/links, a warning
+report .md into a document-style .pdf (styled headings/tables/lists/links, a warning
 callout for make-or-break rules, tickable checklists, an auto-linked "Key terms"
 glossary, A4 margins, footer page numbers) written alongside the .md, so a student who
-asks for their dossiers gets something they can open and skim directly.
+asks for their reports gets something they can open and skim directly.
 
 It only ever *reads* the existing Markdown — it does no research and never touches
-master_list.csv. Build first (build_dossier.py), export on request (here). Sibling of
+master_list.csv. Build first (build_report.py), export on request (here). Sibling of
 apply_prep_to_pdf.py, which does the same for the application-prep guides.
 
 Engine = WeasyPrint (real CSS: styled callouts, reliable internal links for the glossary
@@ -22,14 +22,14 @@ change. Migrated off xhtml2pdf (2026-07) so both PDF pipelines share one capable
 Two readability passes run before the Markdown->HTML step, both reused from siblings:
   * apply_prep_to_pdf._checkboxes()  — turn GFM `- [ ]` task items into tickable glyphs.
   * apply_glossary                    — build a "Key terms" block from the acronyms the
-    dossier actually uses, insert it after the Snapshot, and link each term's first use
+    report actually uses, insert it after the Snapshot, and link each term's first use
     per section to it (so a student can tap MAE / OPT / MQA / CSS Profile to see it).
 
 Usage:
-    python tools/dossier_to_pdf.py --student aisyah-rahman --dossier manchester-cs
-    python tools/dossier_to_pdf.py --student aisyah-rahman --all
+    python tools/report_to_pdf.py --student aisyah-rahman --report manchester-cs
+    python tools/report_to_pdf.py --student aisyah-rahman --all
 
-    # --dossier accepts the slug with or without the .md extension.
+    # --report accepts the slug with or without the .md extension.
 """
 
 import argparse
@@ -48,7 +48,7 @@ if hasattr(sys.stdout, "reconfigure"):
 REPO_ROOT = Path(__file__).resolve().parent.parent
 STUDENTS_DIR = REPO_ROOT / "data" / "students"
 
-# WeasyPrint gives us real CSS. Navy dossier palette kept; the load-bearing additions vs
+# WeasyPrint gives us real CSS. Navy report palette kept; the load-bearing additions vs
 # the old xhtml2pdf sheet are: a paged footer via counter(page), a red *warning callout*
 # (blockquotes are reserved for make-or-break rules — see workflows/05), and tables that
 # actually render. Markdown extensions attr_list + md_in_html let a section drop a
@@ -133,7 +133,7 @@ def _insert_key_terms(text, block):
 
 
 def _prepare_markdown(text):
-    """Run the readability passes on the raw dossier Markdown, returning the final
+    """Run the readability passes on the raw report Markdown, returning the final
     Markdown string to hand to the HTML renderer. Glossary terms are detected from the
     raw text (so the 'Key terms' list matches what's used), jargon in the body is linked
     to those anchors, then the Key terms block is dropped in after the Snapshot."""
@@ -144,7 +144,7 @@ def _prepare_markdown(text):
 
 
 def render_pdf(md_path, weasyprint, out_path=None):
-    """Convert one dossier .md to a .pdf (beside it by default). Returns the output Path.
+    """Convert one report .md to a .pdf (beside it by default). Returns the output Path.
 
     `weasyprint` is the loaded module (load once in the caller). `out_path` lets the
     manual/sales path (md_to_pdf.py) write to an arbitrary location; the pipeline leaves
@@ -159,27 +159,27 @@ def render_pdf(md_path, weasyprint, out_path=None):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Export a dossier Markdown file to PDF.")
+    parser = argparse.ArgumentParser(description="Export a report Markdown file to PDF.")
     parser.add_argument("--student", required=True, help="Student slug (folder under data/students/).")
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument("--dossier", help="Dossier slug to convert (with or without .md).")
-    group.add_argument("--all", action="store_true", help="Convert every dossier for this student.")
+    group.add_argument("--report", help="Report slug to convert (with or without .md).")
+    group.add_argument("--all", action="store_true", help="Convert every report for this student.")
     args = parser.parse_args()
 
-    dossiers_dir = STUDENTS_DIR / args.student / "dossiers"
-    if not dossiers_dir.exists():
-        sys.exit(f"ERROR: {dossiers_dir} not found. Run build_dossier.py first.")
+    reports_dir = STUDENTS_DIR / args.student / "reports"
+    if not reports_dir.exists():
+        sys.exit(f"ERROR: {reports_dir} not found. Run build_report.py first.")
 
     if args.all:
-        md_files = sorted(dossiers_dir.glob("*.md"))
+        md_files = sorted(reports_dir.glob("*.md"))
         if not md_files:
-            print(f"  ! No dossier .md files in {dossiers_dir}. Nothing to convert.")
+            print(f"  ! No report .md files in {reports_dir}. Nothing to convert.")
             return
     else:
-        name = args.dossier[:-3] if args.dossier.endswith(".md") else args.dossier
-        md_path = dossiers_dir / f"{name}.md"
+        name = args.report[:-3] if args.report.endswith(".md") else args.report
+        md_path = reports_dir / f"{name}.md"
         if not md_path.exists():
-            sys.exit(f"ERROR: {md_path} not found. Check the dossier slug (list: {dossiers_dir}).")
+            sys.exit(f"ERROR: {md_path} not found. Check the report slug (list: {reports_dir}).")
         md_files = [md_path]
 
     weasyprint = _load_weasyprint()

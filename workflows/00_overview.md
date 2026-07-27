@@ -19,7 +19,7 @@ university that hasn't passed the cheap cut first.
 |---|---|---|---|
 | 1 | `01_intake.md` | `profile.json` + `preferences.json` | Who the student is (grades, budget, English, recognition needs) **and** what they want (countries, field, priorities) — batch-built from the Google Form CSV, then finalized by you |
 | 3 | `03_discover_longlist.md` | `master_list.csv` (Longlist) | Broad, cheap, snippet-level discovery — 20-40 candidates |
-| 4 | `04_university_dossier.md` | `dossiers/<uni>.md` | Student picks 3-5 finalists off the Longlist; **verify their hard facts from official sources** (Reach/Match/Safety, feasibility gates), then a full 16-section decision **university report** per finalist. Two paths (`--mode`): course-specific (default) or **university-general (US-only)** for whole-institution fit |
+| 4 | `04_university_report.md` | `reports/<uni>.md` | Student picks 3-5 finalists off the Longlist; **verify their hard facts from official sources** (Reach/Match/Safety, feasibility gates), then a full 16-section decision **university report** per finalist. Two paths (`--mode`): course-specific (default) or **university-general (US-only)** for whole-institution fit |
 | 5 | `05_decide_and_apply.md` | `recommendation.md` + `calendar.md` | Recommendation, application strategy, one deadline calendar |
 
 **Cross-cutting:** `resume.md` (utility, not a stage) — when a returning student says **"resume
@@ -38,6 +38,15 @@ deadlines) via `build_application_prep.py`. Report-free and **read-only** (never
 > deliberate, not a missing file. The career-backwards interest-discovery branch went with them: the
 > form stopped asking those questions, so the branch had no input data.
 
+> **Stage 4's per-finalist research + report step runs on a pinned-model subagent
+> (2026-07-27).** The research → JSON → `build_report.py` sequence in
+> `04_university_report.md`'s "Tools used" section dispatches to
+> `.claude/agents/report-writer.md` (pinned to **Opus**), once per surviving finalist —
+> it's the highest-stakes, lowest-volume, deepest-synthesis stage, and no linter checks a
+> report's synthesis quality, only its structure. The pre-flight pick/verify/cut in that
+> workflow stays in this (Sonnet) session — it's a checkpoint with the student, not
+> research.
+
 ## The data bank (one folder per student)
 
 ```
@@ -48,7 +57,7 @@ data/students/<student-slug>/
   weights.json         # Stage 3: this student's desirability weights (scoring-weights skill; sync refuses without it)
   master_list.csv      # Stages 3-4: every candidate + a "List status" column
   score_log.jsonl      # Stage 3: append-only audit — weights_id + sub-scores + entry_margin behind each scored row
-  dossiers/<uni>.md    # Stage 4  (dossiers/<uni>.pdf — optional, on request via dossier_to_pdf.py)
+  reports/<uni>.md     # Stage 4  (reports/<uni>.pdf — optional, on request via report_to_pdf.py)
   recommendation.md    # Stage 5
   calendar.md          # Stage 5
   application_prep/<region>.md  # 08_application_prep.md — per-region "how to apply" guide (optional)
@@ -97,7 +106,7 @@ student. Quick glossary of the less-obvious columns:
 > **The schema was slimmed 41 → 34 columns on 2026-07-16.** It is read in Google Sheets, and seven columns
 > were blank in practice, duplicated another column, or were internal bookkeeping: `Meets English?`,
 > `Total cost (programme)`, `Currency`, `Student community links`, `Student life`, `Data as-of`,
-> `Dossier status`. **Removing a column ≠ removing the fact** — `currency` and `meets_english` are still
+> `Report status`. **Removing a column ≠ removing the fact** — `currency` and `meets_english` are still
 > required candidate-JSON fields feeding `Approx total (MYR)` and the `English short` warning, and
 > student-life research now lives in the Stage 4 university report where paragraphs belong. `Info source` values were
 > renamed `Aggregator`→`Not verified` and `Official`→`Official page` at the same time.
@@ -171,7 +180,7 @@ The student's data bank holds personal data (grades, finances, nationality). `da
 
 `firecrawl_search.py` (discovery) · `init_student.py` (scaffold) · `ingest_form_csv.py` (batch-scaffold
 from a Google Form CSV) · `shortlist_schema.py` (single source of truth) · `sync_shortlist.py`
-(score/dedupe/append) · `compare_universities.py` (comparison tables) · `build_dossier.py` (16-section
-university report; `--mode course` default or `--mode university` for US whole-institution) · `dossier_to_pdf.py`
+(score/dedupe/append) · `compare_universities.py` (comparison tables) · `build_report.py` (16-section
+university report; `--mode course` default or `--mode university` for US whole-institution) · `report_to_pdf.py`
 (export a report to PDF for the student) · `build_calendar.py`
 (deadline calendar) · `build_application_prep.py` (per-region apply guide grouped by application system).

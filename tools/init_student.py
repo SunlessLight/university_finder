@@ -1,7 +1,7 @@
 """
 init_student.py — scaffold a private data bank for one student.
 
-Creates data/students/<slug>/ with a dossiers/ subfolder and writes template
+Creates data/students/<slug>/ with a reports/ subfolder and writes template
 profile.json + preferences.json pre-filled with the schema keys set to null/empty.
 
 The normal way in is the Google Form (workflows/01_intake.md -> ingest_form_csv.py,
@@ -120,7 +120,7 @@ def main():
 
     slug = slugify(args.name)
     student_dir = STUDENTS_DIR / slug
-    dossiers_dir = student_dir / "dossiers"
+    reports_dir = student_dir / "reports"
 
     if student_dir.exists() and not args.force:
         sys.exit(
@@ -128,7 +128,7 @@ def main():
             f"(this will reset profile.json / preferences.json)."
         )
 
-    dossiers_dir.mkdir(parents=True, exist_ok=True)
+    reports_dir.mkdir(parents=True, exist_ok=True)
 
     profile_path = student_dir / "profile.json"
     prefs_path = student_dir / "preferences.json"
@@ -142,7 +142,7 @@ def main():
     print(f"Created student data bank: {student_dir}")
     print(f"  - {profile_path.name}     (Stage 1: who the student is — fill by hand)")
     print(f"  - {prefs_path.name} (Stage 1: what they want — fill by hand)")
-    print(f"  - dossiers/         (Stage 4: per-finalist deep dossiers land here)")
+    print(f"  - reports/          (Stage 4: per-finalist deep reports land here)")
     print("\nNote: the normal intake path is the Google Form — see workflows/01_intake.md.")
     print("Filled both files by hand? Next: derive weights.json, then Stage 3 (discover longlist).")
 

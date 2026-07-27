@@ -10,9 +10,8 @@ countries, score them at snippet level, and land them in `master_list.csv` as **
 > order to **cut** — enough to say "keep looking at this one" or "drop it" at a glance in Google Sheets.
 > Anything that needs a paragraph belongs somewhere else: the long-form research goes to
 > `research_notes.md` now, and the real depth goes into the Stage-4 **university report**
-> (`04_university_dossier.md`), which is the document the student actually reads to *decide*. Cell
-> length budgets enforce this in code — see the readability rules below. Call it a "report" when you
-> talk to the student; "dossier" is internal vocabulary they don't use.
+> (`04_university_report.md`), which is the document the student actually reads to *decide*. Cell
+> length budgets enforce this in code — see the readability rules below.
 
 ## Tools used (in order)
 
@@ -504,14 +503,14 @@ must say why).
   line up under their headers.
 - **The schema went 34 → 35 columns on 2026-07-25** (the readability fix). `Fits grades?` was renamed
   **`Grades vs entry bar`** and is now derived from `entry_margin` alone; `Backup entry route` was
-  dropped from the CSV (it is a Stage-4 report section now — see `04_university_dossier.md`); and
+  dropped from the CSV (it is a Stage-4 report section now — see `04_university_report.md`); and
   **`Course at a glance`** + **`Student life`** were added, one sentence each. All five student CSVs were
   migrated in one disposable pass. Two new per-student files came with it: `research_notes.md` (the
   long-form research the cells no longer hold) and `glossary.csv` (the Google Sheets Glossary tab).
 - **The schema was slimmed 41 → 34 columns on 2026-07-16** — the master list is read in Google Sheets, and
   seven columns were blank, duplicated another column, or were internal bookkeeping: `Meets English?`,
   `Total cost (programme)`, `Currency`, `Student community links`, `Student life`, `Data as-of`,
-  `Dossier status`. All five student CSVs were migrated in one pass (a disposable script, not a `tools/`
+  `Report status`. All five student CSVs were migrated in one pass (a disposable script, not a `tools/`
   entry — same rationale as the budget backfill below). **The columns went, the candidate-JSON fields
   stayed**: `currency`, `total_cost_programme` and `meets_english` are still required inputs (see Field
   notes above). If you are reading an old report or `.bak` that references the dropped columns, that's
@@ -539,5 +538,5 @@ must say why).
 
 What carries forward is **candidates, not research**. The Longlist hands Stage 4 a scannable set of
 plausible rows on *provisional* facts; verification and all the depth happen there. Proceed to
-**Stage 4** (`04_university_dossier.md`) — the student picks finalists, you verify their hard facts
+**Stage 4** (`04_university_report.md`) — the student picks finalists, you verify their hard facts
 against official sources, and build a **university report** for each survivor.

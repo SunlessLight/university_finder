@@ -3,7 +3,7 @@ build_calendar.py — aggregate every deadline across a student's finalists into
 chronological calendar.
 
 Reads the finalist rows in master_list.csv (persistent) for application deadlines and
-intakes, plus any .tmp/<slug>/dossier_*.json files that carry a structured "dated_items"
+intakes, plus any .tmp/<slug>/report_*.json files that carry a structured "dated_items"
 list (scholarship deadlines, admissions-test dates, visa lead times). Renders a single
 chronological data/students/<slug>/calendar.md so nothing gets missed.
 
@@ -14,7 +14,7 @@ Usage:
     python tools/build_calendar.py --student aisyah-rahman
     python tools/build_calendar.py --student aisyah-rahman --status Finalist
 
-Optional structured dates in a dossier JSON:
+Optional structured dates in a report JSON:
     "dated_items": [
       {"date": "2027-01-15", "label": "UCAS deadline", "action": "Submit application"},
       {"date": "2026-11-01", "label": "Scholarship X deadline", "action": "Apply separately"}
@@ -60,12 +60,12 @@ def items_from_master(finalists):
     return items
 
 
-def items_from_dossiers(slug, finalists):
+def items_from_reports(slug, finalists):
     """
-    Pull structured dated_items from the .tmp/<slug>/dossier_*.json files that belong
+    Pull structured dated_items from the .tmp/<slug>/report_*.json files that belong
     to the selected rows.
 
-    Scoped to `finalists` on purpose: .tmp/ accumulates a dossier JSON for every
+    Scoped to `finalists` on purpose: .tmp/ accumulates a report JSON for every
     university ever researched, so an unscoped sweep put Rejected and Shortlist-only
     universities' deadlines into a Finalist calendar — `--status` filtered the
     master-list half and silently not this one.
@@ -78,7 +78,7 @@ def items_from_dossiers(slug, finalists):
         ((r.get("University") or "").strip().lower(), (r.get("Course") or "").strip().lower())
         for r in finalists
     }
-    for jpath in sorted(tmp_dir.glob("dossier_*.json")):
+    for jpath in sorted(tmp_dir.glob("report_*.json")):
         try:
             data = json.loads(jpath.read_text(encoding="utf-8"))
         except json.JSONDecodeError:
@@ -137,7 +137,7 @@ def main():
     if not finalists:
         sys.exit(f"No rows with List status = {args.status} in {csv_path.name}.")
 
-    items = items_from_master(finalists) + items_from_dossiers(args.student, finalists)
+    items = items_from_master(finalists) + items_from_reports(args.student, finalists)
     out_path = student_dir / "calendar.md"
     out_path.write_text(render_calendar(args.student, args.status, items), encoding="utf-8")
 

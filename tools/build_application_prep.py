@@ -12,7 +12,7 @@ dates. Writes it to data/students/<slug>/application_prep/<region>.md.
 
 This is a decision-support / how-to-apply deliverable (sibling of build_calendar.py):
 read-only against master_list.csv — it does NOT change List status or flip rows.
-It complements the per-university dossier (build_dossier.py); it does not replace it.
+It complements the per-university report (build_report.py); it does not replace it.
 
 Every university must carry non-empty deadlines + application_checklist + financial_aid,
 or the build fails loudly — a half-researched apply guide shouldn't pass.

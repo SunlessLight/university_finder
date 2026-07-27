@@ -10,7 +10,7 @@ checklists, page-number footer, A4) written alongside the .md.
 
 It only ever *reads* the existing Markdown — no research, never touches master_list.csv.
 Build first (build_application_prep.py), export on request (here). Sibling of
-dossier_to_pdf.py, which does the same for dossiers.
+report_to_pdf.py, which does the same for reports.
 
 Engine = WeasyPrint (real CSS: reliable internal links for the Contents/glossary jumps,
 paged footers, proper list styling). On Windows WeasyPrint needs the native GTK/Pango/Cairo
@@ -99,7 +99,7 @@ h1::after { content: ""; display: block; width: 2.4cm; height: 3px;
             background: #c0392b; margin-top: 8pt; }
 
 /* break-after on both: without it a section heading strands alone at the foot of a
-   page with its content overleaf (dossier_to_pdf.py has guarded this since day one). */
+   page with its content overleaf (report_to_pdf.py has guarded this since day one). */
 h2 { font-size: 14pt; color: #10233f; margin: 20pt 0 7pt 0;
      border-bottom: 1px solid #d3dbe6; padding-bottom: 3pt; break-after: avoid; }
 h3 { font-size: 11.5pt; color: #123a66; margin: 14pt 0 4pt 0; break-after: avoid; }

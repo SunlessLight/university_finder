@@ -34,7 +34,7 @@ regenerate them from a different student, re-run the same scan and re-read them.
 
 ## How they were built (to regenerate)
 
-Redacted copies of the source student's `dossiers/mit-mechanical-engineering.md` and
-`application_prep/us.md` were rendered with the existing tools (`dossier_to_pdf.py`,
+Redacted copies of the source student's `reports/mit-mechanical-engineering.md` and
+`application_prep/us.md` were rendered with the existing tools (`report_to_pdf.py`,
 `apply_prep_to_pdf.py`); the CSV is 15 selected rows of the master list with the same redaction applied
 to every cell. The un-redacted source stays in the gitignored data bank and is never shared.

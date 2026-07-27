@@ -14,10 +14,10 @@ See [CLAUDE.md](CLAUDE.md) for the agent operating instructions, and
 ## Layout
 
 ```
-workflows/   Markdown SOPs (00_overview, 01_intake, 03_discover_longlist, 04_university_dossier,
+workflows/   Markdown SOPs (00_overview, 01_intake, 03_discover_longlist, 04_university_report,
              05_decide_and_apply, + 08_application_prep, resume)
 tools/       Python execution scripts (firecrawl_search, init_student, ingest_form_csv,
-             shortlist_schema, sync_shortlist, compare_universities, build_dossier, build_calendar)
+             shortlist_schema, sync_shortlist, compare_universities, build_report, build_calendar)
 data/students/   One private data bank per student (gitignored — PII)
 data/form/       Google Form CSV exports dropped here for batch intake (gitignored — PII)
 .tmp/        Disposable intermediates (gitignored)
@@ -30,11 +30,16 @@ data/form/       Google Form CSV exports dropped here for batch intake (gitignor
 |---|---|---|
 | 1 Intake | `profile.json` + `preferences.json` | Grades, budget, English, recognition needs — plus countries, field and priorities. Built from the Google Form CSV |
 | 3 Discover | `master_list.csv` (Longlist) | 20-40 candidates, scored |
-| 4 Verify + Report | `dossiers/<uni>.md` | Student picks 3-5 finalists; verify their facts against official sources (Reach/Match/Safety), then a deep 16-section **university report** each |
+| 4 Verify + Report | `reports/<uni>.md` | Student picks 3-5 finalists; verify their facts against official sources (Reach/Match/Safety), then a deep 16-section **university report** each |
 | 5 Decide | `recommendation.md` + `calendar.md` | Ranked picks, application strategy, deadlines |
 
 There is **no Stage 2** — intake and aspirations merged into Stage 1 on 2026-07-25, when the Google
 Form became the only on-ramp. Stages 3-5 kept their numbers rather than renumber the whole repo.
+
+Stage 4's per-finalist research-and-report step also runs on a different model — Claude dispatches it
+to a subagent pinned to **Opus** (it's the deepest, highest-stakes writing task in the pipeline), while
+everything else, including Stage 4's own pick/verify/cut checkpoint with you, runs on the normal session
+model. This happens automatically; there's nothing you need to run or configure.
 
 ## Setup (first time)
 
@@ -76,7 +81,7 @@ python tools/sync_shortlist.py --student aisyah-rahman          # add --dry-run 
 python tools/compare_universities.py --student aisyah-rahman --status Shortlist --dimensions all
 #   ...narrow by editing the List status column; promote finalists...
 
-python tools/build_dossier.py --student aisyah-rahman --input .tmp/aisyah-rahman/dossier_manchester-cs.json
+python tools/build_report.py --student aisyah-rahman --input .tmp/aisyah-rahman/report_manchester-cs.json
 python tools/build_calendar.py --student aisyah-rahman
 ```
 
@@ -99,6 +104,13 @@ Run in **`acceptEdits`** mode, not `bypassPermissions`. `.claude/settings.json` 
 while `--force`, `rm` and `git push` still stop and ask. That last stop matters more here than in a
 normal repo: `data/students/` is **gitignored**, so an overwritten `profile.json` or `master_list.csv`
 has no git history to restore from.
+
+**Stage 4 quietly switches models for its research-and-report step.** When it reaches the per-finalist
+"Tools used" work in `04_university_report.md` (research → assemble JSON → `build_report.py`), Claude
+dispatches that one step to a subagent pinned to Opus (`.claude/agents/report-writer.md`) instead of
+writing the report itself on whichever model is running your session. It happens automatically, once
+per finalist — you don't run or configure anything differently. The pick/verify/cut checkpoint earlier
+in Stage 4, where you choose the finalists, still happens in your normal session.
 
 ## Notes
 

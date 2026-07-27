@@ -72,7 +72,9 @@ promotion/rejection is an agent edit to the CSV, never a sync side-effect.
 **Read `workflows/00_overview.md` first** — the master SOP. It holds the full stage-by-stage
 pipeline, the per-stage workflow files (`01_intake`, `03`, `04`, `05`, plus the `08_application_prep`
 and `resume` utilities — **there is no `02`**; intake and aspirations merged on 2026-07-25), and the
-complete tool reference. `README.md` has the human-facing setup/run guide.
+complete tool reference. `README.md` has the human-facing setup/run guide. Stage 4 delegates its
+research-and-report step to an Opus-pinned subagent (`.claude/agents/report-writer.md`) — see
+`00_overview.md` for the full note; everything else in this project runs on the session's default model.
 
 ### Non-negotiable rules (the guardrails)
 

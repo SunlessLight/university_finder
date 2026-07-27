@@ -734,7 +734,7 @@ def main():
         seen_slugs.add(slug)
 
         if not args.dry_run:
-            (student_dir / "dossiers").mkdir(parents=True, exist_ok=True)
+            (student_dir / "reports").mkdir(parents=True, exist_ok=True)
             (student_dir / "profile.json").write_text(
                 json.dumps(profile, indent=2, ensure_ascii=False), encoding="utf-8"
             )

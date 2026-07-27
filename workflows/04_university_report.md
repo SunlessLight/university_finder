@@ -13,8 +13,7 @@ A-tier and best-fit first.
 > `master_list.csv` to one-line, budgeted cells so a student can *cut* by skimming it; everything that
 > needs a paragraph belongs here instead. Promoting a row writes back exactly **two one-sentence cells**
 > (`Course at a glance`, `Student life`) condensed from the report — never more. If you find yourself
-> wanting to put a paragraph in a cell, it belongs in a report section or in `research_notes.md`. Say a
-> word to the student and it should be "report", not "dossier" — they don't use that word.
+> wanting to put a paragraph in a cell, it belongs in a report section or in `research_notes.md`.
 
 > **This stage absorbs the old "verify → shortlist" step.** There is no longer a separate 8-12 Shortlist
 > tier: the student picks their finalists straight off the Longlist, and you **verify each pick's hard
@@ -88,7 +87,7 @@ are enough to earn a report.
 
 ## Two report paths — course vs university (pick with `--mode`)
 
-`build_dossier.py` renders **two** report shapes; choose per finalist:
+`build_report.py` renders **two** report shapes; choose per finalist:
 
 - **`--mode course` (default) — the course-specific report.** *"Should I do THIS course here?"* Every
   `master_list.csv` row is a `University + Course` pair, so it matches/flips the row by
@@ -107,14 +106,23 @@ sources for hard facts, enforced non-empty sections, the PDF export — is **ide
 
 ## Tools used
 
+> **Dispatch steps 1-3 to the `report-writer` subagent — one call per finalist, one at a time.**
+> `.claude/agents/report-writer.md` (pinned to **Opus**) runs this research-and-render sequence for
+> exactly one finalist per dispatch — give it the student slug, the finalist (university + course, or
+> university alone for `--mode university`), and the mode. Dispatch finalists **sequentially, not in
+> parallel**: `build_report.py` reads and rewrites the whole `master_list.csv`, so two dispatches
+> racing to flip different rows at the same time can silently drop one Finalist flip. The pre-flight
+> above (pick, verify, cut) stays in this session — it's the Stage 4 checkpoint with the student
+> (CLAUDE.md), not research.
+
 1. *(agent research)* gather the facts for the 14 content sections. **Hard facts** (fees, requirements,
    visa, recognition, deadlines) come from **official sources** (course page, UCAS/Common App, the
    country's visa site, MQA). **Decision texture** (who gets in, student life, the city) comes from search
    + forums/video/social — capture their URLs + snippets without scraping them.
-2. *(agent step)* assemble `.tmp/<slug>/dossier_<uni>.json`.
-3. `build_dossier.py --student <slug> --input .tmp/<slug>/dossier_<uni>.json` — renders the report and
-   flips that row to `List status = Finalist`. (There is no `Dossier status` column — the report file
-   under `dossiers/` *is* the record that it was built.)
+2. *(agent step)* assemble `.tmp/<slug>/report_<uni>.json`.
+3. `build_report.py --student <slug> --input .tmp/<slug>/report_<uni>.json` — renders the report and
+   flips that row to `List status = Finalist`. (There is no `Report status` column — the report file
+   under `reports/` *is* the record that it was built.)
 
 ### Which scraper for which section (spend credits where they matter)
 
@@ -264,7 +272,7 @@ Ordered institution-first. **Snapshot** and **Sources** are rendered by the tool
 
 ### The university-mode JSON shape
 
-Write `.tmp/<slug>/uni_<uni-slug>.json` (see `build_dossier.py`'s header for the exact shape). No
+Write `.tmp/<slug>/uni_<uni-slug>.json` (see `build_report.py`'s header for the exact shape). No
 `course`; the snapshot uses institution fields, and `sections` are the 14 keys above:
 
 ```json
@@ -294,11 +302,11 @@ Write `.tmp/<slug>/uni_<uni-slug>.json` (see `build_dossier.py`'s header for the
 
 Render it:
 ```powershell
-python tools/build_dossier.py --student <slug> --input .tmp/<slug>/uni_mit.json --mode university
+python tools/build_report.py --student <slug> --input .tmp/<slug>/uni_mit.json --mode university
 ```
-Output: `data/students/<slug>/dossiers/<uni-slug>.md`; every `master_list.csv` row for that university
+Output: `data/students/<slug>/reports/<uni-slug>.md`; every `master_list.csv` row for that university
 flips to `Finalist` (the tool prints which, and refuses if any matched row isn't a US row). Export to PDF
-exactly as below — `dossier_to_pdf.py` reads either report unchanged.
+exactly as below — `report_to_pdf.py` reads either report unchanged.
 
 ## Writing rules — make it skimmable (non-negotiable, both modes)
 
@@ -341,7 +349,7 @@ questions — *can I get in? · can I afford it? · what do I actually do?* — 
   `<div class="callout-note" markdown="1"> … </div>`.
 - **Collect every "confirm this yourself" task into the Application checklist** — one place, as
   checklist items — instead of scattering "confirm the 4-year English record" across five sections.
-- **Acronyms are auto-glossaried — don't hand-expand every one.** `dossier_to_pdf.py` builds a
+- **Acronyms are auto-glossaried — don't hand-expand every one.** `report_to_pdf.py` builds a
   "Key terms" block from the acronyms you actually use (via `apply_glossary.py`) and links each
   term's first use to it. So write `MAE`, `OPT`, `CSS Profile`, `MQA`, `ABET`, `BEM` normally — the
   PDF explains them. **If you use an acronym the glossary doesn't know, add it to
@@ -352,7 +360,7 @@ questions — *can I get in? · can I afford it? · what do I actually do?* — 
 
 ## Assemble the report JSON
 
-Write `.tmp/<slug>/dossier_<uni>.json` (see `build_dossier.py`'s header for the exact shape). Each of the
+Write `.tmp/<slug>/report_<uni>.json` (see `build_report.py`'s header for the exact shape). Each of the
 14 content sections is a Markdown string under `"sections"`. Two optional-but-recommended extras:
 
 - **`dated_items`** — structured dates the calendar will pick up:
@@ -370,11 +378,11 @@ empty (empty sections fail the build on purpose — a half-researched report sho
 ## Render
 
 ```powershell
-python tools/build_dossier.py --student <slug> --input .tmp/<slug>/dossier_manchester-cs.json
+python tools/build_report.py --student <slug> --input .tmp/<slug>/report_manchester-cs.json
 ```
-Output: `data/students/<slug>/dossiers/<uni-course-slug>.md`, and the matching `master_list.csv` row flips
+Output: `data/students/<slug>/reports/<uni-course-slug>.md`, and the matching `master_list.csv` row flips
 to **`Finalist`**. Repeat per finalist. (`Finalist` is the whole story — `List status` only ever takes
-`Longlist`/`Shortlist`/`Finalist`/`Rejected`, and the report file under `dossiers/` is the record that it
+`Longlist`/`Shortlist`/`Finalist`/`Rejected`, and the report file under `reports/` is the record that it
 was built.)
 
 ## Export to PDF (optional, on request)
@@ -382,11 +390,11 @@ was built.)
 When a student asks for their report(s) to read outside the tool, convert the rendered Markdown to a
 clean PDF (written alongside the `.md`):
 ```powershell
-python tools/dossier_to_pdf.py --student <slug> --dossier manchester-cs   # one report
-python tools/dossier_to_pdf.py --student <slug> --all                     # every report
+python tools/report_to_pdf.py --student <slug> --report manchester-cs   # one report
+python tools/report_to_pdf.py --student <slug> --all                    # every report
 ```
 This is a delivery step, not a pipeline stage — it only reads the existing `.md` (no research, no CSV
-changes). Output: `data/students/<slug>/dossiers/<uni-course-slug>.pdf` (gitignored, like the rest of
+changes). Output: `data/students/<slug>/reports/<uni-course-slug>.pdf` (gitignored, like the rest of
 the student's data bank).
 
 The PDF renders with **WeasyPrint** and adds three things at render time (nothing to do in the `.md`):

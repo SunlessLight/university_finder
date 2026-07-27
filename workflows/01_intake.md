@@ -119,7 +119,7 @@ fine — but keep the substring in bold intact.
    python tools/ingest_form_csv.py data/form/responses.csv --dry-run
    python tools/ingest_form_csv.py data/form/responses.csv
    ```
-   The tool creates `data/students/<slug>/{profile.json,preferences.json,dossiers/}` per consenting
+   The tool creates `data/students/<slug>/{profile.json,preferences.json,reports/}` per consenting
    respondent, copies budget/scholarship into **both** files, and prints a per-student
    **"Needs agent review"** list. Add `--force` only to intentionally overwrite an existing folder.
    - `--assume-consent` — **internal-only escape hatch.** If the form has no consent question (e.g. a

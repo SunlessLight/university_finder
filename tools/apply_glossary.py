@@ -199,8 +199,8 @@ GLOSSARY = {
                       "Year-12 students; international applicants usually apply to each university "
                       "directly instead.",
     },
-    # --- Recognition, outcomes & academic structure (dossier terms) -----------
-    # These surface mostly in the dossiers (build_dossier.py) rather than the apply
+    # --- Recognition, outcomes & academic structure (report terms) ------------
+    # These surface mostly in the reports (build_report.py) rather than the apply
     # guides — recognition-back-home, post-study work, and department shorthand.
     "OPT": {
         "aliases": ["Optional Practical Training"],
@@ -261,7 +261,7 @@ GLOSSARY = {
         "definition": "Electrical & Computer Engineering — a common name for the university "
                       "department covering electrical engineering and computer hardware.",
     },
-    # --- Naval architecture / marine engineering + UK routes (dossier terms) ---
+    # --- Naval architecture / marine engineering + UK routes (report terms) ---
     "RINA": {
         "aliases": ["Royal Institution of Naval Architects"],
         "definition": "**Royal Institution of Naval Architects** — the UK professional body for "

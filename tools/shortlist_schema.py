@@ -5,7 +5,7 @@ Defines the master_list.csv column order, the deterministic desirability scoring
 rubric, the admission-likelihood (Reach/Match/Safety) and feasibility-gate logic,
 rough currency normalization to MYR, and the slug/canonical-name helpers used for
 deduplication. Imported by init_student.py, sync_shortlist.py, compare_universities.py,
-build_dossier.py, and build_calendar.py so the layout and the math never drift apart.
+build_report.py, and build_calendar.py so the layout and the math never drift apart.
 
 Design rule baked in here: DESIRABILITY is kept separate from ADMISSIBILITY. Entry
 fit is NOT one of the scoring weights — a university the student can't get into must
@@ -39,7 +39,7 @@ SHORTLIST_HEADERS = [
     "Course at a glance",   # ONE tight sentence: shape of the degree, e.g. "3-yr, broad first year then pick a DS major"
     "Country",
     "City",
-    "Student life",         # ONE tight sentence: what living/studying there is like. Depth belongs in the dossier.
+    "Student life",         # ONE tight sentence: what living/studying there is like. Depth belongs in the report.
     # Quality
     "Subject rank",
     "Overall rank",
@@ -79,7 +79,7 @@ LIST_STATUSES = ["Longlist", "Shortlist", "Finalist", "Rejected"]
 DEFAULT_LIST_STATUS = LIST_STATUSES[0]
 
 # --------------------------------------------------------------------------- #
-# Cell length budgets — the master list is a SCANNING surface, not a dossier.
+# Cell length budgets — the master list is a SCANNING surface, not a report.
 #
 # It is read in Google Sheets, where a 500-word cell either truncates or blows the
 # row height up and makes the whole list unscannable. Enforced by
@@ -116,7 +116,7 @@ CELL_BUDGETS = {
 }
 
 # Allowed values for "Info source". A row starts unverified and the Stage 4 pre-flight flips it once the
-# fact has been confirmed on the university's own page (see workflows/04_university_dossier.md).
+# fact has been confirmed on the university's own page (see workflows/04_university_report.md).
 INFO_SOURCE_UNVERIFIED = "Not verified"
 INFO_SOURCE_OFFICIAL = "Official page"
 
