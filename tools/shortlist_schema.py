@@ -427,6 +427,7 @@ FX_TO_MYR = {
     "EUR": 5.1,
     "RMB": 0.65,  # alias for CNY
     "JPY": 0.031,  # ~100 JPY -> 3.1 MYR
+    "HKD": 0.60,  # ~7.8 HKD per USD, USD 4.7 MYR -> ~0.60
 }
 
 

@@ -63,6 +63,7 @@ QUESTION_MAP = [
     ("which college", "current_institution"),
     ("when do you graduate", "current_completion"),  # current form's wording
     ("when do you finish", "current_completion"),    # legacy fallback (older form)
+    ("final exam results", "current_completion"),    # current form: "when will you get your actual final exam results"
     ("list each subject", "grades_raw"),             # legacy paragraph-grades form; structured subjects handled separately
     ("actual results or predicted", "grade_status"),
     ("which english test", "english_test"),
@@ -102,7 +103,7 @@ QUESTION_MAP = [
     # inside that area. See workflows/01_intake.md, finalize step 5.
 ]
 
-# The six supported destination sets (preferences.target_countries). Normalize
+# The seven supported destination sets (preferences.target_countries). Normalize
 # the form's checkbox labels onto these exact tokens.
 COUNTRY_NORMALIZE = {
     "uk": "UK",
@@ -117,6 +118,7 @@ COUNTRY_NORMALIZE = {
     "malaysia": "Singapore/Malaysia",
     "china": "China",
     "japan": "Japan",
+    "hong kong": "Hong Kong",
 }
 
 # Priority dropdown labels -> short tokens used in preferences.priorities.
@@ -185,6 +187,8 @@ SUBJECT_NORMALIZE = {
     "computer science": "Computer Science",
     "business": "Business",
     "business studies": "Business",
+    "english literature": "English Literature",
+    "history": "History",
 }
 
 
@@ -536,8 +540,8 @@ def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None,
     if dropped_countries:
         joined = ", ".join(dropped_countries)
         prefs["notes"] = (
-            f"Requested target countries not in the 6 supported destination sets (UK / Australia / USA / "
-            f"Singapore-Malaysia / China / Japan), so NOT in target_countries: {joined}. "
+            f"Requested target countries not in the 7 supported destination sets (UK / Australia / USA / "
+            f"Singapore-Malaysia / China / Japan / Hong Kong), so NOT in target_countries: {joined}. "
             f"Decide with the student whether to research them out-of-band."
         )
         needs_review.append(f"target_countries dropped unsupported destination(s): {joined}")
@@ -569,10 +573,10 @@ def _normalize_intake(value):
 
 
 def _normalize_countries(value):
-    """Map the checkbox labels onto the 6 supported destination sets.
+    """Map the checkbox labels onto the 7 supported destination sets.
 
     Returns (kept_tokens, dropped_labels): dropped_labels are answers we couldn't map (e.g. "Canada",
-    which isn't one of the 6 sets) so the caller can report them instead of losing them silently.
+    which isn't one of the 7 sets) so the caller can report them instead of losing them silently.
     """
     out, dropped = [], []
     for label in _split_multi(value):

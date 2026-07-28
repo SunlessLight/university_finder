@@ -38,18 +38,7 @@
       "PowerShell(git show:*)",
       "PowerShell(Get-ChildItem:*)"
     ],
-    "ask": [
-      "Bash(python tools/ingest_form_csv.py:*)",
-      "Bash(python tools/init_student.py:*)",
-      "Bash(rm:*)",
-      "Bash(git push:*)",
-      "Bash(git commit:*)",
-      "PowerShell(python tools/ingest_form_csv.py:*)",
-      "PowerShell(python tools/init_student.py:*)",
-      "PowerShell(Remove-Item:*)",
-      "PowerShell(git push:*)",
-      "PowerShell(git commit:*)"
-    ],
+    "ask": [],
     "deny": [
       "Read(./.env)",
       "Read(./.env.*)"

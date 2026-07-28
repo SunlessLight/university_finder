@@ -206,6 +206,19 @@ CSC scholarship <field> bachelor
 <university> international admissions <course>
 ```
 
+**Hong Kong** → English-taught + non-local admissions (placeholder — no verified traps yet):
+```
+<course> bachelor Hong Kong university non-local student admissions
+HKU OR CUHK OR HKUST OR PolyU OR CityU <course> international admissions
+<university> non-local student tuition fees
+IANG Hong Kong post-study work visa
+```
+> **This block has not been run for a real student yet.** Unlike the other destinations above, it
+> carries no dated, learned traps (currency, fee tiers, intake quirks) — don't invent any. Fill it
+> in with real findings (fee-tier gotchas, intake dates, recognition/accreditation notes) the first
+> time a Hong Kong candidate is actually researched, per the Self-Improvement Loop in `CLAUDE.md`.
+> Set `currency: "HKD"` (now in `FX_TO_MYR`) or the MYR total silently blanks.
+
 **Japan** → English-taught (G30/SGU) + MEXT:
 ```
 <course> English-taught bachelor Japan university G30
@@ -261,6 +274,14 @@ Results land in `.tmp/<slug>/search_results.json`. **`--student` (or `--out`) is
 shared default path, so parallel sessions can't overwrite each other's results.
 
 ## Extract candidates (agent judgement)
+
+> **`specific_courses` from the Broad-Area grid is a sub-category, not a literal course title.**
+> The grid's per-area cell (e.g. "Accounting & Finance (Includes Corporate Finance, Banking &
+> FinTech)") is the student's course of interest *in their framing* — treat it as decided
+> (`interest_discovery.decided = true` already reflects this), but search **broadly across the
+> courses implied by that sub-category** (Accounting, Finance, Banking, FinTech, Corporate
+> Finance, …), not for an exact title match against the label itself. A course named just
+> "BSc Finance" or "BSc Banking & FinTech" both count as candidates for that student.
 
 Read `.tmp/<slug>/search_results.json`. For each plausible university+course, build a candidate object with honest
 **0-5 sub-scores** and an **`entry_margin`** judgement, and write the list to
@@ -325,7 +346,7 @@ Read `.tmp/<slug>/search_results.json`. For each plausible university+course, bu
   - **`currency`** ⇒ `Approx total (MYR)`. **This one is a silent-failure trap:** `to_myr()` returns
     `None` on a blank or unrecognised currency, which empties the MYR total *and* takes the
     `Over budget` warning down with it — an unaffordable row then looks clean. Always set it, and use a
-    code from `FX_TO_MYR` (MYR/GBP/USD/AUD/SGD/CNY/EUR/JPY).
+    code from `FX_TO_MYR` (MYR/GBP/USD/AUD/SGD/CNY/EUR/JPY/HKD).
   - **`total_cost_programme`** ⇒ also `Approx total (MYR)`. Leave it empty to let the tool compute
     `total_tuition` + `est_living_per_year` × `duration_years`; set it explicitly only when that model
     can't express the cost (e.g. a mixed-currency 2+2 — see the branch-campus note below).

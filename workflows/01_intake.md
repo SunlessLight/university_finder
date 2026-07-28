@@ -70,21 +70,31 @@ fine — but keep the substring in bold intact.
 - Are you aiming at a **regulated profession** — checkboxes (Medicine / Engineering / Law / Accounting
   / Pharmacy / Dentistry / Architecture / Nursing / None). *(Should match the intended career — see the
   Engineering-vs-CS edge case below.)*
-- Any **support & belonging needs** (optional; PDPA-sensitive) — checkboxes, broad and faith/culture-
-  neutral: **Halal food** / **Prayer facilities** / **Malaysian community nearby** / **Stay close to family** / **Personal safety** /
-  **Climate / weather** — plus **Other**.
+- **"Any personal needs?"** (optional; PDPA-sensitive) — the "support & belonging" checkbox set, broad
+  and faith/culture-neutral: **Halal food** / **Prayer facilities** / **Malaysian community nearby** /
+  **Stay close to family** / **Personal safety** / **Climate / weather** — plus **Other**. *(The live
+  form's current header is still the plain "Any personal needs?" — "support & belonging" is an optional
+  future rewording, not what's live today; `QUESTION_MAP`'s `"personal needs"` substring matches the
+  current wording, `"belonging"` is there ready for if it's reworded later.)*
 
 **Section 3 — What you want → `preferences.json`**
 - **Which countries** would you consider — checkboxes (UK / Australia / USA / Singapore-Malaysia /
-  China / Japan). Picking several is fine (research-first breadth). *(Optional follow-up: **which country
-  matters most?** — the agent records it in `preferences.notes` so research goes deepest where it
-  counts.)*
+  China / Japan / Hong Kong — 7 supported destination sets; `COUNTRY_NORMALIZE` in
+  `tools/ingest_form_csv.py` is the source of truth for the exact tokens). Picking several is fine
+  (research-first breadth). *(**Not currently on the live form**: an optional "which country matters
+  most?" follow-up was proposed but never added — if it's added later, it needs a new `QUESTION_MAP`
+  entry so the agent can record it in `preferences.notes` and research goes deepest where it counts.)*
 - **Broad Area of Study + a course grid.** One **Broad Area of Study** dropdown (Arts, Humanities &
   Design / Media, Communication & Social Sciences / Business, Finance & Management / Computer Science, IT
   & Data / Engineering & Built Environment / Pure & Applied Sciences / Health & Medical Sciences /
   Education & Teaching) → `preferences.fields_of_interest`. A **grid** of those same eight areas as columns
-  captures the exact course under the chosen area (e.g. Engineering & Built Environment = "Mechanical
-  Engineering") → `preferences.specific_courses` (the tool collects the one non-empty grid cell).
+  captures a **sub-category within the chosen area** — not a literal course title — e.g. Business,
+  Finance & Management = *"Accounting & Finance (Includes Corporate Finance, Banking & FinTech)"* →
+  `preferences.specific_courses` (the tool collects the one non-empty grid cell). This sub-category
+  **is** the course the student wants, in their framing, so it still sets
+  `interest_discovery.decided = true` — but Stage 3 discovery must search broadly across the courses
+  implied by that sub-category rather than literal-matching the label (see
+  `workflows/03_discover_longlist.md`, "Extract candidates").
 - **When do you want to start** — a **year + season** (e.g. "Sept 2027") **or** *"Flexible / show me all
   intakes"*. Intake only selects the application *cycle* to research — it never filters or scores, so
   "Flexible" is a perfectly good answer (stored as `Flexible`). *(No separate "degree level" question →
@@ -105,16 +115,21 @@ fine — but keep the substring in bold intact.
 - Do you want to **work abroad** after graduating — Yes / No / Unsure. → `intent_to_migrate` (and the
   raw answer into `post_study_work_importance`).
 - Any **deal-breaker**s (optional); **location preference**s (optional checkboxes).
-- **Preferred universities** (optional) — ⚠️ **currently discarded.** The form asks it but there is no
-  `QUESTION_MAP` entry, so the answer never reaches `preferences.json`. Until that's wired up, read the
-  column out of the CSV by hand at finalize and put it in `preferences.notes` — otherwise a student
-  naming the unis they already care about is silently ignored.
+- **Preferred universities** — ⚠️ **not currently on the live form.** This question was proposed but
+  never added to the actual Google Form (confirmed against a real export — no such column exists), so
+  there is no `QUESTION_MAP` entry either. If it's added later, wire up a `QUESTION_MAP` entry (e.g.
+  `("preferred universit", "preferred_universities")`) and land the answer in `preferences.notes` — a
+  student naming unis they already care about should never be silently ignored. Until then, there's
+  nothing to read out of the CSV.
 
 ## How to run
 
 1. Export the form responses (Responses → ⋮ → *Download responses (.csv)*) and drop the file in
-   **`data/form/`** (gitignored — it's PII). Default name: `data/form/responses.csv`.
-2. Preview first, then run for real:
+   **`data/form/`** (gitignored — it's PII). Google names the export after the form itself (e.g.
+   `Form Response.csv`), not `responses.csv` — the tool takes whatever path you pass, so either rename
+   it to `data/form/responses.csv` to match the commands below verbatim, or just point the commands at
+   your actual filename.
+2. Preview first, then run for real (swap in your actual filename):
    ```powershell
    python tools/ingest_form_csv.py data/form/responses.csv --dry-run
    python tools/ingest_form_csv.py data/form/responses.csv
@@ -219,13 +234,23 @@ weights into `tools/shortlist_schema.py` — that shared file is exactly what ma
   Location → Hands-On), deterministic but arbitrary among ties — **sanity-check the ordering** against any
   free-text notes before deriving `weights.json`, since the top band drives the weights. `ranking_importance`
   now carries a 1-8 value; make sure the `scoring-weights` skill reads it on that scale.
-- **Unsupported target countries are reported, not dropped.** A picked country outside the 6 sets
-  (UK / Australia / USA / Singapore-Malaysia / China / Japan) — e.g. **Canada** or **Germany** — is left
-  out of `target_countries` but recorded in a `_needs_review` line **and** `preferences.notes`, so
-  nothing is lost silently. Decide with the student whether to research it out-of-band.
+- **Unsupported target countries are reported, not dropped.** A picked country outside the 7 sets
+  (UK / Australia / USA / Singapore-Malaysia / China / Japan / Hong Kong) — e.g. **Canada** or
+  **Germany** — is left out of `target_countries` but recorded in a `_needs_review` line **and**
+  `preferences.notes`, so nothing is lost silently. Decide with the student whether to research it
+  out-of-band.
 - **Budget unit ambiguity.** A bare number like **`500`** for a whole degree is almost certainly *in
   thousands* (RM 500,000), not RM 500. The tool captures the raw cell verbatim; **you** interpret the unit
   at finalize and note the assumption — confirm the real ceiling with the student.
+- **Budget answered as hedging prose, not a number.** Real answers include *"unsure yet…"*, *"~1
+  million? Idk"*, and a sentence about daily living costs mattering more than tuition. The tool stores
+  whatever text it's given verbatim into `total_budget` / `total_budget_ceiling` (it never invents a
+  number) — at finalize, copy the verbatim quote into `profile.financial.notes` for context, then treat
+  `total_budget` / `total_budget_ceiling` as an **effective null ceiling**, the same handling as a blank
+  answer ("research everything, I'll decide"). Don't leave a prose string sitting in
+  `total_budget_ceiling`: downstream cost checks expect a number or null, and a non-numeric string there
+  risks a silent parse failure like the "Budget stated as a RANGE" bug documented in
+  `03_discover_longlist.md`.
 - **Fields the form never fills.** The schema (`profile_template()` / `preferences_template()` in
   `tools/init_student.py`) is wider than the form, so some keys are *always* null after ingest. Know
   which, so you don't mistake an absent question for a missing answer:
