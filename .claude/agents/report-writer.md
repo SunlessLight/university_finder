@@ -50,14 +50,16 @@ course-independent and get reused across a student's finalists).
   deadlines, and recognition come from the university's own page, UCAS, Common App, the
   relevant visa authority, or MQA — never an aggregator. Every hard-fact source needs an
   authority (`Official`/`Aggregator`) and an `as_of` cycle year.
-- **Route research by what the site is, not by habit.** Free `WebSearch` / `WebFetch` is
-  the default, and the *only* tool, for decision-texture sections (who gets in, student
-  life, the city) — their best sources are Reddit, The Student Room, YouTube, Discord, and
-  student-society pages, which `tools/firecrawl_search.py` either can't reach (IG/FB/
-  TikTok/X are hard-skipped) or scrapes unreliably. Capture the URL plus a snippet; don't
-  try to scrape a forum/video/social page. Reserve `tools/firecrawl_search.py` (via Bash
-  or PowerShell) for official pages that block a plain fetch — fee pages, fee PDFs, walled
-  scholarship/visa pages. Run it freely there; no permission needed.
+- **Free search first; Firecrawl when free is blocked.** `WebSearch` / `WebFetch` is the
+  default for *everything*, official pages included. Escalate to `tools/firecrawl_search.py`
+  (via Bash or PowerShell) when free search is **blocked — an error, *or* a response that
+  doesn't contain the fact you went there for**, which is how a JS-rendered fee table
+  fails. Run it freely there; no permission needed. The full rule is guardrail 6 in
+  `workflows/00_overview.md`. The one place never to escalate is the decision-texture
+  sections (who gets in, student life, the city): their best sources are Reddit, The
+  Student Room, YouTube, Discord and student-society pages, which Firecrawl either can't
+  reach (IG/FB/TikTok/X are hard-skipped) or scrapes unreliably. Capture the URL plus a
+  snippet; don't try to scrape a forum/video/social page.
 - **Never fabricate a fact.** If something genuinely can't be found after a real search,
   write `"Not found — <why>"` in that section rather than leaving it blank or guessing.
   Empty sections fail the `build_report.py` build on purpose — a half-researched report
@@ -75,13 +77,13 @@ course-independent and get reused across a student's finalists).
   `.tmp/<slug>/uni_<uni-slug>.json` (university mode), then run `build_report.py`
   yourself — see `workflows/04_university_report.md` for the exact command and JSON
   shape. Don't hand the JSON back expecting the dispatching session to render it.
-- **Backfill the two master-list cells right after the flip.** `build_report.py` only
-  flips `List status` to `Finalist` — it does not touch `Course at a glance` / `Student
-  life`. You're the only one holding the fresh report content, so condense one tight
-  sentence into each of that row's two cells yourself (from your `course_details` /
-  `student_life_culture` sections) immediately after the render succeeds. Leave them blank
-  if you don't have enough to condense honestly — an invented sentence is a fabricated
-  fact.
+- **Correct `Course at a glance` / `Student life` only if your research contradicts them.**
+  Since 2026-07-29 **Stage 3 fills both cells**, so they arrive already written and
+  `build_report.py` only flips `List status` to `Finalist`. You are not backfilling them.
+  But you now hold far deeper research than the row-filler did — if your `course_details`
+  or `student_life_culture` section shows the existing one-liner is **wrong or misleading**,
+  rewrite that cell (one tight sentence, honour `CELL_BUDGETS`) and say so in your status.
+  Never blank a cell, and never replace a sourced sentence with a vaguer one.
 - **No further delegation, no user prompts.** You don't have a sub-agent dispatch tool or
   a question-to-the-user tool — do the research and writing yourself, end to end, for
   this one finalist.

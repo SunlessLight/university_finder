@@ -72,12 +72,12 @@ still renders (as prose) for back-compat.
 > abolished its contribution entirely, a difference "100% of need" completely hides. **If you use a term not in the glossary, add it to `GLOSSARY` in
 `tools/apply_glossary.py`** (term → one-line definition + aliases) so it gets defined and linked everywhere.
 
-### Which scraper (spend credits where they matter)
-- **Claude WebSearch / WebFetch (free) — the default.** Deadlines, test policy, aid forms/dates, fees and
-  supplement counts live on official admissions/financial-aid pages that fetch cleanly. All of the US
-  research used free search/fetch only.
-- **Firecrawl — only if an official page hard-blocks a clean fetch** (a fee PDF, a login-walled aid
-  page). Run it when that happens; no permission needed (guardrail #6 in `00_overview.md`).
+### Which scraper
+**Guardrail 6 in `00_overview.md` is the rule** — free `WebSearch`/`WebFetch` by default, Firecrawl
+when free is *blocked* (an error, **or a response missing the fact you went there for**), no permission
+needed. In practice this stage barely escalates: deadlines, test policy, aid forms/dates, fees and
+supplement counts live on official admissions/financial-aid pages that fetch cleanly — all of the US
+research used free search/fetch only. A fee PDF or a login-walled aid page is the exception.
 
 ## What to capture per university (the apply mechanics)
 

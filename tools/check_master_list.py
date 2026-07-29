@@ -10,6 +10,7 @@ loudly instead of quietly.
 
 Checks (use --check to run a subset while working through a fix):
   schema       header matches SHORTLIST_HEADERS exactly (catches column drift/misalignment)
+  completeness every REQUIRED_COLUMNS cell filled; sentinels only where they're allowed
   budget       cells over their CELL_BUDGETS length
   jargon       bare acronyms that apply_glossary can explain, outside the allow-list
   values       List status / Info source / Grades vs entry bar outside their allowed sets
@@ -41,6 +42,8 @@ from shortlist_schema import (  # noqa: E402
     INFO_SOURCE_OFFICIAL,
     INFO_SOURCE_UNVERIFIED,
     LIST_STATUSES,
+    REQUIRED_COLUMNS,
+    SENTINEL_VALUES,
     SHORTLIST_HEADERS,
     admission_base,
 )
@@ -75,7 +78,11 @@ PROSE_COLUMNS = [
 # page (UCAS, MQA, BEM, Washington Accord, CSS Profile) are deliberately NOT flagged — the
 # glossary sheet explains those instead. See the rule in apply_glossary.py.
 
-CHECKS = ["schema", "budget", "jargon", "values", "contradiction"]
+CHECKS = ["schema", "completeness", "budget", "jargon", "values", "contradiction"]
+
+# Every sentinel string, whatever column it belongs to — used to catch one being used
+# in a column that doesn't allow it (see check_completeness).
+_ALL_SENTINELS = {s for values in SENTINEL_VALUES.values() for s in values}
 
 
 def load(csv_path):
@@ -100,6 +107,41 @@ def check_schema(header):
             detail.append(f"unexpected {extra}")
         return [f"header column set differs from the schema: {'; '.join(detail)} — migrate the file"]
     return ["header has the schema's columns in a DIFFERENT ORDER — rewrite it keyed by column name"]
+
+
+def check_completeness(rows_as_dicts):
+    """Blank required cells, and sentinels used where they aren't allowed.
+
+    The master list is the client's deliverable — a spreadsheet handed over as the
+    product — so a blank cell reads as breakage, not as "we're still working on it".
+    Stage 3 fills all 35 columns from official sources (it used to leave "Course at a
+    glance", the scholarship block and "Key deadline" to Stage 4, and sessions honoured
+    that unevenly: 1/44 rows filled for one student, 24/24 for another).
+
+    The other half of the rule matters just as much. "Fill every column" invites
+    invention, so SENTINEL_VALUES defines the honest ways to say there is no answer —
+    per column. "Not ranked" is true of a US liberal-arts college and meaningless in
+    "Key deadline"; a sentinel in the wrong column is an agent dodging a fact that
+    exists, which is why that is reported rather than accepted as non-blank.
+
+    Second net only: tools/merge_candidates.py catches the same gaps before they reach
+    the CSV. This one catches hand-edits and rows synced before the policy existed.
+    """
+    out = []
+    for n, row in rows_as_dicts:
+        uni = row.get("University", "?")[:32]
+        for column in REQUIRED_COLUMNS:
+            value = (row.get(column) or "").strip()
+            if not value:
+                allowed = SENTINEL_VALUES.get(column)
+                hint = f" — or say why not: {allowed}" if allowed else ""
+                out.append(f"row {n} {uni} — {column} is blank{hint}")
+            elif value in _ALL_SENTINELS and value not in SENTINEL_VALUES.get(column, []):
+                out.append(
+                    f"row {n} {uni} — {column}: {value!r} is a sentinel for another column; "
+                    f"this one needs the real answer"
+                )
+    return out
 
 
 def check_budget(rows_as_dicts):
@@ -173,10 +215,10 @@ def check_values(rows_as_dicts):
         if source not in allowed_source:
             out.append(f"row {n} {uni} — Info source {source!r} is not one of {sorted(allowed_source)}")
 
+        # Blankness is the completeness check's job now (it owns every required column);
+        # this one only judges whether a filled-in value is a legal one.
         fit = (row.get("Grades vs entry bar") or "").strip()
-        if not fit:
-            out.append(f"row {n} {uni} — Grades vs entry bar is blank (compare the grades to the bar)")
-        elif fit not in allowed_fit:
+        if fit and fit not in allowed_fit:
             out.append(f"row {n} {uni} — Grades vs entry bar {fit!r} is not one of {list(GRADE_FIT_LABELS)}")
 
         admission = (row.get("Admission likelihood") or "").strip()
@@ -213,6 +255,8 @@ def run(header, rows, wanted):
     # meaningfully linted past the schema check.
     if set(header) != set(SHORTLIST_HEADERS):
         return results
+    if "completeness" in wanted:
+        results["completeness"] = check_completeness(rows_as_dicts)
     if "budget" in wanted:
         results["budget"] = check_budget(rows_as_dicts)
     if "jargon" in wanted:

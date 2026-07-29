@@ -25,8 +25,13 @@ fine — but keep the substring in bold intact.
 
 **Section 0 — Consent & identity (required)**
 - **"Collect email addresses" turned ON.** 
-- **I consent** 'Cool for me to store your answers and use them to research unis for you 👍?'. — required checkbox. *(A row that explicitly answers **No** is always skipped.
-  A **blank/absent** consent is also skipped **unless** you pass `--assume-consent` — see below.)*
+- **I consent** 'Cool for me to store your answers and use them to research unis for you 👍?'. — required checkbox.
+  *(**What the gate actually does**, checked against a real export: a Forms checkbox exports its own
+  label text, so a ticked box lands a non-empty cell like `Cool for me to store your answers…` —
+  `_yes()` can't read that as yes or no and returns `None`, and the row passes on the cell simply
+  being **non-empty**. So a ticked checkbox needs **no** `--assume-consent`. What still skips a row:
+  an **empty** consent cell (box not ticked) unless you pass `--assume-consent`, and an answer whose
+  text starts with "n" — the explicit-No case, which no flag overrides.)*
 
 **Section 1 — About you → `profile.json`**
 - **Name**; **Your age**; **Gender**; **Nationality**; **Race/ethnicity**; where you **live in now**.
@@ -43,7 +48,10 @@ fine — but keep the substring in bold intact.
 
 **Section 2 — Your studies, money & recognition → `profile.json`**
 - What are you **studying now** (A-Level / STPM / UEC / IB / Foundation / Matriculation / Diploma /
-  Other); **which college**/school; **when do you graduate** / get results.
+  Other); **which college**/school; **when do you graduate** / get results — a **month + year
+  dropdown** (e.g. "September 2027"), not free text. The tool normalises it to `YYYY-MM`
+  (`_normalize_month_year`), which is what retired the by-hand date-normalisation finalize step and
+  the `9/1/2027` ambiguity. An answer it can't read as a month+year is kept verbatim, never guessed.
 - **Subjects & grades — four structured dropdown pairs.** The form asks each subject as *"List your Nth
   subject"* + *"Select the grade you are **confident of getting**"* (subjects 1-3 required, subject 4
   optional → *"Select None if only 3 subjects"*). The tool builds `profile.subjects[]` **deterministically**
@@ -56,11 +64,17 @@ fine — but keep the substring in bold intact.
   score per uni is filled during research (the `English req` column, plus the `meets_english` candidate
   field behind the `English short` warning), and the definitive "tests you must sit" list is produced at
   the apply stage — not here.
-- **Total budget** for the whole degree in MYR (blank = "research everything, I'll decide" — the
-  intended default; a rough ceiling only powers the "Over budget" flag). **Ask for the total, never
-  per-year** — Stage 4 compares whole-programme cost, and a 3-year UK degree against a 4-year US one
-  is not comparable per year. There is no per-year question on the form, so
-  `financial.budget_per_year` / `preferences.budget_ceiling_per_year` stay null.
+- **Total budget** for the whole degree — a **four-option dropdown**, not free text:
+  **`Under RM 500,000`** / **`RM 500,000 - 1,000,000`** / **`Above RM 1,000,000`** /
+  **`Not sure - no fixed budget`**. `BUDGET_BAND_NORMALIZE` maps them to a numeric ceiling
+  (500000 / 1000000 / **null** / null — "Above RM 1,000,000" states a *floor*, so it carries no
+  ceiling, exactly like "Not sure"); the **verbatim label** goes to `financial.notes` and the
+  **number** to `financial.total_budget` + `preferences.total_budget_ceiling`. A label string must
+  never reach `total_budget_ceiling` — downstream cost checks expect a number or null. "Not sure" is
+  a real answer meaning "research everything, I'll decide", and only powers the absence of the
+  "Over budget" flag. **Ask for the total, never per-year** — Stage 4 compares whole-programme cost,
+  and a 3-year UK degree against a 4-year US one is not comparable per year. There is no per-year
+  question, so `financial.budget_per_year` / `preferences.budget_ceiling_per_year` stay null.
 - **Is scholarship a must?** — Yes/No. A clean gate: Yes sets both `preferences.scholarship_required` and
   `financial.scholarship_dependent` true. **What scholarships are you planning to apply for?** — free text
   → `preferences.scholarship_interests`, a *research hint* (which scholarships to dig into; "don't know /
@@ -78,9 +92,11 @@ fine — but keep the substring in bold intact.
   current wording, `"belonging"` is there ready for if it's reworded later.)*
 
 **Section 3 — What you want → `preferences.json`**
-- **Which countries** would you consider — checkboxes (UK / Australia / USA / Singapore-Malaysia /
-  China / Japan / Hong Kong — 7 supported destination sets; `COUNTRY_NORMALIZE` in
-  `tools/ingest_form_csv.py` is the source of truth for the exact tokens). Picking several is fine
+- **Which countries** would you consider — checkboxes (UK / Australia / USA / **Singapore** /
+  **Malaysia** / China / Japan / Hong Kong — **8** supported destinations; `COUNTRY_NORMALIZE` in
+  `tools/ingest_form_csv.py` is the source of truth for the exact tokens). **Singapore and Malaysia
+  are separate** as of 2026-07-29 — they were fused into one `Singapore/Malaysia` token, which gave a
+  student who ticked only Malaysia a longlist half-full of Singapore rows. Picking several is fine
   (research-first breadth). *(**Not currently on the live form**: an optional "which country matters
   most?" follow-up was proposed but never added — if it's added later, it needs a new `QUESTION_MAP`
   entry so the agent can record it in `preferences.notes` and research goes deepest where it counts.)*
@@ -234,23 +250,34 @@ weights into `tools/shortlist_schema.py` — that shared file is exactly what ma
   Location → Hands-On), deterministic but arbitrary among ties — **sanity-check the ordering** against any
   free-text notes before deriving `weights.json`, since the top band drives the weights. `ranking_importance`
   now carries a 1-8 value; make sure the `scoring-weights` skill reads it on that scale.
-- **Unsupported target countries are reported, not dropped.** A picked country outside the 7 sets
-  (UK / Australia / USA / Singapore-Malaysia / China / Japan / Hong Kong) — e.g. **Canada** or
-  **Germany** — is left out of `target_countries` but recorded in a `_needs_review` line **and**
-  `preferences.notes`, so nothing is lost silently. Decide with the student whether to research it
-  out-of-band.
-- **Budget unit ambiguity.** A bare number like **`500`** for a whole degree is almost certainly *in
-  thousands* (RM 500,000), not RM 500. The tool captures the raw cell verbatim; **you** interpret the unit
-  at finalize and note the assumption — confirm the real ceiling with the student.
-- **Budget answered as hedging prose, not a number.** Real answers include *"unsure yet…"*, *"~1
-  million? Idk"*, and a sentence about daily living costs mattering more than tuition. The tool stores
-  whatever text it's given verbatim into `total_budget` / `total_budget_ceiling` (it never invents a
-  number) — at finalize, copy the verbatim quote into `profile.financial.notes` for context, then treat
-  `total_budget` / `total_budget_ceiling` as an **effective null ceiling**, the same handling as a blank
-  answer ("research everything, I'll decide"). Don't leave a prose string sitting in
-  `total_budget_ceiling`: downstream cost checks expect a number or null, and a non-numeric string there
-  risks a silent parse failure like the "Budget stated as a RANGE" bug documented in
-  `03_discover_longlist.md`.
+- **Unsupported target countries are reported, not dropped.** A picked country outside the **8**
+  supported destinations (UK / Australia / USA / Singapore / Malaysia / China / Japan / Hong Kong) —
+  e.g. **Canada** or **Germany** — is left out of `target_countries` but recorded in a `_needs_review`
+  line **and** `preferences.notes`, so nothing is lost silently. Decide with the student whether to
+  research it out-of-band. (`SUPPORTED_DESTINATIONS` in `tools/ingest_form_csv.py` renders that message,
+  so the count never drifts from `COUNTRY_NORMALIZE`.)
+- **Budget bands, and what each one means downstream.** The form's four-option dropdown removed the
+  whole class of budget-parsing problems (see the two retired edge cases in the note below). What lands
+  where:
+
+  | Form answer | `total_budget` + `total_budget_ceiling` | Meaning |
+  |---|---|---|
+  | `Under RM 500,000` | `500000` | Real ceiling — cost checks apply |
+  | `RM 500,000 - 1,000,000` | `1000000` | Real ceiling — top of the band |
+  | `Above RM 1,000,000` | `null` | A **floor**, not a ceiling: no "Over budget" flag |
+  | `Not sure - no fixed budget` | `null` | "Research everything, I'll decide" |
+  | *(blank)* | `null` | Same as "Not sure" |
+
+  The **verbatim label** always goes to `profile.financial.notes` as `Budget answer: <label>`, so the
+  nuance survives even though the number is a band edge. A `null` ceiling is a legitimate answer, not a
+  gap to chase — don't invent a number for it, and never let a label string reach `total_budget_ceiling`
+  (downstream cost checks expect a number or null).
+  - *Legacy free-text exports* still ingest: an answer matching no band falls back to `budget_ceiling()`,
+    which returns a number only if the text parses to a **plausible** degree budget (it rejects anything
+    under 1000, so `"~ 1 million? Idk"` yields `None`, not `1.0`). If that fallback yields nothing, the
+    tool raises a `_needs_review` line naming the answer — confirm the real ceiling with the student.
+    The old *"budget unit ambiguity"* (`500` meaning RM 500,000) and *"hedging prose"* edge cases both
+    belong to that legacy path only.
 - **Fields the form never fills.** The schema (`profile_template()` / `preferences_template()` in
   `tools/init_student.py`) is wider than the form, so some keys are *always* null after ingest. Know
   which, so you don't mistake an absent question for a missing answer:
@@ -262,8 +289,9 @@ weights into `tools/shortlist_schema.py` — that shared file is exactly what ma
     take it"; the tests a student must sit come out of research at Stage 4 / apply stage.
   - **`min_subject_rank_pref`** — no question, and the tool never touches it. Judge subject standing
     from `ranking_importance` instead.
-  - **`education_history`**, **`financial.notes`** — no question; fill by hand only if a student
-    volunteers something that matters.
+  - **`education_history`** — no question; fill by hand only if a student volunteers something that
+    matters. (**`financial.notes`** is *not* in this list any more — the budget dropdown's verbatim
+    label lands there automatically as `Budget answer: <label>`. Append to it, don't overwrite it.)
   - **`preferences.notes`** — only written when the tool dropped an unsupported country. Anything else
     you want recorded there (e.g. which country matters most, preferred universities) you add at finalize.
 
@@ -286,11 +314,17 @@ weights into `tools/shortlist_schema.py` — that shared file is exactly what ma
 - **English "Other" / "Not yet".** If the respondent picks "Other" without naming the test, `test` is
   unusable — confirm which test + score before it counts. "Not yet" is fine (many longlist rows won't
   need a score until Stage 4). The specific tests-to-sit come from research, not the form.
-- **Free-text dates are ambiguous** (`9/10/2027` = Sept 10 or Oct 9?). Normalize `intake` /
-  `expected_completion` to `YYYY-MM` (or "YYYY Mon") during finalize and confirm with the student. The
-  improved form asks intake as **year+season or "Flexible"**; the tool collapses blank / "flexible" /
-  "not sure" to `intake = "Flexible"` (never a fake date). `expected_completion` is still free text —
-  normalize it by hand.
+- **Dates are dropdowns now — normalising them is no longer your job.** Both `intake` and
+  `current_program.expected_completion` come from a **month + year dropdown**, and
+  `_normalize_month_year()` turns "September 2027" / "Sept 2027" / "Sep 2027" into **`2027-09`** at
+  ingest. That retired the by-hand date step *and* the ambiguity free text always carried (`9/10/2027`
+  = Sept 10 or Oct 9?). Two behaviours to know:
+  - **`intake` also accepts "Flexible".** Blank / "flexible" / "not sure" / "any" all collapse to
+    `intake = "Flexible"` — never a fake date. Intake only picks the application *cycle* to research;
+    it never filters or scores, so "Flexible" is a good answer, not a gap.
+  - **An unreadable answer is kept verbatim, never guessed.** If a legacy export or an "Other" answer
+    doesn't parse as month+year, the raw string passes through unchanged. Spot-check for that shape at
+    finalize and fix it to `YYYY-MM` by hand — but don't invent a month the student didn't give.
 - **Scholarship gate + interests.** The current form asks *"Is scholarship a must?"* (Yes/No) → the tool
   sets `scholarship_required` + `scholarship_dependent` directly, and *"What scholarships are you planning
   to apply for?"* (free text) → `scholarship_interests` (a research hint, never a filter; `funding_source`

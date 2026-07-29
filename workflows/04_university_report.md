@@ -11,19 +11,17 @@ A-tier and best-fit first.
 
 > **The report is where depth lives — the master list stays a scan.** Stage 3 deliberately keeps
 > `master_list.csv` to one-line, budgeted cells so a student can *cut* by skimming it; everything that
-> needs a paragraph belongs here instead. Promoting a row writes back exactly **two one-sentence cells**
-> (`Course at a glance`, `Student life`) condensed from the report — never more. If you find yourself
-> wanting to put a paragraph in a cell, it belongs in a report section or in `research_notes.md`.
+> needs a paragraph belongs here instead. If you find yourself wanting to put a paragraph in a cell, it
+> belongs in a report section or in `research_notes.md`.
 
-> **This stage absorbs the old "verify → shortlist" step.** There is no longer a separate 8-12 Shortlist
-> tier: the student picks their finalists straight off the Longlist, and you **verify each pick's hard
-> facts before you deep-research it**. Do the pre-flight cut below *first* — it's cheap, and it stops you
-> sinking a full report into a university that turns out to be over budget or past its deadline.
+> **Verification moved to Stage 3 (2026-07-29). This stage is now pick-and-cut, then report.** Stage 3's
+> row-filler agents build every row from **official sources** and stamp `Info source = Official page`, so
+> Stage 4 no longer re-verifies a list it was handed verified. What survives here is the *cheap* cut —
+> confirm the facts are still current, confirm the set is balanced, drop the duds — **before** you sink a
+> full report into a university that turns out to be over budget or past its deadline. Two workflows must
+> not both claim ownership of verification; Stage 3 owns it.
 
-## Before you research: pick, verify, and cut (the pre-flight)
-
-Longlist facts are *provisional* (snippet-level, often wrong or stale). Run this cheap cut on the
-student's picks **before** any deep report research:
+## Before you research: pick and cut (the pre-flight)
 
 **1. Pick the finalists.** The student promotes their picks from the Longlist to
 **`List status = Shortlist`** (an agent edit to `master_list.csv`) — aim for ~3-5 they genuinely want to
@@ -32,34 +30,39 @@ apply to. Render the trade-offs first so the choice is informed:
 python tools/compare_universities.py --student <slug> --status Longlist --dimensions summary,scholarship,fit
 ```
 Use `--country <name>` to work one destination at a time on a large list. This is the narrowing surface —
-the student may keep, drop, or re-add rows; that iteration *is* the cut working.
+the student may keep, drop, or re-add rows; that iteration *is* the cut working. **The student picks; you
+render and wait** (guardrail — see `CLAUDE.md`).
 
-**2. Verify each pick's hard facts against OFFICIAL sources** — the university's own course page, UCAS, or
-Common App, never an aggregator:
-- **Tuition** (per year + full programme) + **living cost** → recompute the total; sanity-check `Approx total (MYR)`.
-- **Entry requirements** (academic + English) → does the student actually meet them? **And what the
-  application itself makes you submit** — personal statement / short-response essays, an achievements /
-  co-curricular list, admissions tests. **A "grades-based" system is not necessarily grades-only:** e.g.
-  NUS's *Aptitude-Based Admissions* requires *every* applicant to list achievements/CCA **and** answer
-  short-response questions. A required component the student can't evidence is an **admission** risk
-  (feeds `Admission likelihood`), not just a scholarship one — don't file it away as funding-only.
-- **Key deadline** + **intake** → is the intake offered, and is the deadline still open?
-- **Recognition back home** (MQA + the relevant professional body) for regulated professions — a gate, not a footnote.
+**2. Spot-check the picks — currency, not correctness.** The row's facts were verified at Stage 3, so
+this is a *staleness and gate* check on the handful of picks, not a re-verification of the list:
+- **`Key deadline` + intake** → still open, still offered? This is the one that rots fastest, and the one
+  that wastes a whole report if it's stale.
+- **`Info source`** → if a pick still reads `Not verified`, it predates the 2026-07-29 rebuild. **That
+  row does need the full official-source check** (tuition + living cost, entry + English requirements,
+  deadline, recognition) before it can become a Finalist — a row can't reach `Finalist` on unverified
+  facts (guardrail 2 in `00_overview.md`).
+- **Recognition back home** (MQA + the relevant professional body) for regulated professions — a gate,
+  not a footnote. Confirm it's actually recorded on the row.
+- **What the application itself makes you submit** — personal statement / short-response essays, an
+  achievements / co-curricular list, admissions tests. **A "grades-based" system is not necessarily
+  grades-only:** e.g. NUS's *Aptitude-Based Admissions* requires *every* applicant to list
+  achievements/CCA **and** answer short-response questions. A required component the student can't
+  evidence is an **admission** risk (feeds `Admission likelihood`), not just a scholarship one — don't
+  file it away as funding-only. This is genuinely new depth at Stage 4, not a re-check.
 
-Set **`Info source = Official page`** on each verified row (it starts `Not verified`). Where the official
-page disagrees with a search result, **the official figure wins** — put the discrepancy in `Notes`.
-Verifying may need a couple of Firecrawl scrapes of clean official pages — just run them; no permission
-needed (guardrail #6 in `00_overview.md`).
+Where an official page disagrees with what's on the row, **the official figure wins** — update the cell
+and put the discrepancy in `Notes`. Free `WebSearch`/`WebFetch` first, Firecrawl the moment free is
+blocked; no permission needed either way (guardrail 6 in `00_overview.md`).
 
-**3. Re-judge admissibility & warnings on the verified facts.** Re-confirm **`Admission likelihood`**
-(Reach/Match/Safety) and the hard **`Warnings`** (`Over budget`, `English short`, `Deadline passed`) —
-these were computed at Stage 3 from provisional data and often move once real facts land. Predicted grades
-keep borderline cases Reach until results come in. To update an existing row's facts, **edit
-`master_list.csv` directly** — re-running `sync_shortlist.py` is only for *new* candidates.
+**3. Re-judge admissibility & warnings if anything moved.** If step 2 changed a fact, re-confirm
+**`Admission likelihood`** (Reach/Match/Safety) and the hard **`Warnings`** (`Over budget`,
+`English short`, `Deadline passed`). Predicted grades keep borderline cases Reach until results come in.
+To update an existing row's facts, **edit `master_list.csv` directly** — re-running `sync_shortlist.py`
+is only for *new* candidates.
 
 **4. Check the set is balanced, and swap out any dud.** Across the picks, confirm a Reach/Match/Safety
-spread — at least one **Safety** the student clears comfortably, not five long-shots. If verification kills
-a pick (over budget even with scholarship, deadline passed, entry unreachable), demote it to
+spread — at least one **Safety** the student clears comfortably, not five long-shots. If the spot-check
+kills a pick (deadline passed, a stale row that fails verification, entry unreachable), demote it to
 **`Rejected`** with a one-line reason in `Notes` and have the student pick a replacement from the
 Longlist — *before* you sink report research into it. For a kept Reach where direct entry is a stretch,
 research the **backup entry route** (foundation year / INTO-Kaplan-Navitas / community-college transfer)
@@ -68,13 +71,11 @@ column** (it left the CSV on 2026-07-25): on a longlist the student is still sca
 cells just restated the obvious — "direct entry is a Safety on his grades" tells them nothing. It earns
 its space once a row survives to Shortlist, where the detail is actually actionable.
 
-**Fill `Course at a glance` and `Student life` when you promote a row.** They are one tight sentence
-each — the shape of the degree ("3-yr, broad first year then pick a major") and what living there is
-like ("large suburban campus, strong industry-placement culture") — condensed from the report's
-*Course details & structure* and *Student life & culture* sections. They stay blank on unresearched
-rows on purpose; a plausible-sounding invented sentence about campus culture is a fabricated fact.
-Campus and city facts are course-independent, so reuse them across students rather than re-researching
-(e.g. `data/students/toru/student_life_research.md`).
+> **`Course at a glance` and `Student life` are already filled.** Stage 3 writes them, like every other
+> column. If the report's *Course details & structure* or *Student life & culture* research contradicts
+> the one-liner, **correct the cell** — but don't treat filling it as a Stage 4 task. Campus and city
+> facts are course-independent, so reuse them across students rather than re-researching (e.g.
+> `data/students/toru/student_life_research.md`).
 
 > **Too few survivors?** If the cut leaves fewer than ~3 workable picks, go back to **Stage 3**
 > (`03_discover_longlist.md`) and widen discovery (more countries or safer options) rather than
@@ -82,8 +83,7 @@ Campus and city facts are course-independent, so reuse them across students rath
 
 Only once a pick survives this cut do you build its report below. The report's own deep research (Costs,
 Scholarships, Visa, Recognition sections) is where the *full* funding and fit detail gets written — you
-don't also need to write paragraphs into the master-list scholarship cells; the make-or-break facts above
-are enough to earn a report.
+don't also need to write paragraphs into the master-list scholarship cells.
 
 ## Two report paths — course vs university (pick with `--mode`)
 
@@ -124,18 +124,18 @@ sources for hard facts, enforced non-empty sections, the PDF export — is **ide
    flips that row to `List status = Finalist`. (There is no `Report status` column — the report file
    under `reports/` *is* the record that it was built.)
 
-### Which scraper for which section (spend credits where they matter)
+### Which scraper for which section
 
-- **Claude WebSearch / WebFetch (free) — the default, and the *only* tool for the decision-texture
-  sections** (`admitted_profiles`, `student_life_culture`, `city_and_belonging`). Their best sources are
-  Reddit / The Student Room / YouTube / Instagram / Discord — which Firecrawl either can't scrape (IG / FB
-  / TikTok / X are hard-skipped in `firecrawl_search.py`) or handles unreliably, so paid credits buy almost
-  nothing here. Capture the URL + a snippet from the search result; don't try to scrape the page.
-- **Firecrawl — reserve for hard-fact official pages that block Claude's plain fetch**: fee
-  pages, fee PDFs, some scholarship/visa pages (the recurring "confirm — blocks automated fetch" gaps).
-  There the info difference is real (an exact figure vs "confirm later"). Run it freely on those pages —
-  no permission needed — but don't point it at the culture/admit sections, where it returns worse results
-  than free search.
+**Routing is defined once, in guardrail 6 of `00_overview.md`** — free `WebSearch`/`WebFetch` is the
+default for everything; escalate to `firecrawl_search.py` when free is *blocked* (an error, **or a
+response missing the fact you went there for**); no permission needed either way. Two things specific
+to this stage:
+
+- **The decision-texture sections are free-search ONLY** (`admitted_profiles`, `student_life_culture`,
+  `city_and_belonging`). Their best sources are Reddit / The Student Room / YouTube / Instagram /
+  Discord — which Firecrawl either can't scrape (IG / FB / TikTok / X are hard-skipped in
+  `firecrawl_search.py`) or handles unreliably. Capture the URL + a snippet; don't try to scrape.
+  Escalating here isn't blocked-fallback, it's a worse result for credits.
 - Firecrawl doesn't offload the agent's reasoning — fetched content still lands in context; the win is
   reliability on protected pages + fewer failed-fetch retries.
 

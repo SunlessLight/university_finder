@@ -2,9 +2,22 @@
 
 ## Objective
 
-Cast a **wide, cheap** net: find 20-40 plausible university+course candidates across the student's target
-countries, score them at snippet level, and land them in `master_list.csv` as **Longlist**. Facts here are
-*provisional* — they get verified against official sources in Stage 4. Don't deep-research yet.
+Produce, for **ONE country per session**, 8-12 university+course rows in `master_list.csv` with **all 35
+columns filled from official sources**. Every row is a **Longlist** row the student can cut on at a
+glance; Stage 4 no longer re-verifies it, it only writes reports on the survivors.
+
+> **The master list is the PRODUCT.** The client receives it as a spreadsheet, so a blank cell reads as
+> breakage, not as work-in-progress (established 2026-07-29, after an audit of all 8 student CSVs found
+> `Course at a glance` filled on 1 of 44 rows for one student and 24 of 24 for another — the workflow
+> itself used to say "leave it for Stage 4"). Completeness is now enforced in code twice:
+> `merge_candidates.py` before the CSV, `check_master_list.py` after it.
+>
+> **Completeness must never become invention.** The counterweight is `SENTINEL_VALUES` in
+> `tools/shortlist_schema.py`: the honest ways to say there is no answer — `Rolling` /
+> `Not published — check portal` for a deadline, `Not ranked` for a rank a university genuinely
+> doesn't hold, `No statistics published` for scholarship odds, `Not published` for a grade bar,
+> `None` for clean warnings. A sentinel is for *"there is no answer"*, never for *"I didn't find it"* —
+> if the fact exists and you couldn't reach it, say so in `notes`.
 
 > **The longlist is a SCANNING surface, not a report.** A row carries only what the student needs in
 > order to **cut** — enough to say "keep looking at this one" or "drop it" at a glance in Google Sheets.
@@ -15,15 +28,78 @@ countries, score them at snippet level, and land them in `master_list.csv` as **
 
 ## Tools used (in order)
 
-1. `firecrawl_search.py --student <slug>` — discovery: runs search queries, saves results to
-   `.tmp/<slug>/search_results.json`. Costs credits; **run it, no permission needed.**
-2. *(agent step)* review results, extract candidates → write `.tmp/<slug>/uni_candidates.json`.
-3. `sync_shortlist.py --student <slug>` — scores, dedupes, appends Longlist rows to `master_list.csv`.
+**One country per session.** Do not run two in one pass — that is what keeps this session's context
+small enough to research 35 columns a row, and it's now a hard gate (`--country` on both tools).
+
+```
+0. Pick the country      — from the files, never ask. See "Pick the next country".
+1. Roster sweep          — free WebSearch, 6-10 queries -> 8-12 rows of
+                           university + course + city + course URL ONLY.
+2. Country constants     — researched ONCE, reused by every row: visa money, work
+                           rights, how to apply, intake, living benchmark, ranks.
+                           -> .tmp/<slug>/country_<code>.json
+3. Row fill              — PARALLEL row-filler subagents, one per university.
+                           -> .tmp/<slug>/candidates/<uni-slug>.json
+4. python tools/merge_candidates.py --student <slug> --country "<Country>"
+                           merges the fragments; HARD-ERRORS naming every gap.
+5. python tools/sync_shortlist.py --student <slug> --country "<Country>"
+                           scores, dedupes, appends Longlist rows.
+6. python tools/check_master_list.py --student <slug>
+   python tools/build_glossary_sheet.py --student <slug>
+7. Update status.md      — name the NEXT country explicitly.
+```
+
+**Search routing: free first, Firecrawl when free is blocked.** Claude's `WebSearch`/`WebFetch` is the
+default for everything here, official course pages included. Escalate to `firecrawl_search.py` the
+moment free search is *blocked* — meaning an error **or a response that doesn't contain the fact you
+went there for** (a JS-rendered fee table coming back empty is the usual case, and it's a block even
+though nothing errored). Then just run it; credits are there to be spent, no permission needed. The
+full rule is **guardrail 6 in `00_overview.md`** — this is the only copy that stage-specific detail
+belongs in.
+
+## Pick the next country (don't ask the student)
+
+`preferences.json → target_countries` is already in the student's stated preference order — that
+order **is** the discovery sequence. Never open a session by asking "which country should we start
+with" or "which country next" — work it out from the files, the same discipline `resume.md` uses
+for the rest of the pipeline state:
+
+1. **Read `target_countries`** from `data/students/<slug>/preferences.json` (e.g. `["Australia",
+   "Singapore", "Malaysia", "China"]`) — this is the full ordered scope.
+2. **Read `master_list.csv`'s `Country` column** (if the file exists yet) to see which of those
+   countries already have rows. Zero rows ⇒ not yet discovered; any rows ⇒ at least started.
+   `master_list.csv` is the source of truth here, not `status.md`'s prose — if they disagree, trust
+   the CSV, same rule as `resume.md`'s "files win over the note."
+3. **Next country = the first entry in `target_countries` with no rows yet.** Run **exactly one**
+   country per session — roster → constants → row fill → merge → sync. Not a preference: `--country`
+   on `merge_candidates.py` and `sync_shortlist.py` refuses a mixed batch, because a 35-column
+   country pass is the most context this session can hold and still research honestly.
+4. **Every target country already has rows ⇒ Stage 3 discovery is done**, not "pick one to redo" —
+   move on to Stage 4 (see "Done when").
+5. **Singapore and Malaysia are separate entries** (split 2026-07-29 — `COUNTRY_NORMALIZE` used to
+   fuse them into one `Singapore/Malaysia` token, which handed Foo De Mi six Singapore rows for a
+   country she never picked). They are two countries, two passes, two syncs. The same goes for any
+   grouped label you meet in an older `preferences.json` — split it before you start.
+
+The one case actually worth surfacing to the student: `target_countries` is empty/missing, or names
+a country with no playbook section below and no obvious query pattern to improvise from. Everything
+else is inferable from the files.
+
+**Update `status.md` after every country's pass, not just at the end of the whole stage.** Rewrite
+the "Master list state → Destinations covered" line and the "Next action" line to name the specific
+next country (e.g. "Next: run Singapore discovery"), so a fresh session — or you, next message —
+never has to ask again.
 
 ## Per-destination query playbook
 
-Generate ~8-15 queries spanning aggregators (for breadth) **and** official course pages (for the real
-data). Substitute `<field>`, `<course>`, `<level>`.
+**This section has two readers.** You use it for the **roster sweep** (step 1) — 6-10 queries to name
+the country's 8-12 candidate universities and courses. Each **row-filler subagent** is told to read its
+country's block first, because the dated traps below (the Australian domestic-fee trap, Singapore's
+five-tier fee table, the SMU name collision, XJTLU's Year-2 entry) are exactly what a cold researcher
+gets wrong. **They live here and only here** — never copy them into the agent file.
+
+Substitute `<field>`, `<course>`, `<level>`. Aggregators are fine for *finding* universities in the
+roster sweep; they are never the source of a number that lands in a cell.
 
 **Cross-country (discovery only — never the source of record for a hard fact):**
 ```
@@ -40,6 +116,32 @@ site:ac.uk <course> entry requirements
 <course> BSc UK tuition fees international students
 UK Graduate Route post study work
 ```
+
+> **The UK has NO meets-full-need or need-blind equivalent for internationals — if `scholarship_required`
+> is a hard gate, say so plainly (learned 2026-07-28, Francena).** Unlike the US block above, a wide
+> UK search (9 unis incl. Oxbridge/Imperial/UCL/Russell Group) turned up only generic "international
+> scholarships search" portals — no named award with a confirmed amount survived snippet-level
+> discovery. UK international scholarships are typically **partial merit awards** (a few thousand GBP/yr
+> off tuition), not the US's full-cost-of-attendance model. Score `scholarship_opportunity` modestly and
+> uniformly at Longlist (there's rarely a documented reason to rank one uni above another on this axis
+> yet), and flag the gap explicitly in `status.md` follow-ups for the Stage-4 conversation with the
+> student — don't let a low, unremarked score quietly bury her #1 priority.
+>
+> **A-Level entry bars for Chemistry (and likely other sciences) cluster in two clean tiers, which
+> makes `entry_margin` easy to source:** Russell Group non-Oxbridge sits at **AAB-ABB** (Nottingham,
+> Southampton) down to **ABB-BBC/BBB** (Cardiff, Glasgow, Strathclyde), while UCL/Imperial ask **AAA/A*AA**
+> and Oxbridge's **A\*A\*A** is holistic on top. A UK A-Level student with strong grades (A\*A\*A here)
+> can look "Safety" by grades alone across most of the list — that's a correct, honest signal per
+> `entry_margin`'s grade-only rule, not a bug to second-guess. Reserve the `admission_likelihood`
+> override for genuinely holistic gates: Oxbridge's interview + admissions test, and a small-quota
+> "very competitive" case like Imperial where the exact grade text wasn't sourced.
+>
+> **Course pages sometimes show a course-specific fee GROUP/BAND, not a flat rate — read for the
+> subject match before taking the first number.** Cambridge's official fee table lists tuition by
+> subject group (e.g. "Natural Sciences; Psychological and Behavioural Sciences" was Group 4 at
+> £44,214/yr, 2026/27) rather than one university-wide figure — confirm Chemistry's actual group,
+> don't assume the lowest or an average. Oxford, similarly, bands overseas fees **£37,380-£62,820**
+> by course, and Chemistry (a lab science) sits at the **top** of that range, not the middle.
 
 **USA** → Common App + department + outcomes:
 ```
@@ -59,9 +161,33 @@ OPT STEM <field> post study work
 > ```
 > **Need-BLIND vs need-AWARE for internationals is the distinction that matters** — at a need-aware
 > school, *requesting aid actively lowers admission odds*, so it belongs in `entry_margin` and `Notes`,
-> not just the scholarship columns. As of 2026 the need-blind-for-internationals list is only ~10 schools
-> (Harvard, Yale, Princeton, MIT, Amherst, Dartmouth, Bowdoin, Washington & Lee, + Brown and Notre Dame
-> from the Class of 2029) — and a sub-5%-acceptance deal-breaker removes the first four.
+> not just the scholarship columns. And a sub-5%-acceptance deal-breaker removes the most selective end.
+>
+> **The need-blind-for-international cohort membership drifts — always re-check against each university's
+> OWN current page, not a remembered list or even a past "confirmed" note in this file (learned
+> 2026-07-28, Teoh Yu Shan; corrected again same day after a second session re-verified).** Bowdoin's July
+> 2022 press release states *"Bowdoin joins Harvard University, Princeton University, Massachusetts
+> Institute of Technology, Yale University, Dartmouth College, and Amherst College in including all
+> students, regardless of citizenship, under its need-blind admissions policy"* — a clean, citable 7-school
+> cohort **as of 2022**. Brown is widely reported to have joined later (~Class of 2029) — plausible but
+> re-verify the year. **Washington & Lee and Notre Dame have since joined too — both are need-blind AND
+> meet 100% of demonstrated need for international undergraduates, per their own pages, verified
+> 2026-07-28:** Notre Dame's `admissions.nd.edu/apply/resources-for/international-applicants/international-faqs/`
+> states "We offer need-based financial aid that meets the full demonstrated need of all undergraduate
+> students, domestic and international"; W&L's `wlu.edu/admissions/financial-aid/types-of-aid/international-student-aid`
+> states "W&L is need-blind in its admissions decisions" and "meets 100% of demonstrated financial need
+> without loans for every admitted student." Both changes came from large 2024 gifts — Notre Dame's
+> "Pathways to Notre Dame" initiative (announced 2024-09-13, effective Class of 2029) and W&L's $132M gift
+> (announced 2024-10-24/25, effective Class of 2029) — **both postdating Bowdoin's 2022 anchor**, which is
+> exactly why an earlier pass of this note (same session, same day) checked Notre Dame's general costs page
+> instead of its international-applicants FAQ, found no international mention, and wrongly concluded
+> need-aware/uncertain. **The actual lesson, twice-learned: "absent from an older confirmed list" is not the
+> same as "excluded" — a school can join after the anchor source's date, so always check for a MORE RECENT
+> institutional announcement before treating an exclusion as settled,** and prefer a page written for
+> international applicants specifically (an FAQ, an "International Student Aid" page) over a general costs
+> page that may simply not mention international status either way. Don't assume this correction is final
+> either — this cohort keeps growing; re-verify against each university's own current page every time, and
+> don't just trust this note's snapshot indefinitely.
 >
 > **Headline admit rates lie for aid-seeking internationals.** Duke publishes ~6% but funds only **20-25
 > international students a year** university-wide, in a *separate* pool — the effective rate is far lower.
@@ -118,8 +244,8 @@ Australia 485 graduate visa <field>
 > student whose `preferences.intake` says "Sept" cannot mean Australia — settle which semester before
 > Stage 4, because it moves every deadline. For a Malaysian A-Level student finishing in December,
 > Sem 1 (Feb) is tight but starts them ~7 months earlier than the UK/US; Sem 2 (July) is the safe fit.
-> **Don't invent a `key_deadline`** — leave it blank and verify at Stage 4; a fabricated date is worse
-> than an empty cell.
+> **Never invent a `key_deadline`** — if the university genuinely publishes none, write the sentinel
+> (`Rolling`, or `Not published — check portal`). A fabricated date is worse than either.
 >
 > **Scholarships are Australia's weak spot** — partial fee remission (20-30%), not the US
 > meets-full-need model. If the student ranks scholarship highly, say so plainly. The best structure
@@ -136,12 +262,20 @@ Australia 485 graduate visa <field>
 > **designated regional areas** — a possible extra year on the 485, which matters if
 > `intent_to_migrate` is true.
 
-**Singapore/Malaysia (local)** → NUS/NTU/SMU + MQA:
+**Singapore** → the public five + a private/foreign campus for the Safety end:
 ```
 NUS OR NTU OR SMU <course> admissions
-<course> Malaysia university intake <intake>
-MQA recognised programme <course>
+SUTD OR SIT <course> undergraduate international admissions
+Singapore MOE tuition grant ASEAN undergraduate tuition fees
+ASEAN Undergraduate Scholarship NUS NTU
+JCU OR Curtin OR SIM Singapore <course> bachelor international fees
+Singapore Employment Pass minimum salary graduate
 ```
+
+> **Singapore and Malaysia were one block until 2026-07-29** — `COUNTRY_NORMALIZE` fused them into a
+> single `Singapore/Malaysia` token, so a student who ticked only Malaysia got Singapore rows. They are
+> two countries with almost nothing in common operationally (fee tiers, recognition ladder, entry
+> system, cost), and now two separate passes.
 
 > **SINGAPORE — for an ASEAN student, the funded public unis are a genuine mid-band, not a Reach wall
 > (learned 2026-07-16, Ong).** The playbook that worked: 10 queries covering NUS / NTU / SMU / SUTD / SIT
@@ -199,12 +333,73 @@ MQA recognised programme <course>
 > SMU offers data science as a **second major on an Economics/Computing degree**, not a standalone DS
 > degree — score `course_match` for what it actually is.
 
+**Malaysia (home country)** → public + private + the accreditation register:
+```
+<course> Malaysia public university intake <intake>
+<course> degree Malaysia private university international campus
+MQA recognised programme <course>
+<university> Malaysia <course> local student fees UPU
+EAC accredited engineering programme Malaysia
+```
+
+> **Malaysia is a home-country pass and inverts three habits at once.** The traps are written up in the
+> scoring section below rather than here, because each is a scoring rule, not a query — read all three
+> before filling a Malaysian row:
+> - **`recognition_fit`: MQA is a floor, not a distinction** — every Malaysian programme is MQA-registered,
+>   so scoring MQA as recognition makes every domestic row max out for a reason that means nothing. Score
+>   the professional ladder (EAC/BEM/Washington vs ETAC/MBOT/Sydney), per programme.
+> - **Price at the LOCAL rate, not the international one** — aggregators quote the international fee by
+>   default, and the local rate is often 4-10x less at a public university. The local route has its own
+>   English requirement (**MUET** via UPU, not IELTS).
+> - **A "local" branch-campus row may be a 2+2 in disguise** — a mandatory transfer inverts the cost
+>   model, `post_study_work_fit`, and what the row should be compared against.
+>
+> Malaysia usually supplies the **Safety** end of a list and the only rows where the student can live at
+> home — both worth saying out loud when the rest of the list is Reach-heavy.
+
 **China** → English-taught + CSC:
 ```
 <course> English-taught bachelor China university
 CSC scholarship <field> bachelor
 <university> international admissions <course>
 ```
+
+> **For Humanities/History/Philosophy specifically, a literal English-taught "BA History" does not
+> exist at mainstream Chinese universities — confirmed twice now (learned 2026-07-16 and re-confirmed
+> 2026-07-28, Teoh Yu Shan).** A china-admissions.com sweep of 9 History bachelor's programmes
+> (Tsinghua, Zhejiang, Wuhan ×2, Sichuan, Beijing Normal, East China Normal, Chongqing, Zhengzhou ×2)
+> found every single one Chinese-taught. **The realistic substitutes are Sino-foreign joint-venture
+> (JV) universities**, not a mainland public university's own History/Philosophy department:
+> - **XJTLU (Xi'an Jiaotong-Liverpool)** — `BA (Hons) China Studies` is an Area/Sinology-Studies
+>   degree (not literally History, but its core modules are heavily historical) and a genuine dual
+>   degree with University of Liverpool (Russell Group). International A-Level students meeting the
+>   bar (**BBB**) enter **directly into Year Two** — this quietly means the real commitment is **3
+>   years, not the advertised 4**; set `duration_years` to the years actually attended, not the
+>   headline. Fee (own fees page): **RMB 93,000/yr**. Living cost has a wide range on XJTLU's own
+>   living-costs page — a frugal dorm-based student runs ~RMB 3,700/month (~44,400/yr) vs a private
+>   apartment up to ~RMB 9,600/month (~115,200/yr); pick the frugal figure as the default estimate and
+>   flag the range.
+> - **Duke Kunshan University** (Duke + Wuhan University JV) and **NYU Shanghai** (part of NYU's
+>   global network) both offer genuine English-taught **Philosophy and/or History tracks** inside a
+>   Humanities-style major — a tighter course-name match than XJTLU's Area Studies. Both apply via the
+>   **Common Application** (Duke Kunshan: commonapp.org/explore/duke-kunshan-university; NYU Shanghai:
+>   the same Common App used for NYU's NY/Abu Dhabi campuses — A-Levels accepted with predicted
+>   grades). Both are **holistic with no published grade bar** (`entry_margin: "not_published"`) and
+>   both are **need-AWARE for internationals, not need-blind** — this is the same US-style funding
+>   trap as the USA block above, just transplanted onto a China row, so don't let the "China" label
+>   imply cheap. 2026-27 official costs of attendance: Duke Kunshan **~USD 84,065/yr** (own tuition
+>   page), NYU Shanghai **~USD 91,676/yr** (own cost-of-attendance page) — both can out-cost the
+>   cheapest US rows on the same list.
+> - **CSC (Chinese Government Scholarship) does NOT meaningfully apply to any English-taught JV
+>   programme.** Its own rules (confirmed via a Chinese-taught-university's international-admissions
+>   page restating MOE/CSC policy) state undergraduate scholarship recipients "must register for
+>   Chinese-taught credit courses" (Chinese-medium prep year unless HSK-exempt) — CSC targets
+>   Chinese-taught majors specifically. A university that surfaces in search as "CSC-eligible for
+>   History/Philosophy" (e.g. Jinan University) is offering the **Chinese-taught** version of that
+>   major, not an English-medium one — don't treat CSC eligibility as evidence a programme is
+>   accessible to a student with no demonstrated Chinese/HSK proficiency.
+> - Also checked and excluded for Humanities: **University of Nottingham Ningbo China** offers only
+>   English/Communications/Applied-Linguistics majors, no History or Philosophy.
 
 **Hong Kong** → English-taught + non-local admissions (placeholder — no verified traps yet):
 ```
@@ -244,8 +439,8 @@ MEXT scholarship undergraduate <field>
 >
 > **Intake ≠ September.** The Japanese academic year starts in **April**; many EMI/G30 programs *also*
 > run an **autumn (Sept/Oct)** intake, but not all. Reconcile against `preferences.intake` (Sept 2027)
-> per program rather than assuming — and **don't fabricate a `key_deadline`**; leave it blank and verify
-> at Stage 4.
+> per program rather than assuming — and **never fabricate a `key_deadline`**; where none is published,
+> use the sentinel (`Rolling` / `Not published — check portal`).
 >
 > **MEXT is the scholarship story** — the government scholarship (embassy-recommended or
 > university-recommended) can cover tuition + a monthly stipend + airfare, but it is **highly
@@ -262,18 +457,81 @@ MEXT scholarship undergraduate <field>
 > heavily shapes actual employability — note it in `post_study_work` rather than treating the visa
 > route as the whole answer.
 
-## Run discovery
+## Step 1 — Roster sweep (free WebSearch, main session)
 
-```powershell
-python tools/firecrawl_search.py "query one" "query two" --limit 6 --scrape-top 2
+Name the country's candidates and **nothing else**. 6-10 free `WebSearch` queries off the playbook
+block above, and for each plausible hit record only four things:
+
+| university | course | city | course URL |
+|---|---|---|---|
+
+**Stop there.** No fees, no entry bars, no scores — those are the row-fillers' job, and pulling them
+now means paying for the same page twice and filling this session's context with 12 universities'
+worth of detail. Aim for **8-12 rows**: enough to cut from, few enough that each can carry 35
+researched columns. Aggregators (StudyPortals, QS, THE) are welcome *here* — this is the one step
+where they're the right tool.
+
+Sanity-check the roster before dispatching: drop anything that plainly fails a stated deal-breaker,
+doesn't teach the field in English, or is a name collision (`smu.edu` is **Texas**, not Singapore).
+Each bad row costs a full subagent.
+
+## Step 2 — Country constants (once per country)
+
+Research **once** what every row in this country would otherwise re-research 10 times, and write it to
+`.tmp/<slug>/country_<code>.json`. Every row-filler is handed this path:
+
+```json
+{
+  "country": "Australia",
+  "as_of": "2026-07-29",
+  "visa_funds_proof": "AUD 29,710/yr living costs + first-year tuition + return airfare (subclass 500)",
+  "post_study_work": "485 graduate visa, 2-3 yrs; +1 yr in designated regional areas",
+  "application_system": "Direct to each university (or an agent portal)",
+  "intakes": "Semester 1 late Feb; Semester 2 late July. NO September intake.",
+  "living_benchmark_per_year": "AUD 29,710 (official); Sydney/Melbourne ~20-40% above",
+  "recognition_route": "Washington Accord via Engineers Australia; check MQA recognition per programme",
+  "ranking_source": "QS 2026 subject + overall",
+  "notes": "Domestic (Commonwealth Supported) fees appear beside international fees on the same page."
+}
 ```
-Or put queries in a JSON list and pass `--queries-file .tmp/<slug>/queries.json`. Use `--scrape-top N` to
-pull full markdown for the most promising official course/prospectus pages (those scrape cleanly;
-social/forum URLs return "Website Not Supported" — capture the URL + snippet, don't waste a scrape slot).
-Results land in `.tmp/<slug>/search_results.json`. **`--student` (or `--out`) is required** — there is no
-shared default path, so parallel sessions can't overwrite each other's results.
 
-## Extract candidates (agent judgement)
+Fill only the keys that are genuinely country-wide. A row-filler is told to prefer a real per-university
+exception over these when one exists — and to say so in `research_notes` when it does.
+
+## Step 3 — Row fill (parallel `row-filler` subagents)
+
+Dispatch **one `row-filler` subagent per university, in parallel** (`.claude/agents/row-filler.md`,
+pinned to Sonnet). Each researches its one university+course and writes exactly one fragment to
+`.tmp/<slug>/candidates/<uni-slug>.json`. Give each dispatch, explicitly:
+
+- the **student slug**,
+- the **one university + course** (and city + course URL from the roster),
+- the **country**,
+- the path to `.tmp/<slug>/country_<code>.json`.
+
+Parallel is safe here and serial is not just slower but *worse*: each agent writes its own fragment
+file and never touches `master_list.csv`, so there is nothing to race — unlike Stage 4's report-writer
+dispatches, which rewrite the whole CSV and must run one at a time. Keeping the research out of this
+session is the point: 12 universities' worth of fetched pages would otherwise all land in one context.
+
+**Parallelised by ROW, not by column.** One agent per university (~2-3 fetches each) beats one agent
+per column (~21 agents each re-fetching the same course page). It also matches how the tools work:
+`sync_shortlist.py` dedupes by `course_key` and **skips** a repeat university rather than merging into
+it, so a column-at-a-time sync is impossible today — and scoring needs all eight sub-scores at once
+anyway. Fragments in, one merge, one sync.
+
+When they're all back, read the "Gaps/flags" line of each reply — that's where sentinels and
+unverifiable facts get declared — before merging.
+
+> **Firecrawl's rate limit is tight and shared across search+scrape (~10-15 req/min, learned
+> 2026-07-28, Francena).** This bites much less now that Firecrawl is a *fallback* rather than the
+> primary discovery tool, but it still applies when several row-fillers escalate at once: some queries
+> return 0 results, some scrapes silently come back `null`, and the tool still exits 0. **Check the
+> `results` count and `markdown` per query before trusting a batch.** Retry a few seconds later (the
+> error carries a `retry after Ns` hint), and always to a **different `--out` path** — the tool
+> overwrites and has no append mode, so concurrent agents must not share one output file.
+
+## The candidate schema (what each row-filler writes)
 
 > **`specific_courses` from the Broad-Area grid is a sub-category, not a literal course title.**
 > The grid's per-area cell (e.g. "Accounting & Finance (Includes Corporate Finance, Banking &
@@ -283,61 +541,61 @@ shared default path, so parallel sessions can't overwrite each other's results.
 > Finance, …), not for an exact title match against the label itself. A course named just
 > "BSc Finance" or "BSc Banking & FinTech" both count as candidates for that student.
 
-Read `.tmp/<slug>/search_results.json`. For each plausible university+course, build a candidate object with honest
-**0-5 sub-scores** and an **`entry_margin`** judgement, and write the list to
-`.tmp/<slug>/uni_candidates.json`:
+One fragment per university, at `.tmp/<slug>/candidates/<uni-slug>.json` — a **single** candidate
+object, with honest **0-5 sub-scores** and an **`entry_margin`** judgement. **Every field below is
+required and non-empty** (`REQUIRED_CANDIDATE_FIELDS` in `tools/shortlist_schema.py`, enforced by
+`merge_candidates.py`); `total_cost_programme` is the one exception, where empty means *"compute it
+from tuition + living × duration"*, which is the normal case.
 
 ```json
-[
-  {
-    "university": "University of Manchester",
-    "course": "BSc Computer Science",
-    "country": "UK",
-    "city": "Manchester",
-    "subject_rank": "QS CS #51-100",
-    "overall_rank": "QS #34",
-    "entry_requirements": "AAA incl. Maths",
-    "student_grades": "AAA (predicted)",
-    "english_req": "IELTS 6.5 (6.0)",
-    "meets_english": true,
-    "annual_tuition": "GBP 30000",
-    "total_tuition": "GBP 90000",
-    "est_living_per_year": "GBP 12000",
-    "duration_years": 3,
-    "currency": "GBP",
-    "total_cost_programme": "",
-    "scholarship_portal": "Global Futures Scholarship — apply via the university funding portal",
-    "scholarship_coverage": "",
-    "scholarship_competitiveness": "",
-    "scholarship_how_to": "",
-    "funds_proof": "~GBP 12000 shown for visa",
-    "post_study_work": "Graduate Route 2 yrs",
-    "recognised_back_home": "MQA recognised; n/a professional body",
-    "application_system": "UCAS",
-    "key_deadline": "2027-01-15",
-    "intake": "2027 Sept",
-    "course_url": "https://www.manchester.ac.uk/...",
-    "source_authority": "Not verified",
-    "entry_margin": 0,
-    "admission_likelihood": "",
-    "admission_reason": "",
-    "pathway_option": "INTO Manchester Foundation if below AAA",
-    "course_at_a_glance": "3-yr BSc, broad first year then pick a specialism",
-    "student_life": "Large city campus, strong industry-placement culture",
-    "notes": "",
-    "research_notes": "",
-    "scores": {
-      "course_match": 5,
-      "subject_reputation": 4,
-      "total_cost_fit": 2,
-      "post_study_work_fit": 4,
-      "scholarship_opportunity": 3,
-      "experiential_fit": 3,
-      "location_pref_fit": 4,
-      "recognition_fit": 5
-    }
+{
+  "university": "University of Manchester",
+  "course": "BSc Computer Science",
+  "country": "UK",
+  "city": "Manchester",
+  "subject_rank": "QS CS #51-100",
+  "overall_rank": "QS #34",
+  "entry_requirements": "AAA incl. Maths",
+  "student_grades": "AAA (predicted)",
+  "english_req": "IELTS 6.5 (6.0)",
+  "meets_english": true,
+  "annual_tuition": "GBP 30000",
+  "total_tuition": "GBP 90000",
+  "est_living_per_year": "GBP 12000",
+  "duration_years": 3,
+  "currency": "GBP",
+  "total_cost_programme": "",
+  "scholarship_portal": "Global Futures Scholarship — apply via the university funding portal",
+  "scholarship_coverage": "GBP 5,000/yr off tuition, renewable for all 3 years",
+  "scholarship_competitiveness": "No statistics published",
+  "scholarship_how_to": "Automatic on the UCAS application; no separate form. Decisions with the offer.",
+  "funds_proof": "~GBP 12,000 living costs shown for the visa, plus first-year tuition",
+  "post_study_work": "2 yrs work rights after graduating (Graduate Route)",
+  "recognised_back_home": "MQA recognised; no professional body needed for pure CS",
+  "application_system": "UCAS",
+  "key_deadline": "2027-01-15",
+  "intake": "2027 Sept",
+  "course_url": "https://www.manchester.ac.uk/...",
+  "source_authority": "Official page",
+  "entry_margin": 0,
+  "admission_likelihood": "",
+  "admission_reason": "",
+  "pathway_option": "INTO Manchester Foundation if below AAA",
+  "course_at_a_glance": "3-yr BSc, broad first year then pick a specialism",
+  "student_life": "Large city campus, strong industry-placement culture",
+  "notes": "Fees confirmed on the course page for 2026/27 entry; 2027 rate not yet published.",
+  "research_notes": "Fee page read 2026-07-29 ... (free length — the depth the cells can't hold)",
+  "scores": {
+    "course_match": 5,
+    "subject_reputation": 4,
+    "total_cost_fit": 2,
+    "post_study_work_fit": 4,
+    "scholarship_opportunity": 3,
+    "experiential_fit": 3,
+    "location_pref_fit": 4,
+    "recognition_fit": 5
   }
-]
+}
 ```
 
 **Field notes:**
@@ -350,12 +608,21 @@ Read `.tmp/<slug>/search_results.json`. For each plausible university+course, bu
   - **`total_cost_programme`** ⇒ also `Approx total (MYR)`. Leave it empty to let the tool compute
     `total_tuition` + `est_living_per_year` × `duration_years`; set it explicitly only when that model
     can't express the cost (e.g. a mixed-currency 2+2 — see the branch-campus note below).
-  - **`meets_english`** ⇒ the `English short` warning. `true`/`false` only; `null`/omit if unknown. It is
-    a strict identity check, so the string `"No"` does **not** trigger the flag. The requirement itself
-    goes in `english_req`, which *is* a column.
-- Put a date in `key_deadline` as `YYYY-MM-DD` so it parses (extra text after the date is fine).
-- `source_authority` stays `"Not verified"` at this stage — Stage 4 flips verified rows to
-  `"Official page"`. These are the only two values the `Info source` column takes.
+  - **`meets_english`** ⇒ the `English short` warning. `true`/`false` only — and it is now **required**,
+    so decide it: compare the student's test/score in `profile.english_proficiency` against the
+    university's stated bar. It is a strict identity check, so the string `"No"` does **not** trigger
+    the flag. The requirement itself goes in `english_req`, which *is* a column.
+- Put a date in `key_deadline` as `YYYY-MM-DD` so it parses (extra text after the date is fine). Where
+  the university publishes none, write the sentinel — `Rolling` or `Not published — check portal`.
+- **`source_authority` is `"Official page"` at Stage 3 now**, because Stage 3 is where hard facts get
+  verified (the pre-flight moved here on 2026-07-29 — Stage 4 is report-only). Leave `"Not verified"`
+  **only** on a row whose facts you genuinely could not confirm on an official page, and say which fact
+  in `notes` — that row can't become a Finalist until someone does. These are the only two values the
+  `Info source` column takes.
+- **Sentinels, not blanks, not guesses.** Every field is required, so a fact that genuinely doesn't
+  exist takes its column's sentinel from `SENTINEL_VALUES` (`Not ranked`, `Rolling`,
+  `Not published — check portal`, `No statistics published`, `not_published` as an `entry_margin`).
+  A fact that *does* exist but you couldn't reach is not a sentinel case — name the gap in `notes`.
 
 > **`entry_margin` means ONE thing: grades vs the published academic bar.** **+2** well above …
 > **0** borderline/meets … **−2** well below. It produces the **`Grades vs entry bar`** column
@@ -396,9 +663,12 @@ Read `.tmp/<slug>/search_results.json`. For each plausible university+course, bu
 >    Washington Accord, CSS Profile, IELTS; `tools/build_glossary_sheet.py` generates a per-student
 >    `glossary.csv` explaining exactly the terms that student's list uses, to import as a second tab.
 > - `course_at_a_glance` and `student_life` are **one tight sentence each** — the shape of the
->   degree, and what living there is like. Leave them **blank** unless you actually researched it:
->   an invented sentence about campus culture is a fabricated fact like any other. Stage 4 fills
->   them when a row is promoted.
+>   degree, and what living there is like. **Research them and fill them here** (they used to be
+>   left for Stage 4, which is exactly how they ended up blank on 43 of one student's 44 rows).
+>   One real sentence from the course page and the university's own student-life/accommodation
+>   pages is enough; an invented sentence about campus culture is a fabricated fact like any other,
+>   so if you truly have nothing, say what you *do* know about the degree's shape rather than
+>   inventing atmosphere.
 
 **Scoring guide (each 0-5 — these are DESIRABILITY only, never admissibility):**
 - `course_match` — how well the course matches the field/goal.
@@ -479,35 +749,56 @@ Read `.tmp/<slug>/search_results.json`. For each plausible university+course, bu
 > `tools/shortlist_schema.py`, which is shared source that concurrent sessions would fight over.
 > Derive them from the student's `preferences.priorities` with the **`scoring-weights` skill** before
 > syncing; `sync_shortlist.py` refuses to run without a valid file. Because no student state is shared,
-> two students can be discovered and synced **in parallel**. The rich scholarship detail columns are
-> usually left blank at discovery and filled during Stage 4.
+> two students can be discovered and synced **in parallel**. **The four scholarship columns are filled
+> here, not at Stage 4** — they were the single biggest source of blank cells, and for a
+> `scholarship_required` student they are the reason the list exists.
 
-## Sync to the master list
+## Steps 4-6 — Merge, sync, check
 
 ```powershell
-python tools/sync_shortlist.py --student <slug>          # add --dry-run to preview first
-python tools/check_master_list.py --student <slug>       # readability + honesty gate
-python tools/build_glossary_sheet.py --student <slug>    # refresh the Glossary tab
+python tools/merge_candidates.py  --student <slug> --country "<Country>"   # gaps stop here
+python tools/sync_shortlist.py    --student <slug> --country "<Country>"   # --dry-run to preview
+python tools/check_master_list.py --student <slug>                          # the gate
+python tools/build_glossary_sheet.py --student <slug>                       # refresh Glossary tab
 ```
+
+`merge_candidates.py` collects `.tmp/<slug>/candidates/*.json` into `.tmp/<slug>/uni_candidates.json`
+and **exits 1 naming every `(university, missing field)` pair** — so you re-dispatch only the two
+row-fillers that came back short, not the country. It also rejects a fragment whose `country` isn't
+this pass's, and two fragments claiming the same university+course. Fixing gaps *before* the CSV is
+the whole point: sync only ever appends and dedupes by `course_key`, so a university synced with holes
+is silently **skipped** on a re-run rather than topped up.
+
 `sync_shortlist.py` computes desirability + A/B/C tier, Reach/Match/Safety, feasibility flags, dedupes
 by canonical university+course, and appends new rows as **Longlist**. It also writes each candidate's
-`research_notes` to `research_notes.md`. The CSV is created on first run.
+`research_notes` to `research_notes.md`. The CSV is created on first run. **`--country` is required**
+and every candidate must match it — one country per pass, enforced.
 
 `check_master_list.py` is the gate — it must come back clean before you hand a list to a student. It
-checks the header against the schema, the length budgets, bare jargon that has a plain equivalent,
-the allowed values per column, and contradictions between `Grades vs entry bar` and
-`Admission likelihood` (grades below the bar can't be a Safety; grades above it that are still a Reach
-must say why).
+checks the header against the schema, **completeness** (every required column filled; a sentinel only
+in a column that allows one), the length budgets, bare jargon that has a plain equivalent, the allowed
+values per column, and contradictions between `Grades vs entry bar` and `Admission likelihood` (grades
+below the bar can't be a Safety; grades above it that are still a Reach must say why).
+
+## Step 7 — Update `status.md`
+
+Rewrite "Master list state → Destinations covered" and "Next action" to name the **specific** next
+country. Record the pass's cost (rough token spend + wall-clock) while you still know it — the
+per-country budget is a measurement nobody has taken yet.
 
 ## Edge cases & rules
 
-- **Aim wide** — a Longlist of 20-40 across countries is healthy. Include some safe options, not only
-  aspirational ones.
+- **8-12 rows per country, not 20-40 in one go.** The old "aim wide" number came from snippet-level
+  rows that cost almost nothing; a 35-column officially-sourced row is a different unit of work. Wide
+  still matters — get the spread *across* countries and include genuinely safe options, not only
+  aspirational ones — but a country pass that returns 25 rows means each got researched a third as well.
 - **Don't over-scrape — for signal, not for spend.** Every scraped page lands in context and dilutes it,
   so a wide `--scrape-top` makes the extraction step *worse*, not just pricier. Tune `--limit` /
-  `--scrape-top` to the most promising official pages; a snippet is enough for the rest at this stage.
-- **Provisional facts** — snippet-level fees/requirements are often wrong or out of date. That's fine here;
-  Stage 4 verifies. Keep `source_authority = Not verified` until then.
+  `--scrape-top` to the most promising official pages.
+- **Facts are official-sourced now, not provisional.** Stage 3 owns verification (the pre-flight moved
+  here on 2026-07-29); Stage 4 writes reports and does not re-check the row. So a number in a cell has
+  to have come off the university's own page — `source_authority = "Official page"`. A row left
+  `Not verified` is an admission of a gap, and it must name the unverified fact in `notes`.
 - **CSV append needs a trailing newline** — `sync_shortlist.py` appends rows. If the existing
   `master_list.csv` doesn't end in a newline (e.g. it was hand-edited, or renamed from another file), the
   first appended row used to fuse onto the last existing row, corrupting it into one physical line. The tool
@@ -537,27 +828,40 @@ must say why).
   notes above). If you are reading an old report or `.bak` that references the dropped columns, that's
   why. Toru's Stage-4 student-life research was rescued to
   `data/students/toru/student_life_research.md` — fold it into a report rather than re-researching it.
-- **Budget stated as a RANGE silently killed the `Over budget` flag** (fixed 2026-07-16, keep in mind when
-  reading older rows). `ingest_form_csv.py` passes the form's budget answer straight through, so a student
-  who types `400000-800000` lands a *range string* in `profile.financial.total_budget`. `feasibility_flags()`
-  used to do `float(budget)` inside a swallowing `except: pass` — the parse threw and the check silently
-  never ran, so over-budget rows looked clean (it worked only for single-number budgets). `budget_ceiling()`
-  now parses a range to its **upper bound**. Because sync only *appends*, **rows synced before the fix were
-  never retro-flagged**. Don't trust the absence of `Over budget` on an old row; re-check against the ceiling.
-  Ong's UK rows were backfilled on 2026-07-16 (UCL 893,850 / Manchester 885,000 / Warwick 841,281) and are
-  now clean — worth knowing that the first status note of this named only two of the three, so **re-derive
+- **A missing `Over budget` flag on an OLD row proves nothing** (the free-text-budget era, closed
+  2026-07-29). Budget used to be a free-text form question passed straight through, so a student who typed
+  `400000-800000` landed a *range string* in `profile.financial.total_budget`; `feasibility_flags()` did
+  `float(budget)` inside a swallowing `except: pass`, the parse threw, and the check silently never ran —
+  over-budget rows looked clean. Two fixes closed it: `budget_ceiling()` parses a range to its **upper
+  bound** (2026-07-16) and now also **rejects implausible values** (anything under 1000 → `None`, so
+  `"~ 1 million? Idk"` no longer yields a ceiling of `1.0`); and the form's budget question became a
+  **four-band dropdown** (2026-07-29), so nothing but a number or null reaches `total_budget_ceiling` any
+  more — see the band table in `01_intake.md`.
+  **Sync only ever appends, so rows synced before those fixes were never retro-flagged.** Don't read the
+  absence of `Over budget` on a pre-2026-07-29 row as affordable; re-check it against the ceiling. Ong's UK
+  rows were backfilled on 2026-07-16 (UCL 893,850 / Manchester 885,000 / Warwick 841,281) and are now
+  clean — worth knowing that the first status note of this named only two of the three, so **re-derive
   which rows are over from the CSV, don't trust a prose list of them.** Backfill is a small one-off script
-  reusing `budget_ceiling()`: only range-budget students are affected, so it doesn't belong in `tools/`.
-- **Stale `.tmp/<slug>/uni_candidates.json`** — this file is disposable and may carry leftovers from an
-  earlier round (different unis, old scoring). Overwrite it fresh each discovery run rather than appending —
-  `sync_shortlist.py` syncs whatever is in it.
+  reusing `budget_ceiling()`: only the affected students matter, so it doesn't belong in `tools/`.
+- **Stale `.tmp/<slug>/candidates/`** — fragments are disposable and a stale one from an earlier round
+  (different course, old scoring) merges just as happily as a fresh one. **Clear the directory before
+  each country's pass**, and remember `merge_candidates.py` reads *every* `*.json` in it. Same for
+  `uni_candidates.json`, which is overwritten, and which `sync_shortlist.py` syncs verbatim.
+- **The 35 columns are all required now (2026-07-29)** — `REQUIRED_COLUMNS` in `shortlist_schema.py`,
+  everything but `Warnings`, which is written `None` when a row is clean rather than left empty. The
+  eight existing student CSVs were **not** backfilled: they predate the policy and will fail the
+  completeness check until someone re-researches them. That's expected, not a regression — the policy
+  applies to new students and new country passes.
 
 ## Done when
 
-`master_list.csv` holds a broad Longlist with sensible scores and flags, and
-`python tools/check_master_list.py --student <slug>` comes back clean.
+For **this country**: 8-12 rows in `master_list.csv`, every one of the 35 columns populated,
+`merge_candidates.py` and `check_master_list.py` both clean, and `status.md` naming the next country.
 
-What carries forward is **candidates, not research**. The Longlist hands Stage 4 a scannable set of
-plausible rows on *provisional* facts; verification and all the depth happen there. Proceed to
-**Stage 4** (`04_university_report.md`) — the student picks finalists, you verify their hard facts
-against official sources, and build a **university report** for each survivor.
+For **Stage 3 overall**: every entry in `preferences.json → target_countries` has rows (see "Pick the
+next country" — that's what makes this checkable without asking), with a Reach/Match/Safety spread
+*across* the whole list rather than per country.
+
+What carries forward is a **verified** list, not a provisional one. Stage 4 no longer re-checks these
+facts — it takes the student's finalists and writes reports. Proceed to **Stage 4**
+(`04_university_report.md`).

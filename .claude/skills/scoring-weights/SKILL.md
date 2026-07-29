@@ -65,32 +65,48 @@ The form's priority dropdown normalizes to these tokens (`PRIORITY_NORMALIZE` in
 
 The current form's **eight 1-8 priority sliders** produce a full 8-way ranking (not just 3), including a
 **Course Ranking** slider → `course_quality` → `course_match`. So `course_quality` is no longer
-non-form-only — form students now supply it directly. With all eight ranked, the top *band* is better
-anchored, but the modifiers below still do the heavy lifting (unlisted ≠ zero, gates override rank).
+non-form-only — form students now supply it directly.
 
 ## Procedure — judgement, not arithmetic
 
-The form gives only **3** ranked priorities but there are **8** keys, so **most of the weight
-comes from the modifiers, not the ranking.** Do not build a formula and trust it.
+`preferences.priorities` now arrives as a **complete 8-way ordering**, one entry per weight key, derived
+from the eight 1-8 sliders (highest first; ties broken by the form's column order — see
+`01_intake.md`). That is far more signal than the old 3-priority form gave, and it changes the job: you
+are **shaping a full ranking**, not inventing seven keys from three. Still do not build a formula and
+trust it — the ordering is only as good as the student's slider discipline, and the gates below
+outrank it.
 
-1. **The 3 named priorities anchor the top.** But **unlisted ≠ zero** — every key keeps a
-   floor, and `course_match` keeps a *raised* floor: "is this even the right course?" is
-   never irrelevant.
-2. **Apply the modifiers**, and name each one you used in `rationale`:
+1. **The ordering anchors every key, not just the top.** Rank 1 sits in the top band, rank 8 at the
+   floor, the rest spread between — but **rank 8 ≠ zero**: every key keeps a floor, and `course_match`
+   keeps a *raised* floor ("is this even the right course?" is never irrelevant).
+2. **Distrust flat and near-flat slider sets.** A student who drags everything to 7-8, or leaves them
+   all at the default, has ranked nothing — the tie-break then hands you the *form's column order*
+   (Cost → Scholarship → University Ranking → Course Ranking → Employability → Recognition → Location →
+   Hands-On), which is arbitrary, not a preference. Check the spread before you lean on the order; if
+   it's flat, say so in `rationale` and derive from the modifiers, `notes` and `deal_breakers` instead.
+3. **Apply the modifiers**, and name each one you used in `rationale`:
    - `scholarship_required: true` → `scholarship_opportunity` to the top band **regardless of
      priority rank** (it's a hard gate).
-   - `total_budget_ceiling: null` → `total_cost_fit` at floor.
+   - **`total_budget_ceiling: null` no longer means "cost doesn't matter."** Under the four-band budget
+     dropdown, `null` is produced by *two different answers* — read `profile.financial.notes`, which
+     carries the verbatim label, before deciding:
+     - `Above RM 1,000,000` → a genuine no-ceiling student. Cost is a weak differentiator here;
+       `total_cost_fit` low unless the Cost slider says otherwise.
+     - `Not sure - no fixed budget` → the ceiling is *unknown*, not absent. **Let the Cost slider
+       decide**: a student who ranked Cost near the top means it, ceiling or no ceiling.
+     - Only floor `total_cost_fit` when there's no ceiling **and** Cost sits low in the ordering.
+       A real band (`500000` / `1000000`) makes cost genuine — weight it accordingly.
    - `intent_to_migrate: true`, or work-abroad Yes/High → `post_study_work_fit` up.
    - Regulated profession (Engineering / Medicine / Law / Accounting / Pharmacy) →
      `recognition_fit` above floor.
    - Contradictory `location_prefs` (Urban *and* Rural both ticked) → `location_pref_fit`
      near floor: they're telling you not to filter on setting.
-3. **Read `notes` and `deal_breakers` — they override the structured fields.** The structured
+4. **Read `notes` and `deal_breakers` — they override the structured fields.** The structured
    fields are a lossy compression of intent; the notes are the intent. (Zafri's accreditation
    deal-breaker beats his `ranking_importance: 4`.)
-4. **`priorities` order wins over `ranking_importance`** on conflict. `ranking_importance`
+5. **`priorities` order wins over `ranking_importance`** on conflict. `ranking_importance`
    only modulates *within* the band the priority order already assigned.
-5. **Sum to exactly 1.00; every weight ≤ 0.5.** If `validate_weights` rejects it, **fix the
+6. **Sum to exactly 1.00; every weight ≤ 0.5.** If `validate_weights` rejects it, **fix the
    derivation — never fudge a key to make the sum work.**
 
 ### Never weight admissibility
@@ -101,15 +117,26 @@ university the student can't get into must not rank highly. Admissibility lives 
 `Admission likelihood` (Reach/Match/Safety) and `Warnings`. This is guardrail #1 of
 `00_overview.md`, and it is now enforced in code.
 
-### Prose fields (toru / law-jia-herng predate the form)
+### Reading `ranking_importance` — check the scale before you read the number
 
-`ranking_importance` may be `"5"`, `"medium"`, or a whole sentence. Numeric → int;
-`low`/`medium`/`high` → 2/3/4; prose → judge it, and **quote the phrase you judged from** in
-the `rationale`.
+`ranking_importance` steers `subject_reputation`, and **the same integer means different things
+depending on which form the student filled.** Establish the scale first; a `5` is near-top on one and
+mid-pack on the other.
+
+| Source | Scale | How to read it |
+|---|---|---|
+| Current form (2026-07-29+) — the **[University Ranking]** slider | **1-8** | 7-8 = top band, 4-6 = middle, 1-3 = floor-ish. `derived_from` will name a recent form response. |
+| A dedicated *"how much does your subject's strength matter"* question, if the form ever gains one | **1-5** | The tool prefers this over the slider when present. |
+| Pre-slider form students | **1-7** | Same shape as 1-8; scale it before comparing. |
+| Prose students (`toru`, `law-jia-herng` — predate the form) | none | `"medium"` / a whole sentence. `low`/`medium`/`high` → 2/3/4 on a 1-5 reading; for a sentence, judge it and **quote the phrase you judged from** in the `rationale`. |
+
+When the scale is ambiguous, **say which one you assumed in `rationale`** — it is the difference
+between a top-band `subject_reputation` and a middling one.
 
 ## Worked example — Lai Zheng Yi (real, verified)
 
-His inputs: Biomedical Engineering; priorities `ranking > ...`; `ranking_importance: 5`;
+His inputs: Biomedical Engineering; priorities `ranking > ...`; `ranking_importance: 5` **on the
+pre-slider scale** (top band — not a mid-pack 5 out of 8; see the scale table above);
 `scholarship_required: **true**`; ~RM500k total budget; `intent_to_migrate: true`, work
 abroad Yes; `location_prefs` = Urban **+** Rural **+** near family.
 
@@ -138,4 +165,5 @@ in `score_log.jsonl`. Re-syncing re-scores only the rows you sync; already-baked
 - `validate_weights` accepts it: 8 exact keys, no forbidden keys, sums to 1.00, each ≤ 0.5.
 - `rationale` names each non-floor weight and every modifier applied.
 - `tools/shortlist_schema.py` is **untouched**.
-- `python tools/sync_shortlist.py --student <slug> --dry-run` prints the expected `weights_id`.
+- `python tools/sync_shortlist.py --student <slug> --country <name> --dry-run` prints the expected
+  `weights_id`. (`--country` is **required** — one country per pass; see `03_discover_longlist.md`.)

@@ -86,16 +86,18 @@ These stop a tidy-looking list from being quietly wrong:
   `scoring-weights` skill. **Never hardcode weights in `tools/shortlist_schema.py`**: it's shared source,
   so concurrent sessions silently overwrite each other. Sync hard-errors if a student's file is missing.
 - **Official sources for hard facts.** Verify fees/requirements/deadlines against the official uni /
-  UCAS / Common App page before you build a row's report (the Stage 4 pre-flight — a row can't become
-  Finalist on unverified facts); aggregators are discovery only. Stamp `Info source`
-  (`Not verified` → `Official page`).
+  UCAS / Common App page. **Stage 3 owns verification** — rows are built from official pages and stamped
+  `Info source = Official page` there; Stage 4 only spot-checks currency. A row can't become Finalist on
+  unverified facts. Aggregators are discovery only.
 - **Total cost in MYR**, not annual tuition (3-yr UK vs 4-yr US must be comparable). MYR is approximate.
 - **Balanced shortlist** — a Reach/Match/Safety spread, not top-N by score.
 - **Recognition back home** (MQA + professional body) is a gate for regulated professions.
-- **Spend the credits — don't ask.** Run `firecrawl_search.py` when the workflow calls for it; no
-  permission needed. Free web search/fetch is still the *default* for forums, social and student-life
-  texture, because Firecrawl hard-skips those sites and buys nothing there. Reserve Firecrawl for
-  official pages that block a plain fetch — that's routing, not budget.
+- **Free search first, Firecrawl when free is blocked — and never ask permission for either.**
+  Claude's `WebSearch`/`WebFetch` is the default for *everything*, official pages included. Escalate
+  to `firecrawl_search.py` the moment free search is blocked — meaning an error **or a response that
+  doesn't contain the fact you went there for** (a JS-rendered fee table returning empty is the
+  common case). Then just run it; the credits are there to be spent. Full rule: guardrail 6 in
+  `workflows/00_overview.md`.
 
 ## Privacy & files
 

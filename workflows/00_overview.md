@@ -75,13 +75,17 @@ plain-English sentences, not jargon — and that is **enforced**, by
 student. Quick glossary of the less-obvious columns:
 - **`Info source`** — how far a row's hard facts have been checked: `Not verified` (found via web search /
   rankings sites — discovery only) or `Official page` (confirmed on the uni's own page / UCAS / Common
-  App). Every row must read `Official page` by Stage 4.
+  App). **Stage 3 already stamps `Official page`** — the row-filler agents build every row off official
+  sources — so `Not verified` on a fresh row means something went wrong, not "not yet". Legacy rows
+  predating the 2026-07-29 rebuild may still read `Not verified`; re-verify those before Stage 4.
 - **`Grades vs entry bar`** — `Well above` / `Above` / `Meets` / `Below` / `Well below`, or
   `Not published` where the university sets no academic cutoff. It answers **grades only**. Why a row is
   hard to get into lives next door in `Admission likelihood`, which can carry a short reason —
   `Reach (very selective)`. Keeping those two apart is the whole point; see guardrail 1.
-- **`Course at a glance`** / **`Student life`** — one tight sentence each. Blank until someone has
-  actually researched it (Stage 4 fills them on promotion); an invented sentence is a fabricated fact.
+- **`Course at a glance`** / **`Student life`** — one tight sentence each, **filled at Stage 3** like
+  every other column (they used to wait for Stage 4; that left the delivered spreadsheet full of holes).
+  An invented sentence is still a fabricated fact — a row-filler that couldn't find the answer writes a
+  **sentinel**, never a guess. See `SENTINEL_VALUES` in `shortlist_schema.py`.
 - **Cell length budgets** — `CELL_BUDGETS` in `shortlist_schema.py`. The list is a *scanning* surface;
   long-form research goes to `data/students/<slug>/research_notes.md` instead, and nothing is ever
   silently truncated.
@@ -149,10 +153,12 @@ These are *why this project exists* — they stop a tidy-looking list from being
    **provisional** — `sync_shortlist.py` stamps a "Grades unverified (self-predicted)" warning on every
    row. The list must not read as settled until actual/official predicted results arrive.
 2. **Official sources for hard facts.** Fees, entry requirements, English, deadlines, and intake must be
-   verified against the **official** university / UCAS / Common App page before you build a row's report
-   (the Stage 4 pre-flight — a row can't become `Finalist` on unverified facts). Aggregators (StudyPortals,
-   rankings, Niche) are for *discovery only*. Record `Info source` on every row. Where sources conflict,
-   the official one wins; note the conflict in `Notes`.
+   verified against the **official** university / UCAS / Common App page. **Stage 3 owns this** — the
+   row-filler agents build every row from official sources and stamp `Info source = Official page`, so a
+   row arrives at Stage 4 already verified; Stage 4's pre-flight only spot-checks currency (deadlines
+   rot) and chases any legacy row still reading `Not verified`. **A row can't become `Finalist` on
+   unverified facts.** Aggregators (StudyPortals, rankings, Niche) are for *discovery only*. Where
+   sources conflict, the official one wins; note the conflict in `Notes`.
 3. **Total cost, not annual.** Compare full-programme **total cost in MYR** (3-yr UK vs 4-yr US are not
    comparable per year). `Approx total (MYR)` is a rough offline conversion — flag it as approximate.
 4. **Balanced list.** A shortlist is a spread of Reach/Match/Safety, not the top-N by score.
@@ -161,14 +167,24 @@ These are *why this project exists* — they stop a tidy-looking list from being
    won't let the student practise in Malaysia is a dealbreaker, not a footnote. The
    profession → body mapping (MMC / BEM+Washington Accord / LPQB / MIA+ACCA / LAM / …) lives in
    `01_intake.md`, finalize step 4 — `ingest_form_csv.py` auto-fills it best-effort, and you verify.
-6. **Right scraper for the job — no permission needed.** `firecrawl_search.py` costs credits; **spend
-   them, don't ask** (the gate was removed 2026-07-27 — it stalled every stage for no safety gain).
-   What survives is *routing*, and it is about what works, not what costs: **free WebSearch/WebFetch
-   for decision texture** (Reddit, The Student Room, YouTube, student societies — IG/FB/TikTok/X are
-   hard-skipped inside `firecrawl_search.py`, so credits buy nothing there), **Firecrawl for official
-   pages that block a plain fetch** (fee tables, fee PDFs, walled scholarship/visa pages), where an
-   exact figure beats "confirm later". Tune `--limit`/`--scrape-top` for signal, not for spend:
-   scraped pages land in context and dilute it.
+6. **Free search first; Firecrawl when free is blocked — and no permission needed either way.**
+   This is the single source of truth for search routing; every other workflow points here rather
+   than restating it (four drifting copies is how the last convention rotted).
+   - **Claude's built-in `WebSearch` / `WebFetch` is the DEFAULT for everything** — official course
+     pages included, not just forums. Most official pages fetch cleanly and free.
+   - **Escalate to `firecrawl_search.py` the moment free search is *blocked*.** Blocked means **an
+     error, *or* a response that does not contain the fact you went there for.** The silent case is
+     the real one: a JS-rendered fee table that returns an empty page, a 200 with none of the
+     numbers on it. That is a block even though nothing failed loudly — don't accept a fetch that
+     didn't answer the question.
+   - **`firecrawl_search.py` costs credits; spend them, don't ask** (the gate was removed
+     2026-07-27 — it stalled every stage for no safety gain). Never ask permission to run it, and
+     never leave a fact unverified because a scrape would cost something.
+   - **Firecrawl is not the answer for social/forum texture** (Reddit, The Student Room, YouTube,
+     student societies): IG/FB/TikTok/X are hard-skipped inside the tool and the rest scrape
+     unreliably, so credits buy nothing there. Capture the URL + snippet from free search instead.
+   - Tune `--limit`/`--scrape-top` for signal, not for spend: scraped pages land in context and
+     dilute it.
 
 ## Privacy (PDPA)
 

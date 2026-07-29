@@ -25,9 +25,13 @@ The CSV is a SCANNING surface, so a candidate's long-form research does not go i
 is appended to data/students/<slug>/research_notes.md. Cells over CELL_BUDGETS are
 reported after a sync and never silently truncated.
 
+--country is REQUIRED and every candidate must match it: Stage 3 runs one country per
+pass (see check_one_country). The normal input is written by tools/merge_candidates.py,
+which merges the per-university fragments and refuses to emit an incomplete row.
+
 Usage:
-    python tools/sync_shortlist.py --student aisyah-rahman
-    python tools/sync_shortlist.py --student aisyah-rahman --dry-run
+    python tools/sync_shortlist.py --student aisyah-rahman --country Australia
+    python tools/sync_shortlist.py --student aisyah-rahman --country Australia --dry-run
 
 candidate JSON: a list of objects — see workflows/03_discover_longlist.md for the
 full schema. Each carries a "scores" dict (0-5 sub-scores) and an "entry_margin".
@@ -46,6 +50,7 @@ from shortlist_schema import (  # noqa: E402
     DEFAULT_LIST_STATUS,
     INFO_SOURCE_UNVERIFIED,
     SHORTLIST_HEADERS,
+    WARNINGS_NONE,
     candidate_total_myr,
     classify_admission,
     compute_score,
@@ -97,6 +102,10 @@ def candidate_to_row(c, score, tier, admission, flags):
     per-candidate override, and no caveat for self-predicted grades: feasibility_flags()
     already stamps "Grades unverified (self-predicted)" in Warnings for such a student, and
     repeating it in a second column just costs 45 chars a row.
+
+    A clean row's "Warnings" is written as "None", not left blank: the master list is the
+    client's deliverable and an empty cell reads as an unfinished one. "None" says a human
+    looked and there was nothing to flag (see SENTINEL_VALUES in shortlist_schema.py).
     """
     myr = candidate_total_myr(c)
     values = {
@@ -104,7 +113,7 @@ def candidate_to_row(c, score, tier, admission, flags):
         "Desirability": str(score),
         "Tier": tier,
         "Admission likelihood": admission,
-        "Warnings": "; ".join(flags),
+        "Warnings": "; ".join(flags) if flags else WARNINGS_NONE,
         "University": c.get("university", ""),
         "Course": c.get("course", ""),
         "Course at a glance": c.get("course_at_a_glance", ""),
@@ -138,6 +147,32 @@ def candidate_to_row(c, score, tier, admission, flags):
         "Info source": c.get("source_authority", INFO_SOURCE_UNVERIFIED),
     }
     return [values.get(h, "") for h in SHORTLIST_HEADERS]
+
+
+def check_one_country(candidates, country):
+    """Hard-error unless every candidate's `country` is exactly `country`.
+
+    Stage 3 runs ONE country per session — a rule that lived only as prose in
+    workflows/03_discover_longlist.md and so was followed inconsistently (Foo De Mi
+    ended up with six Singapore rows for a country she never picked). One country per
+    pass is what keeps a session's context small enough to research 35 columns a row,
+    and what makes "which country is next?" answerable from the CSV alone.
+
+    Compared case-insensitively on stripped text so "australia" doesn't fail a run,
+    but the candidate's own spelling is what lands in the CSV.
+    """
+    want = (country or "").strip().lower()
+    offenders = []
+    for c in candidates:
+        got = str(c.get("country") or "").strip()
+        if got.lower() != want:
+            offenders.append(f"{c.get('university', '?')} — country {got or '(blank)'!r}")
+    if offenders:
+        sys.exit(
+            f"ERROR: --country {country!r} but {len(offenders)} candidate(s) say otherwise:\n  "
+            + "\n  ".join(offenders)
+            + "\nStage 3 syncs ONE country per pass. Split the file and sync each country separately."
+        )
 
 
 def append_research_notes(notes_path, scored):
@@ -274,6 +309,12 @@ def write_rows(csv_path, rows):
 def main():
     parser = argparse.ArgumentParser(description="Sync scored university candidates into the master list.")
     parser.add_argument("--student", required=True, help="Student slug (folder under data/students/).")
+    parser.add_argument(
+        "--country",
+        required=True,
+        help="The ONE country this pass covers. Every candidate must carry this exact "
+        "'country' value; a mismatch is a hard error.",
+    )
     parser.add_argument("--input", help="Path to uni_candidates.json (default .tmp/<slug>/uni_candidates.json).")
     parser.add_argument(
         "--dry-run",
@@ -323,6 +364,8 @@ def main():
     candidates = json.loads(input_path.read_text(encoding="utf-8"))
     if not isinstance(candidates, list):
         sys.exit("ERROR: uni_candidates.json must be a JSON list of candidate objects.")
+
+    check_one_country(candidates, args.country)
 
     seen = set(existing_keys(read_existing(output_path)))
     scored = []

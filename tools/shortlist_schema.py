@@ -79,6 +79,91 @@ LIST_STATUSES = ["Longlist", "Shortlist", "Finalist", "Rejected"]
 DEFAULT_LIST_STATUS = LIST_STATUSES[0]
 
 # --------------------------------------------------------------------------- #
+# Completeness policy — the master list is the PRODUCT, and a blank cell reads to
+# the client as breakage (established 2026-07-29 after auditing all 8 student CSVs).
+#
+# Stage 3 now fills every column from official sources rather than leaving
+# "Course at a glance", the scholarship block and "Key deadline" for Stage 4. That
+# rewrite has one obvious failure mode — "fill every column" becoming "invent every
+# column" — so completeness comes in two halves that must always ship together:
+#
+#   REQUIRED_COLUMNS  what must not be blank
+#   SENTINEL_VALUES   the legal ways to say "there is no answer here", per column
+#
+# A sentinel is an honest non-answer ("Not ranked", "Rolling"), not a fabrication.
+# Using one in a column that doesn't allow it is itself a finding: it means the
+# agent dodged a fact that exists. Enforced by tools/check_master_list.py
+# (completeness check) and, before the CSV, by tools/merge_candidates.py.
+# --------------------------------------------------------------------------- #
+# Everything except "Warnings", which is written as "None" when a row is clean and
+# so is never actually blank either — see sync_shortlist.candidate_to_row().
+REQUIRED_COLUMNS = [h for h in SHORTLIST_HEADERS if h != "Warnings"]
+
+WARNINGS_NONE = "None"
+
+SENTINEL_VALUES = {
+    # A university with no fixed date genuinely has none; a guessed date is worse
+    # than saying so (the old "don't invent a key_deadline" rule, now expressible).
+    "Key deadline": ["Rolling", "Not published — check portal"],
+    # US liberal-arts colleges genuinely carry no QS/THE rank — see the
+    # liberal-arts-trap note in 03_discover_longlist.md's USA playbook.
+    "Subject rank": ["Not ranked"],
+    "Overall rank": ["Not ranked"],
+    "Scholarship competitiveness": ["No statistics published"],
+    # Already a real value of this column (see GRADE_FIT_LABELS) — listed here so
+    # the completeness check knows it is an allowed non-answer, not a gap.
+    "Grades vs entry bar": ["Not published"],
+    "Warnings": [WARNINGS_NONE],
+}
+
+# Candidate-JSON keys a row needs before it can be synced. Includes the three inputs
+# with NO column of their own (currency, total_cost_programme, meets_english): they
+# feed "Approx total (MYR)" and the "English short" warning, and a blank currency
+# silently blanks the MYR total *and* the "Over budget" flag with it.
+#
+# `total_cost_programme` is required as a KEY, not as a value: an empty string means
+# "compute it from total_tuition + living x duration", which is the normal case.
+# merge_candidates.py checks presence for it and non-emptiness for the rest.
+REQUIRED_CANDIDATE_FIELDS = [
+    "university",
+    "course",
+    "course_at_a_glance",
+    "country",
+    "city",
+    "student_life",
+    "subject_rank",
+    "overall_rank",
+    "entry_requirements",
+    "student_grades",
+    "entry_margin",
+    "english_req",
+    "meets_english",
+    "annual_tuition",
+    "total_tuition",
+    "est_living_per_year",
+    "duration_years",
+    "currency",
+    "total_cost_programme",
+    "scholarship_portal",
+    "scholarship_coverage",
+    "scholarship_competitiveness",
+    "scholarship_how_to",
+    "funds_proof",
+    "post_study_work",
+    "recognised_back_home",
+    "application_system",
+    "key_deadline",
+    "intake",
+    "notes",
+    "course_url",
+    "source_authority",
+    "scores",
+]
+
+# Fields that may legitimately be present-but-empty (see the note above).
+OPTIONAL_VALUE_FIELDS = {"total_cost_programme"}
+
+# --------------------------------------------------------------------------- #
 # Cell length budgets — the master list is a SCANNING surface, not a report.
 #
 # It is read in Google Sheets, where a 500-word cell either truncates or blows the
@@ -115,8 +200,10 @@ CELL_BUDGETS = {
     "Grades vs entry bar": 40,
 }
 
-# Allowed values for "Info source". A row starts unverified and the Stage 4 pre-flight flips it once the
-# fact has been confirmed on the university's own page (see workflows/04_university_report.md).
+# Allowed values for "Info source". Since 2026-07-29 Stage 3's row-filler agents build every row from
+# official pages, so a fresh row is stamped "Official page" at sync time and "Not verified" means either
+# a legacy row or a research failure — not "not yet". (See workflows/03_discover_longlist.md; Stage 4
+# only spot-checks currency.)
 INFO_SOURCE_UNVERIFIED = "Not verified"
 INFO_SOURCE_OFFICIAL = "Official page"
 
@@ -309,7 +396,17 @@ def grade_fit_label(entry_margin):
     This is the ONLY producer of that column — there is deliberately no free-text
     override, because a hand-typed value is exactly how two of this student's files
     ended up giving contradictory answers for the same grades.
+
+    entry_margin also accepts the sentinel "not_published" (any case/spacing) for a
+    university that sets no academic bar at all — see GRADE_FIT_LABELS's "Not
+    published" note above. Without this branch the label was unreachable: it was
+    declared valid here and checked for by check_master_list.py, but nothing ever
+    produced it, so every holistic-admission US row came back "blank" (found
+    2026-07-28 building Teoh Yu Shan's USA longlist — a Longlist of Ivies/elite LACs
+    with no published grade bar has no other way to pass the gate).
     """
+    if isinstance(entry_margin, str) and entry_margin.strip().lower().replace(" ", "_") == "not_published":
+        return "Not published"
     m = _margin(entry_margin)
     if m is None:
         return ""
@@ -446,6 +543,11 @@ def parse_amount(value):
         return None
 
 
+# Below this, a "budget" is not a degree budget — it's a stray number the parser
+# picked out of prose. A whole-degree budget under RM 1,000 does not exist.
+MIN_PLAUSIBLE_BUDGET = 1000
+
+
 def budget_ceiling(value):
     """Return the upper bound of a stated budget, or None.
 
@@ -453,13 +555,25 @@ def budget_ceiling(value):
     ('400000-800000') — for a range the ceiling is the TOP, which is what an
     'Over budget' test must compare against. parse_amount() can't do this: it
     strips the separator and fuses '400000-800000' into 400000800000.
+
+    Anything that doesn't parse to a PLAUSIBLE degree budget returns None (= no
+    ceiling), not a number. Hedging prose reaches this function in practice —
+    '~ 1 million? Idk' pulls out the digit 1 and used to return 1.0, which would
+    have flagged literally every row 'Over budget' and made the warning column
+    worthless. A missing ceiling is an open question; a ceiling of RM 1 is a lie.
+    The form's budget bands (BUDGET_BAND_NORMALIZE in ingest_form_csv.py) mean
+    prose should no longer arrive here at all — this is the second net.
     """
     if value is None or isinstance(value, bool):
         return None
     if isinstance(value, (int, float)):
-        return float(value)
-    amounts = [float(m) for m in re.findall(r"\d+(?:\.\d+)?", str(value).replace(",", ""))]
-    return max(amounts) if amounts else None
+        ceiling = float(value)
+    else:
+        amounts = [float(m) for m in re.findall(r"\d+(?:\.\d+)?", str(value).replace(",", ""))]
+        if not amounts:
+            return None
+        ceiling = max(amounts)
+    return ceiling if ceiling >= MIN_PLAUSIBLE_BUDGET else None
 
 
 def to_myr(amount, currency):

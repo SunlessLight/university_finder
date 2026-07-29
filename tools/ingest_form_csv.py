@@ -29,12 +29,13 @@ data/form/ is gitignored (PII), same class as data/students/.
 import argparse
 import csv
 import json
+import re
 import sys
 from pathlib import Path
 
 # Allow running from any cwd: make the tools dir importable for shared helpers/templates.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from shortlist_schema import slugify  # noqa: E402
+from shortlist_schema import budget_ceiling, slugify  # noqa: E402
 from init_student import profile_template, preferences_template  # noqa: E402
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -103,8 +104,16 @@ QUESTION_MAP = [
     # inside that area. See workflows/01_intake.md, finalize step 5.
 ]
 
-# The seven supported destination sets (preferences.target_countries). Normalize
-# the form's checkbox labels onto these exact tokens.
+# The eight supported destinations (preferences.target_countries). Normalize the form's
+# checkbox labels onto these exact tokens.
+#
+# Singapore and Malaysia were ONE fused "Singapore/Malaysia" token until 2026-07-29, even
+# though the live form offers them as separate checkboxes — so a student who ticked only
+# Malaysia got a longlist half-full of Singapore rows (Foo De Mi: 6 of them). They are two
+# countries with different fee tiers, recognition ladders, entry systems and costs, and
+# Stage 3 now researches one country per pass, so the fused token was wrong at both ends.
+# The legacy fused labels still map — to Singapore — so an old export doesn't silently drop
+# a destination; split such a student's preferences.json by hand (see 03_discover_longlist.md).
 COUNTRY_NORMALIZE = {
     "uk": "UK",
     "united kingdom": "UK",
@@ -112,14 +121,66 @@ COUNTRY_NORMALIZE = {
     "usa": "USA",
     "united states": "USA",
     "us": "USA",
-    "singapore-malaysia": "Singapore/Malaysia",
-    "singapore/malaysia": "Singapore/Malaysia",
-    "singapore": "Singapore/Malaysia",
-    "malaysia": "Singapore/Malaysia",
+    "singapore": "Singapore",
+    "malaysia": "Malaysia",
+    "singapore-malaysia": "Singapore",  # legacy label from the pre-2026-07-29 form
+    "singapore/malaysia": "Singapore",  # legacy label from the pre-2026-07-29 form
     "china": "China",
     "japan": "Japan",
     "hong kong": "Hong Kong",
 }
+
+# Rendered into the "we dropped this country" message so it never drifts from the map above.
+SUPPORTED_DESTINATIONS = ["UK", "Australia", "USA", "Singapore", "Malaysia", "China", "Japan", "Hong Kong"]
+
+# --------------------------------------------------------------------------- #
+# Budget BANDS (the form's dropdown, 2026-07-29) -> a numeric ceiling in MYR.
+#
+# Budget used to be free text, and free text is what people actually type: "unsure yet",
+# "~1 million? Idk", a sentence about living costs mattering more than tuition. That string
+# went straight into total_budget / total_budget_ceiling, where downstream code expects a
+# number — and budget_ceiling() pulled the digit 1 out of "~ 1 million? Idk" and returned
+# 1.0, which would have flagged every row "Over budget". A four-option dropdown removes the
+# whole class of problem at the source (budget_ceiling() rejects sub-1000 values as a second
+# net, and the "Not sure" band is an honest null, not a zero).
+#
+# Matched by substring on the lowercased label, first match wins — so "under" is checked
+# before the range, and the two null bands last.
+BUDGET_BAND_NORMALIZE = [
+    ("under", 500000),
+    # "Above RM 1,000,000" states a FLOOR, not a ceiling — the student has at least that much.
+    # Pinning the ceiling at 1,000,000 would flag a 1.2M programme "Over budget" for exactly the
+    # students who can afford it, so the top band carries no ceiling, same as "Not sure".
+    ("above", None),
+    ("1,000,000", 1000000),   # "RM 500,000 - 1,000,000" only reaches here if "under"/"above" missed
+    ("1000000", 1000000),
+    ("not sure", None),
+    ("no fixed", None),
+]
+
+
+# Sentinel distinguishing "the label matched a band whose ceiling is None" (an honest
+# "not sure") from "no band matched at all" (a legacy free-text answer to fall back on).
+_UNMATCHED_BAND = object()
+
+
+def _budget_band(answer):
+    """Map a budget-band label to (ceiling_or__UNMATCHED_BAND, verbatim_label).
+
+    A blank answer and a "not sure" answer both mean "no ceiling — research everything",
+    which is the intended default, not a gap to chase. An unrecognised label (a legacy
+    free-text export) returns _UNMATCHED_BAND so the caller falls back to budget_ceiling(),
+    which returns None unless the text parses to a plausible budget.
+    """
+    label = _clean(answer)
+    if not label:
+        return None, None
+    low = label.lower()
+    for substr, ceiling in BUDGET_BAND_NORMALIZE:
+        if substr in low:
+            return ceiling, label
+    return _UNMATCHED_BAND, label
+
 
 # Priority dropdown labels -> short tokens used in preferences.priorities.
 PRIORITY_NORMALIZE = {
@@ -388,10 +449,13 @@ def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None,
     post_grad_location = get(row, col_index, "post_grad_location")
 
     # --- profile: current program ------------------------------------------ #
+    # expected_completion comes from a month+year dropdown -> "YYYY-MM". An answer that
+    # isn't a clean month+year is kept verbatim rather than guessed at.
+    completion_raw = get(row, col_index, "current_completion")
     profile["current_program"] = {
         "type": get(row, col_index, "current_type") or None,
         "institution": get(row, col_index, "current_institution") or None,
-        "expected_completion": get(row, col_index, "current_completion") or None,
+        "expected_completion": _normalize_month_year(completion_raw) or completion_raw or None,
     }
 
     # --- profile: grades ---------------------------------------------------- #
@@ -438,7 +502,20 @@ def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None,
     }
 
     # --- profile + preferences: money (asked once, copied to both) ---------- #
-    total_budget = get(row, col_index, "total_budget") or None
+    # The form asks budget as a four-option BAND, so what lands in total_budget /
+    # total_budget_ceiling is always a number or null — never the label, never prose.
+    # The verbatim label is kept in financial.notes, where the nuance belongs.
+    band_ceiling, budget_label = _budget_band(get(row, col_index, "total_budget"))
+    if band_ceiling is _UNMATCHED_BAND:
+        # Legacy free-text export: parse it, and accept only a plausible budget.
+        band_ceiling = budget_ceiling(budget_label)
+        if band_ceiling is None and budget_label:
+            needs_review.append(
+                f"budget answer {budget_label!r} didn't match a band and isn't a usable number — "
+                f"treated as no ceiling; confirm with the student"
+            )
+    total_budget = band_ceiling
+    budget_note = f"Budget answer: {budget_label}" if budget_label else None
     budget_per_year = get(row, col_index, "budget_per_year") or None
 
     # Scholarship gate: prefer the dedicated "Is scholarship a must?" Yes/No (current form) — a clean
@@ -463,7 +540,7 @@ def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None,
         "currency": "MYR",
         "funding_source": funding_source,
         "scholarship_dependent": scholarship_dep,
-        "notes": None,
+        "notes": budget_note,
     }
     prefs["total_budget_ceiling"] = total_budget
     prefs["budget_ceiling_per_year"] = budget_per_year
@@ -539,9 +616,10 @@ def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None,
     # --- dropped target countries (don't lose them silently) --------------- #
     if dropped_countries:
         joined = ", ".join(dropped_countries)
+        supported = " / ".join(SUPPORTED_DESTINATIONS)
         prefs["notes"] = (
-            f"Requested target countries not in the 7 supported destination sets (UK / Australia / USA / "
-            f"Singapore-Malaysia / China / Japan / Hong Kong), so NOT in target_countries: {joined}. "
+            f"Requested target countries not in the {len(SUPPORTED_DESTINATIONS)} supported destinations "
+            f"({supported}), so NOT in target_countries: {joined}. "
             f"Decide with the student whether to research them out-of-band."
         )
         needs_review.append(f"target_countries dropped unsupported destination(s): {joined}")
@@ -561,22 +639,56 @@ def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None,
     return slug, profile, prefs, needs_review, None
 
 
+# Month name/abbreviation -> number, for _normalize_month_year(). Covers the spellings a
+# month+year dropdown produces ("September 2027", "Sept 2027", "Sep 2027").
+_MONTHS = {
+    "jan": 1, "feb": 2, "mar": 3, "apr": 4, "may": 5, "jun": 6,
+    "jul": 7, "aug": 8, "sep": 9, "sept": 9, "oct": 10, "nov": 11, "dec": 12,
+}
+
+
+def _normalize_month_year(value):
+    """'September 2027' -> '2027-09'. Returns None if there's no month+year to read.
+
+    The form asks intake and results-date as a month+year dropdown (2026-07-29), which
+    kills the ambiguity free text always carried: '9/1/2027' is September 1st to a
+    Malaysian and January 9th to an American, and normalising it was a by-hand finalize
+    step that got skipped. Anything that isn't a clean month+year returns None so the
+    caller can keep the raw text rather than invent a date.
+    """
+    text = _clean(value)
+    if not text:
+        return None
+    low = text.lower()
+    year = re.search(r"(20\d{2})", low)
+    if not year:
+        return None
+    for name, number in _MONTHS.items():
+        if re.search(rf"\b{name}", low):
+            return f"{year.group(1)}-{number:02d}"
+    # Already normalised ("2027-09"), or a numeric month+year we can read unambiguously.
+    iso = re.search(r"(20\d{2})[-/](\d{1,2})\b", low)
+    if iso and 1 <= int(iso.group(2)) <= 12:
+        return f"{iso.group(1)}-{int(iso.group(2)):02d}"
+    return None
+
+
 def _normalize_intake(value):
     """Intake never filters/scores — it only picks the application cycle. A blank answer or an
-    explicit 'flexible / not sure' collapses to 'Flexible' (research all intakes); anything else
-    (e.g. 'Sept 2027') is kept verbatim. Never invents a date."""
+    explicit 'flexible / not sure' collapses to 'Flexible' (research all intakes); a month+year
+    becomes 'YYYY-MM'; anything else is kept verbatim. Never invents a date."""
     v = _clean(value)
     low = v.lower()
     if not v or "flex" in low or "not sure" in low or "unsure" in low or "any" in low:
         return "Flexible"
-    return v
+    return _normalize_month_year(v) or v
 
 
 def _normalize_countries(value):
-    """Map the checkbox labels onto the 7 supported destination sets.
+    """Map the checkbox labels onto the 8 supported destinations.
 
     Returns (kept_tokens, dropped_labels): dropped_labels are answers we couldn't map (e.g. "Canada",
-    which isn't one of the 7 sets) so the caller can report them instead of losing them silently.
+    which isn't supported) so the caller can report them instead of losing them silently.
     """
     out, dropped = [], []
     for label in _split_multi(value):
