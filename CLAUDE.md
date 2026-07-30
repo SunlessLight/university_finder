@@ -48,6 +48,21 @@ conversations with me, not permission prompts:
   haven't agreed to drop. `data/students/` is **gitignored**, so there is no `git checkout` undo.
 - **`check_master_list.py` must come back clean** before a list goes to a student.
 
+**Entry points are slash commands.** `/catchup <slug>` · `/intake` · `/longlist <slug> [country]` ·
+`/report <slug>` · `/decide <slug>` · `/apply-prep <slug> <region>` (`.claude/commands/`). Each is a thin
+launcher onto its workflow file — the workflow stays the source of truth, the command just saves a cold
+session from re-deriving which file to read. (`/catchup`, not `/resume` — that name is taken by the
+built-in.)
+
+**5. Subagents fan out over volume; you keep the judgement.** A subagent is a stateless worker: fresh
+context every dispatch, nothing from the conversation, no per-agent history and **no way to ask a
+question**. So the split is by volume, not by stage — `row-filler` (parallel, one per university) and
+`report-writer` (sequential, one per finalist) exist because those are 8-12 and 3-5 near-identical
+research units; Stages 1, 5 and 8 stay in the main session because each is one unit wrapped in a
+conversation with me. Don't build stage-owning agents: the checkpoints above live inside exactly those
+stages, and an agent that hit one would stall or guess. Continuity is **per student** (`status.md`), never
+per stage. Parallelism rule and each agent's write fence: `workflows/00_overview.md` → "Subagents".
+
 ## The Self-Improvement Loop
 
 Every failure is a chance to make the system stronger: (1) identify what broke, (2) fix the tool,

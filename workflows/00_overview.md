@@ -47,6 +47,32 @@ deadlines) via `build_application_prep.py`. Report-free and **read-only** (never
 > workflow stays in this (Sonnet) session — it's a checkpoint with the student, not
 > research.
 
+## Subagents — concurrency and write fences
+
+Two subagents exist, and they split the work **by volume, not by stage**: the main session keeps
+every judgement call and every checkpoint with the student, and fans out only the repeated research.
+There is deliberately no "intake agent" or "decide agent" — a subagent **cannot ask a question**, and
+Stage 1's `_needs_review` finalize and Stage 4's finalist pick *are* questions.
+
+| Agent | Concurrency | May write | Never writes |
+|---|---|---|---|
+| main session | — | anything | — |
+| `row-filler` (Sonnet, Stage 3) | **parallel, one per university** (~8-12) | `.tmp/<slug>/candidates/<uni-slug>.json`, its own `.tmp/<slug>/fc_<uni-slug>.json` | `master_list.csv`; anything outside `.tmp/<slug>/`; never runs merge/sync/check |
+| `report-writer` (Opus, Stage 4) | **sequential, one at a time** (~3-5) | `.tmp/<slug>/report_*.json` \| `uni_*.json`, `reports/<uni>.md`, and via `build_report.py` the `Finalist` flip + the `Course at a glance` / `Student life` cells | any file a sibling dispatch is concurrently writing |
+
+**The rule that decides concurrency: two agents may run in parallel only if their write sets are
+disjoint.** Row-fillers each own one fragment file and touch nothing shared, so 12 at once is safe —
+and necessary, since 12 universities' worth of fetched pages would otherwise land in one context.
+Report-writers each call `build_report.py`, which reads and rewrites the **whole** `master_list.csv`,
+so two in flight can silently drop a `Finalist` flip — those run one at a time. **Any new agent
+declares its write set in this table before first use**; if it overlaps another agent's, it runs
+sequentially.
+
+Subagents carry **no memory** — fresh context every dispatch, nothing from the conversation, no
+per-agent history file. Everything a dispatch needs goes in its prompt (slug is mandatory; both
+agents are instructed to stop rather than guess it). Continuity is **per student, not per stage**, and
+lives in `status.md` + `master_list.csv` + `research_notes.md`.
+
 ## The data bank (one folder per student)
 
 ```
@@ -130,6 +156,23 @@ python tools/ingest_form_csv.py "data/form/responses.csv"
 
 `init_student.py` still exists for scaffolding one student's folder by hand, and its templates are the
 schema source of truth — but the normal path is the form.
+
+### Slash commands — one call per workflow (`.claude/commands/`)
+
+A cold session doesn't need prose. Each command is a thin launcher that names its workflow, passes the
+slug, and re-asserts that workflow's own checkpoint — the workflow file stays the single source of truth.
+
+| Command | Runs |
+|---|---|
+| `/catchup <slug>` | `resume.md` — brief where we are, reconciled against the files |
+| `/intake [csv-path]` | `01_intake.md` — ingest the form CSV, then finalize `_needs_review` |
+| `/longlist <slug> [country]` | `03_discover_longlist.md` — one country per pass |
+| `/report <slug>` | `04_university_report.md` — pre-flight with the student, then one report per finalist |
+| `/decide <slug>` | `05_decide_and_apply.md` — recommendation + calendar |
+| `/apply-prep <slug> <region>` | `08_application_prep.md` — one region per pass |
+
+It's `/catchup`, not `/resume`, because `/resume` is a built-in Claude Code command (resume a past
+conversation) and a project command of that name would collide with it.
 
 ## Non-negotiable design rules (the anti-loophole guardrails)
 
