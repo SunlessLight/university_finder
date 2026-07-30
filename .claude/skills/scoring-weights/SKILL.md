@@ -7,7 +7,7 @@ description: >
   priorities change. ALSO use if you are tempted to edit weights, SCORE_WEIGHTS, or any
   weighting inside tools/shortlist_schema.py — don't: that file is shared source, weights
   are per-student and live in the data bank, and hand-editing it collides with concurrent
-  sessions. Covers the priorities->weight-key mapping, the modifiers, and validation.
+  sessions.
 ---
 
 # Deriving per-student scoring weights

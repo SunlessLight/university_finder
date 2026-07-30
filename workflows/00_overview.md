@@ -47,6 +47,17 @@ deadlines) via `build_application_prep.py`. Report-free and **read-only** (never
 > workflow stays in this (Sonnet) session — it's a checkpoint with the student, not
 > research.
 
+> **Stage 3's workflow file split three ways on 2026-07-30** (a token-cost pass — a country
+> pass used to force both the main session and every `row-filler` to read the whole 62,703-char
+> file). `03_discover_longlist.md` is now the core SOP only: objective, tools, step-by-step flow.
+> Each destination's query playbook and dated traps (the Australian domestic-fee trap,
+> Singapore's five-tier fee table, etc.) moved verbatim into `workflows/countries/<code>.md`
+> (`uk`, `usa`, `australia`, `singapore`, `malaysia`, `china`, `hong-kong`, `japan`) — read by
+> the main session for the roster sweep and by each `row-filler` for its one university. The
+> candidate JSON schema, field notes and scoring guide moved into
+> `workflows/03b_candidate_schema.md` — read by `row-filler` only; the main session never needs
+> it. Same invariant as before the split: a trap or a field rule lives in exactly one file.
+
 ## Subagents — concurrency and write fences
 
 Two subagents exist, and they split the work **by volume, not by stage**: the main session keeps

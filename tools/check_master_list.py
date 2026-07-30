@@ -15,6 +15,7 @@ Checks (use --check to run a subset while working through a fix):
   jargon       bare acronyms that apply_glossary can explain, outside the allow-list
   values       List status / Info source / Grades vs entry bar outside their allowed sets
   contradiction  "Grades vs entry bar" vs "Admission likelihood" telling different stories
+  status       status.md over STATUS_BUDGET chars (--student mode only)
 
 The contradiction check is the original bug turned into a rule. Duke read "Fits grades? =
 No" for a student with A*A*A*A because the column was derived from admission likelihood;
@@ -45,6 +46,7 @@ from shortlist_schema import (  # noqa: E402
     REQUIRED_COLUMNS,
     SENTINEL_VALUES,
     SHORTLIST_HEADERS,
+    STATUS_BUDGET,
     admission_base,
 )
 
@@ -78,7 +80,7 @@ PROSE_COLUMNS = [
 # page (UCAS, MQA, BEM, Washington Accord, CSS Profile) are deliberately NOT flagged — the
 # glossary sheet explains those instead. See the rule in apply_glossary.py.
 
-CHECKS = ["schema", "completeness", "budget", "jargon", "values", "contradiction"]
+CHECKS = ["schema", "completeness", "budget", "jargon", "values", "contradiction", "status"]
 
 # Every sentinel string, whatever column it belongs to — used to catch one being used
 # in a column that doesn't allow it (see check_completeness).
@@ -246,11 +248,27 @@ def check_contradiction(rows_as_dicts):
     return out
 
 
-def run(header, rows, wanted):
+def check_status(status_path):
+    """status.md over STATUS_BUDGET chars — it's a snapshot read at the start of every
+    /catchup, /longlist, /report, /decide and /apply-prep session, not a growing log.
+    History beyond the last two sessions belongs in research_notes.md instead.
+    """
+    if status_path is None or not status_path.exists():
+        return []
+    size = len(status_path.read_text(encoding="utf-8"))
+    if size > STATUS_BUDGET:
+        return [f"status.md is {size} chars (budget {STATUS_BUDGET}) — "
+                f"move older session history to research_notes.md"]
+    return []
+
+
+def run(header, rows, wanted, status_path=None):
     rows_as_dicts = [(i, dict(zip(header, r))) for i, r in enumerate(rows, start=2)]
     results = {}
     if "schema" in wanted:
         results["schema"] = check_schema(header)
+    if "status" in wanted:
+        results["status"] = check_status(status_path)
     # The other checks read by column name, so a file with the wrong column SET can't be
     # meaningfully linted past the schema check.
     if set(header) != set(SHORTLIST_HEADERS):
@@ -279,8 +297,10 @@ def main():
     if bool(args.student) == bool(args.file):
         sys.exit("ERROR: pass exactly one of --student or --file.")
 
+    status_path = None
     if args.student:
         csv_path = STUDENTS_DIR / args.student / "master_list.csv"
+        status_path = STUDENTS_DIR / args.student / "status.md"
     else:
         csv_path = Path(args.file)
         if not csv_path.is_absolute():
@@ -296,7 +316,7 @@ def main():
             sys.exit(f"ERROR: unknown check(s) {unknown}. Valid: {', '.join(CHECKS)}")
 
     header, rows = load(csv_path)
-    results = run(header, rows, wanted)
+    results = run(header, rows, wanted, status_path=status_path)
 
     total = sum(len(v) for v in results.values())
     print(f"{csv_path.relative_to(REPO_ROOT) if csv_path.is_relative_to(REPO_ROOT) else csv_path} "

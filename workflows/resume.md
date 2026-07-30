@@ -40,10 +40,8 @@ starts talking about ongoing work, offer it.
      delete the keys — *before* any discovery. Scoring a student whose `degree_level` or
      `recognition_targets` were never settled produces a confidently wrong list.)
 
-   > **Why this step is non-negotiable:** in the session that created this workflow, two separate
-   > cold reads of Toru's files were stale — leading to wrong advice ("demote the China rows") and a
-   > wrong stage read ("Stage 3 half-finished"). The files had moved on. **Always reconcile the note
-   > against the files, and if they conflict, the files win — then fix `status.md`.**
+   > A stale `status.md` once produced wrong advice from a cold read that trusted it — always
+   > reconcile against the files, and if they conflict, the files win, then fix `status.md`.
 4. **If `status.md` is missing,** reconstruct the state from the files, **create** `status.md` from
    the template below, and tell the student you generated it fresh.
 5. **Brief the student.** Give a concise summary: current stage, the single most important next
@@ -60,6 +58,10 @@ every stage and every working session.** Capture:
 
 A stale note is worse than none — it lies with confidence. Treat updating it as part of finishing
 any piece of work, the same way you'd flip `Info source` on a row you just verified.
+
+`status.md` has a hard budget (`STATUS_BUDGET` in `shortlist_schema.py`, checked by
+`check_master_list.py --check status`) — history beyond the last two sessions moves to
+`research_notes.md`, which is already the free-length surface.
 
 ## The status.md template
 
@@ -90,10 +92,6 @@ Stage <n> — <done | in progress | blocked>. <one line on where exactly>
 
 ## Edge cases & rules
 
-- **Files win over the note.** If `status.md` and the JSON/CSV disagree, the files are truth. Fix
-  `status.md`, and tell the student what you reconciled.
-- **Never fabricate progress.** If you can't tell whether a stage was done, say so and check the
-  files — don't assume the note is complete.
 - **One snapshot, not a log.** `status.md` is the *current* state; overwrite it. Put dated history
   under "Recent actions" (keep it short — last few sessions), not by stacking whole old snapshots.
 - **PDPA.** `status.md` lives in the gitignored `data/students/<slug>/` folder like the other files.

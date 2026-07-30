@@ -18,8 +18,10 @@ in this file. This module is shared, so a weight hardcoded here is a weight two
 concurrent sessions fight over. Derive them with the 'scoring-weights' skill.
 """
 
+import argparse
 import json
 import re
+import sys
 from datetime import date
 from pathlib import Path
 
@@ -199,6 +201,11 @@ CELL_BUDGETS = {
     "Admission likelihood": 40,
     "Grades vs entry bar": 40,
 }
+
+# status.md is a snapshot read at the start of every /catchup, /longlist, /report, /decide
+# and /apply-prep session (see workflows/resume.md) — not a growing log. The resume.md
+# template produces ~1,000 chars; 3,000 gives headroom without letting it run away.
+STATUS_BUDGET = 3000
 
 # Allowed values for "Info source". Since 2026-07-29 Stage 3's row-filler agents build every row from
 # official pages, so a fresh row is stamped "Official page" at sync time and "Not verified" means either
@@ -662,3 +669,42 @@ def _canonical_course(course):
 def course_key(university, course):
     """Dedupe key for a (university, course) pair, resistant to alias/title noise."""
     return (canonical_uni(university), _canonical_course(course))
+
+
+def main():
+    """CLI: --contract prints the row-filler-facing constants as JSON.
+
+    A row-filler subagent used to be pointed straight at this file to look up
+    SENTINEL_VALUES / REQUIRED_CANDIDATE_FIELDS / CELL_BUDGETS — reading all ~7.1k
+    tokens of this module for ~40 lines of constants, once per dispatch. --contract
+    gives the same facts as ~500 tokens of JSON. See workflows/03b_candidate_schema.md
+    and .claude/agents/row-filler.md.
+    """
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--contract",
+        action="store_true",
+        help="Print SENTINEL_VALUES, REQUIRED_CANDIDATE_FIELDS, CELL_BUDGETS and SHORTLIST_HEADERS as JSON.",
+    )
+    args = parser.parse_args()
+
+    if args.contract:
+        print(json.dumps(
+            {
+                "SENTINEL_VALUES": SENTINEL_VALUES,
+                "REQUIRED_CANDIDATE_FIELDS": REQUIRED_CANDIDATE_FIELDS,
+                "CELL_BUDGETS": CELL_BUDGETS,
+                "SHORTLIST_HEADERS": SHORTLIST_HEADERS,
+            },
+            indent=2,
+            ensure_ascii=False,
+        ))
+        return
+
+    parser.print_help()
+
+
+if __name__ == "__main__":
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
+    main()

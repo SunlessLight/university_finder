@@ -63,6 +63,13 @@ conversation with me. Don't build stage-owning agents: the checkpoints above liv
 stages, and an agent that hit one would stall or guess. Continuity is **per student** (`status.md`), never
 per stage. Parallelism rule and each agent's write fence: `workflows/00_overview.md` → "Subagents".
 
+**6. Bulk file generation belongs in a fresh session, not the tail of a long one.** Same principle
+as the subagent rule above — keep volume out of the judgement session. If a session produces a big
+plan (many files to write, a large split/rewrite), write the plan to a file where it was produced,
+then open a fresh session to execute the bulk writes from that file. Don't `/compact` to make room
+first — compaction re-reads the whole window, pays for a summary, and invalidates the cache; a new
+session reading the plan cleanly off disk is cheaper on every axis.
+
 ## The Self-Improvement Loop
 
 Every failure is a chance to make the system stronger: (1) identify what broke, (2) fix the tool,
