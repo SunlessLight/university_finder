@@ -52,7 +52,9 @@ conversations with me, not permission prompts:
 `/report <slug>` · `/decide <slug>` · `/apply-prep <slug> <region>` (`.claude/commands/`). Each is a thin
 launcher onto its workflow file — the workflow stays the source of truth, the command just saves a cold
 session from re-deriving which file to read. (`/catchup`, not `/resume` — that name is taken by the
-built-in.)
+built-in.) `/commit` is the odd one out: it launches repo *maintenance*, not a pipeline stage — it
+dispatches `commit-drafter` to read the working tree and draft a commit split into `.tmp/commit_plan.md`.
+I approve the split; nothing stages itself.
 
 **5. Subagents fan out over volume; you keep the judgement.** A subagent is a stateless worker: fresh
 context every dispatch, nothing from the conversation, no per-agent history and **no way to ask a
@@ -62,6 +64,11 @@ research units; Stages 1, 5 and 8 stay in the main session because each is one u
 conversation with me. Don't build stage-owning agents: the checkpoints above live inside exactly those
 stages, and an agent that hit one would stall or guess. Continuity is **per student** (`status.md`), never
 per stage. Parallelism rule and each agent's write fence: `workflows/00_overview.md` → "Subagents".
+
+The same volume test is why `commit-drafter` is allowed to exist outside the pipeline: a full `git diff`
+is read-once volume that would otherwise sit in this session's transcript for the rest of its life. It
+absorbs the diff and hands back `.tmp/commit_plan.md`. It ends at a *plan* — it never stages, commits or
+pushes — so it isn't owning a checkpoint, it's preparing one for me.
 
 **6. Bulk file generation belongs in a fresh session, not the tail of a long one.** Same principle
 as the subagent rule above — keep volume out of the judgement session. If a session produces a big
