@@ -1,7 +1,16 @@
 # Cutting token cost in the university_finder WAT pipeline
 
-> **Status:** Session A (Changes 1+2) done 2026-07-30 — see "Session A" note below. Changes
-> 3-7 not yet executed as of this note.
+> **Status:** Session A (Changes 1+2) done 2026-07-30 — see "Session A" note below. Change 3
+> (the `STATUS_BUDGET` gate) is also confirmed live as of 2026-08-02 — `resume.md` already
+> carries its "history moves to research_notes.md" line and `check_master_list.py --check
+> status` actively enforces it. **This banner was stale for days about that** — a plan file
+> drifting out of sync with the code it describes is the same failure mode `resume.md` warns
+> about for `status.md`; don't trust this note either, verify against the files. Changes 4-7
+> status unverified. **Change 8 (row-filler backfill-dispatch hygiene) was executed
+> 2026-08-02** — 8a/8b/8c all landed in the files, plus a new `tools/apply_backfill.py` and
+> `check_master_list.py --blanks`. See the "Session D" note below for what shipped and what
+> is still owed (a live end-to-end run). **Change 9 landed with it** (both bullets are in
+> `check_master_list.py`'s docstring), so session E is done too.
 > **How to pick this up:** open a fresh session in this repo and say
 > *"execute Change N from plan.md"*. See "Execution order" at the bottom — some changes
 > can run in parallel sessions, two must not.
@@ -203,6 +212,126 @@ session).
 
 ---
 
+## Change 8 — Fix the ad hoc backfill-dispatch pattern (from `token_cost_report.md`'s addendum)
+
+*(source: 2026-08-01/02 Francena Dominic Francis resume + backfill session — `token_cost_report.md`
+addendum has the measured detail)*
+
+That session invented a one-off "backfill mode" for `row-filler` (report values as reply-text
+instead of writing a candidate JSON, since it's patching an existing longlist row, not
+discovering a new one) inside a per-student plan file
+(`data/students/<slug>/plans/02_uk_row_fill.md`). It worked, but the pattern isn't written down
+anywhere shared, so it'll be reinvented — probably slightly differently, and with the same waste
+— the next time a student's master list needs a completeness backfill. Two fixes, both cheap:
+
+**8a — Dispatch by reference, not by paste.** When a plan file already contains the full shared
+context for a batch of parallel dispatches (student profile, cell budgets, sentinels, per-row
+blanks), the dispatch prompts should point at that file — *"read `plans/02_uk_row_fill.md`, you
+are dispatch #N ($UNIVERSITY)"* — not re-paste the shared context into all N prompts. This
+session re-pasted ~300 words of identical context into 9 separate prompts. Add this as an
+explicit rule in `workflows/00_overview.md`'s "Subagents — concurrency and write fences" section
+(next to the existing per-agent write-fence table around line 61-72) — it's the same "point at a
+file, don't paste the file" principle as Change 2, just applied to dispatch prompts instead of
+tool docs.
+
+**8b — Backfill dispatches should write fragment files, not reply-text.** Give `row-filler` a
+documented backfill mode (in `.claude/agents/row-filler.md` itself, not reinvented per-student):
+when patching an existing row rather than discovering a new one, write a small JSON fragment to
+`.tmp/<slug>/backfill/<uni-slug>.json` (column → value, same shape as the reply-text list used
+this session) instead of reporting the values in the reply. This lets the "apply results" step
+(`04_apply_*_results.md`-style) be a script that reads N fragment files and writes directly into
+`master_list.csv` — the orchestrating session never has to hold and re-transcribe N full replies
+into a scratch data structure the way this session's `check_budgets.py` did. Keep the existing
+constraint that the fragment must not touch `master_list.csv` or run
+`merge_candidates.py`/`sync_shortlist.py` (those tools treat existing rows as dupes and would
+skip them) — the fragment is read by a small purpose-built apply script instead, same spirit as
+`merge_candidates.py` but for patches, not new rows.
+
+**8c — Multi-section text-file edits via script, not N `Edit` calls.** When updating many
+near-identical sections of one file (e.g. appending a note to each of 9 `## University X`
+sections in a student's `research_notes.md`), do it with one read-modify-write Python pass — as
+this session correctly did for `master_list.csv` — instead of N sequential `Edit` tool calls each
+needing a large `old_string` purely to disambiguate the match. Add this as a line under CLAUDE.md's
+existing "Bulk file generation belongs in a fresh session" rule (How to Operate, item 6) — it's
+the same instinct (keep repetitive volume off the turn-by-turn diff mechanism), just within a
+single session rather than across sessions.
+
+None of this touches `shortlist_schema.py`, `check_master_list.py`, or any currently-shared
+workflow file besides `00_overview.md` and `row-filler.md` — low collision risk with A/B/C below.
+
+> **Session D (Change 8 + Change 9) — done 2026-08-02.** Shipped more than the plan specified,
+> because 8b's "small purpose-built apply script" turned out to be the natural home for 8c as well:
+>
+> - **`tools/apply_backfill.py` (new).** Reads `.tmp/<slug>/backfill/*.json`, matches each to an
+>   **existing** row by `course_key`, and writes `master_list.csv` **and** `research_notes.md` in
+>   one pass each. Validates everything before writing anything (all-or-nothing). Refuses: a
+>   university not on the list, an unknown column (with a close-match hint), a cell over
+>   `CELL_BUDGETS`, any `COMPUTED_COLUMNS` write (`Desirability`/`Tier`/`Admission
+>   likelihood`/`Grades vs entry bar`/`Warnings`/`Approx total (MYR)`/`List status` — hand-typing
+>   one is the 2026-07-25 bug), and any overwrite of a filled cell without `--overwrite`.
+>   `--country` guards a split batch. Prints which computed columns went **stale** (it has cells,
+>   not scores — it deliberately does not rescore). Idempotent: a re-run is a clean no-op.
+> - **`check_master_list.py --blanks`.** Report mode (always exits 0): each row's blank required
+>   columns grouped by university — the brief a backfill plan is written from. Both Change 9
+>   bullets went into the same docstring.
+> - **8a** → `00_overview.md`, new "Dispatch by reference, not by paste" subsection under Subagents,
+>   with the two corollaries (agents report a path, not research; a tool call beats a hand-written
+>   summary). **8b** → `row-filler.md` gained a two-mode table, a `## What you produce — backfill
+>   mode` section, and a hardened reply cap. **8c** → `CLAUDE.md` How-to-Operate item 6.
+> - Also: a `## Backfilling an existing longlist` SOP in `03_discover_longlist.md` (the missing
+>   piece — the pattern had no shared home at all, which is *why* it was reinvented twice), the
+>   backfill write-fence row in `00_overview.md`'s agent table, the append-vs-patch note in its
+>   tool reference, a README note, and `.claude/settings.json` allow entries (Bash + PowerShell).
+>
+> **Verified:** both tools exercised against a scratchpad fixture — dry-run, real apply,
+> idempotent re-run, and every rejection path (computed column, unknown column, over-budget cell,
+> no-such-row, country mismatch, overwrite protection). Testing caught one real bug: the first
+> version re-appended `research_notes` prose on a re-run, since that file has no `course_key` to
+> dedupe on; the duplicate check now lives in `validate()` so `--dry-run` reports it accurately.
+> **Not yet done:** a live end-to-end backfill on a real student — the next one that needs it is
+> the proof. Francena is fully backfilled (`--blanks` returns zero), so it won't be her.
+
+**Was confirmed unexecuted before this session (2026-08-02):** `grep backfill
+.claude/agents/row-filler.md` was zero matches, and `00_overview.md`'s "Subagents" table had no
+dispatch-by-reference rule. The 2026-08-02 Francena USA-backfill session (`token_cost_report.md`
+Addendum 2) reproduced 8a and 8c exactly, one day after Addendum 1 first measured them on the same
+student's UK half — direct evidence the fix needed to land in the files, not stay documented in a
+plan. That is what this session fixed.
+
+---
+
+## Change 9 — Verification-loop discipline on budgeted files (from `token_cost_report.md`'s Addendum 2)
+
+*(source: 2026-08-02 Francena Dominic Francis USA-backfill session)*
+
+Two new patterns, distinct from Change 8, both about how a session interacts with
+`check_master_list.py` rather than about the subagent dispatch itself:
+
+**9a — Compute the length locally before a budgeted edit, don't discover it via a failed gate
+run.** Updating `status.md` took three separate write → `check_master_list.py --check status`
+→ fail → rewrite round trips (4199 chars, then 3254, both over the 3000 budget) before landing
+under budget. Each round trip re-pays the file read, the edit, and the check output. A `python
+-c "print(len(open(path, encoding='utf-8').read()))"` (or equivalent) run *before* writing tells
+you the target immediately — cheaper than a gate call, and doesn't need the file rewritten to
+find out it's still too long. Applies to any `CELL_BUDGETS`/`STATUS_BUDGET`-governed file:
+draft to the known limit, don't iterate against the checker.
+
+**9b — Run the full check, not a narrow `--check` filter, once you're fixing anything.** The
+`--check status` flag answers only "is status.md's length OK" — it stayed green while an
+unrelated `jargon` failure (bare "I-20" in 10 `Money to show (visa)` cells, flagged by
+`apply_glossary.PLAIN_ALTERNATIVES`) sat undetected in the same file the whole time. Discovering
+it took a second, separate full run. `--check <name>` exists for narrowing a *known* question
+(e.g. "did my status.md trim work") — once a file is being actively edited for any reason, run
+the full `check_master_list.py --student <slug>` with no filter, so every category gets checked
+in the same pass instead of one flag at a time.
+
+Add both as a short bullet under [check_master_list.py](tools/check_master_list.py)'s existing
+`--check` docstring section (it already documents the flag; this is guidance on *when* to use
+the narrow form vs. the full one) — no code change, workflow-discipline only. Low collision risk:
+touches only that docstring.
+
+---
+
 ## Execution order (session split)
 
 The same rule that produced this plan applies to executing it: bulk file generation belongs
@@ -211,13 +340,19 @@ into ten.
 
 | Session | Changes | Why grouped |
 |---|---|---|
-| A | **1 + 2** | Both edit `.claude/agents/row-filler.md`. Splitting them across concurrent sessions would race the same file — the same write-fence rule `00_overview.md` applies to report-writers. Largest session; start it fresh. |
-| B | **3 + 4** | Both touch `workflows/resume.md`, and 4 is cleanup done while the file is open. 3 also edits `shortlist_schema.py` + `check_master_list.py`. |
-| C | **5 + 6 + 7** | Disjoint small edits: one SKILL.md description, two settings.json files, one CLAUDE.md note. |
+| A | **1 + 2** | Both edit `.claude/agents/row-filler.md`. Splitting them across concurrent sessions would race the same file — the same write-fence rule `00_overview.md` applies to report-writers. Largest session; start it fresh. **Done 2026-07-30.** |
+| B | **3 + 4** | Both touch `workflows/resume.md`, and 4 is cleanup done while the file is open. 3 also edits `shortlist_schema.py` + `check_master_list.py`. **Change 3 confirmed live 2026-08-02** (see status banner); Change 4 unverified. |
+| C | **5 + 6 + 7** | Disjoint small edits: one SKILL.md description, two settings.json files, one CLAUDE.md note. Status unverified. |
+| D | **8** | **Done 2026-08-02** — see the Session D note above. Touched `row-filler.md`, `00_overview.md`, `03_discover_longlist.md`, `CLAUDE.md`, `README.md`, `settings.json`; added `tools/apply_backfill.py` and `check_master_list.py --blanks`. |
+| E | **9** | **Done 2026-08-02, folded into D** — both bullets are in `check_master_list.py`'s module docstring, added alongside `--blanks`. |
 
 **A and B both edit `tools/shortlist_schema.py`** (A adds `--contract`, B adds
-`STATUS_BUDGET`) — run A to completion first, or accept a merge. C is independent of both
-and can run any time.
+`STATUS_BUDGET`) — A is done and B's `STATUS_BUDGET` addition is confirmed merged in cleanly.
+C is independent of both and can run any time. **D and E are done** (2026-08-02). Note for
+whoever runs C: D added a "How to Operate" item-6 addition to `CLAUDE.md`, which is where C's
+Change 7 note also goes — read item 6 first and append to it rather than assuming it's absent.
+**C is now the only outstanding session** (5 + 6 + 7), plus Change 4's unverified `resume.md`
+trim from B.
 
 > **Session A (Changes 1+2) — done 2026-07-30, uncommitted.** `03_discover_longlist.md` split
 > into the core file + `03b_candidate_schema.md` + `workflows/countries/{uk,usa,australia,
