@@ -116,5 +116,10 @@ in Stage 4, where you choose the finalists, still happens in your normal session
 
 - **`Approx total (MYR)`** uses a rough offline FX table in `tools/shortlist_schema.py` — update the rates
   periodically; it's for apples-to-apples comparison, not financial precision.
+- **A list with blank cells has a repair path.** `sync_shortlist.py` only ever *adds* universities —
+  it skips any already on the list, so it can't fill holes in an existing row. For that, run
+  `python tools/check_master_list.py --student <slug> --blanks` to see what's missing, then ask Claude
+  to backfill it; `tools/apply_backfill.py` writes the results in. Mostly affects older lists, which
+  predate the "every column filled" rule.
 - **Privacy:** `data/students/` is gitignored. It holds personal data (grades, finances, nationality) —
   keep it local, don't commit or share it.

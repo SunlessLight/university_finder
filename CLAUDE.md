@@ -70,6 +70,21 @@ then open a fresh session to execute the bulk writes from that file. Don't `/com
 first — compaction re-reads the whole window, pays for a summary, and invalidates the cache; a new
 session reading the plan cleanly off disk is cheaper on every axis.
 
+**Within one session, the same rule is: repetitive edits go through a script, not N tool calls.**
+Updating many near-identical sections of one file — appending a note to each of 9 `## University X`
+blocks in `research_notes.md` — is **one** read-modify-write Python pass, never 9 sequential `Edit`
+calls. Each of those needs a large `old_string` purely to disambiguate the match: no new
+information, pure overhead, and it sits in the transcript being re-read for every remaining turn.
+This has cost real tokens twice (2026-08-01, 2026-08-02) in sessions that had *already* done the
+CSV correctly as a single Python pass and then hand-edited the second file anyway. If a tool
+already owns the write, use it — `apply_backfill.py` writes both `master_list.csv` and
+`research_notes.md` from fragments on disk, so neither file needs an `Edit` at all.
+
+**Point at a file; don't paste the file.** Applies to dispatch prompts (N agents sharing context
+read one plan file — `workflows/00_overview.md` → "Dispatch by reference, not by paste"), to tool
+contracts (`python tools/shortlist_schema.py --contract`, never "read the source"), and to agent
+replies (a path and a flag line, never the research).
+
 ## The Self-Improvement Loop
 
 Every failure is a chance to make the system stronger: (1) identify what broke, (2) fix the tool,
