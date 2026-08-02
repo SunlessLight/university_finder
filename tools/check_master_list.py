@@ -23,10 +23,28 @@ grades and selectivity are different questions. So: below the bar cannot be a Sa
 a Reach whose grades clear the bar must SAY why it is still a Reach — "Reach (very
 selective)" — because that is the student's actual unanswered question.
 
+--blanks is a REPORT, not a check: it prints each row's empty required columns grouped by
+university, which is exactly the input a backfill dispatch plan needs. It exists because two
+sessions (2026-08-01/02) derived that same list by hand from the completeness findings before
+they could plan anything. Exits 0 whatever it finds — the gate is the normal run.
+
+On --check: use it to narrow a KNOWN question ("did my status.md trim work"). Once a file is
+being actively edited for any reason, run the tool with NO filter. A run narrowed to `status`
+kept passing while a jargon failure sat in ten cells of the same file the whole time, and
+finding it cost a second full pass anyway (2026-08-02).
+
+Don't iterate against this tool to hit a length budget. Trimming a status.md took three
+write -> check -> fail round trips (4199 chars, then 3254, budget 3000) before it landed, each
+re-paying the read and the check. Measure locally first and draft to the number:
+    python -c "print(len(open(PATH, encoding='utf-8').read()))"
+Budgets are constants — STATUS_BUDGET and CELL_BUDGETS in shortlist_schema.py, or
+`python tools/shortlist_schema.py --contract` for the cell ones as JSON.
+
 Usage:
     python tools/check_master_list.py --student ong-kyan
     python tools/check_master_list.py --file csvs/master_list3.csv
     python tools/check_master_list.py --student toru --check budget,jargon
+    python tools/check_master_list.py --student toru --blanks
 """
 
 import argparse
@@ -144,6 +162,37 @@ def check_completeness(rows_as_dicts):
                     f"this one needs the real answer"
                 )
     return out
+
+
+def report_blanks(rows_as_dicts):
+    """[(University, Course, [blank required columns])] — the backfill plan's input.
+
+    Same rule as check_completeness's blank half, grouped by row instead of flattened into
+    one finding per cell, because that is the shape the work actually takes: one dispatch per
+    university, carrying that university's column list. Rows with nothing missing are omitted.
+    """
+    out = []
+    for _, row in rows_as_dicts:
+        missing = [c for c in REQUIRED_COLUMNS if not (row.get(c) or "").strip()]
+        if missing:
+            out.append((row.get("University", "?"), row.get("Course", "?"), missing))
+    return out
+
+
+def print_blanks(csv_path, rows_as_dicts):
+    """Print report_blanks() as a paste-ready block, and return the blank-cell count."""
+    findings = report_blanks(rows_as_dicts)
+    cells = sum(len(m) for _, _, m in findings)
+    label = csv_path.relative_to(REPO_ROOT) if csv_path.is_relative_to(REPO_ROOT) else csv_path
+    print(f"{label} — {len(rows_as_dicts)} rows, {len(findings)} with blanks, {cells} blank cell(s)\n")
+    for uni, course, missing in findings:
+        print(f"{uni} — {course}")
+        print(f"  Blanks: {', '.join(missing)}\n")
+    if not findings:
+        print("No blank required columns. Nothing to backfill.")
+    else:
+        print("One row-filler dispatch per university (backfill mode); the column list is its brief.")
+    return cells
 
 
 def check_budget(rows_as_dicts):
@@ -292,10 +341,18 @@ def main():
     parser.add_argument("--file", help="Path to a master list CSV, instead of --student.")
     parser.add_argument("--check", help=f"Comma list of checks to run (default all): {', '.join(CHECKS)}")
     parser.add_argument("--limit", type=int, default=15, help="Max findings shown per check (default 15).")
+    parser.add_argument(
+        "--blanks",
+        action="store_true",
+        help="Report mode: list each row's blank required columns, grouped by university, as the "
+        "brief for a backfill dispatch plan. Runs no checks and always exits 0.",
+    )
     args = parser.parse_args()
 
     if bool(args.student) == bool(args.file):
         sys.exit("ERROR: pass exactly one of --student or --file.")
+    if args.blanks and args.check:
+        sys.exit("ERROR: --blanks is a report, not a check — drop --check.")
 
     status_path = None
     if args.student:
@@ -316,6 +373,13 @@ def main():
             sys.exit(f"ERROR: unknown check(s) {unknown}. Valid: {', '.join(CHECKS)}")
 
     header, rows = load(csv_path)
+
+    if args.blanks:
+        if set(header) != set(SHORTLIST_HEADERS):
+            sys.exit(f"ERROR: {csv_path} columns differ from the schema — run the schema check first.")
+        print_blanks(csv_path, [(i, dict(zip(header, r))) for i, r in enumerate(rows, start=2)])
+        return
+
     results = run(header, rows, wanted, status_path=status_path)
 
     total = sum(len(v) for v in results.values())

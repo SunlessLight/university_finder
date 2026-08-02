@@ -68,7 +68,8 @@ Stage 1's `_needs_review` finalize and Stage 4's finalist pick *are* questions.
 | Agent | Concurrency | May write | Never writes |
 |---|---|---|---|
 | main session | — | anything | — |
-| `row-filler` (Sonnet, Stage 3) | **parallel, one per university** (~8-12) | `.tmp/<slug>/candidates/<uni-slug>.json`, its own `.tmp/<slug>/fc_<uni-slug>.json` | `master_list.csv`; anything outside `.tmp/<slug>/`; never runs merge/sync/check |
+| `row-filler` (Sonnet, Stage 3, **discovery**) | **parallel, one per university** (~8-12) | `.tmp/<slug>/candidates/<uni-slug>.json`, its own `.tmp/<slug>/fc_<uni-slug>.json` | `master_list.csv`; anything outside `.tmp/<slug>/`; never runs merge/sync/check |
+| `row-filler` (Sonnet, **backfill**) | **parallel, one per university** (~8-12) | `.tmp/<slug>/backfill/<uni-slug>.json`, its own `.tmp/<slug>/fc_<uni-slug>.json` | `master_list.csv`, `research_notes.md`; anything outside `.tmp/<slug>/`; never runs `apply_backfill.py` |
 | `report-writer` (Opus, Stage 4) | **sequential, one at a time** (~3-5) | `.tmp/<slug>/report_*.json` \| `uni_*.json`, `reports/<uni>.md`, and via `build_report.py` the `Finalist` flip + the `Course at a glance` / `Student life` cells | any file a sibling dispatch is concurrently writing |
 
 **The rule that decides concurrency: two agents may run in parallel only if their write sets are
@@ -83,6 +84,33 @@ Subagents carry **no memory** — fresh context every dispatch, nothing from the
 per-agent history file. Everything a dispatch needs goes in its prompt (slug is mandatory; both
 agents are instructed to stop rather than guess it). Continuity is **per student, not per stage**, and
 lives in `status.md` + `master_list.csv` + `research_notes.md`.
+
+### Dispatch by reference, not by paste
+
+**When N dispatches share context, write it in a file once and point every prompt at the file.**
+A prompt should carry only what makes that dispatch *different* — the university, the course URL,
+the column list — plus the path to the shared brief:
+
+> *"Read `data/students/<slug>/plans/02_uk_row_fill.md` — it has the student profile, the cell
+> budgets, the sentinels and the mode. You are dispatch #3: **University of Oxford**, Chemistry
+> (MChem). Fill the columns listed for it."*
+
+Not a style preference — a measured cost, twice. On 2026-08-01 and again on 2026-08-02 (same
+student, one day apart) a backfill batch re-pasted the same ~300 words of shared context into
+each of 9-10 `Agent` calls. Those prompts are tool-call inputs: they live in the dispatching
+session's transcript and are **re-read on every one of its remaining turns**, so ~1,400 words of
+pure duplication gets billed for the rest of the session, not once. The same "point at a file,
+don't paste the file" rule is why `row-filler` reads `workflows/countries/<code>.md` itself
+instead of being handed the country's traps inline.
+
+Two corollaries, same principle:
+- **Agents report a path and a flag line, never their research.** Both agent files cap the reply
+  at two lines. A reply is transcript too — ten replies of research prose costs the session as
+  much as ten pasted prompts. The values belong in the fragment on disk, which a tool reads.
+- **A tool call beats a hand-written summary.** If a script can read N fragments and write the
+  result (`merge_candidates.py`, `apply_backfill.py`), the main session never holds the values
+  at all. Re-transcribing agent replies into a scratch data structure to check them — done on
+  2026-08-01 — is that cost paid a second time, for content already on disk.
 
 ## The data bank (one folder per student)
 
@@ -249,8 +277,16 @@ The student's data bank holds personal data (grades, finances, nationality). `da
 ## Tools (deterministic layer) — see each workflow for usage
 
 `firecrawl_search.py` (discovery) · `init_student.py` (scaffold) · `ingest_form_csv.py` (batch-scaffold
-from a Google Form CSV) · `shortlist_schema.py` (single source of truth) · `sync_shortlist.py`
-(score/dedupe/append) · `compare_universities.py` (comparison tables) · `build_report.py` (16-section
-university report; `--mode course` default or `--mode university` for US whole-institution) · `report_to_pdf.py`
-(export a report to PDF for the student) · `build_calendar.py`
+from a Google Form CSV) · `shortlist_schema.py` (single source of truth) · `merge_candidates.py`
+(collect + gate the discovery fragments) · `sync_shortlist.py` (score/dedupe/**append** new rows) ·
+`apply_backfill.py` (**patch** blank cells in rows that already exist — the one sync can't do) ·
+`check_master_list.py` (the gate; `--blanks` lists what a backfill needs to fill) ·
+`build_glossary_sheet.py` (Glossary tab) · `compare_universities.py` (comparison tables) ·
+`build_report.py` (16-section university report; `--mode course` default or `--mode university` for US
+whole-institution) · `report_to_pdf.py` (export a report to PDF for the student) · `build_calendar.py`
 (deadline calendar) · `build_application_prep.py` (per-region apply guide grouped by application system).
+
+**Append vs patch** is the distinction to keep straight: `sync_shortlist.py` only ever *appends* and
+dedupes by `course_key`, so it **silently skips** a university already on the list — a row with holes
+cannot be topped up by re-running it. That is what `apply_backfill.py` is for, and why a backfill
+needs its own fragment shape and its own row-filler mode.

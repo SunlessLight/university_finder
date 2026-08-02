@@ -232,6 +232,43 @@ Rewrite "Master list state → Destinations covered" and "Next action" to name t
 country. Record the pass's cost (rough token spend + wall-clock) while you still know it — the
 per-country budget is a measurement nobody has taken yet.
 
+## Backfilling an existing longlist (rows that are already there, with holes)
+
+Not a country pass. This is the repair path for a list that already has its rows but fails the
+completeness gate — a legacy student predating the "all 35 columns required" policy (2026-07-29),
+or a pass that came back short. **`sync_shortlist.py` cannot do this**: it only appends and dedupes
+by `course_key`, so it silently *skips* a university already on the list rather than topping it up.
+
+```
+1. python tools/check_master_list.py --student <slug> --blanks
+                           the brief: each row's blank columns, grouped by university.
+2. Write the shared context ONCE            -> data/students/<slug>/plans/<n>_<country>_backfill.md
+                           student profile, cell budgets, sentinels, any paste-don't-research
+                           constants (e.g. the visa figure), and the per-university column lists.
+3. Dispatch row-filler in BACKFILL mode     -> .tmp/<slug>/backfill/<uni-slug>.json
+                           parallel, one per university. Each prompt = the plan file's path,
+                           the dispatch number, the university. Nothing else. See 00_overview.md
+                           -> "Dispatch by reference, not by paste".
+4. python tools/apply_backfill.py --student <slug> [--country "<Country>"] --dry-run
+   python tools/apply_backfill.py --student <slug> [--country "<Country>"]
+5. python tools/check_master_list.py --student <slug>        # full run, no --check filter
+   python tools/build_glossary_sheet.py --student <slug>
+6. Update status.md.
+```
+
+`apply_backfill.py` patches the cells **and** appends each fragment's `research_notes` under that
+university's existing heading in `research_notes.md` — both files written once, from disk. It
+validates everything first and writes nothing if any fragment fails, so a batch is all-or-nothing.
+It refuses: a university not already on the list, an unknown column, a cell over `CELL_BUDGETS`, a
+computed column (`Desirability`, `Tier`, `Admission likelihood`, `Grades vs entry bar`, `Warnings`,
+`Approx total (MYR)`, `List status`), and — without `--overwrite` — any cell that is already filled.
+
+> **It does not rescore.** It has cells, not sub-scores or weights, so patching `Key deadline` or a
+> cost column leaves `Warnings` / `Approx total (MYR)` stale. The tool prints which computed columns
+> went stale; re-derive those by hand, or put the row through the normal fragment → merge → sync
+> path instead. `--country` is the guard for a split batch (UK half and USA half in two sessions):
+> it refuses to patch a row whose `Country` doesn't match.
+
 ## Edge cases & rules
 
 - **8-12 rows per country, not 20-40 in one go.** The old "aim wide" number came from snippet-level
