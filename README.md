@@ -55,21 +55,47 @@ pip install -r requirements.txt
 #    FIRECRAWL_API_KEY=fc-...
 ```
 
+**4. Wire up the form-response feed** (one time, so intake can pull responses instead of you
+downloading a CSV every run):
+
+1. Open the form's **responses spreadsheet** → Extensions → Apps Script. Paste the contents of
+   [tools/appsscript/Code.gs](tools/appsscript/Code.gs) over whatever's there and save.
+2. Project Settings → Script Properties → add **`FORM_TOKEN`** = a long random string. It never goes
+   in the source; `Code.gs` is committed to git.
+3. Deploy → New deployment → type **Web app**, *Execute as* **Me**, *Who has access* **Anyone**. Copy
+   the `/exec` URL. (It has to be "Anyone" — anything narrower returns a Google login page instead of
+   JSON. The token is the gate.)
+4. Add both to `.env`:
+   ```
+   FORM_WEBAPP_URL=https://script.google.com/macros/s/.../exec
+   FORM_WEBAPP_TOKEN=<the same string you set as FORM_TOKEN>
+   ```
+
+The deployed URL is public and the token is the only gate — keep it long and random, and keep it in
+`.env` (already gitignored). **To revoke access**, change `FORM_TOKEN` in Script Properties, redeploy,
+and update `.env`. You don't need to create the `Ingested at` column yourself — the script appends it
+as the last column on first call. If any of this isn't set up, intake still works via the manual CSV
+export; see [workflows/01_intake.md](workflows/01_intake.md).
+
 ## Run
 
 **Intake is a Google Form.** Students request a search by filling it in; the responses become student
 data banks in bulk. Build the form once — the exact questions, sections, and consent gate are in
-[workflows/01_intake.md](workflows/01_intake.md) — then export responses as CSV and drop the file in
-**`data/form/`** (gitignored — PII).
+[workflows/01_intake.md](workflows/01_intake.md) — then pull responses with
+`tools/fetch_form_responses.py`, which writes **`data/form/responses.csv`** (gitignored — PII) and
+hands back only respondents not yet ingested. Manual export still works as a fallback.
 
 Easiest: open this folder in VSCode and tell Claude **"ingest the form responses"** — Claude reads the
 workflows, finalizes the judgment-heavy fields per student (grades → subjects, recognition targets,
 degree level), and drives the remaining stages. Or by hand:
 
 ```powershell
+python tools/fetch_form_responses.py --dry-run                        # who's pending
+python tools/fetch_form_responses.py                                  # -> data/form/responses.csv
 python tools/ingest_form_csv.py "data/form/responses.csv" --dry-run   # preview
 python tools/ingest_form_csv.py "data/form/responses.csv"             # create folders
 #   ...Stage 1: finalize each student's _needs_review items, then delete the key...
+python tools/fetch_form_responses.py --confirm                        # LAST: mark them done in the sheet
 
 #   ...Stage 3: ask Claude to derive data/students/<slug>/weights.json (the 'scoring-weights' skill)
 #      — per-student scoring weights; sync refuses to run without them...

@@ -3,11 +3,22 @@ description: Stage 1 — ingest the Google Form CSV and finalize each student's 
 argument-hint: [csv-path]
 ---
 
-Run `workflows/01_intake.md` for the responses CSV at `$1`.
+Run `workflows/01_intake.md`.
 
-If `$1` is empty, look in `data/form/` and use what's there (Google names the export after the
-form, e.g. `Form responses - Sheet1.csv` — not `responses.csv`). If there's more than one file, ask
-which.
+**Start by fetching** — don't go hunting for a file:
+
+```powershell
+python tools/fetch_form_responses.py --dry-run
+python tools/fetch_form_responses.py
+```
+
+This pulls only respondents not yet ingested into `data/form/responses.csv`. "Nothing new" means
+there's nothing to do — say so and stop. If the fetch fails (endpoint not set up, bad token, no
+network), fall back to whatever CSV is already in `data/form/` (Google names the export after the
+form, e.g. `Form responses - Sheet1.csv`); if there's more than one file, ask which. Say which path
+you took — a fallback CSV can't be `--confirm`ed.
+
+If `$1` is given, use that CSV directly and skip the fetch.
 
 Preview before writing:
 
@@ -29,5 +40,15 @@ Bring me the flagged list per student rather than resolving judgment calls silen
 confirm with me first.
 
 Write each student's first `status.md` when their intake is done.
+
+**Then, last of all** — once every student's folder and `status.md` are actually written:
+
+```powershell
+python tools/fetch_form_responses.py --confirm
+```
+
+That stamps those respondents as ingested in the sheet so they're never handed back again. It runs
+*after* everything else on purpose: an intake that crashed or that you abandoned mid-finalize leaves
+the rows pending, and the next `/intake` just picks them up. Skip it if you used a fallback CSV.
 
 This workflow IS the plan. Do not enter plan mode (CLAUDE.md).

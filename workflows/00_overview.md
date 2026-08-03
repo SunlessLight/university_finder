@@ -182,16 +182,24 @@ student. Quick glossary of the less-obvious columns:
 
 ## How to start
 
-Export the Google Form responses to CSV, drop it in `data/form/` (gitignored — PII), and tell Claude
-**"ingest the form responses."** Claude runs `ingest_form_csv.py`, finalizes the judgment-heavy fields
-per student (Stage 1), then walks Stage 3 → 4 → 5. Or by hand from the repo root with the venv active:
+Tell Claude **"ingest the form responses."** Claude pulls the not-yet-ingested responses with
+`fetch_form_responses.py`, runs `ingest_form_csv.py`, finalizes the judgment-heavy fields per student
+(Stage 1), marks those respondents done in the sheet, then walks Stage 3 → 4 → 5. Or by hand from the
+repo root with the venv active:
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
+python tools/fetch_form_responses.py --dry-run                        # who's pending
+python tools/fetch_form_responses.py                                  # -> data/form/responses.csv
 python tools/ingest_form_csv.py "data/form/responses.csv" --dry-run   # preview first
 python tools/ingest_form_csv.py "data/form/responses.csv"
+#   ...finalize each student's _needs_review items (Stage 1)...
+python tools/fetch_form_responses.py --confirm                        # LAST — only after ingest succeeded
 #   ...then follow workflows 01 -> 03 -> 04 -> 05 (there is no 02)...
 ```
+
+A manual CSV export dropped in `data/form/` (gitignored — PII) still works as a fallback if the fetch
+endpoint isn't set up; see `01_intake.md`.
 
 `init_student.py` still exists for scaffolding one student's folder by hand, and its templates are the
 schema source of truth — but the normal path is the form.
@@ -276,8 +284,9 @@ The student's data bank holds personal data (grades, finances, nationality). `da
 
 ## Tools (deterministic layer) — see each workflow for usage
 
-`firecrawl_search.py` (discovery) · `init_student.py` (scaffold) · `ingest_form_csv.py` (batch-scaffold
-from a Google Form CSV) · `shortlist_schema.py` (single source of truth) · `merge_candidates.py`
+`firecrawl_search.py` (discovery) · `init_student.py` (scaffold) · `fetch_form_responses.py` (pull
+not-yet-ingested form responses from the sheet; `--confirm` stamps them done) · `ingest_form_csv.py`
+(batch-scaffold from a Google Form CSV) · `shortlist_schema.py` (single source of truth) · `merge_candidates.py`
 (collect + gate the discovery fragments) · `sync_shortlist.py` (score/dedupe/**append** new rows) ·
 `apply_backfill.py` (**patch** blank cells in rows that already exist — the one sync can't do) ·
 `check_master_list.py` (the gate; `--blanks` lists what a backfill needs to fill) ·

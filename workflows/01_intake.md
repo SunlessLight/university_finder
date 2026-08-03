@@ -140,15 +140,30 @@ fine — but keep the substring in bold intact.
 
 ## How to run
 
-1. Export the form responses (Responses → ⋮ → *Download responses (.csv)*) and drop the file in
-   **`data/form/`** (gitignored — it's PII). Google names the export after the form itself (e.g.
-   `Form Response.csv`), not `responses.csv` — the tool takes whatever path you pass, so either rename
-   it to `data/form/responses.csv` to match the commands below verbatim, or just point the commands at
-   your actual filename.
-2. Preview first, then run for real (swap in your actual filename):
+Four commands, in this order. Steps 1-3 are safe to repeat; step 4 is the one that changes the sheet.
+
+1. **Fetch what's pending** — pulls only responses that haven't been ingested yet, straight from the
+   responses spreadsheet, into `data/form/responses.csv` (gitignored — it's PII):
    ```powershell
-   python tools/ingest_form_csv.py data/form/responses.csv --dry-run
-   python tools/ingest_form_csv.py data/form/responses.csv
+   python tools/fetch_form_responses.py --dry-run   # who's pending, writes nothing
+   python tools/fetch_form_responses.py             # writes data/form/responses.csv
+   ```
+   "Already ingested" is recorded **in the sheet**, in a column called `Ingested at` (blank = pending),
+   so it survives a wiped `data/` folder or a different machine. The fetched CSV carries one extra
+   trailing column, `_row`, holding each response's sheet row number — that's what step 4 stamps.
+   Both `_row` and `Ingested at` are inert to `ingest_form_csv.py` (they match nothing in
+   `QUESTION_MAP`), which is why the ingest tool needs no special handling.
+
+   *Fallback if the endpoint is broken or not set up:* export by hand (Responses → ⋮ → *Download
+   responses (.csv)*) and drop the file in **`data/form/`**. Google names the export after the form
+   itself (e.g. `Form responses - Sheet1.csv`), not `responses.csv` — the ingest tool takes whatever
+   path you pass. A manual export has no `_row` column, so step 4 can't run against it; stamp the
+   `Ingested at` cells by hand instead, or the same people come back next fetch.
+
+2. Preview first, then run for real:
+   ```powershell
+   python tools/ingest_form_csv.py "data/form/responses.csv" --dry-run
+   python tools/ingest_form_csv.py "data/form/responses.csv"
    ```
    The tool creates `data/students/<slug>/{profile.json,preferences.json,reports/}` per consenting
    respondent, copies budget/scholarship into **both** files, and prints a per-student
@@ -163,6 +178,31 @@ fine — but keep the substring in bold intact.
      Wanting to work abroad is a migration *aspiration* → `preferences.intent_to_migrate`, not a
      different home country. (The tool used to overwrite `home_country` from the old "live and work
      after graduating" question, mislabelling a Malaysian who simply wants to work overseas.)
+
+3. **Finalize each student's `_needs_review` items** — the next section. This is the judgment step and
+   it happens *before* step 4.
+
+4. **Confirm — last, and only once the ingest actually succeeded:**
+   ```powershell
+   python tools/fetch_form_responses.py --confirm
+   ```
+   This stamps `Ingested at` for every row in `data/form/responses.csv`, so those respondents are never
+   handed back again. Running it last is the whole safety property: **a crashed or abandoned ingest
+   leaves the rows pending**, and re-running step 1 simply hands them back. Confirming early and then
+   failing to ingest loses the respondents silently.
+
+### Edge cases
+
+- **Never sort the responses sheet by hand.** Row identity is the sheet row number, which only holds
+  because Forms *appends* responses and never reorders them. A `Data → Sort range` would make `_row`
+  in an already-fetched CSV point at the wrong respondent, and `--confirm` would stamp the wrong rows.
+  Filter views are fine (they don't move the underlying rows). If it does get sorted, delete
+  `data/form/responses.csv` unconfirmed and re-fetch.
+- **`--confirm` reports skipped rows** when the CSV and the sheet disagree (a `_row` beyond the end of
+  the sheet). It exits non-zero and names them — usually it means the sheet was sorted or rows deleted.
+- **Deleting rows from the sheet shifts every row below them up.** Same hazard as sorting: only ever do
+  it when there is no unconfirmed `responses.csv` sitting on disk.
+- **`--confirm` against a manual export** fails with a clear error — there's no `_row` column to stamp.
 
 ## Finalize each student (the judgment layer — this is your job, not the tool's)
 
