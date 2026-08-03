@@ -431,6 +431,24 @@ GLOSSARY = {
         "definition": "**Institution of Engineers, Singapore** — the professional body behind EAB "
                       "accreditation.",
     },
+    "IANG": {
+        "aliases": ["Immigration Arrangements for Non-local Graduates"],
+        "definition": "**Immigration Arrangements for Non-local Graduates** — Hong Kong's post-study work "
+                      "route. Graduates get 24 months to stay and work with no job offer needed, then "
+                      "renew 2+2+3 years; seven continuous years qualifies for permanent residency.",
+    },
+    "JUPAS": {
+        "aliases": ["Joint University Programmes Admissions System"],
+        "definition": "Hong Kong's central admissions system — for local students sitting the HKDSE only. "
+                      "A Malaysian A-Level applicant never uses it, so JUPAS entry scores do not apply to "
+                      "you; apply through each university's own international route instead.",
+    },
+    "non-JUPAS": {
+        "aliases": ["non-local admission", "non-local student"],
+        "definition": "Everyone in Hong Kong who isn't a local HKDSE student. It is the admissions route "
+                      "you use — and the tuition rate you pay: non-local fees run four to six times the "
+                      "subsidised local rate shown beside them on the same fee page.",
+    },
     "G30": {
         "aliases": [],
         "definition": "A Japanese government programme of degrees taught entirely in English — one of "
