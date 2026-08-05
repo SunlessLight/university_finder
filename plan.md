@@ -5,8 +5,12 @@
 > carries its "history moves to research_notes.md" line and `check_master_list.py --check
 > status` actively enforces it. **This banner was stale for days about that** — a plan file
 > drifting out of sync with the code it describes is the same failure mode `resume.md` warns
-> about for `status.md`; don't trust this note either, verify against the files. Changes 4-7
-> status unverified. **Change 8 (row-filler backfill-dispatch hygiene) was executed
+> about for `status.md`; don't trust this note either, verify against the files. **Changes 4
+> and 5 were verified done 2026-08-04** — both had in fact shipped inside the same
+> `e331538` commit as Change 3 and were simply never recorded here (see their sections).
+> **Changes 6 and 7 also verified done 2026-08-04** — same `e331538` commit again (see their
+> sections for the check performed). **Session C is now fully done**, closing every change in
+> this plan except the two out-of-scope items. **Change 8 (row-filler backfill-dispatch hygiene) was executed
 > 2026-08-02** — 8a/8b/8c all landed in the files, plus a new `tools/apply_backfill.py` and
 > `check_master_list.py --blanks`. See the "Session D" note below for what shipped and what
 > is still owed (a live end-to-end run). **Change 9 landed with it** (both bullets are in
@@ -140,6 +144,15 @@ Also note the duplication between [catchup.md](.claude/commands/catchup.md) and
 duplication is *deliberate and correct* (the command primes a cold session before the Read
 lands); leave it.
 
+> **Done 2026-07-30 in `e331538`, verified 2026-08-04.** Both named cuts are in the file: the
+> four-line Toru blockquote is now one sentence, and the two Edge-cases bullets that restated
+> step 3 (*"Files win over the note"*, *"Never fabricate progress"*) are gone. Template intact;
+> `catchup.md` untouched. **The `~70 lines` target was not met and is deliberately closed at
+> 106 lines / 5,695 chars** — the plan named exactly two cuts and they are done; reaching 70
+> would mean removing another third of the file with no guidance on which third, to save the
+> ~$0.03/session this section itself calls negligible. Not worth the risk to a workflow that
+> every `/catchup` reads.
+
 ---
 
 ## Change 5 — Skills and tools hygiene *(answers "do python skills need descriptions?")*
@@ -165,6 +178,14 @@ Concrete edits:
 - [application-guide/SKILL.md](.claude/skills/application-guide/SKILL.md) — 378 chars,
   well-formed. No change.
 
+> **Done 2026-07-30 in `e331538`, verified 2026-08-04.** The `"Covers the
+> priorities->weight-key mapping, the modifiers, and validation."` sentence is gone;
+> `scoring-weights`' description is 515 chars and keeps the "ALSO use if you are tempted to
+> edit `tools/shortlist_schema.py`" trigger. `application-guide` measures 372 chars,
+> unchanged as specified. Those two are the *only* skills in `.claude/skills/`, and no
+> `tools/*.py` carries YAML frontmatter — so the section's premise ("do python skills need
+> descriptions?") is closed with nothing further to do.
+
 ---
 
 ## Change 6 — Harness settings
@@ -183,6 +204,18 @@ if it is user-scope-only, report that rather than silently leaving it unset.
 `supabase` MCP server whose tool definitions render at position 0 of the cache prefix.
 Expected: ~1,700 tokens off the always-resident skill listing, every turn of every session.
 Again via `update-config`.
+
+> **Done 2026-07-30 in `e331538`, verified 2026-08-04.** `.claude/settings.json` (project) has
+> `"effortLevel": "high"`. Checked against the settings schema (via the `update-config` skill)
+> whether this is genuinely honoured at project scope rather than riding on the user-level
+> value: `effortLevel` carries no scope restriction in the schema (unlike keys explicitly
+> marked "only honored from managed settings"), so it follows the standard `user < project <
+> local` precedence — project scope is a real, effective override point, not a no-op. (Both
+> scopes happen to already say `high`, so there's no live conflict to observe, but the
+> precedence mechanism itself is confirmed, which is what the plan asked to verify.)
+> `~/.claude/settings.json` `enabledPlugins` already matches the four-plugin list exactly:
+> `superpowers`/`code-review`/`skill-creator`/`claude-md-management` → `true`,
+> `frontend-design`/`github`/`supabase`/`telegram` → `false`.
 
 ---
 
@@ -209,6 +242,13 @@ long session* is not.
 Add this to [CLAUDE.md](CLAUDE.md) as a short operating note under "How to Operate", next to
 the existing subagent rule — it is the same principle (keep volume out of the judgement
 session).
+
+> **Done 2026-07-30 in `e331538`, verified 2026-08-04.** [CLAUDE.md item 6](CLAUDE.md) already
+> carries this note verbatim: write the plan to a file, open a fresh session to split it, and
+> the `/compact`-is-worse-on-both-axes rationale (full-window read + summary output + cache
+> re-write). Placed exactly where the plan specified — under "How to Operate", next to the
+> subagent-volume rule (item 5) — and Change 8c later appended to the same item rather than
+> starting a new one, so the two changes share one numbered point as intended.
 
 ---
 
@@ -341,18 +381,25 @@ into ten.
 | Session | Changes | Why grouped |
 |---|---|---|
 | A | **1 + 2** | Both edit `.claude/agents/row-filler.md`. Splitting them across concurrent sessions would race the same file — the same write-fence rule `00_overview.md` applies to report-writers. Largest session; start it fresh. **Done 2026-07-30.** |
-| B | **3 + 4** | Both touch `workflows/resume.md`, and 4 is cleanup done while the file is open. 3 also edits `shortlist_schema.py` + `check_master_list.py`. **Change 3 confirmed live 2026-08-02** (see status banner); Change 4 unverified. |
-| C | **5 + 6 + 7** | Disjoint small edits: one SKILL.md description, two settings.json files, one CLAUDE.md note. Status unverified. |
+| B | **3 + 4** | **Done — both in `e331538` (2026-07-30)**, 3 confirmed live 2026-08-02, 4 verified 2026-08-04 (line-count target closed unmet, on purpose). |
+| C | **5 + 6 + 7** | Disjoint small edits: one SKILL.md description, two settings.json files, one CLAUDE.md note. **Done — all three in `e331538` (2026-07-30), verified 2026-08-04.** |
 | D | **8** | **Done 2026-08-02** — see the Session D note above. Touched `row-filler.md`, `00_overview.md`, `03_discover_longlist.md`, `CLAUDE.md`, `README.md`, `settings.json`; added `tools/apply_backfill.py` and `check_master_list.py --blanks`. |
 | E | **9** | **Done 2026-08-02, folded into D** — both bullets are in `check_master_list.py`'s module docstring, added alongside `--blanks`. |
 
 **A and B both edit `tools/shortlist_schema.py`** (A adds `--contract`, B adds
 `STATUS_BUDGET`) — A is done and B's `STATUS_BUDGET` addition is confirmed merged in cleanly.
-C is independent of both and can run any time. **D and E are done** (2026-08-02). Note for
-whoever runs C: D added a "How to Operate" item-6 addition to `CLAUDE.md`, which is where C's
-Change 7 note also goes — read item 6 first and append to it rather than assuming it's absent.
-**C is now the only outstanding session** (5 + 6 + 7), plus Change 4's unverified `resume.md`
-trim from B.
+C is independent of both and can run any time. **All five sessions (A-E) are done.** Session
+C's Change 7 note landed inside the same CLAUDE.md "How to Operate" item 6 that D's 8c later
+appended to, exactly as anticipated when D was written. **Nothing in this plan is
+outstanding** except the two items explicitly marked "Out of scope" below.
+
+> **Lesson from the 2026-08-04 pass:** Changes 4 and 5 had *already shipped* in `e331538`, and
+> executing them cost a session that produced nothing but this bookkeeping. `e331538`'s commit
+> message names Change 3 and Change 6's effort setting but not 4 or 5, so neither the banner
+> nor `git log --oneline` revealed them — only `git log -p` on the two target files did. The
+> rule this earns: **a session that lands a plan change updates the plan in the same commit.**
+> A plan file drifting behind the code is the same failure `resume.md` warns about for
+> `status.md`, and it costs a whole re-derivation to detect.
 
 > **Session A (Changes 1+2) — done 2026-07-30, uncommitted.** `03_discover_longlist.md` split
 > into the core file + `03b_candidate_schema.md` + `workflows/countries/{uk,usa,australia,
