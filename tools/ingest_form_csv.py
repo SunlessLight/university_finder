@@ -13,10 +13,12 @@ are flagged in a top-level "_needs_review" list on profile.json:
   - the regulated-profession answer -> recognition_targets (best-effort auto-fill + verify)
   - a respondent who gave no field of study at all (nothing to search on)
 
-Columns are matched by a distinctive SUBSTRING of each question title (case-insensitive), so
-light rewording of the form questions won't break the mapping. QUESTION_MAP below is the single
-source of truth for the column<->field wiring; keep it in step with the form spec in
-workflows/01_intake.md.
+Columns are matched by a distinctive SUBSTRING of each question title (case-insensitive).
+QUESTION_MAP below is the single source of truth for the column<->field wiring; keep it in step
+with the form spec in workflows/01_intake.md. A reworded question can still drop the match
+silently — if a field comes back null for EVERY respondent, that means a broken QUESTION_MAP
+substring, not blank answers. Grep the real export's headers against QUESTION_MAP before trusting
+the mapping, especially after the form's questions change.
 
 Usage:
     python tools/ingest_form_csv.py data/form/responses.csv
@@ -64,7 +66,8 @@ QUESTION_MAP = [
     ("which college", "current_institution"),
     ("when do you graduate", "current_completion"),  # current form's wording
     ("when do you finish", "current_completion"),    # legacy fallback (older form)
-    ("final exam results", "current_completion"),    # current form: "when will you get your actual final exam results"
+    ("final exam results", "current_completion"),    # legacy: "when will you get your actual final exam results"
+    ("final result", "current_completion"),          # current form: "When month does your final result comes out?"
     ("list each subject", "grades_raw"),             # legacy paragraph-grades form; structured subjects handled separately
     ("actual results or predicted", "grade_status"),
     ("which english test", "english_test"),
@@ -663,9 +666,18 @@ def _normalize_month_year(value):
     year = re.search(r"(20\d{2})", low)
     if not year:
         return None
-    for name, number in _MONTHS.items():
-        if re.search(rf"\b{name}", low):
-            return f"{year.group(1)}-{number:02d}"
+    # Take the EARLIEST month in the string, not the first one in _MONTHS order. The live
+    # dropdown labels carry a trailing gloss that names other months — "August 2027 ( Takes
+    # A2 in May/June )" — and a dict-order scan reached "may" before "aug" and returned
+    # 2027-05 for an August student (caught on the 2026-08-03 intake). The answer's own
+    # month always leads; the decoys sit in the parenthetical after it.
+    hits = [
+        (match.start(), number)
+        for name, number in _MONTHS.items()
+        if (match := re.search(rf"\b{name}", low))
+    ]
+    if hits:
+        return f"{year.group(1)}-{min(hits)[1]:02d}"
     # Already normalised ("2027-09"), or a numeric month+year we can read unambiguously.
     iso = re.search(r"(20\d{2})[-/](\d{1,2})\b", low)
     if iso and 1 <= int(iso.group(2)) <= 12:

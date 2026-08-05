@@ -365,6 +365,16 @@ weights into `tools/shortlist_schema.py` — that shared file is exactly what ma
   - **An unreadable answer is kept verbatim, never guessed.** If a legacy export or an "Other" answer
     doesn't parse as month+year, the raw string passes through unchanged. Spot-check for that shape at
     finalize and fix it to `YYYY-MM` by hand — but don't invent a month the student didn't give.
+  - **A dropdown label can name more than one month, and only the first one is the answer.** The live
+    results-date options carry a gloss — `August 2027 ( Takes A2 in May/June )`. `_normalize_month_year`
+    now takes the **earliest** month in the string; it used to scan `_MONTHS` in dict order, reach
+    `may` before `aug`, and silently return `2027-05` for an August student (found 2026-08-03, when
+    every one of six profiles also had a **null** `expected_completion` — `QUESTION_MAP` had no
+    substring matching the live header *"When month does your final result comes out?"*). Two lessons
+    that generalise: **an all-null field across every respondent means a broken `QUESTION_MAP` entry,
+    not six blank answers** — check the header before you patch profiles by hand; and when the form
+    gains a reworded question, grep the real export's headers against `QUESTION_MAP` rather than
+    trusting that "light rewording is fine".
 - **Scholarship gate + interests.** The current form asks *"Is scholarship a must?"* (Yes/No) → the tool
   sets `scholarship_required` + `scholarship_dependent` directly, and *"What scholarships are you planning
   to apply for?"* (free text) → `scholarship_interests` (a research hint, never a filter; `funding_source`
