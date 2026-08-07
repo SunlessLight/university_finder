@@ -59,3 +59,13 @@ Australia 485 graduate visa <field>
 > `est_living_per_year`; Sydney/Melbourne run ~20-40% above it. Adelaide and Wollongong are
 > **designated regional areas** — a possible extra year on the 485, which matters if
 > `intent_to_migrate` is true.
+>
+> **QS's subject-ranking table (`topuniversities.com`) is JavaScript-rendered — a plain fetch
+> returns an empty shell, same trap as the UK's (see `uk.md`) (learned 2026-08-05, Teoh Yu Shan
+> backfill).** Melbourne's History `Subject rank` was never recovered after a WebFetch 403 and 5
+> Firecrawl scrapes; UWA and UNSW settled for a confirmed-but-imprecise band (UWA: "ranked, #1 in
+> WA, exact global band not published") or a broader QS Arts & Humanities cluster proxy instead of
+> the narrow subject number — correct per the "don't fake `Not ranked`" rule, just costly to reach.
+> **Try the university's own rankings/press page first** — it often states its own QS subject
+> position directly (official-sourced, no scrape needed). Cap retries against
+> `topuniversities.com` itself at 2-3 attempts before settling for the honest band/proxy.

@@ -37,3 +37,15 @@ UK Graduate Route post study work
 > £44,214/yr, 2026/27) rather than one university-wide figure — confirm Chemistry's actual group,
 > don't assume the lowest or an average. Oxford, similarly, bands overseas fees **£37,380-£62,820**
 > by course, and Chemistry (a lab science) sits at the **top** of that range, not the middle.
+>
+> **QS's subject-ranking table (`topuniversities.com`) is JavaScript-rendered — a plain fetch
+> returns an empty shell, and it fought back on Firecrawl too (learned 2026-08-05, Teoh Yu Shan
+> backfill).** Every `Subject rank` lookup for History/Philosophy that hit this table needed
+> repeated WebFetch + Firecrawl retries; Manchester, UCL Philosophy, Cardiff, and Exeter never
+> recovered an exact number even after 4-5 scrape attempts each and had to report a verified band
+> (e.g. "QS Philosophy #51-100, exact position not published") or a labelled THE-table proxy
+> instead — that is the correct outcome per the "don't fake `Not ranked`" rule, just an expensive
+> one to reach. **Try the university's own press release / rankings page first** — Oxford,
+> Edinburgh, and Durham's subject figures all came from an official page citing their own QS
+> position directly, no scrape needed. Cap retries against `topuniversities.com` itself at 2-3
+> attempts before settling for the honest band/proxy; past that it is very unlikely to render.
