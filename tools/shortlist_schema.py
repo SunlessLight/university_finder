@@ -186,8 +186,13 @@ CELL_BUDGETS = {
     "Recognised in Malaysia?": 160,
     "Work rights after graduating": 160,
     "Scholarship competitiveness": 160,
-    "Course at a glance": 120,
-    "Student life": 120,
+    # Course at a glance / Student life were 120 until 2026-08-06: Austin Lau Hong
+    # Shen's UK pass (12 rows) measured post-trim content clustering at 91-92% of that
+    # cap (avg 110.8/120 and 109.1/120) — real one-sentence content needed more room,
+    # not tighter writing. Raised to 150, same "catch bloat, not shred facts" rationale
+    # as the English req / Money to show pair below.
+    "Course at a glance": 150,
+    "Student life": 150,
     "Scholarship coverage": 120,
     "Warnings": 120,
     # These two were set to 100/80 and then raised once measured against the real data:
@@ -197,7 +202,10 @@ CELL_BUDGETS = {
     # runs ~106. The tighter numbers were forcing mid-sentence cuts on cells that had
     # nothing to trim — a budget should catch bloat, not shred facts.
     "English req": 120,
-    "Money to show (visa)": 100,
+    # Money to show (visa) raised 100 -> 115 alongside the pair above (2026-08-06,
+    # same Austin pass): measured avg 81.8/100 (82%), less tight than the other two
+    # but still worth a buffer against the same squeeze-and-recheck pattern.
+    "Money to show (visa)": 115,
     "Admission likelihood": 40,
     "Grades vs entry bar": 40,
 }
@@ -536,14 +544,22 @@ FX_TO_MYR = {
 
 
 def parse_amount(value):
-    """Extract a numeric amount from a string like 'GBP 90,000' -> 90000.0. None if absent."""
+    """Extract a numeric amount from a string like 'GBP 90,000' -> 90000.0. None if absent.
+
+    Takes the FIRST number token only. Row-filler tuition/living cells routinely carry a
+    caveat after the figure ('GBP 107,100 (3 yrs at 2026/27 rate as proxy)') — stripping to
+    digits-only and concatenating everything used to fuse the caveat's digits onto the real
+    number (107100 + 3 + 2026 + 27 -> 1071003202627). Matching just the leading number avoids
+    that, and matches how a human reads these strings.
+    """
     if value is None:
         return None
     if isinstance(value, (int, float)):
         return float(value)
-    digits = re.sub(r"[^0-9.]", "", str(value).replace(",", ""))
-    if not digits or digits == ".":
+    match = re.search(r"\d[\d,]*(?:\.\d+)?", str(value))
+    if not match:
         return None
+    digits = match.group(0).replace(",", "")
     try:
         return float(digits)
     except ValueError:

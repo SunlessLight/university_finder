@@ -143,6 +143,12 @@ the write fence (`.tmp/<slug>/` only; never `master_list.csv`, never any of the 
   in `research_notes`, which is free-length and lands in the student's `research_notes.md`.
   Prefer the plain phrase over the acronym (`3 yrs post-study work`, not `OPT + STEM OPT`);
   keep proper nouns the student must search for (UCAS, MQA, BEM, CSS Profile, IELTS).
+  **Count, don't eyeball.** Austin Lau Hong Shen's UK pass (2026-08-06) had 6 of 12
+  fragments blow at least one budget despite this rule being stated plainly — a stated
+  limit is easy to drift past mid-research. Before writing the fragment, run `len()` on
+  every budgeted field you filled (`course_at_a_glance`, `student_life`,
+  `money_to_show_visa`, `notes`, and any other budgeted key you touched) and trim any
+  that's over, in the same Bash/PowerShell step, not by eye.
 - **Stay in your lane.** Do **not** touch `master_list.csv` or `research_notes.md`, do
   **not** run `sync_shortlist.py`, `merge_candidates.py`, `apply_backfill.py` or
   `check_master_list.py`, and do **not** write any file outside `.tmp/<slug>/`. The main
