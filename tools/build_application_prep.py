@@ -18,11 +18,11 @@ Every university must carry non-empty deadlines + application_checklist + financ
 or the build fails loudly — a half-researched apply guide shouldn't pass.
 
 Usage:
-    python tools/build_application_prep.py --student toru --input .tmp/toru/apply_prep_us.json
+    python tools/build_application_prep.py --student <slug> --input .tmp/<slug>/apply_prep_us.json
 
 Input JSON shape (see workflows/08_application_prep.md for the full spec):
     {
-      "student_slug": "toru",
+      "student_slug": "<slug>",
       "region": "us",
       "region_title": "United States",
       # Optional. 3-6 imperative next actions, rendered as an ordered list right

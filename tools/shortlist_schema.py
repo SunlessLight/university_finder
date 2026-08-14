@@ -417,7 +417,7 @@ def grade_fit_label(entry_margin):
     published" note above. Without this branch the label was unreachable: it was
     declared valid here and checked for by check_master_list.py, but nothing ever
     produced it, so every holistic-admission US row came back "blank" (found
-    2026-07-28 building Teoh Yu Shan's USA longlist — a Longlist of Ivies/elite LACs
+    2026-07-28 building a USA longlist — a Longlist of Ivies/elite LACs
     with no published grade bar has no other way to pass the gate).
     """
     if isinstance(entry_margin, str) and entry_margin.strip().lower().replace(" ", "_") == "not_published":

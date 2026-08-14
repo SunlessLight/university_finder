@@ -22,8 +22,8 @@ Exit 1 lists every (university, problem) pair — the whole point is that one ru
 exactly which agents to re-dispatch and what each of them missed.
 
 Usage:
-    python tools/merge_candidates.py --student teoh-yu-shan --country "Hong Kong"
-    python tools/merge_candidates.py --student teoh-yu-shan --country "Hong Kong" --dry-run
+    python tools/merge_candidates.py --student <slug> --country "Hong Kong"
+    python tools/merge_candidates.py --student <slug> --country "Hong Kong" --dry-run
 """
 
 import argparse

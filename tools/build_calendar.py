@@ -11,8 +11,8 @@ Read-only/derived — it documents deadlines, it does NOT track submission state
 (consistent with "research + how-to-apply mechanics only").
 
 Usage:
-    python tools/build_calendar.py --student aisyah-rahman
-    python tools/build_calendar.py --student aisyah-rahman --status Finalist
+    python tools/build_calendar.py --student <slug>
+    python tools/build_calendar.py --student <slug> --status Finalist
 
 Optional structured dates in a report JSON:
     "dated_items": [

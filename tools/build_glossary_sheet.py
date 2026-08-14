@@ -13,7 +13,7 @@ apply_glossary.present_terms() does the filtering, both shared with the Stage 8 
 guides. A term added for a guide shows up here for free.
 
 Usage:
-    python tools/build_glossary_sheet.py --student ong-kyan
+    python tools/build_glossary_sheet.py --student <slug>
     python tools/build_glossary_sheet.py --file csvs/master_list3.csv --out csvs/glossary3.csv
 """
 

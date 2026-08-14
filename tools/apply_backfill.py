@@ -36,10 +36,10 @@ Fragment shape (row-filler backfill mode; see .claude/agents/row-filler.md):
     }
 
 Usage:
-    python tools/apply_backfill.py --student francena-dominic-francis --dry-run
-    python tools/apply_backfill.py --student francena-dominic-francis
-    python tools/apply_backfill.py --student francena-dominic-francis --country "United Kingdom"
-    python tools/apply_backfill.py --student francena-dominic-francis --fragments .tmp/x/backfill/uk
+    python tools/apply_backfill.py --student <slug> --dry-run
+    python tools/apply_backfill.py --student <slug>
+    python tools/apply_backfill.py --student <slug> --country "United Kingdom"
+    python tools/apply_backfill.py --student <slug> --fragments .tmp/x/backfill/uk
 """
 
 import argparse

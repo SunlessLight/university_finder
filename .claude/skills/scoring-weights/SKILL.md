@@ -30,8 +30,8 @@ under weights nobody chose produces numbers indistinguishable from chosen ones.
 
 ```json
 {
-  "weights_id": "lai-zheng-yi-v1",
-  "student": "lai-zheng-yi",
+  "weights_id": "<slug>-v1",
+  "student": "<slug>",
   "derived_from": "preferences.json / form response (2026-07-13)",
   "derived_on": "2026-07-15",
   "rationale": "Ranking is his #1 priority (importance 5/5). Scholarship ties it at the top despite not being in his 3 priorities, because scholarship_required=true is a hard gate. ...",
@@ -102,8 +102,8 @@ outrank it.
    - Contradictory `location_prefs` (Urban *and* Rural both ticked) → `location_pref_fit`
      near floor: they're telling you not to filter on setting.
 4. **Read `notes` and `deal_breakers` — they override the structured fields.** The structured
-   fields are a lossy compression of intent; the notes are the intent. (Zafri's accreditation
-   deal-breaker beats his `ranking_importance: 4`.)
+   fields are a lossy compression of intent; the notes are the intent. (one student's accreditation
+   deal-breaker beat their `ranking_importance: 4`.)
 5. **`priorities` order wins over `ranking_importance`** on conflict. `ranking_importance`
    only modulates *within* the band the priority order already assigned.
 6. **Sum to exactly 1.00; every weight ≤ 0.5.** If `validate_weights` rejects it, **fix the
@@ -128,7 +128,7 @@ mid-pack on the other.
 | Current form (2026-07-29+) — the **[University Ranking]** slider | **1-8** | 7-8 = top band, 4-6 = middle, 1-3 = floor-ish. `derived_from` will name a recent form response. |
 | A dedicated *"how much does your subject's strength matter"* question, if the form ever gains one | **1-5** | The tool prefers this over the slider when present. |
 | Pre-slider form students | **1-7** | Same shape as 1-8; scale it before comparing. |
-| Prose students (`toru`, `law-jia-herng` — predate the form) | none | `"medium"` / a whole sentence. `low`/`medium`/`high` → 2/3/4 on a 1-5 reading; for a sentence, judge it and **quote the phrase you judged from** in the `rationale`. |
+| Prose students (predate the intake form) | none | `"medium"` / a whole sentence. `low`/`medium`/`high` → 2/3/4 on a 1-5 reading; for a sentence, judge it and **quote the phrase you judged from** in the `rationale`. |
 
 When the scale is ambiguous, **say which one you assumed in `rationale`** — it is the difference
 between a top-band `subject_reputation` and a middling one.

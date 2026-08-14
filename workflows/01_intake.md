@@ -254,7 +254,7 @@ For every student the tool flagged in `profile.json`'s **`_needs_review`**:
 7. **Delete the `_needs_review` key** once done, so the finished `profile.json` matches the standard
    schema shape (no stray keys — compare against the current `profile_template()` in
    `tools/init_student.py`, the source of truth for the shape; note the `needs` block is the broad
-   "support & belonging" set, so older students like `toru` carry a now-outdated `needs` shape).
+   "support & belonging" set, so students from before this shape existed carry a now-outdated `needs` shape).
 8. Write the student's `status.md` (so `resume.md` works next session).
 
 ## Before Stage 3 — per-student scoring weights (important)

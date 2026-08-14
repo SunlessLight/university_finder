@@ -26,8 +26,8 @@ Two readability passes run before the Markdown->HTML step, both reused from sibl
     per section to it (so a student can tap MAE / OPT / MQA / CSS Profile to see it).
 
 Usage:
-    python tools/report_to_pdf.py --student aisyah-rahman --report manchester-cs
-    python tools/report_to_pdf.py --student aisyah-rahman --all
+    python tools/report_to_pdf.py --student <slug> --report <report-slug>
+    python tools/report_to_pdf.py --student <slug> --all
 
     # --report accepts the slug with or without the .md extension.
 """

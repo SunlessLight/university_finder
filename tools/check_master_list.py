@@ -41,10 +41,10 @@ Budgets are constants — STATUS_BUDGET and CELL_BUDGETS in shortlist_schema.py,
 `python tools/shortlist_schema.py --contract` for the cell ones as JSON.
 
 Usage:
-    python tools/check_master_list.py --student ong-kyan
+    python tools/check_master_list.py --student <slug>
     python tools/check_master_list.py --file csvs/master_list3.csv
-    python tools/check_master_list.py --student toru --check budget,jargon
-    python tools/check_master_list.py --student toru --blanks
+    python tools/check_master_list.py --student <slug> --check budget,jargon
+    python tools/check_master_list.py --student <slug> --blanks
 """
 
 import argparse

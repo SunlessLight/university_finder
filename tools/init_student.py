@@ -13,8 +13,8 @@ profile_template() / preferences_template() are the SINGLE SOURCE OF TRUTH for t
 data-bank shape — a finalized profile.json should match this key set exactly.
 
 Usage:
-    python tools/init_student.py "Aisyah Rahman"
-    python tools/init_student.py "Aisyah Rahman" --force
+    python tools/init_student.py "<Student Name>"
+    python tools/init_student.py "<Student Name>" --force
 
 The student's PII lives only under data/students/ (gitignored). Defaults assume a
 Malaysian student (home_country = "Malaysia", currency = "MYR").

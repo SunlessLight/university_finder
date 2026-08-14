@@ -19,8 +19,8 @@ runs on this machine without a system-wide PATH change. If those libraries can't
 exits with instructions rather than a cryptic ctypes error.
 
 Usage:
-    python tools/apply_prep_to_pdf.py --student toru --region us
-    python tools/apply_prep_to_pdf.py --student toru --all
+    python tools/apply_prep_to_pdf.py --student <slug> --region us
+    python tools/apply_prep_to_pdf.py --student <slug> --all
 
     # --region accepts the slug with or without the .md extension.
 """

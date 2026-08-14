@@ -12,13 +12,13 @@ path means two concurrent Stage 3 sessions silently overwrite each other's resul
 
 Usage:
     # one or more queries as positional args
-    python tools/firecrawl_search.py --student lai-zheng-yi "BSc Biomedical Engineering UK entry requirements"
+    python tools/firecrawl_search.py --student <slug> "BSc Biomedical Engineering UK entry requirements"
 
     # queries from a JSON file (a list of strings)
-    python tools/firecrawl_search.py --student lai-zheng-yi --queries-file .tmp/lai-zheng-yi/queries.json
+    python tools/firecrawl_search.py --student <slug> --queries-file .tmp/<slug>/queries.json
 
     # control how many results per query, and how many to scrape for full text
-    python tools/firecrawl_search.py --student ong-kyan "Manchester CS fees" --limit 8 --scrape-top 3
+    python tools/firecrawl_search.py --student <slug> "Manchester CS fees" --limit 8 --scrape-top 3
 
     # or send results somewhere explicit
     python tools/firecrawl_search.py --out .tmp/scratch/results.json "QS computer science ranking"

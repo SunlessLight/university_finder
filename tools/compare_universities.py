@@ -10,15 +10,15 @@ Pure CSV -> table. No API calls, no credits.
 
 Usage:
     # compare the whole shortlist on the default decision dimensions
-    python tools/compare_universities.py --student aisyah-rahman --status Shortlist
+    python tools/compare_universities.py --student <slug> --status Shortlist
 
     # compare specific rows on cost + visa only
-    python tools/compare_universities.py --student aisyah-rahman \
+    python tools/compare_universities.py --student <slug> \
         --rows "University of Manchester|BSc Computer Science, University of Melbourne|BSc Computing" \
         --dimensions cost,visa
 
     # save a copy alongside the run
-    python tools/compare_universities.py --student aisyah-rahman --status Finalist --dimensions all --save
+    python tools/compare_universities.py --student <slug> --status Finalist --dimensions all --save
 
 Dimension presets: summary, cost, scholarship, quality, fit, visa, deadline, all.
 """

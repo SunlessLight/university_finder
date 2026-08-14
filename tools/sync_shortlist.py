@@ -30,8 +30,8 @@ pass (see check_one_country). The normal input is written by tools/merge_candida
 which merges the per-university fragments and refuses to emit an incomplete row.
 
 Usage:
-    python tools/sync_shortlist.py --student aisyah-rahman --country Australia
-    python tools/sync_shortlist.py --student aisyah-rahman --country Australia --dry-run
+    python tools/sync_shortlist.py --student <slug> --country Australia
+    python tools/sync_shortlist.py --student <slug> --country Australia --dry-run
 
 candidate JSON: a list of objects — see workflows/03_discover_longlist.md for the
 full schema. Each carries a "scores" dict (0-5 sub-scores) and an "entry_margin".
@@ -131,7 +131,7 @@ def candidate_to_row(c, score, tier, admission, flags):
         "Est. living/yr": c.get("est_living_per_year", ""),
         "Duration (yrs)": c.get("duration_years", ""),
         "Approx total (MYR)": "" if myr is None else str(myr),
-        # Scholarship detail (Toru's #1 priority). Fall back to a legacy single "scholarships" field.
+        # Scholarship detail (a top priority for some students). Fall back to a legacy single "scholarships" field.
         "Scholarship & portal": c.get("scholarship_portal", c.get("scholarships", "")),
         "Scholarship coverage": c.get("scholarship_coverage", ""),
         "Scholarship competitiveness": c.get("scholarship_competitiveness", ""),

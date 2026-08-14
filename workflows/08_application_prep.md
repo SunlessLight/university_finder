@@ -123,7 +123,7 @@ Write `.tmp/<slug>/apply_prep_<region>.json` (exact shape in `build_application_
 
 ```json
 {
-  "student_slug": "toru", "region": "us", "region_title": "United States",
+  "student_slug": "<slug>", "region": "us", "region_title": "United States",
   "start_here": ["**Book the SAT now.** Sit it by **3 Oct 2026** …", "…3-6 imperatives"],
   "fx": {"rate": "USD 1 ≈ RM 4.08", "as_of": "2026-07-20 (date of research)"},
   "cost_cycle_note": "These are the published **2026-27** figures; you enter **Fall 2027** …",
@@ -160,8 +160,8 @@ by exact `name`.
 ## Render
 
 ```powershell
-python tools/build_application_prep.py --student toru --input .tmp/toru/apply_prep_us.json
-python tools/apply_prep_to_pdf.py --student toru --region us
+python tools/build_application_prep.py --student <slug> --input .tmp/<slug>/apply_prep_us.json
+python tools/apply_prep_to_pdf.py --student <slug> --region us
 ```
 Output: `data/students/<slug>/application_prep/<region>.md` (+ `.pdf`). Repeat per region. The `.md` is
 regenerable from the `.tmp/<slug>/apply_prep_<region>.json` — keep that JSON so a re-render costs no
