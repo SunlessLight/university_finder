@@ -43,7 +43,14 @@ anyway is the exact cost this mode exists to avoid.
    it holds the accumulated traps that a cold researcher gets wrong every time: the Australian
    domestic-fee trap, Singapore's five-tier fee table, the SMU name collision, XJTLU's
    entry-into-Year-2, the need-blind cohort drift. They live there and only there, so this
-   file never duplicates them. — **both modes.**
+   file never duplicates them. It also has a **"Known-good sources"** table (UCAS, gov.uk visa
+   pages, immi/ICA/IMMD/JASSO, etc.) — start there rather than searching from scratch. —
+   **both modes.**
+   - **Researching a Malaysian sponsor, recognition body, or a rank** (any country)? Those are
+     cross-country, so they live once in **`workflows/sources.md`** instead of in every country
+     file — read it only for that. Same rule as everything else here: it's a location to fetch,
+     never a fee/deadline/rank to copy. If a URL there 404s, use the sentinel for that cell and
+     note the dead link in `research_notes` rather than guessing a new path.
 2. **The candidate schema at `workflows/03b_candidate_schema.md`** — every required field,
    the field notes, the `entry_margin` vs `admission_likelihood` distinction, the cell-budget
    readability rules, and the 0-5 scoring guide. Read it in full; this is what "the schema" and

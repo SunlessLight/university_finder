@@ -13,6 +13,27 @@ MEXT scholarship undergraduate <field>
 <university> international tuition admission fee
 ```
 
+## Known-good sources (locations, never values)
+
+> Places to **fetch**, never facts to quote — a fee, deadline or cutoff comes off the page every
+> time (guardrail 2). `free` = plain `WebFetch` works; `blocked` = the page exists but 403s a
+> plain fetch, so skip the retries and go straight to `firecrawl_search.py`; `quirk` = reachable
+> only at the exact address given. Confirmed 2026-08-08. If one 404s, go up to the site root
+> rather than guessing a deeper path — then fix the row here. **Cross-country sources —
+> rankings, Malaysian sponsors, MQA + the professional bodies, English tests — are in
+> `workflows/sources.md`**, not repeated per country.
+
+| Answers | URL | Fetch |
+|---|---|---|
+| Official English-taught programme search (MEXT/JASSO portal) | `https://www.studyinjapan.go.jp/en/` | free |
+| Scholarships, EJU, and JASSO's own student living-cost survey | `https://www.jasso.go.jp/en/` | free |
+| MEXT undergraduate scholarship | `https://www.mext.go.jp/en/policy/education/highered/title02/detail02/sdetail02/1373897.htm` | free |
+| Student visa / status of residence (Immigration Services Agency) | `https://www.moj.go.jp/isa/` | **quirk** |
+
+Two addressing traps here: **ISA is under the Ministry of Justice** — `www.isa.go.jp` does not serve,
+so use the `moj.go.jp/isa/` path. And **JASSO's deep English paths rot** (the scholarships path
+redirects to a not-found page); start at the `/en/` root and navigate.
+
 > **Japan is a real Safety-side / affordability play — the mirror of the US, and the reason it earns a
 > place in a RM500k budget.** National and public universities run a **near-flat tuition** (national
 > standard **~¥535,800/yr**, ~RM 17k) plus a one-off **admission fee ~¥282,000** — an order of magnitude
@@ -38,7 +59,7 @@ MEXT scholarship undergraduate <field>
 > `scholarship_opportunity` for the *opportunity*, put the competitiveness in `notes`/`entry_margin`,
 > don't inflate.
 >
-> **Recognition:** Japan is a **Washington Accord** signatory via **JABEE** — relevant to Murugaa's
+> **Recognition:** Japan is a **Washington Accord** signatory via **JABEE** — relevant to a student's
 > `recognition_targets` (MQA + BEM + Washington Accord). But **not every program is JABEE-accredited**;
 > record it as a Stage-4 verify, not an assumption.
 >

@@ -13,6 +13,27 @@ MQA recognised programme <course>
 EAC accredited engineering programme Malaysia
 ```
 
+## Known-good sources (locations, never values)
+
+> Places to **fetch**, never facts to quote — a fee, deadline or cutoff comes off the page every
+> time (guardrail 2). `free` = plain `WebFetch` works; `blocked` = the page exists but 403s a
+> plain fetch, so skip the retries and go straight to `firecrawl_search.py`; `quirk` = reachable
+> only at the exact address given. Confirmed 2026-08-08. If one 404s, go up to the site root
+> rather than guessing a deeper path — then fix the row here. **Cross-country sources —
+> rankings, Malaysian sponsors, MQA + the professional bodies, English tests — are in
+> `workflows/sources.md`**, not repeated per country.
+
+| Answers | URL | Fetch |
+|---|---|---|
+| UPU — the public-university application system (the **local**-rate route, MUET not IELTS) | `https://upu.mohe.gov.my/` | free |
+| MOHE — public higher-education policy, intakes, funding | `https://www.mohe.gov.my/` | free |
+
+Recognition is the whole game on a Malaysian row and it lives in `workflows/sources.md`: the **MQR**
+register (every domestic programme is on it — a floor, not a distinction) and the professional ladder
+that actually scores, **EAC/BEM/Washington vs ETAC/MBOT/Sydney**. The Malaysian sponsors are there
+too. Private and branch-campus fees come off each university's own page — no central register lists
+them, and aggregators quote the international rate by default (see the trap below).
+
 > **Malaysia is a home-country pass and inverts three habits at once.** The traps are written up in the
 > scoring section below rather than here, because each is a scoring rule, not a query — read all three
 > before filling a Malaysian row:

@@ -12,8 +12,31 @@ site:ac.uk <course> entry requirements
 UK Graduate Route post study work
 ```
 
+## Known-good sources (locations, never values)
+
+> Places to **fetch**, never facts to quote — a fee, deadline or cutoff comes off the page every
+> time (guardrail 2). `free` = plain `WebFetch` works; `blocked` = the page exists but 403s a
+> plain fetch, so skip the retries and go straight to `firecrawl_search.py`; `quirk` = reachable
+> only at the exact address given. Confirmed 2026-08-08. If one 404s, go up to the site root
+> rather than guessing a deeper path — then fix the row here. **Cross-country sources —
+> rankings, Malaysian sponsors, MQA + the professional bodies, English tests — are in
+> `workflows/sources.md`**, not repeated per country.
+
+| Answers | URL | Fetch |
+|---|---|---|
+| Who offers the course + its entry requirements (UCAS course search) | `https://www.ucas.com/explore/search/courses` | **blocked** |
+| Student visa rules **and** the financial-proof figure | `https://www.gov.uk/student-visa` · `https://www.gov.uk/student-visa/money` | free |
+| Graduate Route post-study work | `https://www.gov.uk/graduate-visa` | free |
+| Fee status, term-time working rules, living-cost guidance for internationals | `https://www.ukcisa.org.uk/` | free |
+| Course-level outcomes and satisfaction — **official (gov-run), not an aggregator** | `https://discoveruni.gov.uk/` | free |
+
+The whole `ucas.com` domain 403s scripted and plain fetches alike, so treat it as a Firecrawl target
+from the first attempt. The university's own course page carries the same entry requirements and is
+free to fetch — prefer it, and use UCAS for what only UCAS has (the cross-university course search
+and the cycle deadlines).
+
 > **The UK has NO meets-full-need or need-blind equivalent for internationals — if `scholarship_required`
-> is a hard gate, say so plainly (learned 2026-07-28, Francena).** Unlike the USA (see `usa.md`), a wide
+> is a hard gate, say so plainly (learned 2026-07-28).** Unlike the USA (see `usa.md`), a wide
 > UK search (9 unis incl. Oxbridge/Imperial/UCL/Russell Group) turned up only generic "international
 > scholarships search" portals — no named award with a confirmed amount survived snippet-level
 > discovery. UK international scholarships are typically **partial merit awards** (a few thousand GBP/yr
@@ -39,7 +62,7 @@ UK Graduate Route post study work
 > by course, and Chemistry (a lab science) sits at the **top** of that range, not the middle.
 >
 > **QS's subject-ranking table (`topuniversities.com`) is JavaScript-rendered — a plain fetch
-> returns an empty shell, and it fought back on Firecrawl too (learned 2026-08-05, Teoh Yu Shan
+> returns an empty shell, and it fought back on Firecrawl too (learned 2026-08-05
 > backfill).** Every `Subject rank` lookup for History/Philosophy that hit this table needed
 > repeated WebFetch + Firecrawl retries; Manchester, UCL Philosophy, Cardiff, and Exeter never
 > recovered an exact number even after 4-5 scrape attempts each and had to report a verified band

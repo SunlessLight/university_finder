@@ -14,6 +14,25 @@ JCU OR Curtin OR SIM Singapore <course> bachelor international fees
 Singapore Employment Pass minimum salary graduate
 ```
 
+## Known-good sources (locations, never values)
+
+> Places to **fetch**, never facts to quote — a fee, deadline or cutoff comes off the page every
+> time (guardrail 2). `free` = plain `WebFetch` works; `blocked` = the page exists but 403s a
+> plain fetch, so skip the retries and go straight to `firecrawl_search.py`; `quirk` = reachable
+> only at the exact address given. Confirmed 2026-08-08. If one 404s, go up to the site root
+> rather than guessing a deeper path — then fix the row here. **Cross-country sources —
+> rankings, Malaysian sponsors, MQA + the professional bodies, English tests — are in
+> `workflows/sources.md`**, not repeated per country.
+
+| Answers | URL | Fetch |
+|---|---|---|
+| MOE Tuition Grant — the subsidy **and the 3-year bond** that decide the real fee | `https://www.moe.gov.sg/financial-matters/tuition-grant-scheme` | free |
+| Student's Pass (ICA) | `https://www.ica.gov.sg/reside/STP/apply` | free |
+
+The five-tier fee table itself is per-university (NUS/NTU/SMU/SUTD/SIT each publish their own) — the
+MOE page tells you which tier the student lands in and what it costs them in bond years, which is the
+part aggregators always drop.
+
 > **Singapore and Malaysia were one block until 2026-07-29** — `COUNTRY_NORMALIZE` fused them into a
 > single `Singapore/Malaysia` token, so a student who ticked only Malaysia got Singapore rows. They are
 > two countries with almost nothing in common operationally (fee tiers, recognition ladder, entry

@@ -12,6 +12,28 @@ Australia 485 graduate visa <field>
 <university> international tuition <course>
 ```
 
+## Known-good sources (locations, never values)
+
+> Places to **fetch**, never facts to quote — a fee, deadline or cutoff comes off the page every
+> time (guardrail 2). `free` = plain `WebFetch` works; `blocked` = the page exists but 403s a
+> plain fetch, so skip the retries and go straight to `firecrawl_search.py`; `quirk` = reachable
+> only at the exact address given. Confirmed 2026-08-08. If one 404s, go up to the site root
+> rather than guessing a deeper path — then fix the row here. **Cross-country sources —
+> rankings, Malaysian sponsors, MQA + the professional bodies, English tests — are in
+> `workflows/sources.md`**, not repeated per country.
+
+| Answers | URL | Fetch |
+|---|---|---|
+| Official course + provider search | `https://www.studyaustralia.gov.au/` | free |
+| Course and entry-requirement comparison across providers | `https://www.courseseeker.edu.au/` | free |
+| Is the course CRICOS-registered for international students | `https://cricos.education.gov.au/` | free |
+| Subclass 500 student visa — **and the official living-cost benchmark** | `https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/student-500` | free |
+| Subclass 485 temporary graduate (post-study work) | `https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/temporary-graduate-485` | free |
+
+> The AUD living-cost benchmark quoted in the traps below is a **2026 snapshot**, kept there because
+> it explains the trap. `est_living_per_year` still gets the current figure off the subclass-500 page
+> — that is exactly the value-vs-location line this section is drawn on.
+
 > **Australia is the SAFETY end of the list — expect it, don't fight it.** Australian entry is
 > **cutoff-based, not holistic**: unis publish an explicit A-Level/ATAR bar per course, so
 > `entry_margin` is a *measurement* here, not a guess. A strong A-Level student will legitimately
@@ -61,7 +83,7 @@ Australia 485 graduate visa <field>
 > `intent_to_migrate` is true.
 >
 > **QS's subject-ranking table (`topuniversities.com`) is JavaScript-rendered — a plain fetch
-> returns an empty shell, same trap as the UK's (see `uk.md`) (learned 2026-08-05, Teoh Yu Shan
+> returns an empty shell, same trap as the UK's (see `uk.md`) (learned 2026-08-05
 > backfill).** Melbourne's History `Subject rank` was never recovered after a WebFetch 403 and 5
 > Firecrawl scrapes; UWA and UNSW settled for a confirmed-but-imprecise band (UWA: "ranked, #1 in
 > WA, exact global band not published") or a broader QS Arts & Humanities cluster proxy instead of

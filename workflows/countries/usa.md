@@ -12,6 +12,34 @@ US News best <field> programs
 OPT STEM <field> post study work
 ```
 
+## Known-good sources (locations, never values)
+
+> Places to **fetch**, never facts to quote — a fee, deadline or cutoff comes off the page every
+> time (guardrail 2). `free` = plain `WebFetch` works; `blocked` = the page exists but 403s a
+> plain fetch, so skip the retries and go straight to `firecrawl_search.py`; `quirk` = reachable
+> only at the exact address given. Confirmed 2026-08-08. If one 404s, go up to the site root
+> rather than guessing a deeper path — then fix the row here. **Cross-country sources —
+> rankings, Malaysian sponsors, MQA + the professional bodies, English tests — are in
+> `workflows/sources.md`**, not repeated per country.
+
+| Answers | URL | Fetch |
+|---|---|---|
+| Which universities take the Common App, their requirements and deadlines | `https://www.commonapp.org/apply/first-year-students` | free |
+| CSS Profile — the aid form internationals usually **must** file at application | `https://cssprofile.collegeboard.org/` | free |
+| Official cost, aid and graduate-earnings data per institution | `https://collegescorecard.ed.gov/` | free |
+| Official admissions/enrolment stats (admit rate, test ranges) | `https://nces.ed.gov/collegenavigator/` | free |
+| Is the engineering/computing programme ABET-accredited (feeds BEM/Washington Accord) | `https://amspub.abet.org/` | free |
+| F-1 student visa | `https://travel.state.gov/content/travel/en/us-visas/study/student-visa.html` | **blocked** |
+| SEVIS I-901 fee | `https://www.fmjfee.com/` | free |
+| OPT + 24-month STEM OPT | `https://www.uscis.gov/working-in-the-united-states/students-and-exchange-visitors/optional-practical-training-opt-for-f-1-students` | free |
+
+**The Common Data Set has no central host** — it is published per university, so search
+`<university> common data set` and take the university's own PDF/page. That is the source behind the
+admitted-profile stats in a Stage 4 report's *Who actually gets in*.
+
+**Need-blind / meets-full-need status has no register either**, and that is deliberate — the cohort
+drifts (see the trap below). It comes off each university's own international-aid page, every time.
+
 > **For the USA, FUNDING is the real axis — not sticker price.** A 4-year US degree runs ~840k-1.8M MYR,
 > so for most Malaysian budgets *every* US row busts the ceiling at sticker and the list is meaningless
 > unless built around aid. Always add these queries:
@@ -26,7 +54,7 @@ OPT STEM <field> post study work
 >
 > **The need-blind-for-international cohort membership drifts — always re-check against each university's
 > OWN current page, not a remembered list or even a past "confirmed" note in this file (learned
-> 2026-07-28, Teoh Yu Shan; corrected again same day after a second session re-verified).** Bowdoin's July
+> 2026-07-28; corrected again same day after a second session re-verified).** Bowdoin's July
 > 2022 press release states *"Bowdoin joins Harvard University, Princeton University, Massachusetts
 > Institute of Technology, Yale University, Dartmouth College, and Amherst College in including all
 > students, regardless of citizenship, under its need-blind admissions policy"* — a clean, citable 7-school

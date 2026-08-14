@@ -11,9 +11,30 @@ CSC scholarship <field> bachelor
 <university> international admissions <course>
 ```
 
+## Known-good sources (locations, never values)
+
+> Places to **fetch**, never facts to quote — a fee, deadline or cutoff comes off the page every
+> time (guardrail 2). `free` = plain `WebFetch` works; `blocked` = the page exists but 403s a
+> plain fetch, so skip the retries and go straight to `firecrawl_search.py`; `quirk` = reachable
+> only at the exact address given. Confirmed 2026-08-08. If one 404s, go up to the site root
+> rather than guessing a deeper path — then fix the row here. **Cross-country sources —
+> rankings, Malaysian sponsors, MQA + the professional bodies, English tests — are in
+> `workflows/sources.md`**, not repeated per country.
+
+| Answers | URL | Fetch |
+|---|---|---|
+| Official programme + CSC scholarship search (the government portal) | `https://www.studyinchina.edu.cn/` | free |
+
+> **`campuschina.org` is dead — the domain no longer resolves.** It was the old CSC portal and still
+> turns up in search results and older notes; `studyinchina.edu.cn` replaced it. Don't spend a retry
+> on it (also recorded in `workflows/sources.md`).
+
+The Sino-foreign JV universities (XJTLU, Duke Kunshan, NYU Shanghai, UNNC) are **not** on the CSC
+portal in any useful way — go to each one's own international-admissions page, per the trap below.
+
 > **For Humanities/History/Philosophy specifically, a literal English-taught "BA History" does not
 > exist at mainstream Chinese universities — confirmed twice now (learned 2026-07-16 and re-confirmed
-> 2026-07-28, Teoh Yu Shan).** A china-admissions.com sweep of 9 History bachelor's programmes
+> 2026-07-28).** A china-admissions.com sweep of 9 History bachelor's programmes
 > (Tsinghua, Zhejiang, Wuhan ×2, Sichuan, Beijing Normal, East China Normal, Chongqing, Zhengzhou ×2)
 > found every single one Chinese-taught. **The realistic substitutes are Sino-foreign joint-venture
 > (JV) universities**, not a mainland public university's own History/Philosophy department:

@@ -14,7 +14,23 @@ HKU OR CUHK OR HKUST OR PolyU OR CityU OR HKBU OR Lingnan <course> international
 IANG Hong Kong post-study work visa immd.gov.hk
 ```
 
-## Traps (learned 2026-08-03, Teoh — first real HK pass)
+## Known-good sources (locations, never values)
+
+> Places to **fetch**, never facts to quote — a fee, deadline or cutoff comes off the page every
+> time (guardrail 2). `free` = plain `WebFetch` works; `blocked` = the page exists but 403s a
+> plain fetch, so skip the retries and go straight to `firecrawl_search.py`; `quirk` = reachable
+> only at the exact address given. Confirmed 2026-08-08. If one 404s, go up to the site root
+> rather than guessing a deeper path — then fix the row here. **Cross-country sources —
+> rankings, Malaysian sponsors, MQA + the professional bodies, English tests — are in
+> `workflows/sources.md`**, not repeated per country.
+
+| Answers | URL | Fetch |
+|---|---|---|
+| Official non-local admissions overview across the HK institutions | `https://www.studyinhongkong.edu.hk/` | free |
+| Student visa for non-local students (IMMD) | `https://www.immd.gov.hk/eng/services/visas/study.html` | free |
+| IANG — post-study work | `https://www.immd.gov.hk/eng/services/visas/IANG.html` | free |
+
+## Traps (learned 2026-08-03 — first real HK pass)
 
 > **Set `currency: "HKD"`** (in `FX_TO_MYR` at 0.60) or the MYR total silently blanks.
 
