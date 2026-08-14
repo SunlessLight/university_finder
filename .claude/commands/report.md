@@ -25,10 +25,18 @@ over the note).
    into it. Demoting or rejecting a row is my call — bring it to me with the one-line reason.
 
 Then, and only for picks that survived: **dispatch the `report-writer` subagent once per finalist,
-sequentially — never in parallel.** `build_report.py` reads and rewrites the whole
-`master_list.csv`, so two concurrent dispatches can silently drop a Finalist flip. Give each
-dispatch the slug, the finalist, and the mode (`--mode course` default; `--mode university` for
-US whole-institution fit).
+all in parallel.** Each dispatch writes only its own report and its own marker fragment — nothing
+writes `master_list.csv`, so there is nothing to race. Give each dispatch the slug, the finalist,
+and the mode (`--mode course` default; `--mode university` for US whole-institution fit).
+
+When every dispatch is back, **once**, in this session:
+```powershell
+python tools/flip_finalists.py    --student $1   # folds the markers into the CSV in one pass
+python tools/check_master_list.py --student $1   # the gate — must come back clean
+```
+`flip_finalists.py` soft-fails per fragment and leaves anything it refused on disk. Bring me its
+failure lines rather than working around them — `already_rejected` in particular means it declined
+to resurrect a row I dropped, and re-promoting that row is my call.
 
 Report back each agent's gaps (`"Not found — <why>"`) so I can see what's missing. Rewrite
 `status.md` at the end.

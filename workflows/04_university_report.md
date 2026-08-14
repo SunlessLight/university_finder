@@ -23,6 +23,11 @@ A-tier and best-fit first.
 
 ## Before you research: pick and cut (the pre-flight)
 
+> **You don't need Stage 3 to be "finished" first.** This stage runs on whatever is on the Longlist
+> now — not on every `target_countries` destination having been discovered. Pick UK finalists while
+> the US longlist doesn't exist yet, then come back after the next Stage 3 pass and pick more. See
+> `00_overview.md`'s pipeline table for the full note.
+
 **1. Pick the finalists.** The student promotes their picks from the Longlist to
 **`List status = Shortlist`** (an agent edit to `master_list.csv`) — aim for ~3-5 they genuinely want to
 apply to. Render the trade-offs first so the choice is informed:
@@ -73,9 +78,10 @@ its space once a row survives to Shortlist, where the detail is actually actiona
 
 > **`Course at a glance` and `Student life` are already filled.** Stage 3 writes them, like every other
 > column. If the report's *Course details & structure* or *Student life & culture* research contradicts
-> the one-liner, **correct the cell** — but don't treat filling it as a Stage 4 task. Campus and city
-> facts are course-independent, so reuse them across students rather than re-researching (e.g.
-> `data/students/toru/student_life_research.md`).
+> the one-liner, **correct it through the report JSON's `corrections` object** (see "Assemble the report
+> JSON" below) — the agent never edits the CSV, `flip_finalists.py` applies it. Don't treat filling
+> these as a Stage 4 task either way. Campus and city facts are course-independent, so reuse them
+> across students rather than re-researching (e.g. `data/students/<slug>/student_life_research.md`).
 
 > **Too few survivors?** If the cut leaves fewer than ~3 workable picks, go back to **Stage 3**
 > (`03_discover_longlist.md`) and widen discovery (more countries or safer options) rather than
@@ -106,23 +112,56 @@ sources for hard facts, enforced non-empty sections, the PDF export — is **ide
 
 ## Tools used
 
-> **Dispatch steps 1-3 to the `report-writer` subagent — one call per finalist, one at a time.**
+> **Dispatch steps 1-3 to the `report-writer` subagent — one call per finalist, all in parallel.**
 > `.claude/agents/report-writer.md` (pinned to **Opus**) runs this research-and-render sequence for
 > exactly one finalist per dispatch — give it the student slug, the finalist (university + course, or
-> university alone for `--mode university`), and the mode. Dispatch finalists **sequentially, not in
-> parallel**: `build_report.py` reads and rewrites the whole `master_list.csv`, so two dispatches
-> racing to flip different rows at the same time can silently drop one Finalist flip. The pre-flight
-> above (pick, verify, cut) stays in this session — it's the Stage 4 checkpoint with the student
-> (CLAUDE.md), not research.
+> university alone for `--mode university`), and the mode. **Parallel is safe** (since 2026-08-07,
+> mirroring Stage 3's row-fillers in `03_discover_longlist.md`): each dispatch writes only its own
+> report and its own marker fragment, and nothing writes `master_list.csv`, so there is nothing to
+> race. It used to be sequential because `build_report.py` rewrote the whole CSV per report; that
+> write moved to `flip_finalists.py`, which runs **once** in this session at step 4. Keeping the
+> research out of this session is the point — 3-5 finalists' worth of fetched pages would otherwise
+> all land in one context. The pre-flight above (pick, verify, cut) stays in this session — it's the
+> Stage 4 checkpoint with the student (CLAUDE.md), not research.
 
 1. *(agent research)* gather the facts for the 14 content sections. **Hard facts** (fees, requirements,
    visa, recognition, deadlines) come from **official sources** (course page, UCAS/Common App, the
    country's visa site, MQA). **Decision texture** (who gets in, student life, the city) comes from search
    + forums/video/social — capture their URLs + snippets without scraping them.
-2. *(agent step)* assemble `.tmp/<slug>/report_<uni>.json`.
-3. `build_report.py --student <slug> --input .tmp/<slug>/report_<uni>.json` — renders the report and
-   flips that row to `List status = Finalist`. (There is no `Report status` column — the report file
-   under `reports/` *is* the record that it was built.)
+2. *(agent step)* assemble `.tmp/<slug>/report_<uni>.json` — including the optional `corrections`
+   object if the deep research contradicts the row's `Course at a glance` / `Student life` cell.
+3. *(agent step)* `build_report.py --student <slug> --input .tmp/<slug>/report_<uni>.json` — renders
+   the report **and** writes a finalist marker fragment to `.tmp/<slug>/finalists/<report-slug>.json`.
+   No CSV change yet. (There is no `Report status` column — the report file under `reports/` *is* the
+   record that it was built.)
+
+Then, back in this session, **once — after every dispatch has returned** (mirrors Stage 3's
+"Steps 4-6 — Merge, sync, check"):
+
+```powershell
+python tools/check_report.py     --student <slug> --all       # per-report quality gate
+python tools/flip_finalists.py   --student <slug> --dry-run   # preview: what each marker would do
+python tools/flip_finalists.py   --student <slug>             # one read, one write, deletes applied
+python tools/check_master_list.py --student <slug>            # the gate — must come back clean
+```
+
+4. `check_report.py --all` lints every report just built, in one pass, without you reading any of
+   them back into this session's context — that re-read is exactly what cost an earlier session 390
+   lines. It catches the mechanical half of "is this report finished": missing Snapshot fields,
+   `Not found` density, thin or all-aggregator sourcing, third-person slips, and a required section
+   that isn't actually a table/checklist. `report-writer` is instructed to run this on its own report
+   before ending its dispatch, so a clean run here is confirmation, not the first check — but run it
+   anyway; it's cheap, and it also catches a report someone built by hand outside the agent. **It is
+   not a synthesis judge** — passing it means the report is structurally sound, not that the writing
+   is good. That's still why this stage is pinned to Opus.
+5. `flip_finalists.py` reads every marker, flips the matched rows to `Finalist`, applies any
+   `corrections`, and deletes only the fragments it applied. It **soft-fails per fragment** — one bad
+   marker never blocks the rest — and leaves whatever failed on disk, named, for a re-run. Read its
+   failure lines: `already_rejected` means the student demoted that row after its report was written
+   (the tool refuses to resurrect it — re-promote by hand only if the rejection was a mistake);
+   `no_match` usually means the agent's university/course string drifted from the row's.
+6. `check_master_list.py` is the gate, exactly as at Stage 3 — a list doesn't go to a student until it
+   comes back clean. Run it **without** `--check`.
 
 ### Which scraper for which section
 
@@ -179,9 +218,10 @@ Ordered decision-first. **Snapshot (1)** and **Sources (16)** are rendered by th
     needs to blend in**, **first-year / orientation activities** (freshers, signature first-year projects),
     and **real student voices** (Reddit / The Student Room / YouTube — links + snippets, not scraped).
     This is the **only** home for student-life research since the master-list columns were removed on
-    2026-07-16 — it needs paragraphs, which is exactly what a spreadsheet cell can't hold. **For Toru,
-    read `data/students/toru/student_life_research.md` first**: 30 rows of this was already researched
-    under the old verify-shortlist step and migrated there. Don't pay for it twice.
+    2026-07-16 — it needs paragraphs, which is exactly what a spreadsheet cell can't hold. **Check
+    `data/students/<slug>/student_life_research.md` first for early students**: 30 rows of this was
+    already researched under the old verify-shortlist step and migrated there for one of them. Don't
+    pay for it twice.
 12. **The city, the area & belonging** — the **city/area feel, safety, transport, and things to do /
     sightseeing**, plus the **Malaysian / halal / prayer / religious-community** angle. Surface
     `needs`-flagged items prominently; otherwise treat as reassuring background, not a decision driver.
@@ -304,9 +344,14 @@ Render it:
 ```powershell
 python tools/build_report.py --student <slug> --input .tmp/<slug>/uni_mit.json --mode university
 ```
-Output: `data/students/<slug>/reports/<uni-slug>.md`; every `master_list.csv` row for that university
-flips to `Finalist` (the tool prints which, and refuses if any matched row isn't a US row). Export to PDF
-exactly as below — `report_to_pdf.py` reads either report unchanged.
+Output: `data/students/<slug>/reports/<uni-slug>.md` **plus** a `mode: "university"` finalist marker at
+`.tmp/<slug>/finalists/<uni-slug>.json`. No CSV change here. When `flip_finalists.py` runs later it
+matches **every** row for that university (by name, ignoring `Course`) and flips them all — and the
+US-only rule is enforced there, as a per-fragment `guard_failed` rather than a hard exit, so one
+mis-moded marker leaves the other finalists' flips intact. A `corrections` entry in a university-mode
+report should be **`Student life` only**: this marker can claim several course rows at once, so one
+`Course at a glance` sentence would be wrong on all but one of them. Export to PDF exactly as below —
+`report_to_pdf.py` reads either report unchanged.
 
 ## Writing rules — make it skimmable (non-negotiable, both modes)
 
@@ -371,6 +416,14 @@ Write `.tmp/<slug>/report_<uni>.json` (see `build_report.py`'s header for the ex
   ]
   ```
 - **`sources`** — required; every hard fact needs a citation with authority + `as_of`.
+- **`corrections`** — the *only* way a report changes a master-list cell. Use it when this report's
+  deeper research shows a Stage 3 one-liner is wrong or misleading; leave it out otherwise:
+  ```json
+  "corrections": {"Student life": "One tight corrected sentence, within CELL_BUDGETS."}
+  ```
+  `flip_finalists.py` validates each entry — a real column, never a computed one
+  (`Admission likelihood`, `Desirability`, `List status`, …), within its `CELL_BUDGETS` length — and
+  refuses the whole marker if any fails, so a typo costs a re-run, never a corrupted cell.
 
 If a fact genuinely can't be found, write `"Not found — <why>"` in that section rather than leaving it
 empty (empty sections fail the build on purpose — a half-researched report shouldn't pass).
@@ -380,10 +433,20 @@ empty (empty sections fail the build on purpose — a half-researched report sho
 ```powershell
 python tools/build_report.py --student <slug> --input .tmp/<slug>/report_manchester-cs.json
 ```
-Output: `data/students/<slug>/reports/<uni-course-slug>.md`, and the matching `master_list.csv` row flips
-to **`Finalist`**. Repeat per finalist. (`Finalist` is the whole story — `List status` only ever takes
-`Longlist`/`Shortlist`/`Finalist`/`Rejected`, and the report file under `reports/` is the record that it
-was built.)
+Two outputs, no CSV change: the report at `data/students/<slug>/reports/<uni-course-slug>.md` and a
+finalist marker at `.tmp/<slug>/finalists/<uni-course-slug>.json` (same slug, so report and marker are
+an obvious pair, and a re-render overwrites its own marker rather than stacking a duplicate). Repeat per
+finalist — **in parallel**, since no two dispatches write the same file.
+
+Then, once, in the main session:
+```powershell
+python tools/check_report.py      --student <slug> --all   # per-report quality gate, no re-read needed
+python tools/flip_finalists.py    --student <slug>          # folds every marker into the CSV in one pass
+python tools/check_master_list.py --student <slug>          # the gate — must come back clean
+```
+That is what makes the rows **`Finalist`**. (`Finalist` is the whole story — `List status` only ever
+takes `Longlist`/`Shortlist`/`Finalist`/`Rejected`, and the report file under `reports/` is the record
+that it was built.)
 
 ## Export to PDF (optional, on request)
 
@@ -416,5 +479,8 @@ a **"Key terms"** glossary built from the acronyms the report uses, with each te
 
 ## Done when
 
-Every finalist has a complete university report and shows as **`Finalist`** in the master list. Then
-proceed to **Stage 5** (`05_decide_and_apply.md`).
+Every finalist has a complete university report, `check_report.py --all` came back clean (or every
+finding was reviewed and judged a false positive), `flip_finalists.py` has run and left
+`.tmp/<slug>/finalists/` empty (anything still sitting there is a flip that did *not* happen — read its
+reason), every finalist shows as **`Finalist`** in the master list, and `check_master_list.py` comes
+back clean. Then proceed to **Stage 5** (`05_decide_and_apply.md`).

@@ -100,15 +100,17 @@ python tools/fetch_form_responses.py --confirm                        # LAST: ma
 #   ...Stage 3: ask Claude to derive data/students/<slug>/weights.json (the 'scoring-weights' skill)
 #      — per-student scoring weights; sync refuses to run without them...
 
-python tools/firecrawl_search.py --student aisyah-rahman "BSc Computer Science UK entry requirements" --limit 6 --scrape-top 2
+python tools/firecrawl_search.py --student <slug> "BSc Computer Science UK entry requirements" --limit 6 --scrape-top 2
 #   ...review .tmp/<slug>/search_results.json, write .tmp/<slug>/uni_candidates.json (schema in workflow 03)...
-python tools/sync_shortlist.py --student aisyah-rahman          # add --dry-run to preview
+python tools/sync_shortlist.py --student <slug>          # add --dry-run to preview
 
-python tools/compare_universities.py --student aisyah-rahman --status Shortlist --dimensions all
+python tools/compare_universities.py --student <slug> --status Shortlist --dimensions all
 #   ...narrow by editing the List status column; promote finalists...
 
-python tools/build_report.py --student aisyah-rahman --input .tmp/aisyah-rahman/report_manchester-cs.json
-python tools/build_calendar.py --student aisyah-rahman
+python tools/build_report.py --student <slug> --input .tmp/<slug>/report_manchester-cs.json
+#   ...one build_report.py per finalist; each writes a report + a marker, not a CSV change...
+python tools/flip_finalists.py --student <slug>    # ONCE: folds every marker into the CSV
+python tools/build_calendar.py --student <slug>
 ```
 
 `tools/init_student.py` still scaffolds a single student folder by hand (and its templates are the
@@ -121,8 +123,8 @@ and the narrowing rules — live in [workflows/](workflows/), starting with
 ### Running a stage with Claude
 
 **Don't use plan mode for a normal run.** The workflow files already *are* the plan, so planning one
-re-derives what's on disk and costs a whole extra pass. Say what you want ("build Aisyah's longlist",
-"resume ong-kyan") and let Claude read the workflow and execute. Save plan mode for changing the
+re-derives what's on disk and costs a whole extra pass. Say what you want ("build the longlist",
+"resume <slug>") and let Claude read the workflow and execute. Save plan mode for changing the
 *system* — a schema change, a new tool, a workflow rewrite.
 
 Run in **`acceptEdits`** mode, not `bypassPermissions`. `.claude/settings.json` allowlists every

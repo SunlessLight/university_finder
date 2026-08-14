@@ -170,9 +170,10 @@ pinned to Sonnet). Each researches its one university+course and writes exactly 
 - the path to `.tmp/<slug>/country_<code>.json`.
 
 Parallel is safe here and serial is not just slower but *worse*: each agent writes its own fragment
-file and never touches `master_list.csv`, so there is nothing to race — unlike Stage 4's report-writer
-dispatches, which rewrite the whole CSV and must run one at a time. Keeping the research out of this
+file and never touches `master_list.csv`, so there is nothing to race. Keeping the research out of this
 session is the point: 12 universities' worth of fetched pages would otherwise all land in one context.
+Stage 4's `report-writer` dispatches now work the same way (fragment per dispatch, one deterministic
+fold afterwards via `flip_finalists.py`) — that pattern started here.
 
 **Parallelised by ROW, not by column.** One agent per university (~2-3 fetches each) beats one agent
 per column (~21 agents each re-fetching the same course page). It also matches how the tools work:
@@ -184,7 +185,7 @@ When they're all back, read the "Gaps/flags" line of each reply — that's where
 unverifiable facts get declared — before merging.
 
 > **Firecrawl's rate limit is tight and shared across search+scrape (~10-15 req/min, learned
-> 2026-07-28, Francena).** This bites much less now that Firecrawl is a *fallback* rather than the
+> 2026-07-28).** This bites much less now that Firecrawl is a *fallback* rather than the
 > primary discovery tool, but it still applies when several row-fillers escalate at once: some queries
 > return 0 results, some scrapes silently come back `null`, and the tool still exits 0. **Check the
 > `results` count and `markdown` per query before trusting a batch.** Retry a few seconds later (the
@@ -288,7 +289,7 @@ computed column (`Desirability`, `Tier`, `Admission likelihood`, `Grades vs entr
   now auto-inserts a separator (`write_rows`/`needs_leading_newline`), but if you hand-edit the CSV, leave a
   trailing newline. Sanity-check after a sync: row count should rise by the "N new" the tool reports.
 - **Header / schema column-order drift** — an older `master_list.csv` may carry the same columns
-  in a *different order* than the current `SHORTLIST_HEADERS` (e.g. Toru's file had `Approx total (MYR)`
+  in a *different order* than the current `SHORTLIST_HEADERS` (e.g. one older file had `Approx total (MYR)`
   at index 8, right after Country). `sync_shortlist.py` builds rows in schema order, so appending to a
   drifted file used to misalign every column of the new rows (data intact, but under the wrong headers).
   The tool now reorders appended rows to the *existing file's* header (`reorder_to_header`) and refuses
@@ -309,8 +310,8 @@ computed column (`Desirability`, `Tier`, `Admission likelihood`, `Grades vs entr
   entry — same rationale as the budget backfill below). **The columns went, the candidate-JSON fields
   stayed**: `currency`, `total_cost_programme` and `meets_english` are still required inputs (see Field
   notes above). If you are reading an old report or `.bak` that references the dropped columns, that's
-  why. Toru's Stage-4 student-life research was rescued to
-  `data/students/toru/student_life_research.md` — fold it into a report rather than re-researching it.
+  why. One early student's Stage-4 student-life research was rescued to
+  `data/students/<slug>/student_life_research.md` — fold it into a report rather than re-researching it.
 - **A missing `Over budget` flag on an OLD row proves nothing** (the free-text-budget era, closed
   2026-07-29). Budget used to be a free-text form question passed straight through, so a student who typed
   `400000-800000` landed a *range string* in `profile.financial.total_budget`; `feasibility_flags()` did

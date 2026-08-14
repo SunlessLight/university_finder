@@ -22,6 +22,15 @@ university that hasn't passed the cheap cut first.
 | 4 | `04_university_report.md` | `reports/<uni>.md` | Student picks 3-5 finalists off the Longlist; **verify their hard facts from official sources** (Reach/Match/Safety, feasibility gates), then a full 16-section decision **university report** per finalist. Two paths (`--mode`): course-specific (default) or **university-general (US-only)** for whole-institution fit |
 | 5 | `05_decide_and_apply.md` | `recommendation.md` + `calendar.md` | Recommendation, application strategy, one deadline calendar |
 
+> **Stage 3 and Stage 4 are independent — don't gate one on the other.** Stage 4 operates on
+> **whatever is on the Longlist right now**. It does *not* require every `preferences.json →
+> target_countries` destination to have been discovered first, and no tool enforces such a gate:
+> `compare_universities.py` and every pre-flight step are country-agnostic unless you pass
+> `--country`. So a student with the UK longlisted and the US not yet started can pick UK
+> finalists and get their reports today — Stage 3 country passes and Stage 4 finalist-picking
+> **interleave freely**, in any order, as many times as the student wants. (Written down because a
+> session stopped to ask permission for this; the only thing blocking it was its own caution.)
+
 **Cross-cutting:** `resume.md` (utility, not a stage) — when a returning student says **"resume
 &lt;name&gt;"**, it reconstructs state from `status.md` (cross-checked against the files) so a fresh
 session skips the cold start. Update each student's `status.md` at the end of every stage.
@@ -42,8 +51,11 @@ deadlines) via `build_application_prep.py`. Report-free and **read-only** (never
 > (2026-07-27).** The research → JSON → `build_report.py` sequence in
 > `04_university_report.md`'s "Tools used" section dispatches to
 > `.claude/agents/report-writer.md` (pinned to **Opus**), once per surviving finalist —
-> it's the highest-stakes, lowest-volume, deepest-synthesis stage, and no linter checks a
-> report's synthesis quality, only its structure. The pre-flight pick/verify/cut in that
+> it's the highest-stakes, lowest-volume, deepest-synthesis stage. `tools/check_report.py`
+> (2026-08-08) gates the mechanical half — missing Snapshot fields, gap density, thin
+> sourcing, voice, required tables — but **no linter checks a report's synthesis quality**,
+> only its structure and completeness; that judgement call is still why the stage is pinned
+> to Opus rather than a deterministic script. The pre-flight pick/verify/cut in that
 > workflow stays in this (Sonnet) session — it's a checkpoint with the student, not
 > research.
 
@@ -58,6 +70,18 @@ deadlines) via `build_application_prep.py`. Report-free and **read-only** (never
 > `workflows/03b_candidate_schema.md` — read by `row-filler` only; the main session never needs
 > it. Same invariant as before the split: a trap or a field rule lives in exactly one file.
 
+> **`workflows/sources.md` holds known-good source *locations* (2026-08-08).** UCAS, Common App,
+> gov.uk visa pages, the Malaysian sponsors (JPA/MARA/PTPTN/Kijang/Khazanah), MQA + the professional
+> bodies, English-test sites — the pages `row-filler` and `report-writer` were rediscovering by
+> search on every student, because the address doesn't change even though the fee/deadline on it
+> does. Destination-specific URLs live inside that destination's own `countries/<code>.md` (a
+> `row-filler` on a UK row already reads that file); URLs that are the same for every country
+> (rankings, Malaysian sponsors/recognition, English tests) live in `sources.md` itself. **The file
+> caches locations only — never values.** A cached fee or deadline would be exactly the stale-fact
+> failure guardrail 2 exists to prevent, so every entry is "fetch this page", never "the answer is
+> X". Read it only when the work at hand needs one of those categories; it is not required reading
+> for every dispatch.
+
 ## Subagents — concurrency and write fences
 
 Two subagents exist, and they split the work **by volume, not by stage**: the main session keeps
@@ -70,15 +94,19 @@ Stage 1's `_needs_review` finalize and Stage 4's finalist pick *are* questions.
 | main session | — | anything | — |
 | `row-filler` (Sonnet, Stage 3, **discovery**) | **parallel, one per university** (~8-12) | `.tmp/<slug>/candidates/<uni-slug>.json`, its own `.tmp/<slug>/fc_<uni-slug>.json` | `master_list.csv`; anything outside `.tmp/<slug>/`; never runs merge/sync/check |
 | `row-filler` (Sonnet, **backfill**) | **parallel, one per university** (~8-12) | `.tmp/<slug>/backfill/<uni-slug>.json`, its own `.tmp/<slug>/fc_<uni-slug>.json` | `master_list.csv`, `research_notes.md`; anything outside `.tmp/<slug>/`; never runs `apply_backfill.py` |
-| `report-writer` (Opus, Stage 4) | **sequential, one at a time** (~3-5) | `.tmp/<slug>/report_*.json` \| `uni_*.json`, `reports/<uni>.md`, and via `build_report.py` the `Finalist` flip + the `Course at a glance` / `Student life` cells | any file a sibling dispatch is concurrently writing |
+| `report-writer` (Opus, Stage 4) | **parallel, one per finalist** (~3-5) | `.tmp/<slug>/report_*.json` \| `uni_*.json`, `reports/<uni>.md`, and via `build_report.py` its own `.tmp/<slug>/finalists/<slug>.json` marker | `master_list.csv` (no `Edit` tool at all); anything outside its own report + marker; never runs `flip_finalists.py` |
 
 **The rule that decides concurrency: two agents may run in parallel only if their write sets are
 disjoint.** Row-fillers each own one fragment file and touch nothing shared, so 12 at once is safe —
 and necessary, since 12 universities' worth of fetched pages would otherwise land in one context.
-Report-writers each call `build_report.py`, which reads and rewrites the **whole** `master_list.csv`,
-so two in flight can silently drop a `Finalist` flip — those run one at a time. **Any new agent
-declares its write set in this table before first use**; if it overlaps another agent's, it runs
-sequentially.
+**Report-writers are now the same shape (2026-08-07).** They used to run one at a time, because
+`build_report.py` read and rewrote the **whole** `master_list.csv` to flip its row and two in flight
+could silently drop a `Finalist` flip. That write moved out: `build_report.py` writes a marker
+fragment, and `flip_finalists.py` — a main-session step, once per batch — reads every marker, reads
+the CSV once, and writes it once. Each dispatch now owns only its own report and its own marker, so
+3-5 Opus deep-research passes run concurrently instead of end to end. **Any new agent declares its
+write set in this table before first use**; if it overlaps another agent's, it runs sequentially — or
+better, gets the fragment treatment so it doesn't have to.
 
 Subagents carry **no memory** — fresh context every dispatch, nothing from the conversation, no
 per-agent history file. Everything a dispatch needs goes in its prompt (slug is mandatory; both
@@ -291,11 +319,20 @@ not-yet-ingested form responses from the sheet; `--confirm` stamps them done) ·
 `apply_backfill.py` (**patch** blank cells in rows that already exist — the one sync can't do) ·
 `check_master_list.py` (the gate; `--blanks` lists what a backfill needs to fill) ·
 `build_glossary_sheet.py` (Glossary tab) · `compare_universities.py` (comparison tables) ·
-`build_report.py` (16-section university report; `--mode course` default or `--mode university` for US
-whole-institution) · `report_to_pdf.py` (export a report to PDF for the student) · `build_calendar.py`
+`build_report.py` (16-section university report + its finalist marker fragment; `--mode course` default
+or `--mode university` for US whole-institution) · `check_report.py` (the Stage 4 report-quality gate —
+structure, sourcing, voice, required tables — read never re-read; `--all` for every report a student
+has) · `flip_finalists.py` (**fold** every finalist marker into `master_list.csv` in one pass — the
+Stage 4 counterpart to `merge_candidates.py`, and the only thing that flips a row to `Finalist`) ·
+`report_to_pdf.py` (export a report to PDF for the student) · `build_calendar.py`
 (deadline calendar) · `build_application_prep.py` (per-region apply guide grouped by application system).
 
 **Append vs patch** is the distinction to keep straight: `sync_shortlist.py` only ever *appends* and
 dedupes by `course_key`, so it **silently skips** a university already on the list — a row with holes
 cannot be topped up by re-running it. That is what `apply_backfill.py` is for, and why a backfill
 needs its own fragment shape and its own row-filler mode.
+
+**`workflows/sources.md`** — known-good source *locations* (never values) for the pages that don't
+change between students: rankings, Malaysian sponsors, MQA + the professional bodies, English tests.
+Destination-specific sources (UCAS, Common App, gov.uk, immi, ICA, IMMD, JASSO…) are a "Known-good
+sources" section inside that destination's own `countries/<code>.md` instead.

@@ -5,26 +5,35 @@ Reads a research JSON the agent assembles in Stage 4 and renders a fixed-order,
 16-section Markdown report (Snapshot + 14 content sections + Sources) built to
 answer three decision questions — can I get in? will I belong & thrive? what will
 it take to apply? — so the student can decide, not just compare. Writes it to
-data/students/<slug>/reports/<slug>.md and flips the matching row(s) in
-master_list.csv to List status = Finalist.
+data/students/<slug>/reports/<slug>.md, plus a small FINALIST MARKER fragment at
+.tmp/<slug>/finalists/<report-slug>.json.
+
+This tool does NOT touch master_list.csv. It used to — it read and rewrote the
+whole file to flip one row to Finalist, which is exactly why report-writer
+dispatches had to run one at a time (two in flight could silently drop a flip).
+Now it writes a fragment and flip_finalists.py folds every fragment into the CSV
+in ONE pass, after the whole batch is back. Same fragments-in / one-write-out
+pattern Stage 3 uses (row-filler -> merge_candidates.py), and the same payoff:
+the dispatches are parallel-safe.
 
 Two paths, chosen with --mode (see workflows/04_university_report.md):
   * course      (default) — the course-specific report: "should I do THIS course
-                here?". Every master_list row is a University+Course pair, so it
-                matches/flips the row by course_key(university, course).
+                here?". Every master_list row is a University+Course pair, so the
+                marker carries university + course and flip_finalists.py matches
+                the row by course_key(university, course).
   * university  — US-only. The whole-institution report: "should I go to THIS
                 university?", because US undergrads apply to the institution and
-                declare a major in year 2. It matches/flips by UNIVERSITY NAME
-                only (ignoring Course) and refuses any matched row whose Country
-                is not USA.
+                declare a major in year 2. The marker carries no course;
+                flip_finalists.py matches by UNIVERSITY NAME only (ignoring
+                Course) and refuses any matched row whose Country is not USA.
 
 The fixed section order is enforced per mode: every content section must be present
 and non-empty, or the build fails loudly — this is what keeps reports comparable
 and stops half-researched finalists slipping through.
 
 Usage:
-    python tools/build_report.py --student aisyah-rahman --input .tmp/aisyah-rahman/report_manchester-cs.json
-    python tools/build_report.py --student toru --input .tmp/toru/uni_mit.json --mode university
+    python tools/build_report.py --student <slug> --input .tmp/<slug>/report_<report-slug>.json
+    python tools/build_report.py --student <slug> --input .tmp/<slug>/uni_<uni-slug>.json --mode university
 
 Course-mode JSON shape (see the workflow for the full spec):
     {
@@ -42,7 +51,10 @@ Course-mode JSON shape (see the workflow for the full spec):
       },
       "sources": [
         {"title": "...", "url": "...", "authority": "Official"|"Aggregator", "as_of": "2026"}
-      ]
+      ],
+      # optional — ONLY cells this report's deeper research proves wrong. Copied
+      # verbatim into the marker; flip_finalists.py validates and applies them.
+      "corrections": {"Course at a glance": "...", "Student life": "..."}
     }
 
 University-mode JSON shape (no "course"; a whole-institution snapshot + 14 uni sections):
@@ -62,18 +74,22 @@ University-mode JSON shape (no "course"; a whole-institution snapshot + 14 uni s
         "costs_aid": "...", "how_to_apply": "...", "outcomes_network": "...",
         "unique_facts": "...", "why_here": "..."
       },
-      "sources": [ ... ]
+      "sources": [ ... ],
+      # optional — same as course mode, but "Course at a glance" is a WARNING here:
+      # a university-mode marker can match several course rows at once, and one
+      # course sentence is wrong for all but one of them. "Student life" is fine
+      # (campus-wide, legitimately uniform).
+      "corrections": {"Student life": "..."}
     }
 """
 
 import argparse
-import csv
 import json
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from shortlist_schema import SHORTLIST_HEADERS, canonical_uni, course_key, slugify  # noqa: E402
+from shortlist_schema import slugify  # noqa: E402
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -126,14 +142,6 @@ UNIVERSITY_SECTIONS = [
 
 # Section schema per --mode. Course is the default; university is US-only.
 SECTIONS_BY_MODE = {"course": COURSE_SECTIONS, "university": UNIVERSITY_SECTIONS}
-
-STATUS_COL = SHORTLIST_HEADERS.index("List status")
-UNI_COL = SHORTLIST_HEADERS.index("University")
-COURSE_COL = SHORTLIST_HEADERS.index("Course")
-COUNTRY_COL = SHORTLIST_HEADERS.index("Country")
-
-# Country values that count as US for the university-mode guard (the CSV uses "USA").
-US_COUNTRY_VALUES = {"usa", "us", "united states", "united states of america"}
 
 
 def validate(data, mode):
@@ -267,67 +275,45 @@ def render_report(data, mode):
     return "\n".join(parts)
 
 
-def update_master_list(csv_path, university, course, mode):
-    """Flip the matching row(s) to List status = Finalist.
+def write_finalist_marker(student_slug, slug, data, mode):
+    """Write the finalist marker fragment this report is claiming a CSV flip with.
 
-    Course mode matches one row by course_key(university, course). University mode
-    (US-only) matches by UNIVERSITY NAME only — a US general report certifies the
-    whole institution, and the student applies undeclared — so it flips every row for
-    that university, after asserting each is a US row.
+    One file per report at .tmp/<student>/finalists/<slug>.json, named with the SAME
+    slug as the report itself, so marker and report are obviously a pair
+    (manchester-cs.json <-> manchester-cs.md) and a re-render overwrites its own
+    marker instead of stacking duplicates.
+
+    Deliberately dumb: it records the claim (this university[+course] earned a report,
+    here are the cells the research contradicted) and nothing else. All the judgement —
+    does a row match, is it already Rejected, is a correction a real column within its
+    cell budget, is a university-mode marker really pointing at US rows — belongs to
+    flip_finalists.py, which is the only thing that opens master_list.csv.
 
     There is no "Report status" column: the report file existing under reports/ is the
     fact, and a column duplicating it just goes stale when a file is deleted or renamed.
     """
-    if not csv_path.exists():
-        print(f"  ! {csv_path.name} not found — report written, but no row to update.")
-        return
-    with csv_path.open(newline="", encoding="utf-8") as f:
-        rows = list(csv.reader(f))
-    if not rows:
-        return
+    corrections = data.get("corrections") or {}
+    if not isinstance(corrections, dict):
+        sys.exit(
+            "ERROR: 'corrections' must be an object of master-list column -> new value "
+            f"(got {type(corrections).__name__}). See the JSON shape in this file's header."
+        )
 
-    max_col = max(UNI_COL, COURSE_COL, STATUS_COL, COUNTRY_COL)
-    if mode == "university":
-        target = canonical_uni(university)
-        matches = [
-            row for row in rows[1:]
-            if len(row) > max_col and canonical_uni(row[UNI_COL]) == target
-        ]
-        if not matches:
-            print(f"  ! No master_list row matched university '{university}'. Report written; CSV unchanged.")
-            return
-        # US-only guard: the whole-institution path is defined for US admissions only.
-        non_us = sorted({row[COUNTRY_COL] for row in matches
-                         if (row[COUNTRY_COL] or "").strip().lower() not in US_COUNTRY_VALUES})
-        if non_us:
-            sys.exit(
-                f"ERROR: --mode university is US-only, but rows for '{university}' have "
-                f"Country = {', '.join(non_us)}. Use the default course mode for non-US universities."
-            )
-        for row in matches:
-            row[STATUS_COL] = "Finalist"
-        with csv_path.open("w", newline="", encoding="utf-8") as f:
-            csv.writer(f).writerows(rows)
-        courses = ", ".join(row[COURSE_COL] for row in matches) or "(no course)"
-        print(f"  master_list.csv: {university} -> Finalist ({len(matches)} row(s): {courses})")
-        return
+    marker = {
+        "university": data["university"],
+        # University mode has no course by design — the marker matches on name alone.
+        "course": data.get("course") if mode == "course" else None,
+        "mode": mode,
+        "corrections": {str(k): v for k, v in corrections.items()},
+    }
+    marker_dir = REPO_ROOT / ".tmp" / student_slug / "finalists"
+    marker_dir.mkdir(parents=True, exist_ok=True)
+    marker_path = marker_dir / f"{slug}.json"
+    marker_path.write_text(json.dumps(marker, indent=2, ensure_ascii=False), encoding="utf-8")
 
-    target = course_key(university, course)
-    matched = False
-    for row in rows[1:]:
-        if len(row) <= max(UNI_COL, COURSE_COL, STATUS_COL):
-            continue
-        if course_key(row[UNI_COL], row[COURSE_COL]) == target:
-            if row[STATUS_COL] != "Finalist":
-                row[STATUS_COL] = "Finalist"
-            matched = True
-            break
-    if not matched:
-        print(f"  ! No master_list row matched {university} — {course}. Report written; CSV unchanged.")
-        return
-    with csv_path.open("w", newline="", encoding="utf-8") as f:
-        csv.writer(f).writerows(rows)
-    print(f"  master_list.csv: {university} — {course} -> Finalist")
+    detail = f" + {len(corrections)} correction(s)" if corrections else ""
+    print(f"Wrote finalist marker: {marker_path}{detail}")
+    return marker_path
 
 
 def main():
@@ -366,7 +352,13 @@ def main():
     out_path.write_text(render_report(data, args.mode), encoding="utf-8")
     print(f"Wrote report: {out_path}")
 
-    update_master_list(student_dir / "master_list.csv", data["university"], data.get("course"), args.mode)
+    write_finalist_marker(args.student, slug, data, args.mode)
+    print(
+        f"\nNext (main session, ONCE after every dispatch is back):\n"
+        f"      python tools/flip_finalists.py --student {args.student}\n"
+        f"      python tools/check_master_list.py --student {args.student}\n"
+        f"      Nothing in master_list.csv changes until that first command runs."
+    )
 
 
 if __name__ == "__main__":
