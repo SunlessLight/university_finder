@@ -261,6 +261,150 @@ GLOSSARY = {
         "definition": "Electrical & Computer Engineering — a common name for the university "
                       "department covering electrical engineering and computer hardware.",
     },
+    # --- Malaysian sponsors + US campus shorthand (report terms) --------------
+    "MARA": {
+        "aliases": ["Majlis Amanah Rakyat"],
+        "definition": "**Majlis Amanah Rakyat** — a Malaysian government agency that sponsors and "
+                      "lends to Bumiputera students for pre-university and degree study, locally "
+                      "and abroad.",
+    },
+    "PKJM": {
+        "aliases": ["Program Khas JPA-MARA", "Program Khas JPA MARA"],
+        "definition": "**Program Khas JPA-MARA** — a joint JPA and MARA sponsorship that takes "
+                      "high-scoring Bumiputera SPM leavers through a preparatory year and then a "
+                      "first degree overseas, including in the US.",
+    },
+    "CPT": {
+        "aliases": ["Curricular Practical Training"],
+        "definition": "**Curricular Practical Training** — US work permission that lets you take an "
+                      "internship connected to your degree while you are still studying.",
+    },
+    "PRL": {
+        "aliases": ["Product Realization Lab"],
+        "definition": "**Product Realization Lab** — Stanford's student machine shop and makerspace, "
+                      "covering welding, machining, woodworking and rapid prototyping.",
+    },
+    "SAIL": {
+        "aliases": ["Stanford Artificial Intelligence Laboratory"],
+        "definition": "**Stanford Artificial Intelligence Laboratory** — Stanford's long-running AI "
+                      "and robotics research lab, founded in 1962.",
+    },
+    "BOSP": {
+        "aliases": ["Bing Overseas Studies Program"],
+        "definition": "**Bing Overseas Studies Program** — Stanford's own study-abroad system, where "
+                      "credit transfers automatically and roughly half of each class takes part.",
+    },
+    "VPUE": {
+        "aliases": ["Vice Provost for Undergraduate Education"],
+        "definition": "**Vice Provost for Undergraduate Education** — the Stanford office that funds "
+                      "undergraduate research through named student grants.",
+    },
+    "coterm": {
+        "aliases": ["coterminal", "coterminal degree"],
+        "definition": "**Coterminal degree** — Stanford's route to take a master's alongside your "
+                      "bachelor's, usually finishing both in about five years.",
+    },
+    "CALS": {
+        "aliases": ["College of Agriculture and Life Sciences"],
+        "definition": "**College of Agriculture and Life Sciences** — one of Cornell's eight "
+                      "admitting undergraduate colleges, and a New York State contract college, so "
+                      "New York residents pay a lower tuition rate there than at the endowed colleges.",
+    },
+    "ORIE": {
+        "aliases": ["Operations Research and Information Engineering"],
+        "definition": "**Operations Research and Information Engineering** — Cornell's engineering "
+                      "school for optimisation, probability and financial engineering; a well-known "
+                      "feeder into quantitative trading and analytics roles.",
+    },
+    "CIP code": {
+        "aliases": ["CIP"],
+        "definition": "**Classification of Instructional Programs code** — the US government's "
+                      "subject code printed on your I-20. Whether yours is on the STEM list is what "
+                      "decides if you get the 24-month STEM OPT extension.",
+    },
+    "S/NC": {
+        "aliases": ["Satisfactory/No Credit", "SNC"],
+        "definition": "**Satisfactory/No Credit** — Brown's alternative to a letter grade. You either "
+                      "pass the course or it leaves no trace on your external transcript; there is no "
+                      "D and no F anywhere in Brown's system.",
+    },
+    "UTRA": {
+        "aliases": ["Undergraduate Teaching and Research Award", "Undergraduate Teaching and Research Awards"],
+        "definition": "**Undergraduate Teaching and Research Award** — Brown's paid scheme for working "
+                      "on a faculty research or teaching project, over the summer or during a semester.",
+    },
+    "PLME": {
+        "aliases": ["Program in Liberal Medical Education"],
+        "definition": "**Program in Liberal Medical Education** — Brown's eight-year combined "
+                      "undergraduate and medical degree, applied for at the same time as the main "
+                      "application and admitted separately.",
+    },
+    "BRDD": {
+        "aliases": ["Brown|RISD Dual Degree", "Brown-RISD Dual Degree"],
+        "definition": "**Brown|RISD Dual Degree** — a five-year programme run jointly with the Rhode "
+                      "Island School of Design next door, ending in two degrees, one from each school.",
+    },
+    "SHIP": {
+        "aliases": ["Student Health Insurance Plan"],
+        "definition": "**Student Health Insurance Plan** — the university's own health cover, billed "
+                      "automatically each year unless you prove you have comparable insurance and get "
+                      "a waiver approved.",
+    },
+    "SEVIS": {
+        "aliases": ["Student and Exchange Visitor Information System"],
+        "definition": "**Student and Exchange Visitor Information System** — the US government database "
+                      "that tracks student-visa holders. Every applicant pays a one-off I-901 SEVIS fee "
+                      "before the visa interview.",
+    },
+    "UROP": {
+        "aliases": ["Undergraduate Research Opportunities Program"],
+        "definition": "**Undergraduate Research Opportunities Program** — MIT's system for pairing "
+                      "undergraduates with faculty research projects, for pay, for credit or as a "
+                      "volunteer, from first year onwards.",
+    },
+    "GIRs": {
+        "aliases": ["GIR", "General Institute Requirements"],
+        "definition": "**General Institute Requirements** — the core every MIT undergraduate takes "
+                      "whatever the major: maths, physics, chemistry, biology, a lab, plus eight "
+                      "humanities, arts and social science subjects.",
+    },
+    "HASS": {
+        "aliases": [],
+        "definition": "**Humanities, Arts and Social Sciences** — MIT's breadth requirement, eight "
+                      "subjects outside science and engineering, two of them writing-intensive.",
+    },
+    "IAP": {
+        "aliases": ["Independent Activities Period"],
+        "definition": "**Independent Activities Period** — the four weeks each January when MIT "
+                      "suspends normal classes for projects, short courses, competitions, internships "
+                      "and travel. No extra tuition for students enrolled in the surrounding terms.",
+    },
+    "MSA": {
+        "aliases": ["Muslim Students Association"],
+        "definition": "**Muslim Students Association** — the student-run Muslim society found on most "
+                      "US campuses, usually running the prayer room, Jumu'ah and Ramadan meals.",
+    },
+    "musalla": {
+        "aliases": ["musallah"],
+        "definition": "A dedicated Muslim prayer room, typically with washing facilities for wudu.",
+    },
+    "Pass/No Record": {
+        "aliases": ["P/NR"],
+        "definition": "**Pass/No Record** — MIT's first-semester grading shield: a passing grade shows "
+                      "only as 'P' on your transcript and a failing one is not recorded at all, so you "
+                      "can take hard classes while you find your feet.",
+    },
+    "MBTA": {
+        "aliases": ["the T"],
+        "definition": "**Massachusetts Bay Transportation Authority** — greater Boston's public "
+                      "transport network, known locally as 'the T'; its Red Line subway stops on "
+                      "MIT's campus at Kendall/MIT.",
+    },
+    "E-Verify": {
+        "aliases": [],
+        "definition": "The US government system employers use to confirm a hire may legally work. "
+                      "Only an E-Verify employer can sponsor the 24-month STEM OPT extension.",
+    },
     # --- Naval architecture / marine engineering + UK routes (report terms) ---
     "RINA": {
         "aliases": ["Royal Institution of Naval Architects"],
@@ -375,6 +519,16 @@ GLOSSARY = {
         "aliases": [],
         "definition": "The US employer-sponsored work visa most graduates need after their post-study "
                       "work permit runs out. It is allocated by lottery, so it is not guaranteed.",
+    },
+    "SEVP": {
+        "aliases": ["SEVP certification"],
+        "definition": "**Student and Exchange Visitor Program** — the US government certification a "
+                      "university must hold to enrol international students and issue the I-20.",
+    },
+    "SEAS": {
+        "aliases": [],
+        "definition": "Harvard's **John A. Paulson School of Engineering and Applied Sciences** — the "
+                      "school that houses every engineering and computer science concentration.",
     },
     "F-1": {
         # "F-1 visa" is listed so the longest-surface-first ordering swallows the trailing
