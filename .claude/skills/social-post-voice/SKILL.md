@@ -50,8 +50,15 @@ When the post's point is "here's what changed," build an actual before/after pai
 the way `.tmp/social/before.md` / `.tmp/social/after.md` do it:
 
 - **`before.md`** — the real artifact (a prompt, a config block, a snippet) exactly
-  as it existed, redacted only where it must be (student slug, name, grades — never
-  silently left in). Ends with a one-line measured tally, e.g.
+  as it existed, with the student slug/name swapped for a placeholder. Redaction is
+  a pass you have to actually finish, not a property the file gets for free: the
+  example's own `before.md` still has real predicted grades in it
+  (`Maths A*/Chem A*/Econs A`, line 13) even though the slug is already
+  `[redacted]` — which is exactly why its thread's closing checklist carries an
+  explicit, unchecked "`before.md` re-read once for student details — name,
+  college, grades all gone" item. Don't mark a draft ready until that re-read has
+  actually happened; don't assume a prior redaction pass caught everything. Ends
+  with a one-line measured tally, e.g.
   `# ↑ 317 words. 195 of them byte-identical in all 10 prompts.`
 - **`after.md`** — the same artifact post-fix, same redaction rules, same closing
   tally line for comparison, e.g. `# ↑ 34 words. The other 195 live in one file...`
