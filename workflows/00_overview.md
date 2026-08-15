@@ -292,6 +292,8 @@ not-yet-ingested form responses from the sheet; `--confirm` stamps them done) ·
 (collect + gate the discovery fragments) · `sync_shortlist.py` (score/dedupe/**append** new rows) ·
 `apply_backfill.py` (**patch** blank cells in rows that already exist — the one sync can't do) ·
 `check_master_list.py` (the gate; `--blanks` lists what a backfill needs to fill) ·
+`check_social_post.py` (confidentiality gate for a drafted social post — scans for live
+student slugs, `data/` paths, and credential-shaped secrets) ·
 `build_glossary_sheet.py` (Glossary tab) · `compare_universities.py` (comparison tables) ·
 `build_report.py` (16-section university report; `--mode course` default or `--mode university` for US
 whole-institution) · `report_to_pdf.py` (export a report to PDF for the student) · `build_calendar.py`

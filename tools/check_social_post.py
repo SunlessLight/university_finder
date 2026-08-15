@@ -32,7 +32,10 @@ Checks (use --check to run a subset while iterating on a fix):
            instead of prose so a social draft gets the identical check.
 
 Exit 0 clean, exit 1 with findings printed per check — same `ok` / `FAIL (n)` block style
-as check_master_list.py's run()/main().
+as check_master_list.py's run()/main(). EXCEPTION: if `names` is among the requested checks
+and no live student slugs can be read (no `data/students/` in this worktree/clone), that
+check cannot actually run — it prints `SKIP names` instead of `ok names` and the whole run
+exits 1, because "couldn't check" must never look like "checked, clean" for a safety gate.
 
 Usage:
     python tools/check_social_post.py --file .tmp/social/twitter_thread.md
@@ -199,6 +202,12 @@ def main():
 
     results = run(text, slugs, wanted)
 
+    # "names" is the gate's most important check — it's the one that catches a real student
+    # slug written into a public draft. If it was requested but there are no live slugs to
+    # check against, the check did not run at all; that must never print/exit the same as a
+    # check that ran and found nothing (see docstring EXCEPTION above).
+    names_skipped = "names" in wanted and not slugs
+
     total = sum(len(v) for v in results.values())
     label = file_path.relative_to(REPO_ROOT) if file_path.is_relative_to(REPO_ROOT) else file_path
     slug_note = (
@@ -211,6 +220,9 @@ def main():
         findings = results.get(name)
         if findings is None:
             continue
+        if name == "names" and names_skipped:
+            print(f"  SKIP {name} — no data/students/ found, cannot verify")
+            continue
         if not findings:
             print(f"  ok   {name}")
             continue
@@ -220,7 +232,7 @@ def main():
         if len(findings) > args.limit:
             print(f"       ... and {len(findings) - args.limit} more")
 
-    sys.exit(1 if total else 0)
+    sys.exit(1 if (total or names_skipped) else 0)
 
 
 if __name__ == "__main__":
