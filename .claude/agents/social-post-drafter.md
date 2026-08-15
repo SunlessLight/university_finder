@@ -62,13 +62,14 @@ the draft and flag it in your reply rather than inventing a motive.
 
 ## Step 2 — Draft in voice
 
-Read `.claude/skills/social-post-voice/SKILL.md` and follow it — it sets the voice so
-the draft reads like this repo, not generic marketing copy.
-
-Match the shape of the validated example at `.tmp/social/twitter_thread.md`: numbered
-blocks (`1/`, `2/`, ...), a screenshot annotation per block that names the exact
-file+line to capture (or `[no image]` / `[image — optional]` when none is needed), and a
-closing "Before you post" checklist of things the human still has to verify or decide.
+Read `.claude/skills/social-post-voice/SKILL.md` and follow it — it sets the voice **and**
+the shape: numbered blocks (`1/`, `2/`, ...), a screenshot annotation per block that names
+the exact file+line to capture (or `[no image]` / `[image — optional]` when none is
+needed), and a closing "Before you post" checklist of things the human still has to
+verify or decide. The skill is self-contained — it inlines a worked excerpt showing this
+shape directly — so you do not need `.tmp/social/twitter_thread.md` to exist. That file is
+gitignored and disposable; if it happens to still be on disk, treat it only as one past
+output, never as something you need to go read for shape guidance.
 
 ## Step 3 — Safety sweep, in your own words
 
