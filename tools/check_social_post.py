@@ -173,10 +173,13 @@ def main():
         description="Confidentiality gate for a drafted social-media post — checks it for "
         "student PII and credential-shaped secrets before it can be called ready."
     )
-    parser.add_argument("--file", required=True, help="Path to the draft to check.")
+    parser.add_argument("--file", help="Path to the draft to check.")
     parser.add_argument("--check", help=f"Comma list of checks to run (default all): {', '.join(CHECKS)}")
     parser.add_argument("--limit", type=int, default=15, help="Max findings shown per check (default 15).")
     args = parser.parse_args()
+
+    if not args.file:
+        sys.exit("ERROR: --file is required.")
 
     file_path = Path(args.file)
     if not file_path.is_absolute():
