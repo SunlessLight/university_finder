@@ -40,6 +40,8 @@ to **apply broadly and compare offers first, research fit later**, this produces
 "how to apply" guide grouped by application system (checklist + fees + tests + financial-aid forms/dates +
 deadlines) via `build_application_prep.py`. Report-free and **read-only** (never changes `List status`).
 
+**Social media posting:** `social_media.md` (utility, not a stage) — draft a confidentiality-checked social post about recent repo work — pull-only, never posts anything itself.
+
 > **Stage 2 was merged into Stage 1 on 2026-07-25.** Every student now arrives through the **Google
 > Form**, which captures who-they-are and what-they-want in one sitting — so the two conversational
 > SOPs (`01_student_intake.md`, `02_aspirations_intake.md`) were deleted and `07_form_intake.md`
@@ -318,6 +320,8 @@ not-yet-ingested form responses from the sheet; `--confirm` stamps them done) ·
 (collect + gate the discovery fragments) · `sync_shortlist.py` (score/dedupe/**append** new rows) ·
 `apply_backfill.py` (**patch** blank cells in rows that already exist — the one sync can't do) ·
 `check_master_list.py` (the gate; `--blanks` lists what a backfill needs to fill) ·
+`check_social_post.py` (confidentiality gate for a drafted social post — scans for live
+student slugs, `data/` paths, and credential-shaped secrets) ·
 `build_glossary_sheet.py` (Glossary tab) · `compare_universities.py` (comparison tables) ·
 `build_report.py` (16-section university report + its finalist marker fragment; `--mode course` default
 or `--mode university` for US whole-institution) · `check_report.py` (the Stage 4 report-quality gate —

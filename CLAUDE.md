@@ -47,14 +47,16 @@ conversations with me, not permission prompts:
 - **Anything destructive** — `--force` on an existing student folder, or demoting/rejecting a row I
   haven't agreed to drop. `data/students/` is **gitignored**, so there is no `git checkout` undo.
 - **`check_master_list.py` must come back clean** before a list goes to a student.
+- **`check_social_post.py` must come back clean** before a draft is shown as ready to post.
 
 **Entry points are slash commands.** `/catchup <slug>` · `/intake` · `/longlist <slug> [country]` ·
-`/report <slug>` · `/decide <slug>` · `/apply-prep <slug> <region>` (`.claude/commands/`). Each is a thin
+`/report <slug>` · `/decide <slug>` · `/apply-prep <slug> <region>` · `/social [topic]` (`.claude/commands/`). Each is a thin
 launcher onto its workflow file — the workflow stays the source of truth, the command just saves a cold
 session from re-deriving which file to read. (`/catchup`, not `/resume` — that name is taken by the
 built-in.) `/commit` is the odd one out: it launches repo *maintenance*, not a pipeline stage — it
 dispatches `commit-drafter` to read the working tree and draft a commit split into `.tmp/commit_plan.md`.
-I approve the split; nothing stages itself.
+I approve the split; nothing stages itself. `/social [topic]` is also outside the student pipeline: it dispatches
+`social-post-drafter` to draft a post about repo/dev work, never posts itself, pull-only.
 
 **5. Subagents fan out over volume; you keep the judgement.** A subagent is a stateless worker: fresh
 context every dispatch, nothing from the conversation, no per-agent history and **no way to ask a
@@ -69,6 +71,8 @@ The same volume test is why `commit-drafter` is allowed to exist outside the pip
 is read-once volume that would otherwise sit in this session's transcript for the rest of its life. It
 absorbs the diff and hands back `.tmp/commit_plan.md`. It ends at a *plan* — it never stages, commits or
 pushes — so it isn't owning a checkpoint, it's preparing one for me.
+
+The same volume test is why `social-post-drafter` is allowed to exist outside the pipeline: a full repo-browsing pass through git log, diff, and files is read-once volume that would otherwise sit in this session's transcript for the rest of its life. It absorbs the pass and hands back a draft post. It ends at a *draft* — it never posts — so it isn't owning a checkpoint, it's preparing one for me.
 
 **6. Bulk file generation belongs in a fresh session, not the tail of a long one.** Same principle
 as the subagent rule above — keep volume out of the judgement session. If a session produces a big
