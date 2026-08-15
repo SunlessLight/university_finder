@@ -31,6 +31,8 @@ to **apply broadly and compare offers first, research fit later**, this produces
 "how to apply" guide grouped by application system (checklist + fees + tests + financial-aid forms/dates +
 deadlines) via `build_application_prep.py`. Report-free and **read-only** (never changes `List status`).
 
+**Social media posting:** `social_media.md` (utility, not a stage) — draft a confidentiality-checked social post about recent repo work — pull-only, never posts anything itself.
+
 > **Stage 2 was merged into Stage 1 on 2026-07-25.** Every student now arrives through the **Google
 > Form**, which captures who-they-are and what-they-want in one sitting — so the two conversational
 > SOPs (`01_student_intake.md`, `02_aspirations_intake.md`) were deleted and `07_form_intake.md`
