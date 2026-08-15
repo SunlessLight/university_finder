@@ -1,6 +1,6 @@
 ---
 description: Stage 4 — pre-flight the finalists, then build one university report each
-argument-hint: <student-slug>
+argument-hint: <student-slug> [finalist; finalist; ...]
 ---
 
 Run `workflows/04_university_report.md` for student `$1`.
@@ -10,12 +10,39 @@ over the note).
 
 **The pre-flight stays in this session — it is the Stage 4 checkpoint with me, not research:**
 
-1. Render the trade-offs and **wait**:
-   ```powershell
-   python tools/compare_universities.py --student $1 --status Longlist --dimensions summary,scholarship,fit
-   ```
-   **I pick the finalists. Do not self-select** (CLAUDE.md). Use `--country <name>` to work one
-   destination at a time on a long list.
+**1. Get to a Shortlist.** Two ways in, depending on whether finalists were named after the slug:
+
+- **Named directly** — e.g. `/report $1 UCL: mechanical engineering; Imperial; Manchester: aerospace`
+  (`;` between finalists, an optional `: Course` after a university only when it has more than one
+  course on the list). Resolve each name — don't match it yourself, that's exactly the guessing this
+  step exists to avoid:
+  ```powershell
+  python tools/match_finalists.py --student $1 --query "University|Course" --query "University2"
+  ```
+  One `--query` per named finalist (course after `|`, omitted where I didn't give one). Read the JSON
+  result per query:
+  - `resolved` — promote it (edit `master_list.csv`, that row's `List status` → `Shortlist`).
+  - `ambiguous_course` — tell me the `options` for that university and ask which one I meant.
+  - `ambiguous_university` / `not_found` — tell me what didn't match. **Don't guess** — fall back to
+    the render below for that one rather than picking the closest-looking row yourself; this is the
+    same "stop rather than guess" rule `report-writer` follows for its own dispatch inputs.
+
+  Once every named finalist resolves, render just those picks so I can confirm the set before you go
+  further — I already named these, so this is a quick confirmation, not a cold render:
+  ```powershell
+  python tools/compare_universities.py --student $1 --rows "University|Course, University|Course" --dimensions summary,scholarship,fit
+  ```
+
+- **Not named** — render the full Longlist and **wait**:
+  ```powershell
+  python tools/compare_universities.py --student $1 --status Longlist --dimensions summary,scholarship,fit
+  ```
+  **I pick the finalists. Do not self-select** (CLAUDE.md). Use `--country <name>` to work one
+  destination at a time on a long list.
+
+Either way, from here on it's the same set of Shortlist rows — steps 2-4 apply regardless of how they
+got there.
+
 2. Spot-check the picks for **currency, not correctness** — `Key deadline` + intake still open, any
    pick still reading `Info source = Not verified` gets the full official-source check, recognition
    recorded for regulated professions, and what the application itself makes the student submit.

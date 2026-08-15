@@ -323,7 +323,9 @@ not-yet-ingested form responses from the sheet; `--confirm` stamps them done) ·
 `check_social_post.py` (confidentiality gate for a drafted social post — scans for live
 student slugs, `data/` paths, and credential-shaped secrets) ·
 `build_glossary_sheet.py` (Glossary tab) · `compare_universities.py` (comparison tables) ·
-`build_report.py` (16-section university report + its finalist marker fragment; `--mode course` default
+`match_finalists.py` (resolve a shorthand name like "UCL" or "UCL|mechanical engineering" typed after
+`/report` to its exact `master_list.csv` row — read-only, never guesses, reports `ambiguous_*`/`not_found`
+instead) · `build_report.py` (16-section university report + its finalist marker fragment; `--mode course` default
 or `--mode university` for US whole-institution) · `check_report.py` (the Stage 4 report-quality gate —
 structure, sourcing, voice, required tables — read never re-read; `--all` for every report a student
 has) · `flip_finalists.py` (**fold** every finalist marker into `master_list.csv` in one pass — the

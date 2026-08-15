@@ -350,6 +350,69 @@ GLOSSARY = {
                       "automatically each year unless you prove you have comparable insurance and get "
                       "a waiver approved.",
     },
+    # --- UK terms (report terms) ----------------------------------------------
+    "RSS": {
+        "aliases": ["Royal Statistical Society"],
+        "definition": "**Royal Statistical Society** — the UK professional body for statisticians. It "
+                      "accredits degrees, and an accredited degree is the fast route to its "
+                      "GradStat professional grade.",
+    },
+    "GradStat": {
+        "aliases": ["Graduate Statistician"],
+        "definition": "**Graduate Statistician** — the Royal Statistical Society's entry professional "
+                      "grade, awarded automatically to graduates of an accredited degree with a "
+                      "2:1 or better, and the first step towards Chartered Statistician.",
+    },
+    "CStat": {
+        "aliases": ["Chartered Statistician"],
+        "definition": "**Chartered Statistician** — the Royal Statistical Society's full professional "
+                      "grade, earned after several years of practice on top of GradStat.",
+    },
+    "IHS": {
+        "aliases": ["Immigration Health Surcharge", "immigration health surcharge"],
+        "definition": "**Immigration Health Surcharge** — a compulsory up-front UK fee, paid per year of "
+                      "your visa, that buys access to the National Health Service while you study.",
+    },
+    "CAS": {
+        "aliases": ["Confirmation of Acceptance for Studies"],
+        "definition": "**Confirmation of Acceptance for Studies** — the electronic reference number your "
+                      "UK university issues once you accept an unconditional place. You cannot apply "
+                      "for a Student visa without it.",
+    },
+    "IGCSE": {
+        "aliases": [],
+        "definition": "**International General Certificate of Secondary Education** — the international "
+                      "version of the UK's GCSE, sat at around age 16. UK universities often set a "
+                      "minimum GCSE or IGCSE grade in English and Maths on top of A-Level grades.",
+    },
+    "NSS": {
+        "aliases": ["National Student Survey"],
+        "definition": "**National Student Survey** — the UK-wide survey of final-year undergraduates. "
+                      "Its course-level satisfaction scores are published on Discover Uni.",
+    },
+    "Discover Uni": {
+        "aliases": [],
+        "definition": "The UK government's official course-comparison site, carrying verified "
+                      "satisfaction, continuation and graduate-earnings data per course.",
+    },
+    "PTPTN": {
+        "aliases": [],
+        "definition": "**Perbadanan Tabung Pendidikan Tinggi Nasional** — Malaysia's national education "
+                      "*loan* fund, not a scholarship. It is aimed at study at approved institutions and "
+                      "is repayable.",
+    },
+    "Kijang Scholarship": {
+        "aliases": ["Kijang", "BNM Kijang"],
+        "definition": "Bank Negara Malaysia's scholarship for high-scoring Malaysians to study abroad in "
+                      "finance-adjacent fields, including data science; it carries a service bond of two "
+                      "years for each sponsored year.",
+    },
+    "UPC": {
+        "aliases": ["Undergraduate Preparatory Certificate"],
+        "definition": "**Undergraduate Preparatory Certificate** — UCL's own international foundation "
+                      "year, for students whose school qualification UCL does not accept for direct "
+                      "entry. A-Levels are accepted, so it is not a route for A-Level students.",
+    },
     "SEVIS": {
         "aliases": ["Student and Exchange Visitor Information System"],
         "definition": "**Student and Exchange Visitor Information System** — the US government database "
