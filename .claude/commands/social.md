@@ -16,7 +16,7 @@ When it returns, **check its `Gate:` line before anything else.** If it reports 
 confidentiality check failed or unresolved, that outranks the draft — surface it first and
 do not present the draft as ready (mirror how `commit.md` treats a flagged safety-sweep
 finding: it outranks the plan, and nothing is presented as done until it's resolved). Only
-once the gate reports passed, read `.tmp/social/<topic>.md` and present it to me.
+once the gate reports passed, read `.tmp/social/<topic-slug>.md` and present it to me.
 
 Then **wait.** I approve the draft before anything is posted.
 

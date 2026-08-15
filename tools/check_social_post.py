@@ -40,6 +40,7 @@ exits 1, because "couldn't check" must never look like "checked, clean" for a sa
 Usage:
     python tools/check_social_post.py --file .tmp/social/twitter_thread.md
     python tools/check_social_post.py --file .tmp/social/draft.md --check secrets
+    python tools/check_social_post.py --file .tmp/social/draft.md --limit 5
 """
 
 import argparse
@@ -106,6 +107,11 @@ def check_names(text, slugs):
     matches each against the live slug list with difflib.get_close_matches — the same
     call apply_backfill.py uses to match a fragment's column name against
     SHORTLIST_HEADERS, applied here to prose instead of a column name.
+
+    KNOWN LIMITATION: the word regex ([a-z']+) drops digits, so a slug like "ong-kyan-2"
+    can never be reconstructed from an n-gram here — nothing in this checker does a plain
+    substring scan for a bare slug, so a digit-suffixed slug written out in prose can slip
+    through undetected.
     """
     if not slugs:
         return []

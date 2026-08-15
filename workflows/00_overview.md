@@ -106,9 +106,11 @@ and necessary, since 12 universities' worth of fetched pages would otherwise lan
 could silently drop a `Finalist` flip. That write moved out: `build_report.py` writes a marker
 fragment, and `flip_finalists.py` — a main-session step, once per batch — reads every marker, reads
 the CSV once, and writes it once. Each dispatch now owns only its own report and its own marker, so
-3-5 Opus deep-research passes run concurrently instead of end to end. **Any new agent declares its
-write set in this table before first use**; if it overlaps another agent's, it runs sequentially — or
-better, gets the fragment treatment so it doesn't have to.
+3-5 Opus deep-research passes run concurrently instead of end to end. **Any new pipeline agent declares
+its write set in this table before first use**; if it overlaps another agent's, it runs sequentially —
+or better, gets the fragment treatment so it doesn't have to. (Non-pipeline utility agents —
+`commit-drafter`, `social-post-drafter` — are deliberately excluded from this table; their write
+fences live in `CLAUDE.md` and their own agent files instead.)
 
 Subagents carry **no memory** — fresh context every dispatch, nothing from the conversation, no
 per-agent history file. Everything a dispatch needs goes in its prompt (slug is mandatory; both

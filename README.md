@@ -41,6 +41,11 @@ to a subagent pinned to **Opus** (it's the deepest, highest-stakes writing task 
 everything else, including Stage 4's own pick/verify/cut checkpoint with you, runs on the normal session
 model. This happens automatically; there's nothing you need to run or configure.
 
+**`/social [topic]`** is outside the student pipeline — a repo-maintenance utility that drafts a
+confidentiality-checked Twitter/X post or thread about recent repo work (a commit, an incident
+writeup, a decision), never about a student. It's pull-only and never posts anything itself; see
+[workflows/social_media.md](workflows/social_media.md).
+
 ## Setup (first time)
 
 ```powershell

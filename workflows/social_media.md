@@ -26,7 +26,7 @@ touches none of a student's data.
 
 ## How to start
 
-1. The user runs `/social [topic or commit ref]`.
+1. The user runs `/social [topic]`.
 2. Dispatch the **`social-post-drafter`** agent (`.claude/agents/social-post-drafter.md`) **once —
    not in parallel.** This is judgment work, one draft, not a volume fan-out — but the agent still
    absorbs read-once `git log`/`git diff` volume itself, the same way `commit-drafter` absorbs a
@@ -58,5 +58,5 @@ touches none of a student's data.
 
 ## Done when
 
-The draft + its "before you post" checklist sits in `.tmp/social/<topic>.md`, `check_social_post.py`
+The draft + its "before you post" checklist sits in `.tmp/social/<topic-slug>.md`, `check_social_post.py`
 has passed on it, and the user has reviewed it and either approved it, edited it, or declined it.
