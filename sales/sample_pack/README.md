@@ -10,7 +10,7 @@ spreadsheet,"* you send one of these files and stop typing. The gap argues for y
 |---|---|---|
 | `sample_master_list.csv` | **Tier 1 — The List** | 15 real universities × the full **35 columns** — Reach/Match/Safety separate from Desirability *and* from whether your grades clear the bar, total cost in ringgit, "Recognised in Malaysia?", verified-vs-not. Opens in Excel / Google Sheets. |
 | `sample_glossary.csv` | **Tier 1 — The Glossary tab** | Plain-English definitions of every acronym the list actually uses, generated from the list itself. Import as a second sheet. |
-| `sample_university-report_MIT.pdf` | **Tier 2 — The University Reports** | One full **16-section decision report** (6 pages) — who actually gets in, aid maths, and honest *reasons to hesitate*. |
+| `sample_university-report_MIT.pdf` | **Tier 2 — The University Reports** | One full **16-section decision report** (19 pages) — who actually gets in, aid maths, and honest *reasons to hesitate*. |
 | `sample_apply-guide_US.pdf` | **Tier 3 — The Apply Pack** | One **per-region apply guide** (15 pages) — grouped by application system, every deadline, the exact financial-aid mechanics. |
 
 Send **one**, not all three, unless someone asks for the full thing — the university-report PDF is usually the
@@ -34,7 +34,24 @@ regenerate them from a different student, re-run the same scan and re-read them.
 
 ## How they were built (to regenerate)
 
-Redacted copies of the source student's `reports/mit-mechanical-engineering.md` and
-`application_prep/us.md` were rendered with the existing tools (`report_to_pdf.py`,
-`apply_prep_to_pdf.py`); the CSV is 15 selected rows of the master list with the same redaction applied
-to every cell. The un-redacted source stays in the gitignored data bank and is never shared.
+`sample_master_list.csv`, `sample_glossary.csv` and `sample_university-report_MIT.pdf` are built by
+`build_sample_pack.py` — run `python sales/sample_pack/build_sample_pack.py`. It pulls the same 15
+universities from the source student's current `master_list.csv`, redacts each cell, regenerates the
+glossary from that redacted list (`build_glossary_sheet.py`), and redacts + renders the MIT report
+(`md_to_pdf.py`, same engine as `report_to_pdf.py`) with the "Sample — anonymized demo" banner inserted
+after the title. It ends by re-running the same leak scan by hand ("zero hits") described below, so a
+regeneration re-proves the guarantee instead of assuming it still holds.
+
+Re-run it whenever the source student's list or reports change materially — a report rebuild, a
+corrected fact, a re-scored row — so the sample stops drifting from what the pipeline produces today.
+`check_master_list.py --file sample_master_list.csv` and `check_report.py --file <redacted .md>` should
+both still come back at 0 findings after a regeneration; if they don't, the source data has an issue
+worth fixing before it goes in a sample, not redaction to work around.
+
+`sample_apply-guide_US.pdf` is **not** covered by the script and was left untouched in the 2026-08-22
+refresh — the source student's `application_prep/us.md` (built 2026-07-26) predates a Stage 5a report
+rebuild (2026-08-20) that corrected real facts (Columbia's test-optional status, a new DHS visa-rule
+fact affecting OPT/STEM-OPT). Regenerate `us.md` via Stage 8 first, then build its sample the same way
+(`md_to_pdf.py --type apply`), before trusting this file as current.
+
+The un-redacted source stays in the gitignored data bank and is never shared.
