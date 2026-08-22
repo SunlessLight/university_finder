@@ -78,6 +78,8 @@ def main():
         sys.exit(f"ERROR: input file not found: {md_path}")
 
     out_path = Path(args.output) if args.output else md_path.with_suffix(".pdf")
+    if out_path.suffix.lower() != ".pdf":
+        sys.exit(f"ERROR: --output must end in .pdf, got: {out_path}")
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
     RENDERERS[args.type](md_path, out_path)
