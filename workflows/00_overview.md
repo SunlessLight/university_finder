@@ -333,7 +333,9 @@ structure, sourcing, voice, required tables — read never re-read; `--all` for 
 has) · `flip_finalists.py` (**fold** every finalist marker into `master_list.csv` in one pass — the
 Stage 4 counterpart to `merge_candidates.py`, and the only thing that flips a row to `Finalist`) ·
 `report_to_pdf.py` (export a report to PDF for the student) · `build_calendar.py`
-(deadline calendar) · `build_application_prep.py` (per-region apply guide grouped by application system).
+(deadline calendar) · `build_application_prep.py` (per-region apply guide grouped by application system) ·
+`progress_dashboard.py` (roster-wide stage report across every student — derives each stage from
+files, never from status.md, so it can't drift; run via `/progress`).
 
 **Append vs patch** is the distinction to keep straight: `sync_shortlist.py` only ever *appends* and
 dedupes by `course_key`, so it **silently skips** a university already on the list — a row with holes
