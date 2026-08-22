@@ -178,6 +178,12 @@ GLOSSARY = {
         "definition": "China Scholarship Council scholarship — the main full-ride government "
                       "scholarship for international students in China.",
     },
+    "CGS": {
+        "aliases": ["Chinese Government Scholarship"],
+        "definition": "**Chinese Government Scholarship** — the award the CSC administers; the full "
+                      "version covers tuition, campus accommodation, a monthly stipend and medical "
+                      "insurance.",
+    },
     "MOE Tuition Grant": {
         "aliases": [],
         "definition": "Singapore's Ministry of Education subsidy that cuts tuition sharply in exchange "
@@ -192,6 +198,21 @@ GLOSSARY = {
         "aliases": [],
         "definition": "A Malaysian foundation offering competitive scholarships to study at top global "
                       "universities.",
+    },
+    "X1 visa": {
+        "aliases": ["X1"],
+        "definition": "China's long-stay student visa, for a course longer than 180 days; you swap it "
+                      "for a residence permit within 30 days of arriving.",
+    },
+    "K visa": {
+        "aliases": [],
+        "definition": "China's visa for young science and technology graduates, live since 1 October "
+                      "2025 — it does not require a Chinese employer to invite you first.",
+    },
+    "STEAM": {
+        "aliases": [],
+        "definition": "Science, Technology, Engineering, Art and Mathematics — a curriculum style that "
+                      "folds design and the arts into a standard STEM degree.",
     },
     "UAC": {
         "aliases": [],
@@ -234,6 +255,18 @@ GLOSSARY = {
                       "an engineer in Malaysia; it recognises accredited degrees via the Washington "
                       "Accord.",
     },
+    "CEEAA": {
+        "aliases": ["China Engineering Education Accreditation Association"],
+        "definition": "**China Engineering Education Accreditation Association** — China's engineering "
+                      "accreditation body and its Washington Accord signatory since 2016; a "
+                      "CEEAA-accredited Chinese degree carries over to BEM.",
+    },
+    "BEM-GAP": {
+        "aliases": ["Graduate Assessment Programme"],
+        "definition": "**BEM Graduate Assessment Programme** — a 2-year top-up route that lets a "
+                      "graduate of an unrecognised engineering degree still register as a Graduate "
+                      "Engineer in Malaysia.",
+    },
     "MQA": {
         "aliases": ["Malaysian Qualifications Agency"],
         "definition": "**Malaysian Qualifications Agency** — the Malaysian body that recognises "
@@ -260,6 +293,37 @@ GLOSSARY = {
         "aliases": [],
         "definition": "Electrical & Computer Engineering — a common name for the university "
                       "department covering electrical engineering and computer hardware.",
+    },
+    "B.S.E.": {
+        "aliases": ["BSE"],
+        "definition": "Bachelor of Science in Engineering — Princeton's four-year engineering "
+                      "degree track, distinct from its liberal-arts A.B. track.",
+    },
+    "A.B.": {
+        "aliases": [],
+        "definition": "Artium Baccalaureus — Princeton's liberal-arts bachelor's track, the "
+                      "alternative to the engineering B.S.E. track.",
+    },
+    "OURSIP": {
+        "aliases": [],
+        "definition": "Office of Undergraduate Research Student Initiated Internship Program — "
+                      "Princeton grants that pay first- and second-year students to spend a summer "
+                      "on faculty-mentored research.",
+    },
+    "PAVE": {
+        "aliases": [],
+        "definition": "Princeton Autonomous Vehicle Engineering — the undergraduate-run robotics "
+                      "research group that builds self-driving vehicles.",
+    },
+    "eating club": {
+        "aliases": ["eating clubs"],
+        "definition": "A private co-ed dining-and-social house on Princeton's Prospect Avenue that "
+                      "most juniors and seniors join in place of a dining hall.",
+    },
+    "bicker": {
+        "aliases": [],
+        "definition": "Princeton's selective eating-club admission process — you apply and current "
+                      "members vote, as opposed to a first-come sign-in club.",
     },
     # --- Malaysian sponsors + US campus shorthand (report terms) --------------
     "MARA": {
@@ -467,6 +531,44 @@ GLOSSARY = {
         "aliases": [],
         "definition": "The US government system employers use to confirm a hire may legally work. "
                       "Only an E-Verify employer can sponsor the 24-month STEM OPT extension.",
+    },
+    "USCIS": {
+        "aliases": ["United States Citizenship and Immigration Services"],
+        "definition": "**United States Citizenship and Immigration Services** — the US agency that "
+                      "decides immigration applications. You file OPT, STEM OPT and any extension of "
+                      "stay with USCIS, with a fee and a processing wait.",
+    },
+    "QS": {
+        "aliases": ["QS World University Rankings"],
+        "definition": "**QS World University Rankings** — one of the three global university league "
+                      "tables, published annually by Quacquarelli Symonds. Weighted heavily toward "
+                      "academic and employer reputation surveys.",
+    },
+    "GPA": {
+        "aliases": ["Grade Point Average"],
+        "definition": "**Grade Point Average** — the US 0-4.0 running average of your course grades. "
+                      "Scholarships and internal programmes often set a GPA floor such as 3.0.",
+    },
+    "SPM": {
+        "aliases": ["Sijil Pelajaran Malaysia"],
+        "definition": "**Sijil Pelajaran Malaysia** — the Malaysian national exam taken at the end of "
+                      "Form 5, before A-Levels or a foundation year.",
+    },
+    "NSF": {
+        "aliases": ["National Science Foundation"],
+        "definition": "**National Science Foundation** — the US federal agency that funds most "
+                      "non-medical academic science. An NSF CAREER Award is its main early-career "
+                      "grant, so it is a shorthand for a rising research group.",
+    },
+    "NYPD": {
+        "aliases": ["New York Police Department"],
+        "definition": "**New York Police Department** — New York City's police force. Campus safety "
+                      "offices often publish its local crime statistics alongside their own.",
+    },
+    "NHRL": {
+        "aliases": ["National Havoc Robot League"],
+        "definition": "**National Havoc Robot League** — the main US combat-robotics competition "
+                      "circuit, where student teams fight weight-class robots they have built.",
     },
     # --- Naval architecture / marine engineering + UK routes (report terms) ---
     "RINA": {
