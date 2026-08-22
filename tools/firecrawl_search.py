@@ -46,6 +46,13 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    # queries can contain CJK characters (China discovery); the failure message below
+    # echoes the query back, so stderr needs the same guard as stdout.
+    sys.stderr.reconfigure(encoding="utf-8")
+
 # Resolve repo paths relative to this file so the tool works from any cwd.
 REPO_ROOT = Path(__file__).resolve().parent.parent
 TMP_DIR = REPO_ROOT / ".tmp"
