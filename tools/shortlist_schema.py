@@ -540,6 +540,7 @@ FX_TO_MYR = {
     "RMB": 0.65,  # alias for CNY
     "JPY": 0.031,  # ~100 JPY -> 3.1 MYR
     "HKD": 0.60,  # ~7.8 HKD per USD, USD 4.7 MYR -> ~0.60
+    "CAD": 2.9,  # added 2026-09-03 for a Canada one-off row (Canada has no country workflow yet)
 }
 
 
@@ -569,6 +570,14 @@ def parse_amount(value):
 # Below this, a "budget" is not a degree budget — it's a stray number the parser
 # picked out of prose. A whole-degree budget under RM 1,000 does not exist.
 MIN_PLAUSIBLE_BUDGET = 1000
+
+# Bounds for "Approx total (MYR)". A whole-degree total outside these is not a cost —
+# it is a parse failure. Set from the real data (2026-09-05): the cheapest legitimate
+# row is RM 44,000 (Universiti Malaysia Terengganu), the dearest RM 2,072,552 (Oxford).
+# The bug this catches wrote RM 56,819,951,581,979,320,320, so precision in the bound
+# is not the point — being ANY bound is.
+MIN_PLAUSIBLE_TOTAL_MYR = 20_000
+MAX_PLAUSIBLE_TOTAL_MYR = 3_000_000
 
 
 def budget_ceiling(value):

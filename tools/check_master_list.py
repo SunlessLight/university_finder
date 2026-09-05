@@ -12,6 +12,7 @@ Checks (use --check to run a subset while working through a fix):
   schema       header matches SHORTLIST_HEADERS exactly (catches column drift/misalignment)
   completeness every REQUIRED_COLUMNS cell filled; sentinels only where they're allowed
   budget       cells over their CELL_BUDGETS length
+  plausibility "Approx total (MYR)" outside a sane range — a parse failure, not a cost
   jargon       bare acronyms that apply_glossary can explain, outside the allow-list
   values       List status / Info source / Grades vs entry bar outside their allowed sets
   contradiction  "Grades vs entry bar" vs "Admission likelihood" telling different stories
@@ -61,6 +62,8 @@ from shortlist_schema import (  # noqa: E402
     INFO_SOURCE_OFFICIAL,
     INFO_SOURCE_UNVERIFIED,
     LIST_STATUSES,
+    MAX_PLAUSIBLE_TOTAL_MYR,
+    MIN_PLAUSIBLE_TOTAL_MYR,
     REQUIRED_COLUMNS,
     SENTINEL_VALUES,
     SHORTLIST_HEADERS,
@@ -98,7 +101,8 @@ PROSE_COLUMNS = [
 # page (UCAS, MQA, BEM, Washington Accord, CSS Profile) are deliberately NOT flagged — the
 # glossary sheet explains those instead. See the rule in apply_glossary.py.
 
-CHECKS = ["schema", "completeness", "budget", "jargon", "values", "contradiction", "status"]
+CHECKS = ["schema", "completeness", "budget", "plausibility", "jargon", "values",
+          "contradiction", "status"]
 
 # Every sentinel string, whatever column it belongs to — used to catch one being used
 # in a column that doesn't allow it (see check_completeness).
@@ -215,6 +219,41 @@ def check_budget(rows_as_dicts):
     return out
 
 
+def check_plausibility(rows_as_dicts):
+    """"Approx total (MYR)" that is not a cost but a parse failure.
+
+    The column is computed, never typed, so a wrong value here is always a tool bug
+    reaching a client's spreadsheet. Three rows shipped with fused-digit totals for a
+    month (RM 8,153,824 for Durham, RM 5.7e19 for LSE) because parse_amount() used to
+    concatenate a cell's caveat digits onto the real number — fixed 2026-08-07, but
+    sync_shortlist only appends, so nothing ever revisited the rows and no check looked
+    at the magnitude. This is the net that would have caught them at hand-over.
+
+    Blankness is check_completeness's job; this one only judges a value that is there.
+    """
+    out = []
+    for n, row in rows_as_dicts:
+        uni = row.get("University", "?")[:32]
+        raw = (row.get("Approx total (MYR)") or "").strip().replace(",", "")
+        if not raw:
+            continue
+        try:
+            total = float(raw)
+        except ValueError:
+            out.append(f"row {n} {uni} — Approx total (MYR) {raw!r} is not a number "
+                       f"(the column is digits only — no currency code, no commentary)")
+            continue
+        if total > MAX_PLAUSIBLE_TOTAL_MYR:
+            out.append(f"row {n} {uni} — Approx total (MYR) is {total:,.0f} "
+                       f"(max plausible {MAX_PLAUSIBLE_TOTAL_MYR:,}) — recompute it from the "
+                       f"cost cells; a caveat's digits have probably fused onto the figure")
+        elif total < MIN_PLAUSIBLE_TOTAL_MYR:
+            out.append(f"row {n} {uni} — Approx total (MYR) is {total:,.0f} "
+                       f"(min plausible {MIN_PLAUSIBLE_TOTAL_MYR:,}) — a whole-degree total "
+                       f"this small means the wrong figure or the wrong currency was used")
+    return out
+
+
 def bare_terms(text):
     """Replaceable jargon appearing in `text`, as [(term, plain alternative)].
 
@@ -326,6 +365,8 @@ def run(header, rows, wanted, status_path=None):
         results["completeness"] = check_completeness(rows_as_dicts)
     if "budget" in wanted:
         results["budget"] = check_budget(rows_as_dicts)
+    if "plausibility" in wanted:
+        results["plausibility"] = check_plausibility(rows_as_dicts)
     if "jargon" in wanted:
         results["jargon"] = check_jargon(rows_as_dicts)
     if "values" in wanted:
