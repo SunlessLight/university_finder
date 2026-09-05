@@ -48,6 +48,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from shortlist_schema import (  # noqa: E402
     CELL_BUDGETS,
     DEFAULT_LIST_STATUS,
+    FX_AS_OF,
     INFO_SOURCE_UNVERIFIED,
     SHORTLIST_HEADERS,
     WARNINGS_NONE,
@@ -56,6 +57,7 @@ from shortlist_schema import (  # noqa: E402
     compute_score,
     course_key,
     feasibility_flags,
+    fx_age_warning,
     grade_fit_label,
     load_weights,
     tier_for,
@@ -391,6 +393,11 @@ def main():
 
     print(f"student: {slug} | weights: {weights_id}")
     print(f"{len(candidates)} candidates in file | {skipped} duplicates skipped | {len(rows)} new")
+    # A conversion the student cannot see the date of is a conversion they cannot check.
+    print(f"  MYR conversions used FX_TO_MYR as of {FX_AS_OF}")
+    stale = fx_age_warning()
+    if stale:
+        print(f"  WARNING: {stale}")
     for score, tier, admission, flags, c in scored:
         flag_str = f"  ⚑ {'; '.join(flags)}" if flags else ""
         print(f"  [{tier}] {score:>3}  {admission or '-':<7} {c.get('university','?')} — {c.get('course','?')}{flag_str}")

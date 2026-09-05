@@ -70,13 +70,20 @@ for the rest of the pipeline state:
    countries already have rows. Zero rows ⇒ not yet discovered; any rows ⇒ at least started.
    `master_list.csv` is the source of truth here, not `status.md`'s prose — if they disagree, trust
    the CSV, same rule as `resume.md`'s "files win over the note."
-3. **Next country = the first entry in `target_countries` with no rows yet.** Run **exactly one**
-   country per session — roster → constants → row fill → merge → sync. Not a preference: `--country`
-   on `merge_candidates.py` and `sync_shortlist.py` refuses a mixed batch, because a 35-column
-   country pass is the most context this session can hold and still research honestly.
-4. **Every target country already has rows ⇒ Stage 3 discovery is done**, not "pick one to redo" —
+3. **Check `preferences.primary_country` first (2026-08+).** If it's set and names a country that's
+   both in `target_countries` and still undiscovered (no rows yet), research it first — it overrides
+   pure list order. This is the "which country matters most, if you picked several" form answer; it's
+   captured for exactly this purpose, so honor it rather than defaulting to `target_countries[0]`.
+   Only fall through to list order once `primary_country` is unset, already discovered, or not among
+   the student's picked countries at all.
+4. **Otherwise, next country = the first entry in `target_countries` with no rows yet.** Run
+   **exactly one** country per session — roster → constants → row fill → merge → sync. Not a
+   preference: `--country` on `merge_candidates.py` and `sync_shortlist.py` refuses a mixed batch,
+   because a 35-column country pass is the most context this session can hold and still research
+   honestly.
+5. **Every target country already has rows ⇒ Stage 3 discovery is done**, not "pick one to redo" —
    move on to Stage 4 (see "Done when").
-5. **Singapore and Malaysia are separate entries** (split 2026-07-29 — `COUNTRY_NORMALIZE` used to
+6. **Singapore and Malaysia are separate entries** (split 2026-07-29 — `COUNTRY_NORMALIZE` used to
    fuse them into one `Singapore/Malaysia` token, which handed Foo De Mi six Singapore rows for a
    country she never picked). They are two countries, two passes, two syncs. The same goes for any
    grouped label you meet in an older `preferences.json` — split it before you start.
@@ -336,6 +343,15 @@ computed column (`Desirability`, `Tier`, `Admission likelihood`, `Grades vs entr
   eight existing student CSVs were **not** backfilled: they predate the policy and will fail the
   completeness check until someone re-researches them. That's expected, not a regression — the policy
   applies to new students and new country passes.
+- **FX rates are offline, dated, and never retro-applied (learned 2026-09-05).** `FX_TO_MYR` in
+  `shortlist_schema.py` is a static table with an `FX_AS_OF` stamp; `sync_shortlist.py` prints it and
+  warns past `FX_STALE_AFTER_DAYS` (90). It went unreviewed from the repo's first commit until a
+  student flagged their GBP total: the table said 5.9 against a market 5.47, and USD 4.7 against 4.04
+  — every UK row overstated ~8%, every US row ~16%, RM 55k-120k on a degree total. **Refreshing the
+  table does nothing to rows already in a CSV** — sync only appends, and `apply_backfill.py` refuses
+  computed columns — so a rate change is two jobs: edit the table, then run a deliberate recompute
+  pass over the affected `master_list.csv` files and re-derive `Over budget` with it. Check the stamp
+  before starting a country pass; if it is stale, refresh it *first* so the new rows are right.
 
 ## Done when
 

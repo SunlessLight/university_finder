@@ -525,23 +525,58 @@ def feasibility_flags(candidate, profile=None, today=None):
 
 
 # --------------------------------------------------------------------------- #
-# Rough currency normalization to MYR. This is an OFFLINE static table — update the
-# rates periodically; it exists only to make 3-yr-UK vs 4-yr-US totals roughly
-# comparable, not for financial precision.
+# Rough currency normalization to MYR. This is an OFFLINE static table — it exists
+# only to make a 3-yr UK total and a 4-yr US total roughly comparable, not for
+# financial precision.
+#
+# It went two months unreviewed once (2026-07-05 -> 2026-09-05) and drifted badly:
+# GBP sat at 5.9 against a market 5.47 and USD at 4.7 against 4.04, so every UK row
+# was overstated ~8% and every US row ~16% — RM 55k-120k on a degree total, on the
+# spreadsheet a student uses to decide what they can afford. A student spotted it
+# before we did. A rate with no date on it cannot be SEEN to be stale, which is why
+# FX_AS_OF now exists and why sync_shortlist prints it on every run.
+#
+# TO UPDATE: look up the mid-market rate for each code, edit the values, and move
+# FX_AS_OF to today. Rows already in a master_list.csv are NOT recomputed — sync only
+# appends, and apply_backfill refuses computed columns — so a rate change needs a
+# deliberate recompute pass over the affected CSVs. See the FX bullet in
+# workflows/03_discover_longlist.md, "Edge cases & rules".
 # --------------------------------------------------------------------------- #
+FX_AS_OF = "2026-09-05"
+FX_STALE_AFTER_DAYS = 90
+
+# Source: ECB reference fixing for 2026-09-04 (api.frankfurter.dev, base MYR, inverted),
+# each one cross-checked against its USD cross for a plausibility read — USD/CNY 6.71,
+# USD/HKD 7.84 (inside the peg band), USD/JPY 156, EUR/USD 1.16. GBP and USD were also
+# confirmed against mid-market quotes for 2026-09-05 (5.47-5.53 and 4.041).
 FX_TO_MYR = {
     "MYR": 1.0,
-    "GBP": 5.9,
-    "USD": 4.7,
-    "AUD": 3.1,
-    "SGD": 3.5,
-    "CNY": 0.65,
-    "EUR": 5.1,
-    "RMB": 0.65,  # alias for CNY
-    "JPY": 0.031,  # ~100 JPY -> 3.1 MYR
-    "HKD": 0.60,  # ~7.8 HKD per USD, USD 4.7 MYR -> ~0.60
-    "CAD": 2.9,  # added 2026-09-03 for a Canada one-off row (Canada has no country workflow yet)
+    "GBP": 5.47,
+    "USD": 4.04,
+    "AUD": 2.91,
+    "SGD": 3.19,
+    "CNY": 0.60,
+    "EUR": 4.70,
+    "RMB": 0.60,  # alias for CNY — keep the two in step
+    "JPY": 0.026,  # per 1 JPY, not per 100
+    "HKD": 0.52,
+    "CAD": 2.93,  # added 2026-09-03 for a Canada one-off row (Canada has no country workflow yet)
 }
+
+
+def fx_age_warning(today=None):
+    """A warning string when FX_TO_MYR is older than FX_STALE_AFTER_DAYS, else None."""
+    from datetime import date
+    today = today or date.today()
+    try:
+        stamped = date.fromisoformat(FX_AS_OF)
+    except ValueError:
+        return f"FX_AS_OF {FX_AS_OF!r} is not an ISO date — fix it in shortlist_schema.py"
+    age = (today - stamped).days
+    if age > FX_STALE_AFTER_DAYS:
+        return (f"FX rates are {age} days old (stamped {FX_AS_OF}, stale after "
+                f"{FX_STALE_AFTER_DAYS}) — refresh FX_TO_MYR before syncing")
+    return None
 
 
 def parse_amount(value):
