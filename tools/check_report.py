@@ -19,7 +19,7 @@ gets, the JSON lives in .tmp and is deleted, and reading the render also catches
 built by an older section spec.
 
 Checks (use --check to run a subset while working through a fix):
-  structure   16 sections, right headings, right order, for the detected mode
+  structure   right headings, right order, for the detected schema (new or legacy)
   snapshot    every Snapshot fact row present and filled (a missing row = a missing JSON field)
   notfound    "Not found — …" density, bare "Not found" with no reason, all-not-found sections
   sources     enough sources, each with a URL, an authority, and enough of them Official
@@ -51,7 +51,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from build_report import SECTIONS_BY_MODE  # noqa: E402
+from build_report import SCHEMAS  # noqa: E402
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -85,44 +85,70 @@ MIN_NAME_PART = 4
 # is on disk, and the whole point of this tool is not re-reading it.
 EXCERPT = 70
 
-# Snapshot rows _fact_table() renders per mode, in order. It SKIPS empty values, so a row
-# missing from the render means the field was missing from the research JSON — which is the
-# only place that omission is ever visible.
+# Snapshot rows _fact_table() renders, in order. It SKIPS empty values, so a row missing from
+# the render means the field was missing from the research JSON — the only place that omission
+# is ever visible.
+#
+# The new schema renders the SAME sections for both scopes, so headings cannot tell a course
+# report from an institution one; the Snapshot can. A course report has a "Course" row, an
+# institution report has "Setting" / "Type & size".
+NEW_SNAPSHOT_CORE = [
+    "University", "Overall rank", "How to apply", "Admission likelihood", "Your priorities",
+]
+NEW_SNAPSHOT_BY_SCOPE = {
+    "course": ["Course", "Country / City", "Subject rank"],
+    "institution": ["Location", "Setting", "Type & size", "Est. net cost after aid (MYR)"],
+}
 SNAPSHOT_ROWS = {
-    "course": [
+    "legacy_course": [
         "University", "Course", "Country / City", "Overall rank", "Subject rank",
         "How to apply", "Admission likelihood", "Your priorities",
     ],
-    "university": [
+    "legacy_university": [
         "University", "Location", "Setting", "Type & size", "Overall rank",
         "How to apply", "Admission likelihood", "Est. net cost after aid (MYR)",
         "Your priorities",
     ],
 }
 
+
+def detect_scope(snapshot_body):
+    """course vs institution for a new-schema report, read off the Snapshot table."""
+    return "course" if "| **Course** |" in snapshot_body else "institution"
+
+
 # Sections the writing rules require to be STRUCTURED, keyed by section key per mode.
 # "Tables and checklists beat prose for anything structured" is the rule; these are the
 # places it is not a preference — a cost breakdown or a deadline list written as a
 # paragraph is the specific failure the readability review found.
 REQUIRED_TABLES = {
-    "course": {
+    "report": {
+        "costs": "a line-item cost table (tuition / living / total in MYR)",
+        "scholarships": "a table of schemes with value + eligibility",
+        "getting_in": "a stats table (admit rate or cutoff, entry requirements, test range)",
+        "why_here": "a 2-column key-value table matching the Snapshot",
+    },
+    "legacy_course": {
         "costs": "a line-item cost table (tuition / living / total in MYR)",
         "scholarships": "a table of schemes with value + eligibility",
         "admitted_profiles": "a stats table (admit rate, applications per place, test range)",
         "why_here": "a 2-column key-value table matching the Snapshot",
     },
-    "university": {
+    "legacy_university": {
         "costs_aid": "a line-item cost table (COA / aid model / your share in MYR)",
         "admissions_fit": "a stats table (admit rate, ED vs RD, intl, test range)",
         "why_here": "a 2-column key-value table matching the Snapshot",
     },
 }
+# The new schema has NO required checklist — the application checklist and key dates moved to
+# the Stage 8 apply guide (workflows/08_application_prep.md) on 2026-09-06.
 REQUIRED_CHECKLISTS = {
-    "course": {
+    "report": {},
+    "legacy_course": {
         "application_checklist": "`- [ ]` items, one per thing to gather",
         "key_dates": "`- [ ]` items with dates, not a paragraph",
     },
-    "university": {
+    "legacy_university": {
         "how_to_apply": "`- [ ]` items for the deadlines and the pieces to prepare",
     },
 }
@@ -162,16 +188,16 @@ def parse_report(text):
 
 
 def detect_mode(sections):
-    """Which of build_report.py's two section specs this report was rendered against.
+    """Which of build_report.py's registered schemas (SCHEMAS) this report was rendered against.
 
     Detected rather than passed in: the caller is usually a cold session linting a report it
     didn't build, and the headings already carry the answer unambiguously (every report on
-    disk matches one spec 16/16 and the other far less).
+    disk matches one schema in full and the others far less).
     """
     headings = {h for _, h, _ in sections}
     scores = {
         mode: len(headings & ({"Snapshot", "Sources"} | {h for _, h in spec}))
-        for mode, spec in SECTIONS_BY_MODE.items()
+        for mode, spec in SCHEMAS.items()
     }
     best = max(scores, key=scores.get)
     tied = [m for m, s in scores.items() if s == scores[best]]
@@ -179,7 +205,7 @@ def detect_mode(sections):
 
 
 def expected_headings(mode):
-    return ["Snapshot"] + [h for _, h in SECTIONS_BY_MODE[mode]] + ["Sources"]
+    return ["Snapshot"] + [h for _, h in SCHEMAS[mode]] + ["Sources"]
 
 
 def section_bodies(sections, mode):
@@ -188,7 +214,7 @@ def section_bodies(sections, mode):
     Lets a check name the section it cares about ("costs") instead of hard-coding a heading
     string that would drift the first time a heading is reworded.
     """
-    by_heading = {h: key for key, h in SECTIONS_BY_MODE[mode]}
+    by_heading = {h: key for key, h in SCHEMAS[mode]}
     return {
         by_heading[h]: "\n".join(body).strip()
         for _, h, body in sections
@@ -242,7 +268,7 @@ def check_structure(sections, mode, ambiguous):
     """
     out = []
     if ambiguous:
-        out.append("cannot tell course mode from university mode — the headings match neither spec")
+        out.append("headings match no known schema — not the current spec, not either legacy one")
     expected = expected_headings(mode)
     actual = [h for _, h, _ in sections]
     if actual == expected:
@@ -279,7 +305,12 @@ def check_snapshot(sections, mode):
     if not rows:
         return ["Snapshot is not a fact table — re-render with the current build_report.py"]
     out = []
-    for label in SNAPSHOT_ROWS[mode]:
+    if mode == "report":
+        scope = detect_scope(body)
+        wanted = NEW_SNAPSHOT_CORE + NEW_SNAPSHOT_BY_SCOPE[scope]
+    else:
+        wanted = SNAPSHOT_ROWS[mode]
+    for label in wanted:
         if label not in rows:
             out.append(f"Snapshot has no {label!r} row — the research JSON left that field empty")
         elif not rows[label]:
@@ -471,7 +502,7 @@ def check_tables(sections, mode):
             out.append(f"{key}: no `- [ ]` checklist items — the writing rules want {want}")
 
     for _, heading, body in sections:
-        in_why_here = heading == dict(SECTIONS_BY_MODE[mode]).get("why_here", "")
+        in_why_here = heading == dict(SCHEMAS[mode]).get("why_here", "")
         for line in body:
             if "⚠" not in line:
                 continue
