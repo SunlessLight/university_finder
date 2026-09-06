@@ -3,7 +3,7 @@
 ## Objective
 
 For each **finalist** (the 3-5 universities the student picks from the Longlist), produce a deep,
-standardized **16-section university report** (Snapshot + 14 content sections + Sources) that answers three
+standardized **15-section university report** (Snapshot + 13 content sections + Sources) that answers three
 decision questions — **can I get in? · will I belong & thrive? · what will it take to apply?** — so the
 student can *decide*, not just compare. Lead with texture that determines whether they apply; keep the
 hard-fact sections as guardrails. This is the most research-intensive stage — do it only for finalists,
@@ -77,38 +77,45 @@ cells just restated the obvious — "direct entry is a Safety on his grades" tel
 its space once a row survives to Shortlist, where the detail is actually actionable.
 
 > **`Course at a glance` and `Student life` are already filled.** Stage 3 writes them, like every other
-> column. If the report's *Course details & structure* or *Student life & culture* research contradicts
-> the one-liner, **correct it through the report JSON's `corrections` object** (see "Assemble the report
-> JSON" below) — the agent never edits the CSV, `flip_finalists.py` applies it. Don't treat filling
-> these as a Stage 4 task either way. Campus and city facts are course-independent, so reuse them
-> across students rather than re-researching (e.g. `data/students/<slug>/student_life_research.md`).
+> column. If the report's *What you'll actually study* or *Culture & vibe* / *Student life, housing &
+> food* research contradicts the one-liner, **correct it through the report JSON's `corrections`
+> object** (see "Assemble the report JSON" below) — the agent never edits the CSV, `flip_finalists.py`
+> applies it. Don't treat filling these as a Stage 4 task either way. Campus and city facts are
+> course-independent, so reuse them across students rather than re-researching (e.g.
+> `data/students/<slug>/student_life_research.md`).
 
 > **Too few survivors?** If the cut leaves fewer than ~3 workable picks, go back to **Stage 3**
 > (`03_discover_longlist.md`) and widen discovery (more countries or safer options) rather than
 > writing reports on weak rows.
 
-Only once a pick survives this cut do you build its report below. The report's own deep research (Costs,
-Scholarships, Visa, Recognition sections) is where the *full* funding and fit detail gets written — you
-don't also need to write paragraphs into the master-list scholarship cells.
+Only once a pick survives this cut do you build its report below. The report's own deep research
+(Costs, Scholarships, and the Outcomes section's recognition-back-home gate) is where the *full*
+funding and fit detail gets written — you don't also need to write paragraphs into the master-list
+scholarship cells.
 
-## Two report paths — course vs university (pick with `--mode`)
+## One schema, two claims (`--mode`)
 
-`build_report.py` renders **two** report shapes; choose per finalist:
+`build_report.py` renders **one** report shape for every country. `--mode` no longer changes which
+sections you get — it only changes **which Snapshot fields render** and **what the finalist marker
+claims**:
 
-- **`--mode course` (default) — the course-specific report.** *"Should I do THIS course here?"* Every
-  `master_list.csv` row is a `University + Course` pair, so it matches/flips the row by
-  `course_key(university, course)`. Use it for **UK · Australia · Singapore · China** — anywhere you
-  apply to a named degree. The 16-section spec below is this path.
-- **`--mode university` — the whole-institution report. US-only.** *"Should I GO to this university?"*
-  US undergrads apply to the **institution** and typically **declare a major in year 2**, so a
-  course-anchored report asks the wrong question. This path swaps the course lens for institutional
-  fit — character, the "type" of student it wants, curriculum shape, culture, aid, setting. It matches/
-  flips by **university name only** (ignoring `Course`) and **hard-errors if a matched row's `Country`
-  isn't `USA`**. Filename is slugged on the university alone (`stanford-university.md`), so it never
-  collides with a course report for the same uni — both can coexist. See **"The US university path"** below.
+- **`--mode course` (default) — claims one `University + Course` row.** *"Should I do THIS course
+  here?"* Every `master_list.csv` row is a `University + Course` pair, so this matches/flips the row
+  by `course_key(university, course)`. Use it for **UK · Australia · Singapore · China** — anywhere
+  you apply to a named degree.
+- **`--mode university` — claims every row for that university. US-only.** *"Should I GO to this
+  university?"* US undergrads apply to the **institution** and typically **declare a major in year
+  2**, so a course-anchored claim asks the wrong question — this is a real fact about admissions, not
+  a schema accident. It matches/flips by **university name only** (ignoring `Course`) and
+  **hard-errors if a matched row's `Country` isn't `USA`**. Filename is slugged on the university
+  alone (`stanford-university.md`), so it never collides with a course report for the same uni — both
+  can coexist.
 
-Everything else — the free-search-vs-Firecrawl split, "capture social links, don't scrape", official
-sources for hard facts, enforced non-empty sections, the PDF export — is **identical for both paths**.
+Both modes render the **same 13 content sections** below; the §3 "For US finalists" callout is the
+only place the US institutional lens gets called out by name — everyone else's finalists get the same
+sections with a non-US example instead. Everything else — the free-search-vs-Firecrawl split, "capture
+social links, don't scrape", official sources for hard facts, enforced non-empty sections, the PDF
+export — is identical for both modes.
 
 ## Tools used
 
@@ -124,10 +131,11 @@ sources for hard facts, enforced non-empty sections, the PDF export — is **ide
 > all land in one context. The pre-flight above (pick, verify, cut) stays in this session — it's the
 > Stage 4 checkpoint with the student (CLAUDE.md), not research.
 
-1. *(agent research)* gather the facts for the 14 content sections. **Hard facts** (fees, requirements,
-   visa, recognition, deadlines) come from **official sources** (course page, UCAS/Common App, the
-   country's visa site, MQA). **Decision texture** (who gets in, student life, the city) comes from search
-   + forums/video/social — capture their URLs + snippets without scraping them.
+1. *(agent research)* gather the facts for the 13 content sections. **Hard facts** (fees,
+   requirements, recognition, post-study work rights, deadlines) come from **official sources**
+   (course page, UCAS/Common App, MQA). **Decision texture** (who gets in, culture, student life, the
+   city) comes from search + forums/video/social — capture their URLs + snippets without scraping
+   them.
 2. *(agent step)* assemble `.tmp/<slug>/report_<uni>.json` — including the optional `corrections`
    object if the deep research contradicts the row's `Course at a glance` / `Student life` cell.
 3. *(agent step)* `build_report.py --student <slug> --input .tmp/<slug>/report_<uni>.json` — renders
@@ -170,32 +178,54 @@ default for everything; escalate to `firecrawl_search.py` when free is *blocked*
 response missing the fact you went there for**); no permission needed either way. Two things specific
 to this stage:
 
-- **The decision-texture sections are free-search ONLY** (`admitted_profiles`, `student_life_culture`,
-  `city_and_belonging`). Their best sources are Reddit / The Student Room / YouTube / Instagram /
-  Discord — which Firecrawl either can't scrape (IG / FB / TikTok / X are hard-skipped in
+- **The decision-texture research is free-search ONLY**: the admitted-profile texture inside
+  `getting_in`, the day-to-day and personality texture inside `culture_vibe` and `student_life`, and
+  all of `city_and_belonging`. Their best sources are Reddit / The Student Room / YouTube /
+  Instagram / Discord — which Firecrawl either can't scrape (IG / FB / TikTok / X are hard-skipped in
   `firecrawl_search.py`) or handles unreliably. Capture the URL + a snippet; don't try to scrape.
   Escalating here isn't blocked-fallback, it's a worse result for credits.
 - Firecrawl doesn't offload the agent's reasoning — fetched content still lands in context; the win is
   reliability on protected pages + fewer failed-fetch retries.
 
-## The 16 sections (the tool enforces all 14 content sections — empty = build fails)
+## The 15 sections (the tool enforces all 13 content sections — empty = build fails)
 
-Ordered decision-first. **Snapshot (1)** and **Sources (16)** are rendered by the tool; you fill 2–15.
+Ordered decision-first. **Snapshot (1)** and **Sources (15)** are rendered by the tool; you fill 2–14.
+Every content section below now applies to **every country** — the ones that used to be US-only carry
+a non-US example so you don't skip them for a UK or Singapore finalist.
 
-1. **Snapshot** *(auto-rendered as a fact table from the JSON's top-level fields)* — uni · course ·
-   country/city · overall rank · subject rank · application system · admission likelihood, plus the
-   student's ranked **`priorities`** (set this field — it's where the priorities get stated once, up front).
-2. **Entry requirements & this student's fit** — academic + English, the grade margin → Reach/Match/Safety,
-   and the **pathway/foundation route** if direct entry is short.
-3. **Who actually gets in** — real admitted-student texture: the **extracurriculars, awards, academic
-   profile, and essay/interview angles** of people who got in. Sources: results/decision threads (Reddit,
-   The Student Room offer-holder threads), "how I got into X" blogs/YouTube, the US **Common Data Set** /
+1. **Snapshot** *(auto-rendered as a fact table from the JSON's top-level fields)* — uni · course (or,
+   in university mode, setting / type & size / est. net cost) · country/city · overall rank · subject
+   rank · application system · admission likelihood, plus the student's ranked **`priorities`** (set
+   this field — it's where the priorities get stated once, up front).
+2. **Identity & what it's known for** — the aim, values, and what the place is known for. Applies
+   everywhere: Cambridge's Tripos + supervision system says as much about identity as any US mission
+   statement.
+3. **Who it's for — the archetype & your fit** — the signature "type" of student the place recruits
+   and shapes, plus an honest fit check against the student's `profile` / `preferences`.
+   > **For US finalists.** US universities differ far more in character than in course catalogue, so
+   > the archetype read matters most there. Look at: **institutional archetype** (Stanford →
+   > founders/builders, MIT → makers/hands-on problem-solvers, Princeton → scholars/researchers,
+   > Harvard → future leaders/humanities + breadth, Caltech → pure scientists, an LAC →
+   > discussion-driven generalists — name it, then say honestly whether the student *is* that
+   > person); **curriculum shape** (open curriculum vs core vs distribution — the biggest single
+   > US-vs-elsewhere difference, covered in full at §5); **size & setting** (large research
+   > university vs small liberal-arts college; urban / college-town / rural — affects class size,
+   > teaching, daily life); **culture** (collaborative vs competitive, Greek life, sports, traditions
+   > — covered in full at §7); **aid model** (need-blind vs need-aware for internationals,
+   > meets-full-need or not, merit scholarships — often the real gate for a Malaysian student, keep
+   > it honest and in MYR); and **support & advising** for internationals.
+4. **Getting in — requirements, who gets in & your fit** — academic + English requirements, the grade
+   margin → Reach/Match/Safety, and the **pathway/foundation route** if direct entry is short; plus
+   real admitted-student texture: the **extracurriculars, awards, academic profile, and
+   essay/interview angles** of people who got in. Sources: results/decision threads (Reddit, The
+   Student Room offer-holder threads), "how I got into X" blogs/YouTube, the US **Common Data Set** /
    acceptance-rate, or the grades-based **IGP / cutoff** (NUS, China).
    > **"Grades-based" ≠ grades-only.** Systems that publish a cutoff/IGP increasingly *also* require a
    > personal statement / short-response essays and an achievements/CCA list from **every** applicant
    > (e.g. NUS's Aptitude-Based Admissions). Verify the real required components on the official
    > application page before writing "admission is just the grades" — and if the student can't yet
-   > evidence a required one, reflect it in the Section-2 admissibility read, not only in Scholarships.
+   > evidence a required one, reflect it in this section's admissibility read, not only in
+   > Scholarships.
 
    **Fallback when thin:** admit-rate /
    cutoff stats **plus official *and* unofficial social channels** (subreddit, IG, Discord, student-society
@@ -207,161 +237,70 @@ Ordered decision-first. **Snapshot (1)** and **Sources (16)** are rendered by th
    found, and answer their `additional_requirements` ask (often literally "what traits are you
    looking for, and do I match?") against the same evidence. Say plainly where they match and where
    there's a visible gap — this is admissibility signal, not filler.
-4. **Course details & structure** — modules, duration, intake, placement/sandwich/co-op, flexibility to
-   change major (a real UK vs US difference).
-5. **Costs (full)** — tuition (per year + full programme), living, application fees, deposit, and the
-   **total cost of attendance in MYR**.
-6. **Scholarships & financial aid** — university + government/external + **Malaysian sponsors (JPA, MARA,
-   Yayasan, PTPTN)**, each with eligibility.
-7. **Cost of living & accommodation** — monthly estimate, on/off campus.
-8. **Visa & immigration** — financial-proof requirement, visa + health-surcharge cost, work-during-study
-   hours, and **post-study work rights** (UK Graduate Route / AUS 485 / US OPT–STEM OPT).
-9. **Recognition back home** — **MQA recognition + the relevant Malaysian professional body**; can the
-   student practise in Malaysia? (Material only for regulated professions — say "n/a" otherwise.)
-10. **Employability & outcomes** — graduate employment rate / salary data, internships, alumni network.
-11. **Student life & culture** — the texture that answers *"will I belong?"*: **study life** (workload,
-    teaching style, intensity), **life outside study** (clubs, sport, weekends, nightlife), the **student
-    personality archetype** (collaborative vs competitive, hands-on vs theoretical), **what a newcomer
-    needs to blend in**, **first-year / orientation activities** (freshers, signature first-year projects),
-    and **real student voices** (Reddit / The Student Room / YouTube — links + snippets, not scraped).
-    This is the **only** home for student-life research since the master-list columns were removed on
-    2026-07-16 — it needs paragraphs, which is exactly what a spreadsheet cell can't hold. **Check
-    `data/students/<slug>/student_life_research.md` first for early students**: 30 rows of this was
-    already researched under the old verify-shortlist step and migrated there for one of them. Don't
-    pay for it twice.
-12. **The city, the area & belonging** — the **city/area feel, safety, transport, and things to do /
-    sightseeing**, plus the **Malaysian / halal / prayer / religious-community** angle. Surface
-    `needs`-flagged items prominently; otherwise treat as reassuring background, not a decision driver.
-13. **Application prep checklist** — *not a step-by-step guide.* A **readiness checklist** of everything to
-    gather beforehand so the application is done in one sitting: documents (transcripts, predicted grades),
-    tests (English test + status, admissions tests e.g. ESAT/SAT), essays/personal statement, references/
-    recommenders, portfolio/interview prep, application + deposit fees, and portal/account setup. Note the
-    system (UCAS / Common App / direct portal) but keep the emphasis on *what to prepare*.
-    **If `profile.achievements` is populated (2026-08+), reference it directly as the raw material for
-    the essay/personal-statement item** — point at which named activities are strong personal-statement
-    material for *this* course/university, rather than leaving "write your personal statement" generic.
-14. **Key dates & deadlines** — application, scholarship, admissions-test dates.
-15. **Why here / why hesitate** — a short honest synthesis tied to this student's `priorities` / `needs`:
-    **2–4 reasons to choose** (the standout hook — signature labs, flagship projects, societies, notable
-    alumni *in the student's field*) **and** an explicit **"reasons to hesitate"**. Inform conviction —
-    don't sell.
-16. **Sources** — each with **authority (Official/Aggregator) + as-of cycle year**.
 
-## The US university path (`--mode university`)
-
-For US finalists, build the whole-institution report instead of (or alongside) a course one. It answers
-*"is this the right **place** for me?"* — the question US admissions actually turns on.
-
-### What US fit-qualities to look for (the lens)
-
-US universities differ far more in **character** than in course catalogue. Research each through these,
-and frame every one as a **"does THIS student fit?"** check — not a brochure:
-
-- **Institutional archetype / "who it's for."** Every top US school has a recognisable type it recruits
-  and shapes: **Stanford → founders/builders**, **MIT → makers/hands-on problem-solvers**, **Princeton →
-  scholars/researchers** (undergrad research, the senior thesis), **Harvard → future leaders/humanities +
-  breadth**, **Caltech → pure scientists**, an LAC → discussion-driven generalists. Name it, then say
-  honestly whether the student *is* that person.
-- **Curriculum shape.** **Open curriculum** (Brown — almost no requirements) vs **core** (Columbia,
-  Chicago — a fixed great-books/science core) vs **distribution** (most — breadth across areas). **When
-  you declare a major** (usually end of year 2), how easy it is to switch, and whether **double
-  majors / minors / self-designed majors** are normal. This is the single biggest US-vs-elsewhere
-  difference — lead with it.
-- **Size & setting.** Large research university vs small liberal-arts college; **urban / college-town /
-  rural**. Affects class size, teaching (professors vs TAs), and daily life.
-- **Culture.** Collaborative vs competitive (P/F first semester? no first-year grades?), intellectual vs
-  pre-professional, **Greek life** presence, **sports** (D1 spectacle vs D3), traditions, and how
-  **undergrad-focused** it is vs graduate/research-heavy.
-- **Aid model — the money reality for an international.** **Need-blind vs need-aware for internationals**,
-  **meets-full-need** or not, and **merit** scholarships. (For Malaysian students this is often the gate —
-  keep it honest and in MYR.)
-- **Support & advising** for internationals, and **outcomes/network** (OPT → STEM-OPT, alumni pull in the
-  student's field).
-
-Same scraper split as the course path: **decision-texture** (archetype, culture, student life, city,
-food, sentiment) → **free WebSearch + social/forum/video** (Reddit / YouTube / student-society pages —
-links + snippets, don't scrape); **hard facts** (aid policy, cost of attendance, deadlines, test
-requirements) → **official pages** (Firecrawl where a page blocks a plain fetch — no permission needed).
-If a student already has `student_life_research.md`, read it first rather than re-researching it.
-
-### The 14 university sections (the tool enforces all 14 — empty = build fails)
-
-Ordered institution-first. **Snapshot** and **Sources** are rendered by the tool; you fill 1–14.
-
-1. **Identity & mission** — the aim, values, what the place stands for.
-2. **Who it's for — the archetype & this student's fit** — the signature "type" (founders/makers/
-   scholars/…) + an honest fit check against the student's `profile` / `preferences`.
-3. **Getting in — admissions & this student's fit** — holistic profile, admit rate, tests (SAT/ACT +
-   whether required this cycle), the grade margin → Reach/Match/Safety, what admits actually look like.
-4. **Academic structure & the four years** — open/core/distribution curriculum, gen-ed, **when you
-   declare a major**, how years 1–4 split, room to explore before committing. *(Scope: the shape of
-   the degree and the timeline. Don't re-explain major-affiliation mechanics in 5 as well — cover
-   it once here.)*
-5. **Majors, minors & flexibility** — fields it's known for, double-major/minor/self-design, ease of
-   switching, and its strength in the student's area of interest. *(Scope: the menu of fields and how
-   freely you move between them — not the year-by-year timeline, that's 4.)*
+   **State what applying here demands** (supplement count, admissions tests, portfolio) as a
+   decision input — the *load*, not the instructions. "3 supplements + an admissions test" is
+   something to weigh when picking finalists; the how-to-submit mechanics are Stage 8's job
+   (`workflows/08_application_prep.md`).
+5. **What you'll actually study** — one question with a country-shaped answer. For the US: open /
+   core / distribution curriculum, **when you declare a major** (usually end of year 2), how easy it
+   is to switch, and whether double majors / minors / self-designed majors are normal — the single
+   biggest US-vs-elsewhere structural difference, so lead with it for a US finalist. Elsewhere:
+   modules, duration, intake, placement/sandwich/co-op, and how locked-in the degree is once you
+   enrol (a real UK-vs-US difference in the other direction). Either way, also cover fields the place
+   is known for, its strength in the student's area of interest, and how freely you can move between
+   majors/minors.
 6. **Signature academic experiences** — undergrad research (e.g. MIT's UROP), co-op, study abroad,
-   makerspaces/labs, first-year signature projects — the hands-on texture. *(Scope: named programmes
-   and hands-on opportunities — not curriculum structure, that's 4/5.)*
-7. **Culture & vibe** — collaborative vs competitive, intellectual tone, Greek life, sports (D1/D3),
-   traditions, the student personality.
-8. **Student life & food** — housing (residential-college system?), clubs, weekends, social scene,
-   dining/meal plans, and **halal/dietary options**.
-9. **The city, the area & belonging** — setting, safety, transport, weather, things to do, plus the
-   **Malaysian / halal / prayer / Muslim-community** angle. Surface `needs`-flagged items prominently.
-10. **Costs & financial aid** — cost of attendance, **need-blind vs need-aware for internationals**,
-    meets-full-need, merit awards + Malaysian sponsors (JPA/MARA/Yayasan), and the realistic **your-share
-    in MYR** (not the sticker — the residual after aid).
-11. **How to apply** — Common App / Coalition / own app, **EA / ED / REA / RD** and which single early
-    shot to spend, essays/supplements, recommenders, application + deposit fees / waivers.
-12. **Outcomes & network** — graduate outcomes, **OPT + 24-month STEM-OPT**, alumni network, careers.
-13. **Unique facts & quirks** — traditions, notable alumni *in the student's field*, fun/quirky facts —
-    the colour that makes it real.
-14. **Why here / why hesitate** — an honest synthesis tied to the student's `priorities` / `needs`:
-    2–4 reasons to choose **and** an explicit "reasons to hesitate". Inform conviction — don't sell.
+   makerspaces/labs, first-year signature projects — the hands-on texture. Applies everywhere: NUS's
+   residential colleges run their own signature modules and mentoring, for instance. *(Scope: named
+   programmes and hands-on opportunities — not curriculum structure, that's §5.)*
+7. **Culture & vibe** — the tone and personality of the place: collaborative vs competitive,
+   intellectual vs pre-professional, Greek life (where relevant), sports culture, traditions, and the
+   **workload / teaching style / intensity** of actually studying there, plus the **student
+   personality archetype** (collaborative vs competitive, hands-on vs theoretical). This is the "is
+   this energy right for me" section — day-to-day life, housing, and food live in §8 instead.
+8. **Student life, housing & food** — **housing** (on/off campus, residential-college systems),
+   **dining/meal plans and halal/dietary options**, **life outside study** (clubs, sport, weekends,
+   nightlife), **first-year/orientation activities** (freshers, signature first-year projects),
+   **what a newcomer needs to blend in**, and **real student voices** (Reddit / The Student Room /
+   YouTube — links + snippets, not scraped). This is the **only** home for student-life research
+   since the master-list columns were removed on 2026-07-16 — it needs paragraphs, which is exactly
+   what a spreadsheet cell can't hold. **Check `data/students/<slug>/student_life_research.md` first
+   for early students**: some of this was already researched under the old verify-shortlist step and
+   migrated there. Don't pay for it twice.
+9. **The city, the area & belonging** — the **city/area feel, safety, transport, and things to do /
+   sightseeing**, plus the **Malaysian / halal / prayer / religious-community** angle. Surface
+   `needs`-flagged items prominently; otherwise treat as reassuring background, not a decision driver.
+10. **Costs (full)** — tuition (per year + full programme), living, application fees, deposit, and
+    the **total cost of attendance in MYR**; for a US finalist, the realistic **your-share in MYR**
+    (not the sticker price — the residual after aid).
+11. **Scholarships & financial aid** — university + government/external + **Malaysian sponsors (JPA,
+    MARA, Yayasan, PTPTN)**, each with eligibility; for a US finalist, also **need-blind vs
+    need-aware for internationals**, meets-full-need or not, and merit awards.
+12. **Outcomes, network & practising in Malaysia** — graduate employment rate / salary data,
+    internships, and alumni network (for the US, **OPT + the 24-month STEM-OPT extension**);
+    **MQA recognition + the relevant Malaysian professional body (BEM/EAC, MMC, LPQB, MIA/ACCA,
+    MBOT)** as a **gate, not a footnote** for regulated professions — can the student practise in
+    Malaysia? (Material only for regulated professions — say "n/a" otherwise); and **post-study work
+    rights** (UK Graduate Route / AUS 485 / US OPT–STEM OPT / Singapore employment-pass pathway) —
+    whether the right to stay and work exists at all is a *reason to pick a country*, so it stays
+    here. The *paperwork* to actually get it (forms, financial proof, fees, lead times) is Stage 8's
+    job.
+13. **Unique facts & quirks** — traditions, notable alumni *in the student's field*, fun/quirky facts
+    — the colour that makes it real. Applies everywhere: a UK university's year-in-industry option is
+    just as much a quirk worth naming as a US school's founding myth.
+14. **Why here / why hesitate** — a short honest synthesis tied to this student's `priorities` /
+    `needs`: **2–4 reasons to choose** (the standout hook — signature labs, flagship projects,
+    societies, notable alumni *in the student's field*) **and** an explicit **"reasons to hesitate"**.
+    Inform conviction — don't sell.
+15. **Sources** — each with **authority (Official/Aggregator) + as-of cycle year**.
 
-### The university-mode JSON shape
-
-Write `.tmp/<slug>/uni_<uni-slug>.json` (see `build_report.py`'s header for the exact shape). No
-`course`; the snapshot uses institution fields, and `sections` are the 14 keys above:
-
-```json
-{
-  "university": "Massachusetts Institute of Technology",
-  "country": "USA", "city": "Cambridge, Massachusetts",
-  "setting": "urban (Boston metro)",
-  "type": "private research university",
-  "size": "~4,500 undergraduates",
-  "overall_rank": "QS #1 / US News ~#2",
-  "application_system": "MIT's own portal (not Common App)",
-  "admission_likelihood": "Reach",
-  "net_cost": "~RM 0-40k/yr after aid (income-band dependent; approx)",
-  "priorities": "1. Funding · 2. Hands-on · 3. Safe/nature setting",
-  "sections": {
-    "identity_mission": "markdown...", "who_its_for": "markdown...",
-    "admissions_fit": "markdown...", "academic_structure": "markdown...",
-    "majors_minors": "markdown...", "signature_experiences": "markdown...",
-    "culture_vibe": "markdown...", "student_life_food": "markdown...",
-    "city_belonging": "markdown...", "costs_aid": "markdown...",
-    "how_to_apply": "markdown...", "outcomes_network": "markdown...",
-    "unique_facts": "markdown...", "why_here": "markdown..."
-  },
-  "sources": [ {"title": "...", "url": "...", "authority": "Official", "as_of": "2026"} ]
-}
-```
-
-Render it:
-```powershell
-python tools/build_report.py --student <slug> --input .tmp/<slug>/uni_mit.json --mode university
-```
-Output: `data/students/<slug>/reports/<uni-slug>.md` **plus** a `mode: "university"` finalist marker at
-`.tmp/<slug>/finalists/<uni-slug>.json`. No CSV change here. When `flip_finalists.py` runs later it
-matches **every** row for that university (by name, ignoring `Course`) and flips them all — and the
-US-only rule is enforced there, as a per-fragment `guard_failed` rather than a hard exit, so one
-mis-moded marker leaves the other finalists' flips intact. A `corrections` entry in a university-mode
-report should be **`Student life` only**: this marker can claim several course rows at once, so one
-`Course at a glance` sentence would be wrong on all but one of them. Export to PDF exactly as below —
-`report_to_pdf.py` reads either report unchanged.
+> **Moved to Stage 8 (2026-09-06).** Visa mechanics, the application-prep checklist, and key dates now
+> live in `workflows/08_application_prep.md` — they are region-level facts that were being rewritten
+> once per finalist despite being identical for every university a student applies to in that region.
+> **`dated_items` stays in this report's JSON** even though `key_dates` is gone as a *section* —
+> `build_calendar.py` globs `.tmp/<slug>/report_*.json` for it directly, and dropping the field would
+> silently empty the Stage 5 deadline calendar.
 
 ## Writing rules — make it skimmable (non-negotiable, both modes)
 
@@ -377,15 +316,14 @@ questions — *can I get in? · can I afford it? · what do I actually do?* — 
   `"1. Funding · 2. Hands-on · 3. Safe/nature setting"`). After that, refer to a priority by name —
   don't re-rank it every section, and never write "#1 priority" without the list being visible.
 - **Say each key fact once.** Pick the section that owns a fact (funding → Costs; test-not-yet-sat →
-  Application checklist / Getting in) and state it there. `why_here` is **net-new synthesis**
+  Getting in) and state it there. `why_here` is **net-new synthesis**
   (the standout hook + honest hesitations), *not* a re-read of the whole report — keep it short.
 - **Bold budget.** Bold only genuinely key figures and actions. If half a paragraph is bold, nothing
   stands out — prefer a short lead phrase or a table over bolding every clause.
-- **Tables and checklists beat prose** for anything structured. Write these sections **as Markdown**
+- **Tables beat prose** for anything structured. Write these sections **as Markdown**
   (the renderer styles them):
   - **Costs** — a small table (row per line item: tuition / COA / net-cost-in-MYR / aid structure).
-  - **Getting in / admitted profile** — a stats table (admit rate, RD vs ED, intl, test range).
-  - **Application checklist & key dates** — a checklist (`- [ ] …`) with deadlines, not a paragraph.
+  - **Getting in** — a stats table (admit rate or cutoff, entry requirements, test range).
   - **Halal / dining** — a table (location · what's served · hours) when there are 3+ options.
   - **`why_here`** — a **key-value table matching the Snapshot**: column 1 = the topic/priority,
     column 2 = the honest read for it. One row per theme, and **fold each hesitation into its
@@ -402,8 +340,11 @@ questions — *can I get in? · can I afford it? · what do I actually do?* — 
   ```
   Reserve blockquotes for these — don't use them for ordinary notes. For a softer neutral aside use
   `<div class="callout-note" markdown="1"> … </div>`.
-- **Collect every "confirm this yourself" task into the Application checklist** — one place, as
-  checklist items — instead of scattering "confirm the 4-year English record" across five sections.
+- **Collect every "confirm this yourself" task in the section it actually belongs to** — don't
+  scatter "confirm the 4-year English record" across five sections; state it once, in `getting_in`.
+  The application-prep **checklist** itself — the readiness list of documents, tests, essays, and
+  fees to gather — now lives in Stage 8 (`workflows/08_application_prep.md`), since it's region-level
+  and was being rewritten once per finalist.
 - **Acronyms are auto-glossaried — don't hand-expand every one.** `report_to_pdf.py` builds a
   "Key terms" block from the acronyms you actually use (via `apply_glossary.py`) and links each
   term's first use to it. So write `MAE`, `OPT`, `CSS Profile`, `MQA`, `ABET`, `BEM` normally — the
@@ -415,8 +356,35 @@ questions — *can I get in? · can I afford it? · what do I actually do?* — 
 
 ## Assemble the report JSON
 
-Write `.tmp/<slug>/report_<uni>.json` (see `build_report.py`'s header for the exact shape). Each of the
-14 content sections is a Markdown string under `"sections"`. Two optional-but-recommended extras:
+Write `.tmp/<slug>/report_<uni>.json` for a course-mode report, or `.tmp/<slug>/uni_<uni-slug>.json`
+for a university-mode one (see `build_report.py`'s header docstring for the exact, authoritative
+shape — including which top-level fields are university-mode-only). Each of the **13 content
+sections** is a Markdown string under `"sections"`, keyed exactly as in `REPORT_SECTIONS`:
+`identity_mission`, `who_its_for`, `getting_in`, `what_youll_study`, `signature_experiences`,
+`culture_vibe`, `student_life`, `city_and_belonging`, `costs`, `scholarships`, `outcomes`,
+`unique_facts`, `why_here` — the same keys and order for both modes.
+
+The institution-scope variant (`--mode university`) swaps the identity fields for the
+whole-institution Snapshot and drops `course`; `"sections"` is unchanged:
+
+```json
+{
+  "university": "Massachusetts Institute of Technology",
+  "country": "USA", "city": "Cambridge, Massachusetts",
+  "setting": "urban (Boston metro)",
+  "type": "private research university",
+  "size": "~4,500 undergraduates",
+  "overall_rank": "QS #1 / US News ~#2",
+  "application_system": "MIT's own portal (not Common App)",
+  "admission_likelihood": "Reach",
+  "net_cost": "~RM 0-40k/yr after aid (income-band dependent; approx)",
+  "priorities": "1. Funding · 2. Hands-on · 3. Safe/nature setting",
+  "sections": { "identity_mission": "markdown...", "...": "the same 13 keys as course mode" },
+  "sources": [ {"title": "...", "url": "...", "authority": "Official", "as_of": "2026"} ]
+}
+```
+
+Two optional-but-recommended extras (unchanged by the 2026-09-06 schema merge):
 
 - **`dated_items`** — structured dates the calendar will pick up:
   ```json
@@ -433,7 +401,10 @@ Write `.tmp/<slug>/report_<uni>.json` (see `build_report.py`'s header for the ex
   ```
   `flip_finalists.py` validates each entry — a real column, never a computed one
   (`Admission likelihood`, `Desirability`, `List status`, …), within its `CELL_BUDGETS` length — and
-  refuses the whole marker if any fails, so a typo costs a re-run, never a corrupted cell.
+  refuses the whole marker if any fails, so a typo costs a re-run, never a corrupted cell. In
+  university mode, a `"Course at a glance"` correction is a **warning, not a hard block** — a
+  university-mode marker can match several course rows at once, so one course sentence is right for
+  at most one of them; `"Student life"` is fine (campus-wide).
 
 If a fact genuinely can't be found, write `"Not found — <why>"` in that section rather than leaving it
 empty (empty sections fail the build on purpose — a half-researched report shouldn't pass).
@@ -442,6 +413,7 @@ empty (empty sections fail the build on purpose — a half-researched report sho
 
 ```powershell
 python tools/build_report.py --student <slug> --input .tmp/<slug>/report_manchester-cs.json
+python tools/build_report.py --student <slug> --input .tmp/<slug>/uni_mit.json --mode university
 ```
 Two outputs, no CSV change: the report at `data/students/<slug>/reports/<uni-course-slug>.md` and a
 finalist marker at `.tmp/<slug>/finalists/<uni-course-slug>.json` (same slug, so report and marker are
@@ -480,10 +452,11 @@ a **"Key terms"** glossary built from the acronyms the report uses, with each te
 - **Official sources for hard facts** — fees, requirements, visa rules, and recognition come from official
   sites, not aggregators. Stamp every source with its cycle year.
 - **Capture social/forum/video links, don't scrape them** — this is load-bearing for the decision-texture
-  sections (`admitted_profiles`, `student_life_culture`, `city_and_belonging`). `firecrawl_search.py`
-  hard-skips IG / FB / TikTok / X (they return "Website Not Supported"); Reddit / The Student Room / YouTube
-  aren't skipped but are JS-heavy and unreliable to scrape — get what you need from **search snippets** and
-  record the URL + snippet as a lead for the student to follow, rather than scraping the page.
+  research inside `getting_in`, `culture_vibe`, `student_life`, and `city_and_belonging`.
+  `firecrawl_search.py` hard-skips IG / FB / TikTok / X (they return "Website Not Supported"); Reddit /
+  The Student Room / YouTube aren't skipped but are JS-heavy and unreliable to scrape — get what you
+  need from **search snippets** and record the URL + snippet as a lead for the student to follow,
+  rather than scraping the page.
 - **Recognition is a gate, not a footnote** — for regulated professions, if the degree isn't recognised by
   MQA / the professional body, say so prominently; it may demote the finalist.
 
