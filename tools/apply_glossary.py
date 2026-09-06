@@ -711,6 +711,32 @@ GLOSSARY = {
         "definition": "Australian Tertiary Admission Rank — the score Australian universities admit on. "
                       "A-Levels are converted to it, so published cutoffs are arithmetic, not a guess.",
     },
+    "OSHC": {
+        "aliases": ["Overseas Student Health Cover"],
+        "definition": "**Overseas Student Health Cover** — the private health insurance every Australian "
+                      "student visa holder must buy and keep for the whole stay. Roughly AUD 650-800 a year "
+                      "for a single student.",
+    },
+    "CRICOS": {
+        "aliases": ["CRICOS code"],
+        "definition": "Australia's register of courses approved to enrol international students. A course "
+                      "without a CRICOS code cannot support a student visa.",
+    },
+    "CoE": {
+        "aliases": ["eCoE", "Confirmation of Enrolment"],
+        "definition": "**Confirmation of Enrolment** — the document an Australian university issues once you "
+                      "accept an offer and pay the deposit. You cannot lodge the student visa without it.",
+    },
+    "QILT": {
+        "aliases": ["Graduate Outcomes Survey"],
+        "definition": "The Australian government's national survey of graduate employment and salaries. It is "
+                      "the comparable, official source for outcome claims.",
+    },
+    "Genuine Student requirement": {
+        "aliases": ["Genuine Student", "GS requirement", "GS statement", "GS Declaration"],
+        "definition": "The written test of intent in an Australian student visa application — short answers, "
+                      "150 words each, on why you are studying this course here. A weak one gets visas refused.",
+    },
     "WAM": {
         "aliases": ["Weighted Average Mark"],
         "definition": "**Weighted Average Mark** — the Australian grade average, used for honours entry "
@@ -856,6 +882,9 @@ PLAIN_ALTERNATIVES = {
     "subclass 485": "post-study work visa",
     "ATAR": "Australian entry score",
     "WAM": "grade average",
+    "OSHC": "compulsory student health insurance",
+    "CRICOS": "Australia's international-course register",
+    "QILT": "Australia's graduate outcomes survey",
     "IGP": "published grade profile",
     "COMPASS": "work-pass points test",
     "PLO": "programme learning outcomes",
