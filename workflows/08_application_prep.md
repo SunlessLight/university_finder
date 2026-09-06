@@ -3,9 +3,10 @@
 ## Objective
 
 Turn a student's **Shortlist/Finalist** into an **action-only apply guide** for one region at a time:
-*exactly what to prepare and do to get every application in*, with the shared work grouped so it's done
-once. It answers one question — **"what do I need to apply?"** — and deliberately skips the "is this uni
-right for me?" texture (that's the university report's job, `04_university_report.md`).
+*exactly what to prepare and do to get every application in*, plus the region's visa mechanics, with the
+shared work grouped so it's done once. It answers one question — **"what do I need to apply?"** — and
+deliberately skips the "is this uni right for me?" texture (that's the university report's job,
+`04_university_report.md`).
 
 Use it when a student has decided to **apply and compare offers first, research fit later** — i.e. they
 don't want more reports, they want a checklist + deadlines + financial-aid mechanics they can act on.
@@ -79,6 +80,28 @@ needed. In practice this stage barely escalates: deadlines, test policy, aid for
 supplement counts live on official admissions/financial-aid pages that fetch cleanly — all of the US
 research used free search/fetch only. A fee PDF or a login-walled aid page is the exception.
 
+### What to capture for the region (visa mechanics)
+
+Moved here from the Stage 4 report on 2026-09-06 — one visa system serves every university in a
+region, so writing it per finalist was the same facts three or four times. Capture from the
+**official** immigration authority (gov.uk / ICA / study-in-China / immi.gov.au / the US embassy),
+never an agency blog:
+
+- **Visa type + who issues it** (UK Student route, Singapore Student's Pass via ICA, China X1/X2
+  via the JW202, US F-1 via the I-20 + SEVIS).
+- **Financial proof** — how much, held for how long, in whose name, which documents.
+- **Cost** — visa fee **and** any health surcharge (UK IHS) or system fee (US SEVIS), in local
+  currency + approximate MYR.
+- **Work during study** — hours per week in term and out of it.
+- **Processing lead time** — how early to apply after the offer; this is what makes it a deadline.
+- **The post-study route's mechanics** — how to apply for the Graduate Route / OPT / a Singapore
+  pass, its cost and window.
+
+> **The decision half stays in the report.** Whether post-study work rights exist at all — the
+> Graduate Route, OPT + STEM-OPT — belongs in the university report's *Outcomes, network &
+> practising in Malaysia* section, because that is a reason to pick a country. What is here is the
+> paperwork: forms, proof, fees, lead times.
+
 ## What to capture per university (the apply mechanics)
 
 For each Shortlist/Finalist uni in the region, from official sources:
@@ -128,6 +151,7 @@ Write `.tmp/<slug>/apply_prep_<region>.json` (exact shape in `build_application_
   "fx": {"rate": "USD 1 ≈ RM 4.08", "as_of": "2026-07-20 (date of research)"},
   "cost_cycle_note": "These are the published **2026-27** figures; you enter **Fall 2027** …",
   "overview": "markdown — the cross-cutting apply strategy",
+  "visa": "markdown — the region's visa mechanics",
   "systems": [
     {"system": "Common App", "universities": ["Princeton University", "..."],
      "shared_checklist": ["one action per item", "filed once across these schools"]},
