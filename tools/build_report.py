@@ -2,7 +2,7 @@
 build_report.py — render a standardized deep-research report for one finalist.
 
 Reads a research JSON the agent assembles in Stage 4 and renders a fixed-order,
-16-section Markdown report (Snapshot + 14 content sections + Sources) built to
+15-section Markdown report (Snapshot + 13 content sections + Sources) built to
 answer three decision questions — can I get in? will I belong & thrive? what will
 it take to apply? — so the student can decide, not just compare. Writes it to
 data/students/<slug>/reports/<slug>.md, plus a small FINALIST MARKER fragment at
@@ -16,71 +16,64 @@ in ONE pass, after the whole batch is back. Same fragments-in / one-write-out
 pattern Stage 3 uses (row-filler -> merge_candidates.py), and the same payoff:
 the dispatches are parallel-safe.
 
-Two paths, chosen with --mode (see workflows/04_university_report.md):
-  * course      (default) — the course-specific report: "should I do THIS course
-                here?". Every master_list row is a University+Course pair, so the
-                marker carries university + course and flip_finalists.py matches
-                the row by course_key(university, course).
-  * university  — US-only. The whole-institution report: "should I go to THIS
-                university?", because US undergrads apply to the institution and
-                declare a major in year 2. The marker carries no course;
-                flip_finalists.py matches by UNIVERSITY NAME only (ignoring
-                Course) and refuses any matched row whose Country is not USA.
+One schema, every country, since 2026-09-06 (see report_merge_plan.md). --mode no
+longer picks which sections render — every report gets the same 13 content
+sections (REPORT_SECTIONS). --mode only selects:
+  * the Snapshot shape — course mode renders Course + subject rank; university
+    mode renders Setting / Type & size / est. net cost instead.
+  * what the finalist marker claims (see workflows/04_university_report.md):
+      - course      (default) — the marker carries university + course, and
+                    flip_finalists.py matches the row by
+                    course_key(university, course). Every master_list row is a
+                    University+Course pair, so this is the default claim.
+      - university  — US-only. The marker carries no course; flip_finalists.py
+                    matches by UNIVERSITY NAME only (ignoring Course) and refuses
+                    any matched row whose Country is not USA — because US
+                    undergrads apply to the institution and declare a major in
+                    year 2, so one report legitimately speaks for every row.
 
-The fixed section order is enforced per mode: every content section must be present
-and non-empty, or the build fails loudly — this is what keeps reports comparable
-and stops half-researched finalists slipping through.
+The fixed section order is enforced: every content section must be present and
+non-empty, or the build fails loudly — this is what keeps reports comparable and
+stops half-researched finalists slipping through.
 
 Usage:
     python tools/build_report.py --student <slug> --input .tmp/<slug>/report_<report-slug>.json
     python tools/build_report.py --student <slug> --input .tmp/<slug>/uni_<uni-slug>.json --mode university
 
-Course-mode JSON shape (see the workflow for the full spec):
+JSON shape (see the workflow for the full spec). Course mode requires "course";
+university mode omits it and adds "setting" / "type" / "size" / "net_cost" for the
+whole-institution Snapshot:
     {
-      "university": "...", "course": "...", "country": "...", "city": "...",
-      "overall_rank": "...", "subject_rank": "...",
+      "university": "...", "course": "...",          # course omitted in university mode
+      "country": "...", "city": "...",
+      "setting": "urban | college town | rural",       # university mode only
+      "type": "private research university | public | liberal arts college",  # university mode only
+      "size": "~4,500 undergrads",                     # university mode only
+      "net_cost": "~RM XXk/yr after aid (approx)",     # university mode only, est. your-share MYR
+      "overall_rank": "...", "subject_rank": "...",    # subject_rank is course mode only
       "application_system": "...", "admission_likelihood": "...",
       "priorities": "1. Funding · 2. Hands-on · 3. ...",  # optional; shown in the Snapshot
       "slug": "manchester-cs",                # optional; derived if absent
       "sections": {
-        "entry_and_fit": "...", "admitted_profiles": "...", "course_details": "...",
-        "costs": "...", "scholarships": "...", "cost_of_living": "...",
-        "visa_immigration": "...", "recognition_back_home": "...", "employability": "...",
-        "student_life_culture": "...", "city_and_belonging": "...",
-        "application_checklist": "...", "key_dates": "...", "why_here": "..."
+        "identity_mission": "...", "who_its_for": "...", "getting_in": "...",
+        "what_youll_study": "...", "signature_experiences": "...", "culture_vibe": "...",
+        "student_life": "...", "city_and_belonging": "...", "costs": "...",
+        "scholarships": "...", "outcomes": "...", "unique_facts": "...", "why_here": "..."
       },
       "sources": [
         {"title": "...", "url": "...", "authority": "Official"|"Aggregator", "as_of": "2026"}
       ],
       # optional — ONLY cells this report's deeper research proves wrong. Copied
       # verbatim into the marker; flip_finalists.py validates and applies them.
+      # In university mode, "Course at a glance" is a WARNING: a university-mode
+      # marker can match several course rows at once, and one course sentence is
+      # wrong for all but one of them. "Student life" is fine (campus-wide).
       "corrections": {"Course at a glance": "...", "Student life": "..."}
     }
 
-University-mode JSON shape (no "course"; a whole-institution snapshot + 14 uni sections):
-    {
-      "university": "...", "country": "...", "city": "...",
-      "setting": "urban | college town | rural",
-      "type": "private research university | public | liberal arts college",
-      "size": "~4,500 undergrads",
-      "overall_rank": "...", "application_system": "...", "admission_likelihood": "...",
-      "net_cost": "~RM XXk/yr after aid (approx)",   # est. your-share, MYR
-      "priorities": "1. Funding · 2. Hands-on · 3. ...",  # optional; shown in the Snapshot
-      "slug": "massachusetts-institute-of-technology",  # optional; derived from university
-      "sections": {
-        "identity_mission": "...", "who_its_for": "...", "admissions_fit": "...",
-        "academic_structure": "...", "majors_minors": "...", "signature_experiences": "...",
-        "culture_vibe": "...", "student_life_food": "...", "city_belonging": "...",
-        "costs_aid": "...", "how_to_apply": "...", "outcomes_network": "...",
-        "unique_facts": "...", "why_here": "..."
-      },
-      "sources": [ ... ],
-      # optional — same as course mode, but "Course at a glance" is a WARNING here:
-      # a university-mode marker can match several course rows at once, and one
-      # course sentence is wrong for all but one of them. "Student life" is fine
-      # (campus-wide, legitimately uniform).
-      "corrections": {"Student life": "..."}
-    }
+dated_items (optional, top-level, unchanged by the 2026-09-06 merge): a list of
+{"item": "...", "date": "..."} the Stage 5 calendar tool globs for directly out of
+this JSON — see build_calendar.py. sources and corrections are unchanged too.
 """
 
 import argparse
@@ -98,10 +91,30 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 STUDENTS_DIR = REPO_ROOT / "data" / "students"
 
 # (section key, heading). Snapshot (1) is generated; Sources (last) is a list.
-# Ordered decision-first: can I get in? → course & cost → gates & payoff → will I
-# belong? → what it takes to apply → should I? Every content section is enforced
-# non-empty (see validate); the numbering below is auto-derived from this order.
-COURSE_SECTIONS = [
+# ONE schema for every country since 2026-09-06 (see report_merge_plan.md). --mode no longer
+# selects sections — it selects the Snapshot shape and what the finalist marker claims.
+# Ordered: who is this place -> can I get in -> what I'd study -> will I belong -> money ->
+# payoff -> colour -> should I.
+REPORT_SECTIONS = [
+    ("identity_mission", "Identity & what it's known for"),
+    ("who_its_for", "Who it's for — the archetype & your fit"),
+    ("getting_in", "Getting in — requirements, who gets in & your fit"),
+    ("what_youll_study", "What you'll actually study"),
+    ("signature_experiences", "Signature academic experiences"),
+    ("culture_vibe", "Culture & vibe"),
+    ("student_life", "Student life, housing & food"),
+    ("city_and_belonging", "The city, the area & belonging"),
+    ("costs", "Costs (full)"),
+    ("scholarships", "Scholarships & financial aid"),
+    ("outcomes", "Outcomes, network & practising in Malaysia"),
+    ("unique_facts", "Unique facts & quirks"),
+    ("why_here", "Why here / why hesitate"),
+]
+
+# READ-ONLY history. Reports built before 2026-09-06 use these; check_report.py needs them to
+# lint what is already on disk. build_report.py NEVER emits them again — do not add to them,
+# do not "fix" them, and do not route new work through them.
+LEGACY_COURSE_SECTIONS = [
     ("entry_and_fit", "Entry requirements & this student's fit"),
     ("admitted_profiles", "Who actually gets in"),
     ("course_details", "Course details & structure"),
@@ -118,12 +131,7 @@ COURSE_SECTIONS = [
     ("why_here", "Why here / why hesitate"),
 ]
 
-# The US "university-general" path (--mode university). Same rigor, whole-institution
-# lens: US undergrads apply to the institution and declare a major in year 2, so this
-# asks "should I GO here?" not "should I do this course here?". Ordered: who it is &
-# who it's for → can I get in → how the degree works → the hands-on texture → will I
-# belong → cost & apply → payoff → colour → should I?
-UNIVERSITY_SECTIONS = [
+LEGACY_UNIVERSITY_SECTIONS = [
     ("identity_mission", "Identity & mission"),
     ("who_its_for", "Who it's for — the archetype & this student's fit"),
     ("admissions_fit", "Getting in — admissions & this student's fit"),
@@ -140,8 +148,12 @@ UNIVERSITY_SECTIONS = [
     ("why_here", "Why here / why hesitate"),
 ]
 
-# Section schema per --mode. Course is the default; university is US-only.
-SECTIONS_BY_MODE = {"course": COURSE_SECTIONS, "university": UNIVERSITY_SECTIONS}
+# Every schema check_report.py may encounter. Only "report" is buildable.
+SCHEMAS = {
+    "report": REPORT_SECTIONS,
+    "legacy_course": LEGACY_COURSE_SECTIONS,
+    "legacy_university": LEGACY_UNIVERSITY_SECTIONS,
+}
 
 
 def validate(data, mode):
@@ -154,13 +166,13 @@ def validate(data, mode):
         if not (data.get(field) or "").strip():
             sys.exit(f"ERROR: report JSON is missing required field '{field}'.")
     sections = data.get("sections") or {}
-    schema = SECTIONS_BY_MODE[mode]
+    schema = REPORT_SECTIONS
     missing = [key for key, _ in schema if not (sections.get(key) or "").strip()]
     if missing:
         sys.exit(
             "ERROR: report is incomplete — these sections are empty: "
             + ", ".join(missing)
-            + f".\nEvery {mode} report must fill all {len(schema)} content sections "
+            + f".\nEvery report must fill all {len(schema)} content sections "
             "(research them, or write 'Not found — <why>')."
         )
     if not data.get("sources"):
@@ -259,7 +271,7 @@ def render_report(data, mode):
     else:
         title = f"# University Report — {data['university']}: {data['course']}"
         snapshot = render_snapshot(data)
-    schema = SECTIONS_BY_MODE[mode]
+    schema = REPORT_SECTIONS
     parts = [title, ""]
     parts.append("## 1. Snapshot")
     parts.append(snapshot)
@@ -322,7 +334,8 @@ def main():
     parser.add_argument("--input", required=True, help="Path to the report research JSON.")
     parser.add_argument(
         "--mode", choices=("course", "university"), default="course",
-        help="course (default) = course-specific report; university = US-only whole-institution report.",
+        help="What this report claims: course (default) = one University+Course row, US-only "
+             "university = every row for that university. Both render the same 13 sections.",
     )
     args = parser.parse_args()
 
