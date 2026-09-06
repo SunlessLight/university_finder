@@ -34,6 +34,11 @@ Input JSON shape (see workflows/08_application_prep.md for the full spec):
       # entry-year figures publish — rendered as a callout above the universities.
       "cost_cycle_note": "These are the published 2026-27 figures ...",
       "overview": "markdown — the cross-cutting apply strategy for this region",
+      # Region-level student-visa mechanics: visa type, financial proof, visa +
+      # health-surcharge cost, work-during-study hours, processing lead time, and the
+      # post-study work application steps. Stated once here, not per university —
+      # one visa system serves every school in a region.
+      "visa": "markdown — the region's student-visa mechanics",
       "systems": [
         {"system": "Common App",
          "universities": ["Princeton", "Stanford", "UPenn", "Harvard", "Yale"],
@@ -305,6 +310,13 @@ def validate(data):
         sys.exit("ERROR: apply-prep JSON is missing required field 'region'.")
     if not (data.get("overview") or "").strip():
         sys.exit("ERROR: apply-prep JSON has an empty 'overview' — write the region apply strategy.")
+    if not (data.get("visa") or "").strip():
+        sys.exit(
+            "ERROR: apply-prep JSON has an empty 'visa' — write the region's student-visa "
+            "mechanics (type, financial proof, cost, work hours, lead time, post-study route). "
+            "This moved out of the Stage 4 report on 2026-09-06; if it is missing here it is "
+            "missing from the whole pipeline."
+        )
     if not data.get("systems"):
         sys.exit("ERROR: apply-prep JSON has no 'systems' — group the universities by application system.")
     unis = data.get("universities") or []
@@ -489,6 +501,7 @@ def render_guide(data):
         middle += [f"## Start here — your next {n} actions", "", start_here, ""]
     middle += ["## Snapshot", render_snapshot(data, unis), "",
                f"## {region_title} application strategy", data["overview"].strip(), "",
+               "## Visa & immigration", data["visa"].strip(), "",
                "## Grouped by application system"]
     # Cost figures are almost always the *current* cycle's published numbers while the
     # student is applying for the next one. Say so once, next to the money.
