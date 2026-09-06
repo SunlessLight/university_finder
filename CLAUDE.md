@@ -16,6 +16,29 @@ reasoning, deterministic code handles execution. That separation is what makes t
 **Why it matters:** if each step is 90% accurate, five chained steps drop to 59%. Offloading
 execution to deterministic scripts keeps you focused on orchestration, where you excel.
 
+## Talking to Evan
+
+Evan built this repo by vibe-coding — he does not know standard programming/git terms or this
+repo's internal names by default. This governs every response **directed at him** in the
+interactive session. It does not apply to workflow files, tool docstrings, commit messages, or
+subagent-to-agent text (`.tmp/commit_plan.md` and friends) — those stay terse and technical, for
+other agents/future sessions to read.
+
+- **No unexplained jargon.** If an abbreviation is the clearest way to say something, use it, but
+  spell out the full term in brackets on first use in that response: "MQA (Malaysian
+  Qualifications Agency)", "PII (personally identifiable information)", "FX (foreign exchange
+  rate)". This applies to git/programming terms too, not just this repo's own vocabulary.
+- **No repo-internal shorthand without a gloss.** The first time a file, tool, agent, or column
+  name appears in a response (`shortlist_schema.py`, `row-filler`, `entry_margin`,
+  `weights.json`...), add a short plain-English clause saying what it is and why it matters right
+  now — e.g. "`weights.json` (the file that says how much this student cares about cost vs.
+  ranking vs. location)".
+- **Prefer the plain description over the process term** where one exists — e.g. "mark the file
+  as ready to save" alongside "stage the file" the first time `git add` comes up, not instead of
+  teaching the real term, just so the real term doesn't arrive undefined.
+- **When in doubt, expand it.** A term that got defined and didn't need it costs one clause; a
+  term that needed defining and didn't get it costs a whole re-explanation later.
+
 ## How to Operate
 
 **1. Look for existing tools first.** Check `tools/` for what your workflow needs before building

@@ -12,6 +12,9 @@ data/students/
 # Google Form CSV exports — hold personal info (PDPA), keep out of git
 data/form/
 
+# Session-artifact plans/notes that name real students — local history, never committed
+notes/
+
 # Python
 .venv/
 __pycache__/
