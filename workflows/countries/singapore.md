@@ -65,6 +65,11 @@ part aggregators always drop.
 > a bigger award you must separately win — score it well. Private/foreign campuses (JCU etc.) get **neither**
 > the Grant nor the scholarship — their listed fee is the full fee.
 >
+> **The "no separate form" claim above is NUS's process, not universal (learned 2026-08-23,
+> GwakGwak3000's Mechanical Engineering pass).** NTU's own ASEAN Undergraduate Scholarship page requires
+> a separate application with an essay and referee report — check each university's own scholarship page
+> rather than assuming NUS's auto-consideration model carries over.
+>
 > **Admissibility is the mirror of Australia — measured, and often a Reach.** NUS/NTU publish an
 > **Indicative Grade Profile (IGP)**, but note two things: (1) it is for **Singapore-Cambridge** A-Levels,
 > not international A-Levels, and international places are capped — so treat it as *indicative*, not the
