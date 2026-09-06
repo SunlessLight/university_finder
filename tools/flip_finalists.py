@@ -103,7 +103,11 @@ def load_markers(frag_dir):
 
 def load_csv(csv_path):
     """(header, rows) from the master list. Exits if the column SET differs from the schema."""
-    with csv_path.open(newline="", encoding="utf-8") as f:
+    # utf-8-sig, not utf-8: master_list.csv is often written with a BOM (Excel, and
+    # ingest_form_csv/fetch_form_responses both read that way). Reading it as plain
+    # utf-8 leaves "﻿List status" as the first header, so the schema check below
+    # fails with "columns differ" on a file whose columns are actually identical.
+    with csv_path.open(newline="", encoding="utf-8-sig") as f:
         rows = list(csv.reader(f))
     if not rows:
         sys.exit(f"ERROR: {csv_path} is empty.")
