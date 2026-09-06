@@ -6,12 +6,14 @@ It reads a Google Forms "responses" CSV (one row per respondent), and for each r
 consent it creates data/students/<slug>/ with a filled profile.json + preferences.json, using
 the SAME templates as init_student.py so the shape never drifts.
 
-The mechanically-mappable fields (name, age, budget, countries, priorities, ...) are filled
-here. The judgment-heavy bits are left for the agent (Claude) to finalize in workflow 01 and
-are flagged in a top-level "_needs_review" list on profile.json:
-  - self-predicted grades -> confirm, or upgrade grade_status when real results arrive
-  - the regulated-profession answer -> recognition_targets (best-effort auto-fill + verify)
-  - a respondent who gave no field of study at all (nothing to search on)
+The mechanically-mappable fields (name, budget, countries, priorities, ...) are filled
+here. Grades, ethnicity, the scholarship gate, and recognition_targets matched off the
+"Choose your desired course" dropdown are all deterministic and need no agent review (the
+dropdown is a closed set of 38 known titles — see COURSE_ACCREDITATION_MAP / google_form_notes.md).
+The only judgment-heavy bit left is flagged in a top-level "_needs_review" list on profile.json:
+  - recognition_targets matched from the optional free-text "specific field of studies"
+    supplement (open text, not the closed dropdown -> best-effort keyword-guess, verify)
+  - a respondent who gave no course and no field of study at all (nothing to search on)
 
 Columns are matched by a distinctive SUBSTRING of each question title (case-insensitive).
 QUESTION_MAP below is the single source of truth for the column<->field wiring; keep it in step
@@ -56,23 +58,31 @@ QUESTION_MAP = [
     ("email", "email"),
     ("full name", "name"),
     ("your name", "name"),  # Forms often exports the name Q's header merged with the section title
-    ("your age", "age"),
-    ("gender", "gender"),
-    ("nationality", "nationality"),
+    ("nickname", "name"),  # current form: nickname permanently replaces full name (identity protection)
     ("race", "ethnicity"),  # PDPA-sensitive; used for scholarship-eligibility research only
-    ("live in now", "country_of_residence"),
     ("live and work after", "post_grad_location"),  # aspiration, NOT home_country (stays Malaysia)
-    ("studying now", "current_type"),
-    ("which college", "current_institution"),
     ("when do you graduate", "current_completion"),  # current form's wording
     ("when do you finish", "current_completion"),    # legacy fallback (older form)
     ("final exam results", "current_completion"),    # legacy: "when will you get your actual final exam results"
     ("final result", "current_completion"),          # current form: "When month does your final result comes out?"
+    ("what year does your actual result", "current_completion_year"),  # current form: added 2026-09 as a
+                                                                          # dedicated year column, fixing the
+                                                                          # "January (Takes A2 in Oct/Nov)" no-year
+                                                                          # ambiguity — map_row() concatenates this
+                                                                          # with current_completion before parsing.
     ("list each subject", "grades_raw"),             # legacy paragraph-grades form; structured subjects handled separately
-    ("actual results or predicted", "grade_status"),
-    ("which english test", "english_test"),
-    ("english test score", "english_score"),
-    ("english score", "english_score"),  # current form: "write down english score"
+    ("actual results or predicted", "grade_status"),  # legacy wording
+    ("forecast result or actual", "grade_status"),  # current form: "Are you applying with forecast result or actual?"
+    ("what's the score", "english_score"),   # current form: "If English test taken, what's the score?..."
+                                              # MUST precede "english test taken" below — that header
+                                              # contains BOTH substrings, and build_col_index() takes
+                                              # the first QUESTION_MAP match in list order, so the more
+                                              # specific one has to win or the score is silently lost.
+    ("which english test", "english_test"),  # legacy
+    ("english test score", "english_score"), # legacy
+    ("english score", "english_score"),      # legacy
+    ("english test taken", "english_test"),  # current form: "English Test Taken" — must stay AFTER
+                                              # "what's the score" above, see comment there
     ("will you take it", "english_date"),
     ("total budget", "total_budget"),
     ("whole degree", "total_budget"),  # this form's wording: "your budget (RM) for the whole degree"
@@ -82,24 +92,52 @@ QUESTION_MAP = [
     ("how will you fund", "funding_plan"),  # merged funding-reality question (legacy)
     ("how will you pay", "funding_source"),  # legacy fallback (older form)
     ("win a scholarship", "scholarship_dependent"),  # legacy fallback (older form)
-    ("regulated profession", "regulated_profession"),
-    ("belonging", "needs"),        # "support & belonging needs" (preferred wording)
+    # NOTE: "regulated profession" checkbox is gone from the live form. recognition_targets is now
+    # auto-guessed from fields_of_interest/specific_courses via _guess_recognition_targets() instead
+    # of a checkbox scan — see map_row(), after preferences are built.
+    ("belonging", "needs"),        # legacy fallback ("support & belonging needs" wording)
     ("personal needs", "needs"),   # legacy fallback (older form)
+    ("any other perferences", "needs"),  # current form: "Any other perferences?" — consolidated lifestyle
+                                          # checklist (replaces "belonging"); matched on the live form's own
+                                          # typo ("perferences") since that's what's actually deployed —
+                                          # --check-headers will flag it if the typo is ever fixed.
+    ("achievements", "achievements_text"),  # current form: "Achievements / activities you'd want to write about..."
     # preferences
-    ("which countries", "target_countries"),
-    ("broad area", "fields_of_interest"),   # current form: "Broad Area of Study" dropdown
+    ("which countries", "target_countries"),  # legacy fallback (older form: "Which countries would you consider?")
+    ("chose your countries", "target_countries"),  # current form: "Chose your countries" (sic — live form's own typo)
+    ("country matters most", "primary_country"),  # current form: "Which country matters most ( If you picked several )? "
+    ("broad area", "fields_of_interest"),   # legacy fallback — the "Broad Area of Study" selector + per-area
+                                              # grid was removed from the live form 2026-09 (see "choose your
+                                              # desired course" below); fields_of_interest is unpopulated on
+                                              # the current form by design.
     ("field or subject", "fields_of_interest"),  # legacy fallback (older form)
-    ("already know the exact course", "decided"),
-    ("name the course", "specific_courses"),
+    ("specific field of studies", "specific_courses_freetext"),  # current form — free-text SUPPLEMENT to
+                                                                    # "choose your desired course" below;
+                                                                    # map_row() merges both.
+    ("already know the exact course", "decided"),  # legacy fallback (older form)
+    ("name the course", "specific_courses"),  # legacy fallback (older form)
+    ("choose your desired course", "specific_courses"),  # current form: single dropdown, the 38
+                                                            # google_form_notes.md options flattened into
+                                                            # one question (replaces the old per-area grid).
+    ("already have in mind", "preferred_universities"),  # current form: "Universities you already have in mind"
     ("degree level", "degree_level"),
-    ("want to start", "intake"),
+    ("want to start", "intake"),  # legacy — no current header matches this; intake resolves to
+                                   # "Flexible" via _normalize_intake's blank-input default
     ("#1 priority", "priority_1"),
     ("#2 priority", "priority_2"),
     ("#3 priority", "priority_3"),
     ("how important is university ranking", "ranking_importance"),
     ("work abroad", "work_abroad"),
-    ("deal-breaker", "deal_breakers"),
+    ("deal-breaker", "deal_breakers"),  # legacy fallback (hyphenated wording)
+    ("dealbreaker", "deal_breakers"),   # legacy fallback — dropped from the live form 2026-09, folded into
+                                          # "Any other perferences?" (-> needs) instead; unpopulated on the
+                                          # current form by design.
     ("location preference", "location_prefs"),
+    ("specific information you want to know", "additional_requirements"),  # legacy fallback — dropped from
+                                                                              # the live form 2026-09, folded
+                                                                              # into "Any other perferences?"
+                                                                              # (-> needs) instead; unpopulated
+                                                                              # on the current form by design.
     # NOTE: the old interest-discovery questions (career goal / what you enjoy / work styles /
     # values / constraints) were removed from the form, and the career-backwards branch that
     # consumed them was dropped on 2026-07-25 along with workflows/02_aspirations_intake.md.
@@ -151,11 +189,16 @@ SUPPORTED_DESTINATIONS = ["UK", "Australia", "USA", "Singapore", "Malaysia", "Ch
 # before the range, and the two null bands last.
 BUDGET_BAND_NORMALIZE = [
     ("under", 500000),
+    ("<", 500000),        # current form: "< 500,000" (symbol replaced the word "under")
     # "Above RM 1,000,000" states a FLOOR, not a ceiling — the student has at least that much.
     # Pinning the ceiling at 1,000,000 would flag a 1.2M programme "Over budget" for exactly the
     # students who can afford it, so the top band carries no ceiling, same as "Not sure".
     ("above", None),
-    ("1,000,000", 1000000),   # "RM 500,000 - 1,000,000" only reaches here if "under"/"above" missed
+    (">", None),           # defensive — no live sample of the top band's symbol wording yet, but if
+                            # "above" ever becomes ">" the same way "under" became "<", the fallback
+                            # budget_ceiling() would otherwise misparse it as a numeric CEILING instead
+                            # of "no ceiling", silently flagging affluent students "Over budget".
+    ("1,000,000", 1000000),   # "RM 500,000 - 1,000,000" only reaches here if the above all missed
     ("1000000", 1000000),
     ("not sure", None),
     ("no fixed", None),
@@ -203,7 +246,15 @@ PRIORITY_NORMALIZE = {
 # category, map each category to a priority token, then order tokens by their numeric value (descending)
 # to produce the same ordered `priorities` list the dropdown form produced. CANONICAL_SLIDER_ORDER breaks
 # ties deterministically (form column order) so equal slider values yield a stable ranking.
-SLIDER_MARKER = "rank your priorities"
+SLIDER_MARKER = "rank your priorities"  # legacy fallback: the 1-8 numeric-slider wording
+TICK_MARKER = "tick the importance"  # current form: "Tick the importance of each topic below" — a 3-tier
+                                       # categorical scale replacing the numeric slider (see
+                                       # TICK_IMPORTANCE_NORMALIZE); same per-category bracket structure.
+TICK_IMPORTANCE_NORMALIZE = {
+    "must have": 3,
+    "important": 2,
+    "nice to have": 1,
+}
 SLIDER_CATEGORY_MAP = {
     "cost": "cost",
     "scholarship": "scholarship",
@@ -253,6 +304,8 @@ SUBJECT_NORMALIZE = {
     "business studies": "Business",
     "english literature": "English Literature",
     "history": "History",
+    "psychology": "Psychology",
+    "law": "Law",
 }
 
 
@@ -260,6 +313,46 @@ def _normalize_subject(name):
     """Map a subject dropdown label to its canonical name; pass through unknown labels verbatim."""
     cleaned = _clean(name)
     return SUBJECT_NORMALIZE.get(cleaned.lower(), cleaned)
+
+
+# Fixed-subject grade grid (current form, 2026-08+) — replaces the old paired "list your Nth
+# subject" + "grade" dropdowns with ONE column per subject: "Select the forecast grades for your
+# subjects. ( Or grade ur confident in getting ) [Biology]", one per subject, and a student leaves
+# blank the ones they don't take. Detected by the shared marker substring + a bracketed suffix.
+SUBJECT_GRID_MARKER = "forecast grades for your subjects"
+
+
+def _subject_grid_columns(fieldnames):
+    """Return [(header, subject_name)] for the fixed-subject bracketed grade columns.
+
+    Empty for the legacy paired-dropdown form (caller falls back to _subject_columns()).
+    """
+    cols = []
+    for header in fieldnames or []:
+        if SUBJECT_GRID_MARKER not in (header or "").lower():
+            continue
+        m = re.search(r"\[([^\]]+)\]\s*$", header or "")
+        if m:
+            cols.append((header, m.group(1).strip()))
+    return cols
+
+
+def _build_subjects_from_grid(row, subject_grid_cols):
+    """Build subjects[] from the fixed-subject grid, skipping blank cells.
+
+    Same contract as the legacy _build_subjects(): the caller stamps grade_status = "expected"
+    whenever this returns anything non-empty (the grid is a self-prediction, whatever the exact
+    header wording — "Or grade ur confident in getting").
+    """
+    subjects = []
+    for header, subject_name in subject_grid_cols:
+        grade = _clean(row.get(header))
+        if grade:
+            subjects.append({
+                "subject": _normalize_subject(subject_name),
+                "grade_or_predicted": grade,
+            })
+    return subjects
 
 
 # "Broad Area of Study" grid — the form renders eight per-area columns; only the column matching the
@@ -305,8 +398,13 @@ NEEDS_NORMALIZE = {
     "queer": "lgbtq_friendly",
     "safety": "personal_safety",
     "safe": "personal_safety",
+    "crime": "personal_safety",  # "Low crime rate" — current form's "Any other perferences?" wording
     "climate": "climate_weather",
     "weather": "climate_weather",
+    "season": "climate_weather",  # "4 seasons" — current form's "Any other perferences?" wording
+    "good food": "food_quality",  # added to the live form 2026-08
+    "public transport": "good_public_transport",  # added to the live form 2026-09 ("Any other perferences?")
+    "living cost": "affordable_cost_of_living",    # added to the live form 2026-09 ("Any other perferences?")
 }
 
 # Merged "how will you fund this degree?" answer -> (funding_source label, scholarship_required,
@@ -335,19 +433,131 @@ def _funding_from_plan(answer):
             return result
     return None
 
-# Best-effort recognition targets per regulated profession (MQA + the professional
-# body / accord). The agent VERIFIES these in workflows/01_intake.md — see the guardrail on
-# recognition in 00_overview.md. "None" -> [].
+# Best-effort recognition targets per regulated-profession KEYWORD (MQA + the professional
+# body / accord). Used ONLY for the free-text "specific field of studies" supplement — see
+# _guess_recognition_targets() below and the note on COURSE_ACCREDITATION_MAP. Bodies verified
+# 2026-09 (WebSearch): BEM/Washington Accord (engineering), MMC (medicine), LPQB (law), MIA+ACCA
+# (accounting), Pharmacy Board Malaysia, MDC (dentistry), LAM (architects) + BQSM (quantity
+# surveyors, Quantity Surveyors Act 1967 — a DIFFERENT board than architects), Nursing Board
+# Malaysia under the Nurses Act 1950 (NOT the Allied Health Professions Act), and MAHPC under the
+# Allied Health Professions Act 2016 (Act 774) for the allied-health titles it actually covers
+# (dietitian, physiotherapist, radiographer, medical laboratory technologist, audiologist —
+# confirmed NOT nursing, which has its own older Act). Deliberately excludes psychology and social
+# work: both have a bill/framework in progress but neither is enacted/enforced as of 2026-09, so
+# there is no real body to auto-fill yet — leave [] rather than assert one that doesn't exist.
 PROFESSION_RECOGNITION = {
     "medicine": ["MQA", "MMC"],
     "engineering": ["MQA", "BEM", "Washington Accord"],
     "law": ["MQA", "LPQB"],
-    "accounting": ["MQA", "MIA"],
+    "accounting": ["MQA", "MIA", "ACCA"],
     "pharmacy": ["MQA", "Pharmacy Board Malaysia"],
     "dentistry": ["MQA", "MDC"],
     "architecture": ["MQA", "LAM"],
+    "quantity survey": ["MQA", "BQSM"],
     "nursing": ["MQA", "Nursing Board Malaysia"],
+    "physiotherap": ["MQA", "MAHPC"],
+    "dietit": ["MQA", "MAHPC"],
+    "radiograph": ["MQA", "MAHPC"],
+    "medical laboratory": ["MQA", "MAHPC"],
+    "audiolog": ["MQA", "MAHPC"],
 }
+
+# Exact-title recognition targets for the "Choose your desired course" dropdown — the 38 fixed
+# options in google_form_notes.md. Because this is a CLOSED, KNOWN set (not open text), a match
+# here is deterministic and needs no agent review, unlike the free-text keyword scan above. Keyed
+# on the option TITLE only (the text before " — "; see _course_title()) so the hook wording can be
+# revised without breaking the map — only a title rename requires updating this dict.
+#
+# Two rows bundle more than one real profession because the option itself does (see
+# google_form_notes.md hooks) — both bodies are included rather than guessing which one applies:
+#   - "Architecture & Built Environment" (hook: "...urban planning, QS") -> LAM (architects) AND
+#     BQSM (quantity surveyors) are two separate boards under two separate Acts.
+#   - "Nursing & Allied Health" (hook: "nurse, physiotherapist, radiographer") -> Nursing Board
+#     Malaysia (nurse) AND MAHPC (physiotherapist/radiographer) are two separate boards under two
+#     separate Acts.
+# A field with no Malaysian licensing body (most of the 38 — arts, business, pure CS, pure
+# science, teaching, ...) maps to [], which is the correct fact, not a gap.
+COURSE_ACCREDITATION_MAP = {
+    "Fine Arts": [],
+    "Design": [],
+    "Performing Arts": [],
+    "Languages & Literature": [],
+    "History & Philosophy": [],
+    "Media & Communication": [],
+    "Psychology": [],  # AHPA 2016 covers the title but practice licensing isn't enforced yet (2026-09)
+    "Sociology & Anthropology": [],  # Social Work Profession Bill not yet enacted (2026-09)
+    "Political Science & International Relations": [],
+    "Law": ["MQA", "LPQB"],
+    "Business & Management": [],
+    "Accounting & Finance": ["MQA", "MIA", "ACCA"],
+    "Marketing & Advertising": [],
+    "Economics": [],
+    "Hospitality, Tourism & Events": [],
+    "Computer Science / Software Engineering / IT": [],
+    "Data Science & Artificial Intelligence": [],
+    "Cybersecurity": [],
+    "Mechanical Engineering": ["MQA", "BEM", "Washington Accord"],
+    "Civil Engineering": ["MQA", "BEM", "Washington Accord"],
+    "Electrical & Electronics Engineering": ["MQA", "BEM", "Washington Accord"],
+    "Aerospace Engineering": ["MQA", "BEM", "Washington Accord"],
+    "Chemical Engineering": ["MQA", "BEM", "Washington Accord"],
+    "Biomedical Engineering": ["MQA", "BEM", "Washington Accord"],
+    "Architecture & Built Environment": ["MQA", "LAM", "BQSM"],
+    "Biological & Life Sciences": [],
+    "Chemistry": [],
+    "Physics": [],
+    "Mathematics & Statistics": [],
+    "Environmental & Agricultural Sciences": [],
+    "Medicine & Surgery (MBBS)": ["MQA", "MMC"],
+    "Nursing & Allied Health": ["MQA", "Nursing Board Malaysia", "MAHPC"],
+    "Pharmacy": ["MQA", "Pharmacy Board Malaysia"],
+    "Biomedical Science & Lab Technology": ["MQA", "MAHPC"],
+    "Public Health & Nutrition": ["MQA", "MAHPC"],  # dietetics is the regulated sub-title; general
+                                                      # "public health" alone is not
+    "Special Needs & Inclusive Education": [],
+    "Secondary Education": [],
+    "Early Childhood & Primary Education": [],
+}
+
+
+def _course_title(course_answer):
+    """Extract the option TITLE from a 'Title — hook' dropdown answer (the format rule in
+    google_form_notes.md). Splits on the first ' — ' (em dash); returns the string unchanged if
+    the separator isn't present (a legacy export, or a title with no hook)."""
+    text = _clean(course_answer)
+    if " — " in text:
+        return text.split(" — ", 1)[0].strip()
+    return text
+
+
+def _course_recognition_targets(course_answer):
+    """Exact-match a 'Choose your desired course' dropdown answer against COURSE_ACCREDITATION_MAP.
+
+    Deterministic: the 38 titles are a closed, known set, so a match needs no agent review (unlike
+    _guess_recognition_targets(), which scans open free text). Returns [] for a non-regulated
+    field, an unrecognised title (legacy export, or the dropdown options changed without updating
+    this map), or a blank answer.
+    """
+    return list(COURSE_ACCREDITATION_MAP.get(_course_title(course_answer), []))
+
+
+def _guess_recognition_targets(*texts):
+    """Keyword-scan free text for a regulated-profession name; best-effort, not NLP.
+
+    Used ONLY for the optional free-text "specific field of studies" supplement — open text can't
+    be trusted the way the closed 38-option dropdown can (see _course_recognition_targets()), so a
+    hit here still gets flagged for agent review in workflows/01_intake.md. Same false-negative
+    risk as before (text that doesn't literally name the profession, e.g. "clinical sciences" for
+    medicine, gets nothing) plus a small false-positive risk from short substrings (e.g. "law"
+    inside an unrelated word).
+    """
+    haystack = " ".join(_clean(t) for t in texts if t).lower()
+    targets, matched = [], []
+    for pkey, vals in PROFESSION_RECOGNITION.items():
+        if pkey in haystack:
+            matched.append(pkey)
+            targets.extend(v for v in vals if v not in targets)
+    return targets, matched
 
 
 # --------------------------------------------------------------------------- #
@@ -366,6 +576,30 @@ def _split_multi(value):
     the rare mangled case in review.
     """
     return [part.strip() for part in _clean(value).split(",") if part.strip()]
+
+
+def _split_free_list(value):
+    """Split a free-text 'name a few things' answer into a clean list.
+
+    Handles the two shapes seen on the live "specific field of studies" question: a
+    newline-numbered list ("1. artificial intelligence \n2. Mechanical engineering") and a
+    single line with '/'-separated items (the field's own placeholder example: "Mechatronics &
+    Nanotech engineering / Criminal Law & Accounting Law"). Falls back to a comma split, then to
+    the whole string as one item. Best-effort, same spirit as _split_multi().
+    """
+    text = _clean(value)
+    if not text:
+        return []
+    items = []
+    for line in (ln.strip() for ln in text.splitlines() if ln.strip()):
+        line = re.sub(r"^\s*\d+[\.\)]\s*", "", line)  # strip "1." / "2)" numbering
+        if "/" in line:
+            items.extend(p.strip() for p in line.split("/") if p.strip())
+        else:
+            items.append(line)
+    if len(items) <= 1 and "," in text:
+        items = [p.strip() for p in text.split(",") if p.strip()]
+    return [i for i in items if i]
 
 
 def _yes(value):
@@ -409,7 +643,8 @@ def get(row, col_index, key):
 # --------------------------------------------------------------------------- #
 # Row -> (profile, preferences) mapping.
 # --------------------------------------------------------------------------- #
-def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None, assume_consent=False):
+def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None,
+            subject_grid_cols=None, assume_consent=False):
     """Turn one CSV row into (slug, profile_dict, preferences_dict, needs_review).
 
     Returns (None, ...) with a reason if the row should be skipped.
@@ -437,52 +672,56 @@ def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None,
     slider_cols = slider_cols or {}
     subject_cols = subject_cols or []
     grid_cols = grid_cols or []
+    subject_grid_cols = subject_grid_cols or []
 
     email = get(row, col_index, "email")
 
     # --- profile: identity -------------------------------------------------- #
-    profile["age"] = get(row, col_index, "age") or None
-    profile["gender"] = get(row, col_index, "gender") or None
-    profile["nationality"] = get(row, col_index, "nationality") or None
     profile["ethnicity"] = get(row, col_index, "ethnicity") or None  # scholarship-eligibility research only
-    profile["country_of_residence"] = get(row, col_index, "country_of_residence") or None
     # NOTE: home_country stays the template default ("Malaysia"). The "where do you want to live
     # and work after graduating" answer is a post-study *aspiration* (captured in notes below +
     # preferences.intent_to_migrate), NOT the student's home country — don't overwrite it here.
     post_grad_location = get(row, col_index, "post_grad_location")
 
     # --- profile: current program ------------------------------------------ #
-    # expected_completion comes from a month+year dropdown -> "YYYY-MM". An answer that
-    # isn't a clean month+year is kept verbatim rather than guessed at.
+    # expected_completion -> "YYYY-MM". Current form: month and year are separate columns (year added
+    # 2026-09, fixing the "January (Takes A2 in Oct/Nov)" no-year ambiguity found 2026-08-23) — combine
+    # them before parsing. Legacy forms carried both in the one month+year dropdown cell already.
+    # type/institution are no longer asked — type stays the template default ("A-Level").
     completion_raw = get(row, col_index, "current_completion")
-    profile["current_program"] = {
-        "type": get(row, col_index, "current_type") or None,
-        "institution": get(row, col_index, "current_institution") or None,
-        "expected_completion": _normalize_month_year(completion_raw) or completion_raw or None,
-    }
+    completion_year_raw = get(row, col_index, "current_completion_year")
+    completion_combined = f"{completion_raw} {completion_year_raw}".strip() if completion_year_raw else completion_raw
+    profile["current_program"]["expected_completion"] = (
+        _normalize_month_year(completion_combined) or completion_combined or None
+    )
 
     # --- profile: grades ---------------------------------------------------- #
     # Current form: structured dropdown pairs -> build subjects[] deterministically here. The grade
     # question asks what the student is "confident of getting" (a self-prediction), so grade_status
     # is "expected" — provisional, surfaced as a warning in the longlist until real/official grades.
-    subjects = _build_subjects(row, subject_cols)
+    subjects = _build_subjects_from_grid(row, subject_grid_cols) or _build_subjects(row, subject_cols)
     if subjects:
         profile["subjects"] = subjects
         # The dropdown path IS the self-prediction path, whatever the exact question wording, so
         # stamp "expected" unconditionally. (This used to require the literal word "confident" in
         # the grade header, while _subject_columns also accepted "select the grade" — a reworded
         # form then built subjects[], left grade_status None, and still emitted the review line
-        # below asserting grade_status=expected.) A legacy explicit column still overrides, below.
+        # below asserting grade_status=expected.) A legacy/current explicit column still overrides, below.
         profile["grade_status"] = "expected"
-        needs_review.append(
-            "grades are self-predicted (grade_status=expected) — provisional until actual/official predicted results"
-        )
-    # Explicit "actual vs predicted" column (legacy) still wins if present.
+    # Explicit "actual vs predicted" column ("Are you applying with forecast result or actual?") still
+    # wins if present — resolve it BEFORE deciding whether to flag, so a student who answered "Actual"
+    # (e.g. real AS/mock results already in hand ahead of a later final exam) doesn't get a review note
+    # that contradicts the grade_status the profile actually ends up with.
     grade_status = get(row, col_index, "grade_status").lower()
     if grade_status.startswith("actual"):
         profile["grade_status"] = "actual"
     elif grade_status.startswith("predict"):
         profile["grade_status"] = "predicted"
+    # NOTE: no needs_review flag for grade_status="expected" (self-predicted) — that's the
+    # NORMAL case for this form, not something to check per-student. sync_shortlist.py already
+    # surfaces it automatically as a "Grades unverified (self-predicted)" warning on every row of
+    # the master list once the student reaches Stage 3, so flagging it again here was pure
+    # duplication. Just leave it; upgrade grade_status by hand only if real/official results arrive.
     # Legacy paragraph-grades form (no structured columns) — stage the free-text for the agent.
     if not subjects:
         if profile["grade_status"] is None:
@@ -503,6 +742,7 @@ def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None,
         "score": get(row, col_index, "english_score") or None,
         "test_date_or_planned": get(row, col_index, "english_date") or None,
     }
+    profile["achievements"] = get(row, col_index, "achievements_text") or None
 
     # --- profile + preferences: money (asked once, copied to both) ---------- #
     # The form asks budget as a four-option BAND, so what lands in total_budget /
@@ -550,23 +790,9 @@ def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None,
     prefs["scholarship_required"] = scholarship_required
     prefs["scholarship_interests"] = get(row, col_index, "scholarship_interests") or None
 
-    # --- profile: recognition (best-effort; agent verifies) ---------------- #
-    professions = _split_multi(get(row, col_index, "regulated_profession"))
-    targets = []
-    for prof in professions:
-        key = prof.strip().lower()
-        if key in ("none", "none of these", ""):
-            continue
-        for pkey, vals in PROFESSION_RECOGNITION.items():
-            if pkey in key:
-                for v in vals:
-                    if v not in targets:
-                        targets.append(v)
-    if targets:
-        profile["recognition_targets"] = targets
-        needs_review.append(
-            f"verify recognition_targets (auto-filled from: {', '.join(professions)})"
-        )
+    # NOTE: recognition_targets is filled further down, after fields_of_interest/specific_courses
+    # are built — see _guess_recognition_targets(). The old checkbox-driven block used to live
+    # here; it's gone along with the "regulated profession" question.
 
     # --- profile: personal needs ------------------------------------------- #
     needs_selected = _split_multi(get(row, col_index, "needs"))
@@ -579,13 +805,47 @@ def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None,
     # --- preferences: what they want --------------------------------------- #
     kept_countries, dropped_countries = _normalize_countries(get(row, col_index, "target_countries"))
     prefs["target_countries"] = kept_countries
+    prefs["primary_country"] = get(row, col_index, "primary_country") or None
     prefs["fields_of_interest"] = _as_list(get(row, col_index, "fields_of_interest"))
-    # specific_courses: current form encodes the exact course in the "Broad Area of Study" grid (only the
-    # column matching the chosen area is filled). Collect non-empty grid cells; else legacy free-text.
+    # specific_courses: current form is a single "Choose your desired course" dropdown (the 38
+    # google_form_notes.md options), PLUS a separate free-text "specific field of studies" supplement —
+    # merge both, dropdown first, no duplicates. Legacy forms encoded the course in a per-area grid
+    # instead (only the column matching the chosen broad area was filled) — grid_cols is empty on the
+    # current form, so this falls through to the dropdown/free-text path automatically.
+    # NOT _split_multi(desired_course): "Choose your desired course" is a single-select dropdown whose
+    # own option text contains commas (the google_form_notes.md "Title — 3-4 concrete nouns" hook
+    # format), so comma-splitting it would shred one course title into several fake ones.
+    desired_course = get(row, col_index, "specific_courses")
     grid_courses = [c for c in (_clean(row.get(h)) for h in grid_cols) if c]
-    prefs["specific_courses"] = grid_courses or _split_multi(get(row, col_index, "specific_courses"))
-    prefs["degree_level"] = get(row, col_index, "degree_level").lower() or None
+    primary_courses = [desired_course] if desired_course else grid_courses
+    freetext_raw = get(row, col_index, "specific_courses_freetext")
+    freetext_courses = _split_free_list(freetext_raw)
+    prefs["specific_courses"] = primary_courses + [c for c in freetext_courses if c not in primary_courses]
+    prefs["preferred_universities"] = get(row, col_index, "preferred_universities") or None
+    # No "degree level" question on the current form -- every respondent is a pre-university student
+    # (A-Level/STPM/Foundation) heading to a bachelor's, so default to "undergraduate" rather than
+    # leaving this null and flagging it for manual finalize every single intake. An explicit answer
+    # (legacy forms, or a future postgrad-conversion question) still wins over the default.
+    prefs["degree_level"] = get(row, col_index, "degree_level").lower() or "undergraduate"
     prefs["intake"] = _normalize_intake(get(row, col_index, "intake"))
+    prefs["additional_requirements"] = get(row, col_index, "additional_requirements") or None
+
+    # --- profile: recognition ----------------------------------------------- #
+    # Exact-match the dropdown course against the closed 38-title set -> deterministic, no review.
+    course_targets = _course_recognition_targets(desired_course)
+    # The free-text supplement is open text -> still a best-effort keyword guess, still flagged.
+    freetext_targets, freetext_matched = (
+        _guess_recognition_targets(freetext_raw) if freetext_raw else ([], [])
+    )
+    rec_targets = course_targets + [t for t in freetext_targets if t not in course_targets]
+    if rec_targets:
+        profile["recognition_targets"] = rec_targets
+    if freetext_matched:
+        needs_review.append(
+            f"verify recognition_targets matched from the free-text 'specific field of studies' "
+            f"answer (keyword match: {', '.join(freetext_matched)}) — the dropdown-course match "
+            f"is already trusted, this only covers the extra free text"
+        )
 
     # Priorities: prefer the per-category sliders (current form); fall back to #1/#2/#3 dropdowns.
     prefs["priorities"] = _build_priorities_from_sliders(row, slider_cols) or _build_priorities(row, col_index)
@@ -724,16 +984,17 @@ def _build_priorities(row, col_index):
 
 
 def _slider_columns(fieldnames):
-    """Return {priority_token: header} for the per-category priority sliders present in this form.
+    """Return {priority_token: header} for the per-category priority questions present in this form.
 
-    A slider header contains the shared marker ("rank your priorities") plus a bracketed category
-    ("... [Cost]"). Matched by substring so light rewording survives. Empty if the form uses the
-    legacy #1/#2/#3 dropdowns instead.
+    A header contains either marker — the legacy numeric-slider wording ("rank your priorities") or
+    the current tick-scale wording ("tick the importance") — plus a bracketed category ("... [Cost]").
+    Matched by substring so light rewording survives. Empty if the form uses the legacy #1/#2/#3
+    dropdowns instead.
     """
     cols = {}
     for header in fieldnames or []:
         low = (header or "").lower()
-        if SLIDER_MARKER not in low:
+        if SLIDER_MARKER not in low and TICK_MARKER not in low:
             continue
         for cat_substr, token in SLIDER_CATEGORY_MAP.items():
             if cat_substr in low and token not in cols:
@@ -743,10 +1004,12 @@ def _slider_columns(fieldnames):
 
 
 def _build_priorities_from_sliders(row, slider_cols):
-    """Order the slider tokens by their numeric value (desc), tie-broken by CANONICAL_SLIDER_ORDER.
+    """Order the priority tokens by importance (desc), tie-broken by CANONICAL_SLIDER_ORDER.
 
-    Blank or non-numeric slider cells are skipped. Returns [] if no usable values (caller falls back
-    to the legacy dropdown builder).
+    Handles both the legacy 1-8 numeric slider and the current form's 3-tier tick scale (Must have /
+    Important / Nice to have, via TICK_IMPORTANCE_NORMALIZE) through the same numeric comparison.
+    Blank or unrecognised cells are skipped. Returns [] if no usable values (caller falls back to the
+    legacy dropdown builder).
     """
     scored = []
     for token, header in slider_cols.items():
@@ -754,7 +1017,9 @@ def _build_priorities_from_sliders(row, slider_cols):
         try:
             value = float(raw)
         except (TypeError, ValueError):
-            continue
+            value = TICK_IMPORTANCE_NORMALIZE.get(raw.lower())
+            if value is None:
+                continue
         tie = CANONICAL_SLIDER_ORDER.index(token) if token in CANONICAL_SLIDER_ORDER else len(CANONICAL_SLIDER_ORDER)
         scored.append((-value, tie, token))
     scored.sort()
@@ -780,10 +1045,19 @@ def _subject_columns(fieldnames):
 
 
 def _grid_columns(fieldnames):
-    """Return the headers of the "Broad Area of Study" grid (the eight per-area course columns)."""
+    """Return the headers of the "Broad Area of Study" grid (the eight per-area course columns).
+
+    Excludes the subject-forecast-grid columns (SUBJECT_GRID_MARKER): one of the 12 A-Level
+    subjects is literally "Computer Science", so its bracketed grade header also contains the
+    "computer science" category substring and would otherwise be mistaken for the "Computer
+    Science, IT & Data" broad-area column — leaking a grade like "A*" into specific_courses for
+    any student who takes that subject (found 2026-08-23 via a real-CSV verification pass).
+    """
     cols = []
     for header in fieldnames or []:
         low = (header or "").lower()
+        if SUBJECT_GRID_MARKER in low:
+            continue
         if any(sub in low for sub in GRID_CATEGORY_SUBSTRINGS):
             cols.append(header)
     return cols
@@ -808,6 +1082,50 @@ def _build_subjects(row, subject_cols):
 
 
 # --------------------------------------------------------------------------- #
+# Header-coverage diagnostic.
+# --------------------------------------------------------------------------- #
+# Headers that are inert by design (see build_col_index / Code.gs docstrings) — never real answers,
+# so they should never show up as "unmapped" noise.
+_INERT_HEADER_SUBSTRINGS = ("timestamp",)
+
+
+def _check_headers(fieldnames, col_index, grid_cols, slider_cols, subject_cols, subject_grid_cols):
+    """Report which live-form headers QUESTION_MAP (and the grid/slider/subject-grid finders) don't
+    recognise, and which QUESTION_MAP keys found no header on this CSV.
+
+    This is the standing version of the by-hand header diff that's needed every time the live Google
+    Form changes — a header that matches nothing used to fail silently (a quietly-blank field) rather
+    than surface here. The unmapped-key list is NOT all bad news: legacy fallback entries (older-form
+    wordings) are expected to go unmatched on a current export.
+    """
+    matched_headers = set(col_index.values()) | set(grid_cols) | set(slider_cols.values())
+    matched_headers |= {header for header, _subject_name in subject_grid_cols}
+    for subject_header, grade_header in subject_cols:
+        matched_headers.add(subject_header)
+        matched_headers.add(grade_header)
+
+    unmapped_headers = [
+        h for h in (fieldnames or [])
+        if h and h != "_row" and h not in matched_headers  # "_row": fetch_form_responses.py's bookkeeping column
+        and not any(s in h.lower() for s in _INERT_HEADER_SUBSTRINGS)
+    ]
+    unmapped_keys = sorted({key for _, key in QUESTION_MAP} - set(col_index.keys()))
+
+    print(f"Checked {len(fieldnames or [])} header(s).")
+    print(f"\nHeaders with NO mapping ({len(unmapped_headers)}) — a new/renamed question, or a typo drifted:")
+    for h in unmapped_headers:
+        print(f"  - {h!r}")
+    if not unmapped_headers:
+        print("  (none)")
+    print(f"\nQUESTION_MAP keys with no matching header on this CSV ({len(unmapped_keys)}) — expected for "
+          f"legacy fallback entries, worth a second look for anything that should be live:")
+    for k in unmapped_keys:
+        print(f"  - {k}")
+    if not unmapped_keys:
+        print("  (none)")
+
+
+# --------------------------------------------------------------------------- #
 # Main.
 # --------------------------------------------------------------------------- #
 def main():
@@ -815,6 +1133,12 @@ def main():
     parser.add_argument("csv_path", help="Path to the Google Forms responses CSV export.")
     parser.add_argument("--force", action="store_true", help="Overwrite existing student folders.")
     parser.add_argument("--dry-run", action="store_true", help="Report what would happen; write nothing.")
+    parser.add_argument(
+        "--check-headers",
+        action="store_true",
+        help="Report which CSV headers QUESTION_MAP doesn't recognise, and which QUESTION_MAP keys "
+        "found no header on this CSV. Diagnostic only — writes nothing and doesn't ingest.",
+    )
     parser.add_argument(
         "--assume-consent",
         action="store_true",
@@ -832,8 +1156,13 @@ def main():
         col_index = build_col_index(reader.fieldnames)
         slider_cols = _slider_columns(reader.fieldnames)
         subject_cols = _subject_columns(reader.fieldnames)
+        subject_grid_cols = _subject_grid_columns(reader.fieldnames)
         grid_cols = _grid_columns(reader.fieldnames)
         rows = list(reader)
+
+    if args.check_headers:
+        _check_headers(reader.fieldnames, col_index, grid_cols, slider_cols, subject_cols, subject_grid_cols)
+        return 0
 
     if "name" not in col_index:
         sys.exit(
@@ -846,7 +1175,9 @@ def main():
 
     for i, row in enumerate(rows, start=1):
         slug, profile, prefs, needs_review, skip_reason = map_row(
-            row, col_index, slider_cols, subject_cols, grid_cols, args.assume_consent
+            row, col_index,
+            slider_cols=slider_cols, subject_cols=subject_cols, grid_cols=grid_cols,
+            subject_grid_cols=subject_grid_cols, assume_consent=args.assume_consent,
         )
         if skip_reason:
             skipped.append((i, get(row, col_index, "name") or "(no name)", skip_reason))

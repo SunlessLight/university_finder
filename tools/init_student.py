@@ -41,15 +41,11 @@ def profile_template(slug, name):
     return {
         "student_slug": slug,
         "name": name,
-        "age": None,
-        "gender": None,
-        "nationality": None,
         "ethnicity": None,           # PDPA-sensitive; informs scholarship-eligibility research (e.g. Bumiputra vs non-Bumiputra funds), never a desirability input
-        "country_of_residence": None,
         "home_country": "Malaysia",
         "recognition_targets": [],  # e.g. ["MQA","MMC"] — only for regulated professions
         "education_history": [],     # [{institution, qualification, years}]
-        "current_program": {"type": None, "institution": None, "expected_completion": None},
+        "current_program": {"type": "A-Level", "expected_completion": None},  # type is a permanent default (no question asks it), same pattern as home_country
         "subjects": [],              # [{subject, grade_or_predicted}]
         "grade_status": None,        # "actual" | "predicted" | "expected" (self-predicted / "confident of getting" — provisional)
         "english_proficiency": {"test": None, "score": None, "test_date_or_planned": None},
@@ -83,7 +79,11 @@ def profile_template(slug, name):
             "lgbtq_friendly": None,
             "personal_safety": None,
             "climate_weather": None,
+            "food_quality": None,             # "Good food" — added to the live form 2026-08
+            "good_public_transport": None,    # added to the live form 2026-09
+            "affordable_cost_of_living": None,  # added to the live form 2026-09
         },
+        "achievements": None,  # free text — activities/achievements for personal-statement-fit research (Stage 4 report sections 3/13)
         "notes": None,
     }
 
@@ -94,15 +94,17 @@ def preferences_template():
         # subset of the 8 supported destinations — SUPPORTED_DESTINATIONS in ingest_form_csv.py
         # is the source of truth: UK / Australia / USA / Singapore / Malaysia / China / Japan / Hong Kong
         "target_countries": [],
+        "primary_country": None,  # which target country matters most, when several are picked — Stage 3 discovers this one first
         "fields_of_interest": [],
         "specific_courses": [],  # may stay empty -> triggers interest-discovery mode
+        "preferred_universities": None,  # free text — universities the student already has in mind (not a list; answers aren't reliably splittable)
         "degree_level": None,    # undergrad | foundation | ...
-        "intake": None,          # e.g. "2027 Sept"
+        "intake": None,          # e.g. "2027 Sept" — no question asks this any more; always resolves to "Flexible"
         "budget_ceiling_per_year": None,
         "total_budget_ceiling": None,
         "currency": "MYR",
         "scholarship_required": None,
-        "scholarship_interests": None,  # free-text: scholarships the student wants researched (a Stage 3/4 hint, not a filter)
+        "scholarship_interests": None,  # no longer asked; stays null by design — research broadly regardless (see 04_university_report.md §6)
         "priorities": [],        # ordered, e.g. ["cost","employability","recognition","ranking","location"]
         "ranking_importance": None,
         "min_subject_rank_pref": None,
@@ -110,6 +112,7 @@ def preferences_template():
         "intent_to_migrate": None,
         "deal_breakers": [],
         "location_prefs": [],
+        "additional_requirements": None,  # free text — specific things the student wants researched/known (Stage 4 report sections 3/13)
         "notes": None,
     }
 

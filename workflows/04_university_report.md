@@ -200,6 +200,13 @@ Ordered decision-first. **Snapshot (1)** and **Sources (16)** are rendered by th
    **Fallback when thin:** admit-rate /
    cutoff stats **plus official *and* unofficial social channels** (subreddit, IG, Discord, student-society
    pages) as leads for the student to dig further. If genuinely nothing exists, write `Not found — <why>`.
+
+   **When `profile.achievements` and/or `preferences.additional_requirements` are set (2026-08+),
+   compare directly against what you just researched** — this section's whole point, made concrete:
+   line up the student's stated activities/achievements against the admitted-applicant profile you
+   found, and answer their `additional_requirements` ask (often literally "what traits are you
+   looking for, and do I match?") against the same evidence. Say plainly where they match and where
+   there's a visible gap — this is admissibility signal, not filler.
 4. **Course details & structure** — modules, duration, intake, placement/sandwich/co-op, flexibility to
    change major (a real UK vs US difference).
 5. **Costs (full)** — tuition (per year + full programme), living, application fees, deposit, and the
@@ -230,6 +237,9 @@ Ordered decision-first. **Snapshot (1)** and **Sources (16)** are rendered by th
     tests (English test + status, admissions tests e.g. ESAT/SAT), essays/personal statement, references/
     recommenders, portfolio/interview prep, application + deposit fees, and portal/account setup. Note the
     system (UCAS / Common App / direct portal) but keep the emphasis on *what to prepare*.
+    **If `profile.achievements` is populated (2026-08+), reference it directly as the raw material for
+    the essay/personal-statement item** — point at which named activities are strong personal-statement
+    material for *this* course/university, rather than leaving "write your personal statement" generic.
 14. **Key dates & deadlines** — application, scholarship, admissions-test dates.
 15. **Why here / why hesitate** — a short honest synthesis tied to this student's `priorities` / `needs`:
     **2–4 reasons to choose** (the standout hook — signature labs, flagship projects, societies, notable
