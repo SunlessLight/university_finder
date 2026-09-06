@@ -56,8 +56,12 @@ python -m venv .venv
 # 2. Install dependencies
 pip install -r requirements.txt
 
-# 3. Add your Firecrawl key to .env  (copy .env.example -> .env)
+# 3. Add your Firecrawl key(s) to .env  (copy .env.example -> .env)
 #    FIRECRAWL_API_KEY=fc-...
+#    # optional: add more keys as FIRECRAWL_API_KEY_<label> — the tool rotates to the
+#    # next one automatically once a key runs out of credits (HTTP 402)
+#    FIRECRAWL_API_KEY_blaze=fc-...
+#    FIRECRAWL_API_KEY_kon=fc-...
 ```
 
 **4. Wire up the form-response feed** (one time, so intake can pull responses instead of you

@@ -35,7 +35,11 @@ Output (.tmp/<student-slug>/search_results.json):
       ...
     ]
 
-The FIRECRAWL_API_KEY must be set in .env (never hardcode it here).
+One or more Firecrawl keys must be set in .env as FIRECRAWL_API_KEY or
+FIRECRAWL_API_KEY_<label> (e.g. FIRECRAWL_API_KEY_blaze) — never hardcode a key here. When more
+than one is present, the client rotates to the next key automatically the moment one comes back
+"Payment Required" (HTTP 402, credits exhausted) — no session ever needs to notice this and swap
+keys by hand.
 """
 
 import argparse
@@ -45,6 +49,11 @@ import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
+
+try:
+    from firecrawl.v2.utils.error_handler import PaymentRequiredError
+except Exception:  # pragma: no cover - SDK version without this error class
+    PaymentRequiredError = None
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -79,13 +88,8 @@ def is_social_url(url):
     return any(domain in u for domain in SOCIAL_DOMAINS)
 
 
-def get_client():
-    """Return a Firecrawl client, tolerating SDK version differences."""
-    load_dotenv(REPO_ROOT / ".env")
-    api_key = os.getenv("FIRECRAWL_API_KEY")
-    if not api_key:
-        sys.exit("ERROR: FIRECRAWL_API_KEY is not set in .env")
-
+def _build_sdk_client(api_key):
+    """Build one Firecrawl SDK client for a single key, tolerating SDK version differences."""
     try:
         # firecrawl-py v2+
         from firecrawl import Firecrawl  # type: ignore
@@ -104,6 +108,78 @@ def get_client():
             "ERROR: could not initialize the Firecrawl SDK "
             f"({exc}). Is firecrawl-py installed? Run: pip install -r requirements.txt"
         )
+
+
+def discover_api_keys():
+    """Return [(env_var_name, key)], sorted by name, for every FIRECRAWL_API_KEY* in .env."""
+    load_dotenv(REPO_ROOT / ".env")
+    keys = sorted(
+        (name, value)
+        for name, value in os.environ.items()
+        if value and (name == "FIRECRAWL_API_KEY" or name.startswith("FIRECRAWL_API_KEY_"))
+    )
+    if not keys:
+        sys.exit("ERROR: no FIRECRAWL_API_KEY (or FIRECRAWL_API_KEY_<label>) is set in .env")
+    return keys
+
+
+def _is_credits_exhausted(exc):
+    """True if exc represents Firecrawl's 402 Payment Required (key out of credits)."""
+    if PaymentRequiredError is not None and isinstance(exc, PaymentRequiredError):
+        return True
+    if getattr(exc, "status_code", None) == 402:
+        return True
+    msg = str(exc).lower()
+    return "payment required" in msg or "insufficient credit" in msg
+
+
+class RotatingClient:
+    """Firecrawl client that transparently rotates to the next key on 402 Payment Required.
+
+    Rotation is in-memory only, per process — no shared state file, so concurrent sessions
+    never race over "which key is current". A dead key just costs one extra failed call before
+    falling through to the next.
+    """
+
+    def __init__(self, keys):
+        self._keys = keys
+        self._index = 0
+        self._client = _build_sdk_client(keys[0][1])
+
+    def __getattr__(self, name):
+        if not hasattr(self._client, name):
+            raise AttributeError(name)
+
+        def call(*args, **kwargs):
+            return self._call_with_rotation(name, *args, **kwargs)
+
+        return call
+
+    def _call_with_rotation(self, name, *args, **kwargs):
+        tried = []
+        while True:
+            key_name, _ = self._keys[self._index]
+            method = getattr(self._client, name)
+            try:
+                return method(*args, **kwargs)
+            except Exception as exc:
+                if not _is_credits_exhausted(exc):
+                    raise
+                tried.append(key_name)
+                if self._index + 1 >= len(self._keys):
+                    sys.exit(
+                        "ERROR: all Firecrawl keys are out of credits "
+                        f"({', '.join(tried)}). Add a fresh key to .env or top up credits."
+                    )
+                next_name, next_key = self._keys[self._index + 1]
+                print(f"  ! {key_name} is out of credits — switching to {next_name}", file=sys.stderr)
+                self._index += 1
+                self._client = _build_sdk_client(next_key)
+
+
+def get_client():
+    """Return a rotating Firecrawl client covering every key found in .env."""
+    return RotatingClient(discover_api_keys())
 
 
 def _as_dict(obj):
