@@ -27,7 +27,7 @@ Full detail in [service-tiers.md](service-tiers.md). In one screen:
 | Tier | Name | What they get | The line |
 |---|---|---|---|
 | **1** | **The List** | 20–40 → verified **8–12** unis · 34-col spreadsheet · Reach/Match/Safety · total cost in MYR | *Know your real options, costed in ringgit* |
-| **2** | **The University Reports** | 3–5 deep **16-section report PDFs** · "who actually gets in" · reasons to hesitate | *Can I get in, will I belong, what will it take* |
+| **2** | **The University Reports** | 3–5 deep **15-section report PDFs** · "who actually gets in" · reasons to hesitate | *Can I get in, will I belong, what will it take* |
 | **3** | **The Apply Pack** | recommendation · one **deadline calendar** · per-region **apply-guide PDFs** grouped by system | *Now go do it — nothing missed* |
 
 Why tier it rather than sell one blob: (a) it makes the invisible part (Tiers 2–3) **nameable**, which

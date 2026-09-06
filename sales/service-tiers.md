@@ -71,7 +71,7 @@ table. The decision happens in Tiers 2–3.
 **One line:** *For your 3–5 favourites: can I get in, will I belong, and what will it take?*
 
 What you get, **as a PDF per finalist** (3–5 of them):
-- A **16-section decision report** — not a comparison row, a document you read to *decide*.
+- A **15-section decision report** — not a comparison row, a document you read to *decide*.
 - **"Who actually gets in"** — real admitted-student texture pulled from Reddit / The Student Room
   offer-holder threads, the Common Data Set, NUS IGP cutoffs: the grades, extracurriculars and essay
   angles of people who actually got in. Most students don't know these sources exist. This is the
@@ -122,5 +122,5 @@ where I want to go" and "I applied, on time, to all of them, without missing an 
 - **Show, don't list.** The [sample pack](sample_pack/) is one row of the spreadsheet, one report, one
   apply-guide page — the three tiers made visible. Send that, then stop typing. (See
   [positioning.md §3](positioning.md).)
-- Numbers, not adjectives: *"35 columns · 8–12 verified unis · 16-section university reports · a deadline
+- Numbers, not adjectives: *"35 columns · 8–12 verified unis · 15-section university reports · a deadline
   calendar across 5 countries."* Never "comprehensive."

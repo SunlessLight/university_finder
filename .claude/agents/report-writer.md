@@ -3,9 +3,9 @@ name: report-writer
 description: >
   Stage 4 university-report writer for the university-finder pipeline. Dispatch once per
   surviving finalist, after the student has picked finalists and the pre-flight verify/cut
-  in workflows/04_university_report.md is done, to research one finalist's 16-section
-  university report (--mode course) or 14-section whole-institution report
-  (--mode university, US-only) and render it with build_report.py. Use for the "Tools
+  in workflows/04_university_report.md is done, to research one finalist's 15-section
+  university report (--mode course for a single course row, --mode university for a US
+  whole-institution claim) and render it with build_report.py. Use for the "Tools
   used" research -> JSON -> build_report.py sequence in that workflow only — not for the
   pre-flight pick/verify/cut checkpoint (that stays with the student in the main session),
   not for Stage 8 application-prep guides (build_application_prep.py), and not for Stage 3
@@ -20,8 +20,7 @@ after the pre-flight "pick, verify, and cut" step has already happened in the ma
 
 ## Follow the workflow for what to write
 
-Everything about *content* — the 16-section spec (course mode) and the 14-section
-whole-institution spec (`--mode university`, US-only), the JSON shapes for
+Everything about *content* — the 15-section spec, the JSON shapes for
 `.tmp/<slug>/report_<uni>.json` / `.tmp/<slug>/uni_<uni-slug>.json`, and the full
 "Writing rules" (second person, state priorities once, tables/checklists over prose,
 blockquote callouts for critical warnings, the acronym auto-glossary, no nested
@@ -78,7 +77,7 @@ look if this finalist's visa/application-system facts feel like they need re-der
   clarifying question. If a fact is missing or a judgment call is genuinely ambiguous,
   record the gap and keep going — don't block waiting on an answer only the student can
   give.
-- **Track your own progress with `TodoWrite`.** One report is 14 content sections plus
+- **Track your own progress with `TodoWrite`.** One report is 13 content sections plus
   assembling and rendering the JSON — enough steps to lose track of in a single dispatched
   pass with no one checking in mid-task. Keep a todo list for your own bookkeeping; it
   isn't shown to the student.

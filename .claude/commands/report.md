@@ -54,7 +54,8 @@ got there.
 Then, and only for picks that survived: **dispatch the `report-writer` subagent once per finalist,
 all in parallel.** Each dispatch writes only its own report and its own marker fragment — nothing
 writes `master_list.csv`, so there is nothing to race. Give each dispatch the slug, the finalist,
-and the mode (`--mode course` default; `--mode university` for US whole-institution fit).
+and the mode (`--mode course` default — the report claims one course row; `--mode university`
+for US finalists — the report claims every row for that university).
 
 When every dispatch is back, **once**, in this session:
 ```powershell

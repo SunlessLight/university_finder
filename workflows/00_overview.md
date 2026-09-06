@@ -19,7 +19,7 @@ university that hasn't passed the cheap cut first.
 |---|---|---|---|
 | 1 | `01_intake.md` | `profile.json` + `preferences.json` | Who the student is (grades, budget, English, recognition needs) **and** what they want (countries, field, priorities) — batch-built from the Google Form CSV, then finalized by you |
 | 3 | `03_discover_longlist.md` | `master_list.csv` (Longlist) | Broad, cheap, snippet-level discovery — 20-40 candidates |
-| 4 | `04_university_report.md` | `reports/<uni>.md` | Student picks 3-5 finalists off the Longlist; **verify their hard facts from official sources** (Reach/Match/Safety, feasibility gates), then a full 16-section decision **university report** per finalist. Two paths (`--mode`): course-specific (default) or **university-general (US-only)** for whole-institution fit |
+| 4 | `04_university_report.md` | `reports/<uni>.md` | Student picks 3-5 finalists off the Longlist; **verify their hard facts from official sources** (Reach/Match/Safety, feasibility gates), then a full 15-section decision **university report** per finalist — the same sections for every country. `--mode` selects only which claim it makes: course-specific (default) or **university-general (US-only)** for whole-institution fit |
 | 5 | `05_decide_and_apply.md` | `recommendation.md` + `calendar.md` | Recommendation, application strategy, one deadline calendar |
 
 > **Stage 3 and Stage 4 are independent — don't gate one on the other.** Stage 4 operates on
@@ -331,8 +331,9 @@ student slugs, `data/` paths, and credential-shaped secrets) ·
 `build_glossary_sheet.py` (Glossary tab) · `compare_universities.py` (comparison tables) ·
 `match_finalists.py` (resolve a shorthand name like "UCL" or "UCL|mechanical engineering" typed after
 `/report` to its exact `master_list.csv` row — read-only, never guesses, reports `ambiguous_*`/`not_found`
-instead) · `build_report.py` (16-section university report + its finalist marker fragment; `--mode course` default
-or `--mode university` for US whole-institution) · `check_report.py` (the Stage 4 report-quality gate —
+instead) · `build_report.py` (15-section university report + its finalist marker fragment; `--mode course`
+default or `--mode university` for a US whole-institution claim — same sections either way) ·
+`check_report.py` (the Stage 4 report-quality gate —
 structure, sourcing, voice, required tables — read never re-read; `--all` for every report a student
 has) · `flip_finalists.py` (**fold** every finalist marker into `master_list.csv` in one pass — the
 Stage 4 counterpart to `merge_candidates.py`, and the only thing that flips a row to `Finalist`) ·

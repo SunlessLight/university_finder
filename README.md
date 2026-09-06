@@ -30,7 +30,7 @@ data/form/       Google Form CSV exports dropped here for batch intake (gitignor
 |---|---|---|
 | 1 Intake | `profile.json` + `preferences.json` | Grades, budget, English, recognition needs — plus countries, field and priorities. Built from the Google Form CSV |
 | 3 Discover | `master_list.csv` (Longlist) | 20-40 candidates, scored |
-| 4 Verify + Report | `reports/<uni>.md` | Student picks 3-5 finalists; verify their facts against official sources (Reach/Match/Safety), then a deep 16-section **university report** each |
+| 4 Verify + Report | `reports/<uni>.md` | Student picks 3-5 finalists; verify their facts against official sources (Reach/Match/Safety), then a deep 15-section **university report** each |
 | 5 Decide | `recommendation.md` + `calendar.md` | Ranked picks, application strategy, deadlines |
 
 There is **no Stage 2** — intake and aspirations merged into Stage 1 on 2026-07-25, when the Google
@@ -125,7 +125,7 @@ python tools/build_calendar.py --student <slug>
 `tools/init_student.py` still scaffolds a single student folder by hand (and its templates are the
 schema source of truth that `ingest_form_csv.py` imports), but the form is the normal way in.
 
-Full instructions — the per-destination query playbook, scoring rubric, the 16-section university-report template,
+Full instructions — the per-destination query playbook, scoring rubric, the 15-section university-report template,
 and the narrowing rules — live in [workflows/](workflows/), starting with
 [00_overview.md](workflows/00_overview.md).
 
