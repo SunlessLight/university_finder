@@ -157,6 +157,11 @@ GLOSSARY = {
         "definition": "Test of English as a Foreign Language — an English-proficiency test; an "
                       "alternative to IELTS.",
     },
+    "PTE Academic": {
+        "aliases": ["PTE"],
+        "definition": "Pearson Test of English Academic — a computer-marked English-proficiency test; "
+                      "another accepted alternative to IELTS/TOEFL.",
+    },
     "ESAT": {
         "aliases": [],
         "definition": "Engineering and Science Admissions Test — required by Oxford and Imperial "
@@ -606,6 +611,18 @@ GLOSSARY = {
         "definition": "**Engineering Accreditation Council** — the Malaysian body that accredits "
                       "engineering degrees for the Washington Accord and for BEM Professional Engineer "
                       "(Ir.) registration.",
+    },
+    # --- Physics / physical sciences UK routes (report terms) -----------------
+    "IOP": {
+        "aliases": ["Institute of Physics"],
+        "definition": "**Institute of Physics** — the UK professional body for physicists; it "
+                      "accredits degrees toward Chartered Physicist status.",
+    },
+    "CPhys": {
+        "aliases": ["Chartered Physicist"],
+        "definition": "**Chartered Physicist** — the UK's full professional-physicist status, awarded "
+                      "via the Institute of Physics. An IOP-accredited integrated master's (e.g. MSci) "
+                      "meets it in full; an accredited bachelor's (BSc) only partially meets it.",
     },
     "UCAS": {
         "aliases": [],
