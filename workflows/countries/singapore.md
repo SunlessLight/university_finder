@@ -4,7 +4,16 @@
 > a Singapore row. Split out of `03_discover_longlist.md` on 2026-07-30 — see that file's
 > "Per-destination query playbook" section for how this fits into Step 1 and Step 3.
 
-**Singapore** → the public five + a private/foreign campus for the Safety end:
+> **No private/foreign campus offers engineering (checked 2026-09-10, har-ley's Mechanical
+> Engineering pass).** JCU Singapore's programmes are Business/IT/Psychology/Education/
+> Accounting/Arts/Aquaculture/Environmental Science/Games Design/Tourism; Curtin Singapore is
+> Health/Computing/Commerce/Communications with engineering only "planned," not live. For an
+> Engineering-field student, widen the Safety end within the public five instead (NTU's
+> Renaissance Engineering Programme and SIT's two ME routes — its own degree plus the SIT-Glasgow
+> joint honours — worked well as substitutes). Re-check this if researching a non-Engineering
+> field, where JCU/Curtin remain valid.
+
+**Singapore** → the public five + a private/foreign campus for the Safety end (Engineering fields: see the note above first):
 ```
 NUS OR NTU OR SMU <course> admissions
 SUTD OR SIT <course> undergraduate international admissions

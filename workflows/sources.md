@@ -115,6 +115,18 @@ down" rather than "wrong address": **EAC serves `http://` only** — `https://ww
 TLS handshake outright. **LPQB works on the bare host only** — `https://www.lpqb.org.my/` fails TLS,
 `https://lpqb.org.my/` is fine.
 
+**LPQB's actual recognised-degree list is a separate block even from the bare host (learned
+2026-09-11, Rey's UK pass).** `https://lpqb.org.my/clp/list-of-qualifications-recognised-to-sit-for-pass-the-clp-examination`
+plain-`WebFetch`es to only the nav shell (JS-rendered) — a **block**, not an error, so go straight to
+`firecrawl_search.py --scrape-top` on that URL. It is the single named-whitelist page for **UK,
+Australia and New Zealand** law degrees eligible for Malaysia's CLP exam (the exam that actually lets a
+graduate practise law here) — a law degree from an unlisted university does not qualify, no matter how
+good the university is (Edinburgh and Glasgow, for instance, are absent). Re-fetch fresh per student
+rather than trusting an old fragment: the Board reviews the list periodically and both adds and
+withdraws entries with a stated effective date (Durham's LLB was added effective 1 Jan 2026, binding
+only for candidates completing on or after that date) — exactly the kind of dated fact this file's own
+rule says never to cache here.
+
 For **Malaysia-as-destination** rows, remember `countries/malaysia.md`'s rule: MQA is a *floor* there
 (every domestic programme has it), so the distinction that scores is the professional ladder —
 EAC/BEM/Washington vs ETAC/MBOT/Sydney.

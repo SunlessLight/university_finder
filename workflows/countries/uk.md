@@ -35,6 +35,15 @@ from the first attempt. The university's own course page carries the same entry 
 free to fetch — prefer it, and use UCAS for what only UCAS has (the cross-university course search
 and the cycle deadlines).
 
+**`ox.ac.uk` (the whole domain, not one page) 403s plain `WebFetch` too (learned 2026-09-10, Khadeja's
+UK pass).** Go straight to `firecrawl_search.py` for any Oxford course/admissions/fees page — same
+pattern as `ucas.com`, just a second domain to skip the retries on.
+
+**`ucl.ac.uk` (the whole domain) 403s plain `WebFetch` too (learned 2026-09-12, Wong De Xin's UK
+pass).** Same pattern as `ucas.com` and `ox.ac.uk` — go straight to `firecrawl_search.py` for any UCL
+course/admissions/fees/scholarships page. The content fetched this way is still the university's own
+page, so it still counts as `source_authority: "Official page"` once read.
+
 > **The UK has NO meets-full-need or need-blind equivalent for internationals — if `scholarship_required`
 > is a hard gate, say so plainly (learned 2026-07-28).** Unlike the USA (see `usa.md`), a wide
 > UK search (9 unis incl. Oxbridge/Imperial/UCL/Russell Group) turned up only generic "international
