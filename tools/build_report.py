@@ -36,9 +36,19 @@ The fixed section order is enforced: every content section must be present and
 non-empty, or the build fails loudly — this is what keeps reports comparable and
 stops half-researched finalists slipping through.
 
+--quick (workflows/quick_university_report.md) renders a standalone report with no student
+involved at all: no profile.json/preferences.json/master_list.csv, no finalist marker, no flip
+step. Output goes to data/quick_reports/<slug>.md instead of data/students/<slug>/reports/.
+Use it instead of --student when a student already knows the university and just wants the
+facts, without going through Stage 1 (intake) or Stage 3 (longlist) first. The input JSON is the
+same shape, just without "admission_likelihood"/"priorities" (meaningless with no student profile
+to compare against) — the Snapshot table already skips those rows when empty, so nothing else
+changes.
+
 Usage:
     python tools/build_report.py --student <slug> --input .tmp/<slug>/report_<report-slug>.json
     python tools/build_report.py --student <slug> --input .tmp/<slug>/uni_<uni-slug>.json --mode university
+    python tools/build_report.py --quick --input .tmp/quick/report_<slug>.json
 
 JSON shape (see the workflow for the full spec). Course mode requires "course";
 university mode omits it and adds "setting" / "type" / "size" / "net_cost" for the
@@ -330,7 +340,14 @@ def write_finalist_marker(student_slug, slug, data, mode):
 
 def main():
     parser = argparse.ArgumentParser(description="Render a standardized finalist report.")
-    parser.add_argument("--student", required=True, help="Student slug (folder under data/students/).")
+    target = parser.add_mutually_exclusive_group(required=True)
+    target.add_argument("--student", help="Student slug (folder under data/students/).")
+    target.add_argument(
+        "--quick", action="store_true",
+        help="Standalone report, no student folder: no profile/preferences/master_list.csv "
+             "involved, no finalist marker written. Writes to data/quick_reports/<slug>.md "
+             "instead of data/students/<slug>/reports/.",
+    )
     parser.add_argument("--input", required=True, help="Path to the report research JSON.")
     parser.add_argument(
         "--mode", choices=("course", "university"), default="course",
@@ -339,9 +356,10 @@ def main():
     )
     args = parser.parse_args()
 
-    student_dir = STUDENTS_DIR / args.student
-    if not student_dir.exists():
-        sys.exit(f"ERROR: {student_dir} not found. Run init_student.py first.")
+    if not args.quick:
+        student_dir = STUDENTS_DIR / args.student
+        if not student_dir.exists():
+            sys.exit(f"ERROR: {student_dir} not found. Run init_student.py first.")
 
     input_path = Path(args.input)
     if not input_path.is_absolute():
@@ -359,11 +377,15 @@ def main():
     else:
         default_slug = slugify(f"{data['university']} {data['course']}")
     slug = data.get("slug") or default_slug
-    reports_dir = student_dir / "reports"
+    reports_dir = (REPO_ROOT / "data" / "quick_reports") if args.quick else (STUDENTS_DIR / args.student / "reports")
     reports_dir.mkdir(parents=True, exist_ok=True)
     out_path = reports_dir / f"{slug}.md"
     out_path.write_text(render_report(data, args.mode), encoding="utf-8")
     print(f"Wrote report: {out_path}")
+
+    if args.quick:
+        # No master_list.csv row exists for a quick report — nothing to flip, nothing to reconcile.
+        return
 
     write_finalist_marker(args.student, slug, data, args.mode)
     print(

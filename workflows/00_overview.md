@@ -42,6 +42,14 @@ deadlines) via `build_application_prep.py`. Report-free and **read-only** (never
 
 **Social media posting:** `social_media.md` (utility, not a stage) — draft a confidentiality-checked social post about recent repo work — pull-only, never posts anything itself.
 
+**Quick university report:** `quick_university_report.md` (utility, not a stage) — a facts-only
+15-section report for a student who already knows which university they want, via `/quick-report`.
+Unlike every stage above, this needs **no student at all** — no `profile.json`, `preferences.json`,
+`master_list.csv` row, or `data/students/<slug>/` folder. It reuses the same `report-writer`
+subagent and the same `build_report.py`, just with `--quick` instead of `--student <slug>`, output
+at `data/quick_reports/<slug>.md`, and the personalized half of a few sections (admission
+likelihood, "your fit", priorities-based synthesis) dropped in favor of the factual half.
+
 > **Stage 2 was merged into Stage 1 on 2026-07-25.** Every student now arrives through the **Google
 > Form**, which captures who-they-are and what-they-want in one sitting — so the two conversational
 > SOPs (`01_student_intake.md`, `02_aspirations_intake.md`) were deleted and `07_form_intake.md`
@@ -249,6 +257,7 @@ slug, and re-asserts that workflow's own checkpoint — the workflow file stays 
 | `/report <slug>` | `04_university_report.md` — pre-flight with the student, then one report per finalist |
 | `/decide <slug>` | `05_decide_and_apply.md` — recommendation + calendar |
 | `/apply-prep <slug> <region>` | `08_application_prep.md` — one region per pass |
+| `/quick-report <university>[: course][; ...]` | `quick_university_report.md` — facts-only report, no student needed |
 
 It's `/catchup`, not `/resume`, because `/resume` is a built-in Claude Code command (resume a past
 conversation) and a project command of that name would collide with it.
@@ -332,12 +341,17 @@ student slugs, `data/` paths, and credential-shaped secrets) ·
 `match_finalists.py` (resolve a shorthand name like "UCL" or "UCL|mechanical engineering" typed after
 `/report` to its exact `master_list.csv` row — read-only, never guesses, reports `ambiguous_*`/`not_found`
 instead) · `build_report.py` (15-section university report + its finalist marker fragment; `--mode course`
-default or `--mode university` for a US whole-institution claim — same sections either way) ·
+default or `--mode university` for a US whole-institution claim — same sections either way;
+`--quick` instead of `--student <slug>` renders a standalone report with no finalist marker, to
+`data/quick_reports/<slug>.md` — see `quick_university_report.md`) ·
 `check_report.py` (the Stage 4 report-quality gate —
 structure, sourcing, voice, required tables — read never re-read; `--all` for every report a student
-has) · `flip_finalists.py` (**fold** every finalist marker into `master_list.csv` in one pass — the
+has; `--file <path>` to lint a report with no `--student`; `--quick` to skip the two
+student-only Snapshot rows for a `--quick`-built report) · `flip_finalists.py` (**fold** every
+finalist marker into `master_list.csv` in one pass — the
 Stage 4 counterpart to `merge_candidates.py`, and the only thing that flips a row to `Finalist`) ·
-`report_to_pdf.py` (export a report to PDF for the student) · `build_calendar.py`
+`report_to_pdf.py` (export a report to PDF for the student; `--file <path>` instead of `--student`
+for a `--quick` report) · `build_calendar.py`
 (deadline calendar) · `build_application_prep.py` (per-region apply guide grouped by application system) ·
 `progress_dashboard.py` (roster-wide stage report across every student — derives each stage from
 files, never from status.md, so it can't drift; run via `/progress`).

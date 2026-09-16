@@ -28,8 +28,11 @@ Two readability passes run before the Markdown->HTML step, both reused from sibl
 Usage:
     python tools/report_to_pdf.py --student <slug> --report <report-slug>
     python tools/report_to_pdf.py --student <slug> --all
+    python tools/report_to_pdf.py --file data/quick_reports/<slug>.md
 
     # --report accepts the slug with or without the .md extension.
+    # --file exports a standalone report (built with build_report.py --quick) that has no
+    # student folder at all — same .pdf, written alongside the .md as usual.
 """
 
 import argparse
@@ -57,9 +60,10 @@ PAGE_CSS = """
 @page {
     size: A4 portrait;
     margin: 1.9cm 1.9cm 2cm 1.9cm;
-    @bottom-left  { content: string(doctitle); color: #8a97a6; font-size: 8pt; }
-    @bottom-right { content: "Page " counter(page) " of " counter(pages);
-                    color: #8a97a6; font-size: 8pt; }
+    @bottom-left   { content: string(doctitle); color: #8a97a6; font-size: 8pt; }
+    @bottom-center { content: "Created by: Evan Yeoh"; color: #8a97a6; font-size: 8pt; }
+    @bottom-right  { content: "Page " counter(page) " of " counter(pages);
+                     color: #8a97a6; font-size: 8pt; }
 }
 body { font-family: "Segoe UI", "DejaVu Sans", Arial, sans-serif; font-size: 10.5pt;
        line-height: 1.5; color: #1a1a1a; }
@@ -160,27 +164,41 @@ def render_pdf(md_path, weasyprint, out_path=None):
 
 def main():
     parser = argparse.ArgumentParser(description="Export a report Markdown file to PDF.")
-    parser.add_argument("--student", required=True, help="Student slug (folder under data/students/).")
-    group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument("--report", help="Report slug to convert (with or without .md).")
+    parser.add_argument("--student", help="Student slug (folder under data/students/).")
+    parser.add_argument("--file", help="Path to one standalone report .md, instead of --student.")
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("--report", help="Report slug to convert (with or without .md; needs --student).")
     group.add_argument("--all", action="store_true", help="Convert every report for this student.")
     args = parser.parse_args()
 
-    reports_dir = STUDENTS_DIR / args.student / "reports"
-    if not reports_dir.exists():
-        sys.exit(f"ERROR: {reports_dir} not found. Run build_report.py first.")
+    if bool(args.file) == bool(args.student):
+        sys.exit("ERROR: pass exactly one of --student or --file.")
+    if args.student and bool(args.report) == bool(args.all):
+        sys.exit("ERROR: with --student, pass exactly one of --report or --all.")
 
-    if args.all:
-        md_files = sorted(reports_dir.glob("*.md"))
-        if not md_files:
-            print(f"  ! No report .md files in {reports_dir}. Nothing to convert.")
-            return
-    else:
-        name = args.report[:-3] if args.report.endswith(".md") else args.report
-        md_path = reports_dir / f"{name}.md"
+    if args.file:
+        md_path = Path(args.file)
+        if not md_path.is_absolute():
+            md_path = REPO_ROOT / md_path
         if not md_path.exists():
-            sys.exit(f"ERROR: {md_path} not found. Check the report slug (list: {reports_dir}).")
+            sys.exit(f"ERROR: {md_path} not found.")
         md_files = [md_path]
+    else:
+        reports_dir = STUDENTS_DIR / args.student / "reports"
+        if not reports_dir.exists():
+            sys.exit(f"ERROR: {reports_dir} not found. Run build_report.py first.")
+
+        if args.all:
+            md_files = sorted(reports_dir.glob("*.md"))
+            if not md_files:
+                print(f"  ! No report .md files in {reports_dir}. Nothing to convert.")
+                return
+        else:
+            name = args.report[:-3] if args.report.endswith(".md") else args.report
+            md_path = reports_dir / f"{name}.md"
+            if not md_path.exists():
+                sys.exit(f"ERROR: {md_path} not found. Check the report slug (list: {reports_dir}).")
+            md_files = [md_path]
 
     weasyprint = _load_weasyprint()
     for md_path in md_files:

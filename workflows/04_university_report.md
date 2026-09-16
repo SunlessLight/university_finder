@@ -119,17 +119,17 @@ export — is identical for both modes.
 
 ## Tools used
 
-> **Dispatch steps 1-3 to the `report-writer` subagent — one call per finalist, all in parallel.**
+> **Dispatch steps 1-4 to the `report-writer` subagent — one call per finalist, all in parallel.**
 > `.claude/agents/report-writer.md` (pinned to **Opus**) runs this research-and-render sequence for
 > exactly one finalist per dispatch — give it the student slug, the finalist (university + course, or
 > university alone for `--mode university`), and the mode. **Parallel is safe** (since 2026-08-07,
 > mirroring Stage 3's row-fillers in `03_discover_longlist.md`): each dispatch writes only its own
-> report and its own marker fragment, and nothing writes `master_list.csv`, so there is nothing to
-> race. It used to be sequential because `build_report.py` rewrote the whole CSV per report; that
-> write moved to `flip_finalists.py`, which runs **once** in this session at step 4. Keeping the
-> research out of this session is the point — 3-5 finalists' worth of fetched pages would otherwise
-> all land in one context. The pre-flight above (pick, verify, cut) stays in this session — it's the
-> Stage 4 checkpoint with the student (CLAUDE.md), not research.
+> report, its own PDF, and its own marker fragment, and nothing writes `master_list.csv`, so there is
+> nothing to race. It used to be sequential because `build_report.py` rewrote the whole CSV per
+> report; that write moved to `flip_finalists.py`, which runs **once** in this session at step 6.
+> Keeping the research out of this session is the point — 3-5 finalists' worth of fetched pages would
+> otherwise all land in one context. The pre-flight above (pick, verify, cut) stays in this session —
+> it's the Stage 4 checkpoint with the student (CLAUDE.md), not research.
 
 1. *(agent research)* gather the facts for the 13 content sections. **Hard facts** (fees,
    requirements, recognition, post-study work rights, deadlines) come from **official sources**
@@ -142,9 +142,17 @@ export — is identical for both modes.
    the report **and** writes a finalist marker fragment to `.tmp/<slug>/finalists/<report-slug>.json`.
    No CSV change yet. (There is no `Report status` column — the report file under `reports/` *is* the
    record that it was built.)
+4. *(agent step)* `report_to_pdf.py --student <slug> --report <report-slug>` — exports the report just
+   rendered straight to PDF, alongside the `.md`, in the same dispatch. This is what makes the PDF
+   **automatic**: the student-facing deliverable is on disk by the time `report-writer` ends, with
+   nothing left to run by hand afterward (see "Export to PDF" below for what a re-export is still for).
+   Run it after `check_report.py` (see step 5) rather than before — no point exporting a report that's
+   about to get a content fix. A PDF failure (e.g. a Windows WeasyPrint/DLL hiccup) does **not** block
+   the dispatch — `report-writer` notes it in its status reply instead, since the Markdown report is
+   the record either way and a missing PDF is easy to re-run later.
 
 Then, back in this session, **once — after every dispatch has returned** (mirrors Stage 3's
-"Steps 4-6 — Merge, sync, check"):
+"Steps 5-7 — Merge, sync, check"):
 
 ```powershell
 python tools/check_report.py     --student <slug> --all       # per-report quality gate
@@ -153,7 +161,7 @@ python tools/flip_finalists.py   --student <slug>             # one read, one wr
 python tools/check_master_list.py --student <slug>            # the gate — must come back clean
 ```
 
-4. `check_report.py --all` lints every report just built, in one pass, without you reading any of
+5. `check_report.py --all` lints every report just built, in one pass, without you reading any of
    them back into this session's context — that re-read is exactly what cost an earlier session 390
    lines. It catches the mechanical half of "is this report finished": missing Snapshot fields,
    `Not found` density, thin or all-aggregator sourcing, third-person slips, and a required section
@@ -162,13 +170,13 @@ python tools/check_master_list.py --student <slug>            # the gate — mus
    anyway; it's cheap, and it also catches a report someone built by hand outside the agent. **It is
    not a synthesis judge** — passing it means the report is structurally sound, not that the writing
    is good. That's still why this stage is pinned to Opus.
-5. `flip_finalists.py` reads every marker, flips the matched rows to `Finalist`, applies any
+6. `flip_finalists.py` reads every marker, flips the matched rows to `Finalist`, applies any
    `corrections`, and deletes only the fragments it applied. It **soft-fails per fragment** — one bad
    marker never blocks the rest — and leaves whatever failed on disk, named, for a re-run. Read its
    failure lines: `already_rejected` means the student demoted that row after its report was written
    (the tool refuses to resurrect it — re-promote by hand only if the rejection was a mistake);
    `no_match` usually means the agent's university/course string drifted from the row's.
-6. `check_master_list.py` is the gate, exactly as at Stage 3 — a list doesn't go to a student until it
+7. `check_master_list.py` is the gate, exactly as at Stage 3 — a list doesn't go to a student until it
    comes back clean. Run it **without** `--check`.
 
 ### Which scraper for which section
@@ -414,11 +422,16 @@ empty (empty sections fail the build on purpose — a half-researched report sho
 ```powershell
 python tools/build_report.py --student <slug> --input .tmp/<slug>/report_manchester-cs.json
 python tools/build_report.py --student <slug> --input .tmp/<slug>/uni_mit.json --mode university
+python tools/check_report.py --student <slug> --report manchester-cs      # lint before exporting
+python tools/report_to_pdf.py --student <slug> --report manchester-cs     # PDF, same dispatch
 ```
-Two outputs, no CSV change: the report at `data/students/<slug>/reports/<uni-course-slug>.md` and a
-finalist marker at `.tmp/<slug>/finalists/<uni-course-slug>.json` (same slug, so report and marker are
-an obvious pair, and a re-render overwrites its own marker rather than stacking a duplicate). Repeat per
-finalist — **in parallel**, since no two dispatches write the same file.
+No CSV change: the report at `data/students/<slug>/reports/<uni-course-slug>.md`, its PDF at
+`data/students/<slug>/reports/<uni-course-slug>.pdf`, and a finalist marker at
+`.tmp/<slug>/finalists/<uni-course-slug>.json` (same slug throughout, so report/PDF/marker are an
+obvious triple, and a re-render overwrites its own marker rather than stacking a duplicate). Repeat
+per finalist — **in parallel**, since no two dispatches write the same files. `report-writer` runs all
+four commands itself per dispatch (see "Tools used" above); this block is the quick reference if
+you're ever building or re-rendering a report by hand outside the agent.
 
 Then, once, in the main session:
 ```powershell
@@ -430,10 +443,15 @@ That is what makes the rows **`Finalist`**. (`Finalist` is the whole story — `
 takes `Longlist`/`Shortlist`/`Finalist`/`Rejected`, and the report file under `reports/` is the record
 that it was built.)
 
-## Export to PDF (optional, on request)
+## Export to PDF (automatic — manual re-export only when needed)
 
-When a student asks for their report(s) to read outside the tool, convert the rendered Markdown to a
-clean PDF (written alongside the `.md`):
+**The PDF is no longer something to ask for.** `report-writer` exports each report to PDF itself,
+right after `build_report.py` and `check_report.py`, in the same dispatch that writes the `.md` — so
+by the time a dispatch ends, `data/students/<slug>/reports/<uni-course-slug>.pdf` already exists
+alongside the Markdown, with nothing to run in a terminal afterward. The manual command below still
+exists for the cases automatic export doesn't cover — a report built by hand outside the agent, a
+report edited after the fact (a `corrections`-driven fix, a typo caught later), or an older report
+from before this became automatic:
 ```powershell
 python tools/report_to_pdf.py --student <slug> --report manchester-cs   # one report
 python tools/report_to_pdf.py --student <slug> --all                    # every report
@@ -446,6 +464,11 @@ The PDF renders with **WeasyPrint** and adds three things at render time (nothin
 a **"Key terms"** glossary built from the acronyms the report uses, with each term's first use
 **tap-linked** to it; **red callouts** for blockquote warnings; and **tickable checkboxes** for
 `- [ ]` items. So follow the *Writing rules* above and the presentation comes for free.
+
+If a dispatch's PDF export fails (the most likely cause on this machine is WeasyPrint's native
+GTK/Pango/Cairo DLLs — see `report_to_pdf.py`'s docstring), that failure is **not** a blocked report:
+the Markdown is the record, `report-writer` notes the failure in its status reply instead of retrying
+silently, and the fix is to re-run the manual command above once the environment issue is sorted.
 
 ## Edge cases & rules
 
@@ -462,8 +485,10 @@ a **"Key terms"** glossary built from the acronyms the report uses, with each te
 
 ## Done when
 
-Every finalist has a complete university report, `check_report.py --all` came back clean (or every
-finding was reviewed and judged a false positive), `flip_finalists.py` has run and left
-`.tmp/<slug>/finalists/` empty (anything still sitting there is a flip that did *not* happen — read its
-reason), every finalist shows as **`Finalist`** in the master list, and `check_master_list.py` comes
-back clean. Then proceed to **Stage 5** (`05_decide_and_apply.md`).
+Every finalist has a complete university report **and its PDF** (missing PDFs are listed in the
+`report-writer` dispatch replies — re-export them by hand rather than treating a report as incomplete
+over it), `check_report.py --all` came back clean (or every finding was reviewed and judged a false
+positive), `flip_finalists.py` has run and left `.tmp/<slug>/finalists/` empty (anything still sitting
+there is a flip that did *not* happen — read its reason), every finalist shows as **`Finalist`** in the
+master list, and `check_master_list.py` comes back clean. Then proceed to **Stage 5**
+(`05_decide_and_apply.md`).

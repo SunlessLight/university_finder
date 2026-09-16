@@ -42,6 +42,7 @@ Usage:
     python tools/check_report.py --student <slug> --all
     python tools/check_report.py --file data/students/<slug>/reports/<report-slug>.md
     python tools/check_report.py --student <slug> --all --check voice,tables
+    python tools/check_report.py --file data/quick_reports/<slug>.md --quick
 """
 
 import argparse
@@ -289,13 +290,22 @@ def check_structure(sections, mode, ambiguous):
     return out
 
 
-def check_snapshot(sections, mode):
+# Rows that only mean something when the report was written against a real student profile.
+# A --quick report (workflows/quick_university_report.md) omits both by design — there is no
+# grade margin to compute admission_likelihood from, and no priorities to rank.
+QUICK_OMITTED_ROWS = {"Admission likelihood", "Your priorities"}
+
+
+def check_snapshot(sections, mode, quick=False):
     """Every Snapshot fact row present and filled.
 
     _fact_table() silently SKIPS a field whose value is empty, so a missing row is the only
     trace an omitted research-JSON field leaves. 'Your priorities' matters most: the writing
     rules hang on stating the ranked priorities once, up front, and every later "your
     top-ranked priority" reference is meaningless without that row visible.
+
+    quick=True drops QUICK_OMITTED_ROWS from the required set — a standalone report has no
+    student profile to compute either from, so their absence is correct, not a finding.
     """
     body = find_section(sections, "Snapshot")
     if body is None:
@@ -310,6 +320,8 @@ def check_snapshot(sections, mode):
         wanted = NEW_SNAPSHOT_CORE + NEW_SNAPSHOT_BY_SCOPE[scope]
     else:
         wanted = SNAPSHOT_ROWS[mode]
+    if quick:
+        wanted = [label for label in wanted if label not in QUICK_OMITTED_ROWS]
     for label in wanted:
         if label not in rows:
             out.append(f"Snapshot has no {label!r} row — the research JSON left that field empty")
@@ -522,7 +534,7 @@ def check_tables(sections, mode):
 
 # --- Driver ----------------------------------------------------------------------------
 
-def run(text, wanted, student_name=None):
+def run(text, wanted, student_name=None, quick=False):
     """(mode, {check: [findings]}) for one report's Markdown."""
     _, sections = parse_report(text)
     if not sections:
@@ -537,7 +549,7 @@ def run(text, wanted, student_name=None):
     if set(h for _, h, _ in sections) != set(expected_headings(mode)):
         return mode, results
     if "snapshot" in wanted:
-        results["snapshot"] = check_snapshot(sections, mode)
+        results["snapshot"] = check_snapshot(sections, mode, quick=quick)
     if "notfound" in wanted:
         results["notfound"] = check_notfound(sections, mode)
     if "sources" in wanted:
@@ -568,11 +580,11 @@ def student_name_for(md_path, slug=None):
         return None
 
 
-def check_one(md_path, wanted, slug, limit):
+def check_one(md_path, wanted, slug, limit, quick=False):
     """Lint one report, print its block, return the finding count."""
     text = md_path.read_text(encoding="utf-8")
     name = student_name_for(md_path, slug)
-    mode, results = run(text, wanted, student_name=name)
+    mode, results = run(text, wanted, student_name=name, quick=quick)
 
     total = sum(len(v) for v in results.values())
     label = md_path.relative_to(REPO_ROOT) if md_path.is_relative_to(REPO_ROOT) else md_path
@@ -601,6 +613,11 @@ def main():
     parser.add_argument("--report", help="Report slug, with or without .md (needs --student).")
     parser.add_argument("--all", action="store_true", help="Every report for --student.")
     parser.add_argument("--file", help="Path to one report .md, instead of --student/--report.")
+    parser.add_argument(
+        "--quick", action="store_true",
+        help="Report was built with build_report.py --quick (no student profile): don't flag "
+             "the 'Admission likelihood'/'Your priorities' Snapshot rows as missing.",
+    )
     parser.add_argument("--check", help=f"Comma list of checks to run (default all): {', '.join(CHECKS)}")
     parser.add_argument("--limit", type=int, default=10, help="Max findings shown per check (default 10).")
     args = parser.parse_args()
@@ -643,7 +660,7 @@ def main():
     for i, path in enumerate(paths):
         if i:
             print()
-        total += check_one(path, wanted, args.student, args.limit)
+        total += check_one(path, wanted, args.student, args.limit, quick=args.quick)
 
     if len(paths) > 1:
         print(f"\n{len(paths)} report(s), {total} finding(s) total")
