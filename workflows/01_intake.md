@@ -119,15 +119,19 @@ fine — but keep the substring in bold intact.
 - **"Any other perferences?"** (optional; PDPA-sensitive; live header keeps the site's own typo,
   "perferences" not "preferences" — `QUESTION_MAP` matches on the typo, `--check-headers` will flag it
   if it's ever fixed). **Replaced the old "Any personal needs?" checkbox 2026-09** — a consolidated
-  lifestyle checklist: **Low crime rate** (→ `needs.personal_safety`) / **4 seasons** (→
-  `needs.climate_weather`) / **Good public transport** (→ `needs.good_public_transport`, new) /
-  **Affordable living cost** (→ `needs.affordable_cost_of_living`, new) / **Good food** (→
-  `needs.food_quality`). **The old sensitive items — Halal food, Prayer facilities, Malaysian community
-  nearby, Stay close to family, disability/accessibility, mental-health/wellbeing support, LGBT-friendly
-  — do not appear anywhere on the current 42-column form.** Confirm with Evan whether that's a
-  deliberate drop or something to add back before treating a student's silence on those as "no need"
-  rather than "not asked" — `profile_template()`'s `needs` keys for them are unchanged, they'll just
-  never get populated by this form as it stands.
+  lifestyle checklist: **Low crime rate** (→ `needs.personal_safety`) / **Malaysian Community nearby**
+  (→ `needs.diaspora_community`) / **4 seasons** (→ `needs.climate_weather`) / **Good public transport**
+  (→ `needs.good_public_transport`, new) / **Affordable living cost** (→
+  `needs.affordable_cost_of_living`, new) / **Good food** (→ `needs.food_quality`). **Confirmed present
+  on the live form 2026-09-09** (two real respondents both ticked it, correctly landing on
+  `diaspora_community` via the `NEEDS_NORMALIZE` "community"/"malaysian" match) — this corrects an
+  earlier note in this file that claimed it had been dropped; that was stale, not the code. **The
+  remaining sensitive items — Halal food, Prayer facilities, Stay close to family,
+  disability/accessibility, mental-health/wellbeing support, LGBT-friendly — still do not appear
+  anywhere on the current form.** Confirm with Evan whether that's a deliberate drop or something to
+  add back before treating a student's silence on those as "no need" rather than "not asked" —
+  `profile_template()`'s `needs` keys for them are unchanged, they'll just never get populated by this
+  form as it stands.
 - **"Achievements / activities you'd want to write about in your application?"** (optional, new
   2026-08) → `profile.achievements`, free text. This exists specifically so Stage 4's "Who actually
   gets in" section and the application-prep guide can compare the student's real activities against
@@ -506,12 +510,13 @@ weights into `tools/shortlist_schema.py` — that shared file is exactly what ma
   faith/culture-neutral set (`diet_halal`, `worship_facilities`, `diaspora_community`,
   `disability_accessibility`, `wellbeing_support`, `lgbtq_friendly`, `personal_safety`,
   `climate_weather`, `food_quality`, plus `good_public_transport` / `affordable_cost_of_living`, added
-  2026-09), but **the current live form's "Any other perferences?" question only offers 5 of those
-  options** (crime→safety, seasons→climate, transport, cost, food) — the sensitive ones (halal, prayer,
-  disability, mental-health, LGBT-friendly) don't appear on the form at all right now. Only ticked
-  options become `true`; everything else stays `null` (not `false`) — these are PDPA-sensitive, so
-  absence ≠ "no need," and on the current form it may just mean "not asked." Spot-check the multi-select
-  split, same as countries.
+  2026-09), but **the current live form's "Any other perferences?" question only offers 6 of those
+  options** (crime→safety, community→diaspora, seasons→climate, transport, cost, food — confirmed
+  2026-09-09 against two real respondents, correcting an earlier "5 options, community dropped" note
+  in this file) — the remaining sensitive ones (halal, prayer, disability, mental-health,
+  LGBT-friendly) don't appear on the form at all right now. Only ticked options become `true`;
+  everything else stays `null` (not `false`) — these are PDPA-sensitive, so absence ≠ "no need," and on
+  the current form it may just mean "not asked." Spot-check the multi-select split, same as countries.
 - **Recognition has two tiers now — course-exact-match (trusted) vs free-text keyword-guess
   (flagged).** The dropdown-matched `recognition_targets` come from `COURSE_ACCREDITATION_MAP` — an
   exact lookup against one of the 38 known titles, so there's no "matched a secondary mention"
