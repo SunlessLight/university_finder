@@ -1,9 +1,10 @@
 """
 html_to_pdf.py — convert a self-contained HTML page to PDF.
 
-Built for the sales one-pager (sales/pitch/one-pager.html), which is a fully-styled A4 page
-(`@page { size: A4; margin: 0 }`, flexbox + grid). Nothing in the repo regenerated the committed
-sales/pitch/one-pager.pdf; this tool does, and works for any self-contained HTML file.
+Built for the sales poster (sales/pitch/university-research-service-poster.html), which is a
+fully-styled A4 page (`@page { size: A4; margin: 0 }`, flexbox + grid). Nothing in the repo
+regenerated the committed sales/pitch/university-research-service-poster.pdf; this tool does, and
+works for any self-contained HTML file.
 
 Engine = WeasyPrint (real CSS: flexbox/grid, @page sizing, print colors). It's reused from
 apply_prep_to_pdf.py via that tool's _load_weasyprint(), which adds the native GTK/Pango/Cairo DLL
@@ -12,8 +13,8 @@ PATH change. Rendering `filename=<input>` sets base_url to the file's own folder
 resolve.
 
 Usage:
-    python tools/html_to_pdf.py --input sales/pitch/one-pager.html
-    python tools/html_to_pdf.py --input sales/pitch/one-pager.html --output out/one-pager.pdf
+    python tools/html_to_pdf.py --input sales/pitch/university-research-service-poster.html
+    python tools/html_to_pdf.py --input sales/pitch/university-research-service-poster.html --output out/poster.pdf
 
     # --output is optional; it defaults to the input path with a .pdf suffix.
 """
