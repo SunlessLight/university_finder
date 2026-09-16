@@ -202,6 +202,8 @@ BUDGET_BAND_NORMALIZE = [
     ("1000000", 1000000),
     ("not sure", None),
     ("no fixed", None),
+    ("not a problem", None),  # current form: "Budget is not a problem" — same "no ceiling" meaning
+                               # as "above"/"not sure", just a fifth band the form gained later.
 ]
 
 
