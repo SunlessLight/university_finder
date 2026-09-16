@@ -228,6 +228,54 @@ GLOSSARY = {
     # --- Recognition, outcomes & academic structure (report terms) ------------
     # These surface mostly in the reports (build_report.py) rather than the apply
     # guides — recognition-back-home, post-study work, and department shorthand.
+    "AAU": {
+        "aliases": ["Association of American Universities"],
+        "definition": "**Association of American Universities** — an invitation-only group of the "
+                      "~70 leading research universities in North America; membership is a shorthand "
+                      "for research heavyweight.",
+    },
+    "FAFSA": {
+        "aliases": [],
+        "definition": "**Free Application for Federal Student Aid** — the US government's aid form. "
+                      "Only US citizens and permanent residents file it; international applicants file "
+                      "the CSS Profile instead.",
+    },
+    "IIE": {
+        "aliases": ["Institute of International Education"],
+        "definition": "**Institute of International Education** — publishes *Open Doors*, the official "
+                      "annual count of international students at US universities.",
+    },
+    "STARS": {
+        "aliases": [],
+        "definition": "**Self-reported Transcript and Academic Record System** — NYU's online form where "
+                      "you type in your own subjects and grades after submitting the application.",
+    },
+    "DURF": {
+        "aliases": ["Dean's Undergraduate Research Fund"],
+        "definition": "**Dean's Undergraduate Research Fund** — NYU College of Arts and Science's grant "
+                      "scheme that pays undergraduates to run their own research projects.",
+    },
+    "HFSAA": {
+        "aliases": [],
+        "definition": "**Halal Food Standards Alliance of America** — the body that certifies halal "
+                      "kitchens and dining stations on US campuses.",
+    },
+    "MUN": {
+        "aliases": ["Model UN", "Model United Nations"],
+        "definition": "**Model United Nations** — a competitive simulation of UN debate; the standard "
+                      "school and university activity for students aiming at diplomacy or international "
+                      "relations.",
+    },
+    "MOHE": {
+        "aliases": [],
+        "definition": "**Ministry of Higher Education Malaysia** — runs the federal scholarship portal "
+                      "through which JPA sponsorship is advertised and applied for.",
+    },
+    "DHS": {
+        "aliases": [],
+        "definition": "**Department of Homeland Security** — the US agency behind student visas; it "
+                      "publishes the list of degree codes that qualify for the STEM OPT extension.",
+    },
     "OPT": {
         "aliases": ["Optional Practical Training"],
         # "OPT" is also the English verb, and it is matched case-sensitively, so a cell
@@ -453,6 +501,39 @@ GLOSSARY = {
         "definition": "**International General Certificate of Secondary Education** — the international "
                       "version of the UK's GCSE, sat at around age 16. UK universities often set a "
                       "minimum GCSE or IGCSE grade in English and Maths on top of A-Level grades.",
+    },
+    "BASc": {
+        "aliases": ["Bachelor of Arts and Sciences"],
+        "definition": "**Bachelor of Arts and Sciences** — UCL's interdisciplinary undergraduate "
+                      "degree, where you pick a major pathway and a minor pathway from different "
+                      "faculties instead of one single subject.",
+    },
+    "GCSE": {
+        "aliases": [],
+        "definition": "**General Certificate of Secondary Education** — the UK exams sat at around "
+                      "age 16, one level below A-Level. Universities often set a minimum GCSE grade in "
+                      "English and Maths as a separate condition.",
+    },
+    "HESA": {
+        "aliases": ["Higher Education Statistics Agency"],
+        "definition": "**Higher Education Statistics Agency** — the UK body that runs the Graduate "
+                      "Outcomes survey, the official source for what graduates are doing 15 months "
+                      "after finishing.",
+    },
+    "TARA": {
+        "aliases": ["Test of Academic Reasoning for University Admission"],
+        "definition": "**Test of Academic Reasoning for University Admission** — an admissions test "
+                      "some UK computer science departments require on top of A-Level grades.",
+    },
+    "TMUA": {
+        "aliases": ["Test of Mathematics for University Admission"],
+        "definition": "**Test of Mathematics for University Admission** — an admissions maths test "
+                      "several UK economics and maths departments require on top of A-Level grades.",
+    },
+    "REF": {
+        "aliases": ["Research Excellence Framework"],
+        "definition": "**Research Excellence Framework** — the UK government's periodic audit that "
+                      "grades every university department on the quality of its research.",
     },
     "NSS": {
         "aliases": ["National Student Survey"],
@@ -866,6 +947,69 @@ GLOSSARY = {
         "aliases": ["Graduate Employment Survey"],
         "definition": "**Graduate Employment Survey** — Singapore's official annual survey of what "
                       "graduates earn and how fast they find work, published per university and degree.",
+    },
+    "ABA": {
+        "aliases": ["Aptitude-Based Admissions", "Aptitude Based Admissions"],
+        "definition": "**Aptitude-Based Admissions** — the Singapore scheme under which every NUS "
+                      "applicant lists achievements and co-curricular activities and answers short "
+                      "written questions, so a published grade profile is never the whole story.",
+    },
+    "CHS": {
+        "aliases": ["College of Humanities and Sciences"],
+        "definition": "**College of Humanities and Sciences** — NUS's combined arts-and-science "
+                      "college. You are admitted to the college, take a shared common curriculum, "
+                      "and declare your major inside it rather than applying to the major directly.",
+    },
+    "DSAAI": {
+        "aliases": ["Data Science and Applied AI"],
+        "definition": "**Data Science and Applied AI** — the NUS BSc (Hons) major that replaces Data "
+                      "Science and Analytics from the AY2026/27 cohort onwards, adding an applied "
+                      "artificial-intelligence spine to the statistics and computing core.",
+    },
+    "NOC": {
+        "aliases": ["NUS Overseas Colleges"],
+        "definition": "**NUS Overseas Colleges** — a six- to twelve-month placement in a global "
+                      "startup hub where you intern at a young company and take courses at a partner "
+                      "university, credited towards your NUS degree.",
+    },
+    "UPIP": {
+        "aliases": ["Undergraduate Professional Internship Programme"],
+        "definition": "**Undergraduate Professional Internship Programme** — NUS Science's paid, "
+                      "credit-bearing internship; the placement must be full-time and related to "
+                      "your major.",
+    },
+    "UROPS": {
+        "aliases": ["Undergraduate Research Opportunities Programme in Science"],
+        "definition": "**Undergraduate Research Opportunities Programme in Science** — a credited "
+                      "research project run with an NUS faculty supervisor, taken as an elective.",
+    },
+    "SEP": {
+        "aliases": ["Student Exchange Programme"],
+        "definition": "**Student Exchange Programme** — a semester or two at one of NUS's overseas "
+                      "partner universities, with the credits counting towards your NUS degree and "
+                      "tuition still paid to NUS.",
+    },
+    "CCA": {
+        "aliases": ["co-curricular activity", "co-curricular activities"],
+        "definition": "**Co-curricular activity** — clubs, sport, volunteering, competitions and "
+                      "leadership roles outside class. Singapore admissions ask you to list these, "
+                      "so they are assessed, not decoration.",
+    },
+    "Student's Pass": {
+        "aliases": ["Student Pass"],
+        "definition": "Singapore's student visa, issued by ICA. It lapses shortly after you graduate, "
+                      "so staying on to work means moving onto an Employment Pass.",
+    },
+    "ICA": {
+        "aliases": ["Immigration & Checkpoints Authority"],
+        "definition": "**Immigration & Checkpoints Authority** — Singapore's immigration agency; it "
+                      "issues and cancels the Student's Pass.",
+    },
+    "UAS": {
+        "aliases": ["University Admission Score"],
+        "definition": "**University Admission Score** — the number NUS and NTU compute from "
+                      "Singapore-Cambridge A-Level grades to rank local applicants. International "
+                      "A-Level applicants are assessed separately, against a capped quota.",
     },
 }
 
