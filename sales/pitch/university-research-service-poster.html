@@ -295,6 +295,124 @@
       color: var(--gray);
     }
 
+    /* feedback charts */
+    .fbhead {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .donut {
+      position: relative;
+      width: 25mm;
+      height: 25mm;
+      flex: 0 0 25mm;
+    }
+
+    .donut svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .donut .dval {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      line-height: 1.05;
+    }
+
+    .donut .dval b {
+      font-family: Georgia, serif;
+      font-size: 15pt;
+      color: var(--navy);
+    }
+
+    .donut .dval span {
+      font-size: 7pt;
+      color: var(--gray);
+    }
+
+    .fbq {
+      font-size: 9pt;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+
+    .legend {
+      font-size: 7.8pt;
+      color: var(--gray);
+      line-height: 1.6;
+    }
+
+    .legend i {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      margin-right: 4px;
+      vertical-align: -0.5px;
+    }
+
+    .bars {
+      margin-bottom: 9px;
+    }
+
+    .bars .btitle {
+      font-size: 7.8pt;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--gray);
+      margin-bottom: 4px;
+    }
+
+    .bar {
+      display: grid;
+      grid-template-columns: 42% 1fr;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 3px;
+      font-size: 8.4pt;
+    }
+
+    .bar .blabel {
+      color: var(--ink);
+      line-height: 1.2;
+    }
+
+    .bar .btrack {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .bar .bfill {
+      height: 9px;
+      background: var(--navy2);
+      border-radius: 1px;
+    }
+
+    .bar.top .bfill {
+      background: var(--gold);
+    }
+
+    .bar .bnum {
+      font-size: 7.8pt;
+      color: var(--gray);
+      white-space: nowrap;
+    }
+
+    .exbox blockquote.sm {
+      font-size: 9pt;
+      margin: 4px 0;
+    }
+
     /* pricing */
     .price-wrap {
       display: flex;
@@ -450,7 +568,7 @@
 <body>
   <div class="page">
 
-    <div class="kicker">Uni &amp; course research · built for Sunway Students</div>
+    <div class="kicker">Uni &amp; course research · built for Students</div>
     <h1>University & Course Researching Service</h1>
     <div class="sub">Real universities that actually fit your grades and budget — not just the famous
       names.</div>
@@ -462,7 +580,6 @@
         <div class="sn">1</div>
         <div class="stitle">Fill a 2-min form</div>
         <div class="sdesc">Your grades, your budget, which countries you're considering. Don't know the exact course?
-          It's ok! Just select the general field.
         </div>
       </div>
       <div class="step">
@@ -510,11 +627,11 @@
           <li>A full <b>PDF</b> for each uni you pick — an actual document you
             can read to decide</li>
           <li><b>Who actually gets in</b> — real grades, activities and essay angles from people who
-            got offers, not a guess</li>
+            got offers</li>
           <li>What it's <b>actually like day to day</b> — workload, the vibe, the community. </li>
           <li>Full cost, plus every scholarship worth applying for — government and company sponsors</li>
           <li>Visa, work rights after you graduate, whether it's recognised back home</li>
-          <li class="honest"><b>The part most people skip:</b> every report says why NOT to go, too. A
+          <li class="honest"><b>The part most people skip:</b> every report says why NOT to go. A
             list that only says nice things isn't one you can trust.</li>
         </ul>
       </div>
@@ -538,14 +655,14 @@
 
     </div>
 
-    <div class="sectlabel pagebreak">See it for real — not just a promise</div>
+    <div class="sectlabel pagebreak">See it for real</div>
     <div class="examples">
       <div class="exbox">
         <div class="extag">A real row from the list</div>
         <div class="row1">MIT · Mechanical Engineering (robotics track) · USA</div>
         <div class="row2">Reach (very selective) · ≈RM 1.74M total, 4 years · Recognised in Malaysia —
           supports BEM registration</div>
-        <div class="askme">Names are changed on samples. Want to see a full one? Just ask.</div>
+        <div class="askme">Want to see a full one? Just ask.</div>
       </div>
       <div class="exbox">
         <div class="extag">A real line from a report</div>
@@ -560,39 +677,92 @@
     <div class="examples">
       <div class="exbox">
         <div class="extag">On the spreadsheet</div>
-        <blockquote>"It's divided into so many parts — from the basics all the way to the small
-          stuff, like campus life and traditions. It actually helped me picture what I'd be walking
-          into."</blockquote>
-        <div class="who">— Amber, used the spreadsheet to shortlist</div>
+        <div class="fbhead">
+          <div class="donut">
+            <svg viewBox="0 0 42 42">
+              <circle cx="21" cy="21" r="16" fill="none" stroke="#e3e8ef" stroke-width="6" />
+              <circle cx="21" cy="21" r="16" fill="none" stroke="#10233f" stroke-width="6" pathLength="100"
+                stroke-dasharray="30.77 69.23" stroke-dashoffset="0" />
+              <circle cx="21" cy="21" r="16" fill="none" stroke="#1157b8" stroke-width="6" pathLength="100"
+                stroke-dasharray="46.15 53.85" stroke-dashoffset="-30.77" />
+              <circle cx="21" cy="21" r="16" fill="none" stroke="#9fb6d6" stroke-width="6" pathLength="100"
+                stroke-dasharray="23.08 76.92" stroke-dashoffset="-76.92" />
+            </svg>
+            <div class="dval"><b>4.1</b><span>out of 5</span></div>
+          </div>
+          <div>
+            <div class="fbq">How confident do you feel narrowing down your choices with it?</div>
+            <div class="legend">
+              <i style="background:#10233f"></i>5 — 4 students<br>
+              <i style="background:#1157b8"></i>4 — 6 students<br>
+              <i style="background:#9fb6d6"></i>3 — 3 students
+            </div>
+          </div>
+        </div>
+        <div class="bars">
+          <div class="btitle">Most useful column</div>
+          <div class="bar top"><span class="blabel">Course at a glance</span><span class="btrack"><span class="bfill"
+                style="width:30.8%"></span><span class="bnum">4 of 13</span></span></div>
+          <div class="bar"><span class="blabel">Entry requirements</span><span class="btrack"><span class="bfill"
+                style="width:23.1%"></span><span class="bnum">3 of 13</span></span></div>
+          <div class="bar"><span class="blabel">Total cost in ringgit</span><span class="btrack"><span class="bfill"
+                style="width:15.4%"></span><span class="bnum">2 of 13</span></span></div>
+          <div class="bar"><span class="blabel">Recognised in Malaysia</span><span class="btrack"><span class="bfill"
+                style="width:7.7%"></span><span class="bnum">1 of 13</span></span></div>
+        </div>
+        <blockquote class="sm">"There are a lot of universities I haven't seen before."</blockquote>
+        <blockquote class="sm">"It's divided into so many parts — from the basics all the way to the small
+          stuff, like campus life and traditions."</blockquote>
       </div>
-      <div class="exbox">
-        <div class="extag">On the spreadsheet</div>
-        <blockquote>"There are a lot of universities I haven't seen before."</blockquote>
-        <div class="who">— Dexin, on finding options beyond the usual names</div>
-      </div>
-    </div>
-    <div class="askme">From real feedback forms: students rate their confidence narrowing down
-      choices 4/5, and the reports 4.3/5 for time saved.</div>
 
-    <div class="sectlabel">Pricing</div>
-    <div class="price-wrap">
-      <table class="topup">
-        <caption>Price</caption>
-        <tr>
-          <td>1 country's list</td>
-          <td>RM 10</td>
-        </tr>
-        <tr>
-          <td>1 University Report</td>
-          <td>RM 15 </td>
-        </tr>
-        <tr>
-          <td>Apply guide, per country</td>
-          <td>RM 10</td>
-        </tr>
-      </table>
+      <div class="exbox">
+        <div class="extag">On the report</div>
+        <div class="fbhead">
+          <div class="donut">
+            <svg viewBox="0 0 42 42">
+              <circle cx="21" cy="21" r="16" fill="none" stroke="#e3e8ef" stroke-width="6" />
+              <circle cx="21" cy="21" r="16" fill="none" stroke="#10233f" stroke-width="6" pathLength="100"
+                stroke-dasharray="33.33 66.67" stroke-dashoffset="0" />
+              <circle cx="21" cy="21" r="16" fill="none" stroke="#1157b8" stroke-width="6" pathLength="100"
+                stroke-dasharray="50 50" stroke-dashoffset="-33.33" />
+              <circle cx="21" cy="21" r="16" fill="none" stroke="#9fb6d6" stroke-width="6" pathLength="100"
+                stroke-dasharray="16.67 83.33" stroke-dashoffset="-83.33" />
+            </svg>
+            <div class="dval"><b>4.2</b><span>out of 5</span></div>
+          </div>
+          <div>
+            <div class="fbq">How much time did it save you in your university research?</div>
+            <div class="legend">
+              <i style="background:#10233f"></i>5 — 2 students<br>
+              <i style="background:#1157b8"></i>4 — 3 students<br>
+              <i style="background:#9fb6d6"></i>3 — 1 student
+            </div>
+          </div>
+        </div>
+        <div class="bars">
+          <div class="btitle">Gave the most clarity</div>
+          <div class="bar top"><span class="blabel">Getting in &amp; your fit</span><span class="btrack"><span
+                class="bfill" style="width:83.3%"></span><span class="bnum">5 of 6</span></span></div>
+          <div class="bar"><span class="blabel">Academic structure</span><span class="btrack"><span class="bfill"
+                style="width:66.7%"></span><span class="bnum">4 of 6</span></span></div>
+          <div class="bar"><span class="blabel">Costs &amp; financial aid</span><span class="btrack"><span class="bfill"
+                style="width:33.3%"></span><span class="bnum">2 of 6</span></span></div>
+          <div class="bar"><span class="blabel">Outcomes &amp; network</span><span class="btrack"><span class="bfill"
+                style="width:33.3%"></span><span class="bnum">2 of 6</span></span></div>
+        </div>
+        <div class="bars">
+          <div class="btitle">Most interesting to read</div>
+          <div class="bar top"><span class="blabel">Culture &amp; vibe</span><span class="btrack"><span class="bfill"
+                style="width:66.7%"></span><span class="bnum">4 of 6</span></span></div>
+          <div class="bar"><span class="blabel">Student life &amp; food</span><span class="btrack"><span class="bfill"
+                style="width:50%"></span><span class="bnum">3 of 6</span></span></div>
+          <div class="bar"><span class="blabel">The city &amp; belonging</span><span class="btrack"><span class="bfill"
+                style="width:33.3%"></span><span class="bnum">2 of 6</span></span></div>
+          <div class="bar"><span class="blabel">Unique facts &amp; quirks</span><span class="btrack"><span class="bfill"
+                style="width:33.3%"></span><span class="bnum">2 of 6</span></span></div>
+        </div>
+      </div>
     </div>
-    <div class="price-note">You only pay for what you actually use.</div>
 
     <div class="cta">
       <div class="ctatext">
