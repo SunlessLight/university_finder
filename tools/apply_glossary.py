@@ -320,6 +320,170 @@ GLOSSARY = {
                       "graduate of an unrecognised engineering degree still register as a Graduate "
                       "Engineer in Malaysia.",
     },
+    "MMC": {
+        "aliases": ["Malaysian Medical Council", "Majlis Perubatan Malaysia"],
+        "definition": "**Malaysian Medical Council** — the regulator every doctor in Malaysia must "
+                      "register with. Only degrees listed in the Second Schedule of the Medical Act "
+                      "1971 let you register and start housemanship, so it is a hard gate, not a badge.",
+    },
+    "MBBS": {
+        "aliases": ["Bachelor of Medicine and Bachelor of Surgery"],
+        "definition": "**Bachelor of Medicine and Bachelor of Surgery** — the standard "
+                      "British-tradition primary medical degree, awarded as one qualification. "
+                      "In Malaysia it normally runs 5 years and is the degree that gets you to "
+                      "housemanship.",
+    },
+    "housemanship": {
+        "aliases": ["house officer", "houseman"],
+        "definition": "**Housemanship** — the supervised internship you must complete in Ministry "
+                      "of Health hospitals after graduating, across six postings, before the MMC "
+                      "will grant you full registration as a doctor.",
+    },
+    "MOH": {
+        "aliases": ["Ministry of Health Malaysia", "Kementerian Kesihatan Malaysia"],
+        "definition": "**Ministry of Health Malaysia** — runs the public hospitals where medical "
+                      "students do clinical rotations and where housemanship places are allocated.",
+    },
+    "NSR": {
+        "aliases": ["National Specialist Register"],
+        "definition": "**National Specialist Register** — Malaysia's official register of recognised "
+                      "medical specialists. A lecturer being on it means they are a practising "
+                      "specialist, not only an academic.",
+    },
+    "NEET": {
+        "aliases": ["National Eligibility cum Entrance Test"],
+        "definition": "**National Eligibility cum Entrance Test** — India's national medical entrance "
+                      "exam. Malaysian medical schools require it only from Indian-national applicants, "
+                      "who also need an Eligibility Certificate from India's National Medical Commission.",
+    },
+    "ISAT": {
+        "aliases": ["International Student Admissions Test", "International Student Admission Test"],
+        "definition": "**International Student Admissions Test** — ACER's reasoning test that "
+                      "Monash uses to rank medicine applicants. It tests thinking skills, not "
+                      "memorised biology, and your score is part of the final ranked list.",
+    },
+    "MMI": {
+        "aliases": ["Multiple Mini Interview", "Multiple Mini Interviews"],
+        "definition": "**Multiple Mini Interviews** — a circuit of short, separately scored "
+                      "interview stations, each a scenario with an examiner. It replaces one long "
+                      "panel interview so a single bad answer cannot sink the whole thing.",
+    },
+    "AMC": {
+        "aliases": ["Australian Medical Council"],
+        "definition": "**Australian Medical Council** — the body that accredits medical degrees in "
+                      "Australia. An AMC-accredited degree lets you register to practise in "
+                      "Australia and New Zealand without sitting an extra qualifying exam.",
+    },
+    "SLMC": {
+        "aliases": ["Sri Lanka Medical Council"],
+        "definition": "**Sri Lanka Medical Council** — Sri Lanka's medical regulator; its "
+                      "recognition matters only if you intend to practise there.",
+    },
+    "PBL": {
+        "aliases": ["Problem-Based Learning", "problem-based learning"],
+        "definition": "**Problem-Based Learning** — you work through a real patient case in a small "
+                      "tutorial group and go find the science you need, instead of being lectured "
+                      "it first. It rewards preparation and speaking up.",
+    },
+    "MD": {
+        "aliases": ["Doctor of Medicine"],
+        "definition": "**Doctor of Medicine** — the modern name for the primary medical degree that "
+                      "used to be called MBBS. Same job at the end: it qualifies you to start "
+                      "housemanship, it is not a research doctorate.",
+    },
+    "BMedSci": {
+        "aliases": ["Bachelor of Medical Science"],
+        "definition": "**Bachelor of Medical Science** — the first, science-heavy stage of a "
+                      "combined medical course, awarded alongside the MD at the end.",
+    },
+    "GAMSAT": {
+        "aliases": ["Graduate Medical School Admissions Test"],
+        "definition": "**Graduate Medical School Admissions Test** — the entrance test for "
+                      "applicants who already hold a degree, used instead of a school-leaver test.",
+    },
+    "MCAT": {
+        "aliases": ["Medical College Admission Test"],
+        "definition": "**Medical College Admission Test** — the US graduate-entry medical entrance "
+                      "test, accepted as an alternative to GAMSAT by some medical schools.",
+    },
+    "MUFY": {
+        "aliases": ["Monash University Foundation Year"],
+        "definition": "**Monash University Foundation Year** — Monash's own one-year pre-university "
+                      "programme, run in Malaysia at Sunway College, that feeds directly into "
+                      "Monash degrees.",
+    },
+    "MPU": {
+        "aliases": ["Mata Pelajaran Umum", "General Studies"],
+        "definition": "**Mata Pelajaran Umum** — the compulsory general-studies subjects every "
+                      "student at a Malaysian university must pass on top of their degree units.",
+    },
+    "AHPRA": {
+        "aliases": ["Australian Health Practitioner Regulation Agency"],
+        "definition": "**Australian Health Practitioner Regulation Agency** — the body you register "
+                      "with to work as a doctor in Australia; it sets its own English-test bar, "
+                      "separate from the university's.",
+    },
+    "SEACO": {
+        "aliases": ["South East Asia Community Observatory", "Southeast Asia Community Observatory"],
+        "definition": "**South East Asia Community Observatory** — Monash Malaysia's long-running "
+                      "population health research site in Segamat, Johor, which tracks the health "
+                      "of tens of thousands of residents over time.",
+    },
+    "CSJB": {
+        "aliases": ["Clinical School Johor Bahru"],
+        "definition": "**Clinical School Johor Bahru** — Monash Malaysia's teaching site next to "
+                      "Hospital Sultanah Aminah, where you spend medicine years three to five.",
+    },
+    "JCSMHS": {
+        "aliases": ["Jeffrey Cheah School of Medicine and Health Sciences"],
+        "definition": "**Jeffrey Cheah School of Medicine and Health Sciences** — the Monash "
+                      "Malaysia school that runs the medical course, named after the founder of "
+                      "the Sunway group.",
+    },
+    "SETARA": {
+        "aliases": [],
+        "definition": "**SETARA** — MOHE's official rating of Malaysian universities. Since 2022 it "
+                      "has just two tiers, Berdaya Saing (Competitive) and Berdaya Maju (Viable), "
+                      "so it tells you which side of a line a university sits on, not its rank.",
+    },
+    "CGPA": {
+        "aliases": ["Cumulative Grade Point Average"],
+        "definition": "**Cumulative Grade Point Average** — your running grade average, usually out "
+                      "of 4.0 in Malaysia. Entry rules and scholarship renewals are written in it.",
+    },
+    "EPF": {
+        "aliases": ["Employees Provident Fund", "KWSP"],
+        "definition": "**Employees Provident Fund** — Malaysia's national retirement savings fund. "
+                      "Members can withdraw from it to pay tuition for themselves or immediate "
+                      "family, which is a common way Malaysian families fund a private degree.",
+    },
+    "EMGS": {
+        "aliases": ["Education Malaysia Global Services"],
+        "definition": "**Education Malaysia Global Services** — the government-linked agency that "
+                      "handles international student passes for Malaysia and publishes official "
+                      "cost-of-living estimates.",
+    },
+    "FAIMER": {
+        "aliases": ["World Directory of Medical Schools"],
+        "definition": "**FAIMER / World Directory of Medical Schools** — the global listing of "
+                      "medical schools many foreign licensing exams check against. Being listed is "
+                      "not the same as being recognised by any particular country's regulator.",
+    },
+    "HCTM": {
+        "aliases": ["Hospital Canselor Tuanku Muhriz"],
+        "definition": "**Hospital Canselor Tuanku Muhriz** — UKM's own teaching hospital in Cheras, "
+                      "Kuala Lumpur, formerly HUKM. Medical students do their clinical years inside it.",
+    },
+    "IPTA": {
+        "aliases": [],
+        "definition": "Institusi Pengajian Tinggi Awam — Malaysia's public universities, the ones you "
+                      "apply to through UPU at the heavily subsidised local fee rate.",
+    },
+    "UD41": {
+        "aliases": [],
+        "definition": "The entry grade on Malaysia's public-sector medical officer salary scale — what "
+                      "you are paid as a houseman and then as a junior medical officer.",
+    },
     "MQA": {
         "aliases": ["Malaysian Qualifications Agency"],
         "definition": "**Malaysian Qualifications Agency** — the Malaysian body that recognises "

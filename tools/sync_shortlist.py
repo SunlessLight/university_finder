@@ -354,7 +354,8 @@ def main():
 
     output_path = student_dir / "master_list.csv"
 
-    # Load profile for feasibility checks (budget). Tolerate a not-yet-filled profile.
+    # Load profile + preferences for feasibility checks (budget, recognition_targets,
+    # location_prefs). Tolerate either being not-yet-filled.
     profile = {}
     profile_path = student_dir / "profile.json"
     if profile_path.exists():
@@ -362,6 +363,14 @@ def main():
             profile = json.loads(profile_path.read_text(encoding="utf-8"))
         except json.JSONDecodeError:
             profile = {}
+
+    preferences = {}
+    preferences_path = student_dir / "preferences.json"
+    if preferences_path.exists():
+        try:
+            preferences = json.loads(preferences_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            preferences = {}
 
     candidates = json.loads(input_path.read_text(encoding="utf-8"))
     if not isinstance(candidates, list):
@@ -385,7 +394,7 @@ def main():
             )
         except ValueError as exc:
             sys.exit(f"ERROR: {c.get('university', '?')} — {c.get('course', '?')}: {exc}")
-        flags = feasibility_flags(c, profile)
+        flags = feasibility_flags(c, profile, preferences)
         scored.append((score, tier_for(score), admission, flags, c))
 
     scored.sort(key=lambda t: t[0], reverse=True)

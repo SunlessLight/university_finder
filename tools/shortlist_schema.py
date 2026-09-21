@@ -491,7 +491,15 @@ def _parse_iso_date(text):
         return None
 
 
-def feasibility_flags(candidate, profile=None, today=None):
+# recognition_fit is scored 0-5 per workflows/03b_candidate_schema.md's professional-ladder
+# guide: 0-2 means "wrong accreditation ladder" / "not accredited" / "unverified", 3+ means
+# a genuine match to the student's recognition_targets. Below this, flag it rather than let
+# a low-weighted sub-score bury the risk — recognition is a GATE for regulated professions
+# (CLAUDE.md guardrail), not just one more weighted factor a student can be outbid on.
+RECOGNITION_RISK_MAX = 2
+
+
+def feasibility_flags(candidate, profile=None, preferences=None, today=None):
     """Return a list of hard-gate warnings. These are surfaced next to (and never
     folded into) the desirability score, so an unreachable/ineligible option stays
     visibly flagged rather than silently scoring well."""
@@ -520,6 +528,26 @@ def feasibility_flags(candidate, profile=None, today=None):
     if myr is not None and ceiling:
         if float(myr) > ceiling:
             flags.append("Over budget")
+
+    # Only meaningful when the student actually named a target ladder (e.g. MQA/BEM/Washington
+    # Accord) — an empty recognition_targets means recognition isn't a gate for this student.
+    targets = (profile.get("recognition_targets") if isinstance(profile, dict) else None) or []
+    if targets:
+        rec_score = (candidate.get("scores") or {}).get("recognition_fit")
+        try:
+            rec_score = float(rec_score) if rec_score is not None else None
+        except (TypeError, ValueError):
+            rec_score = None
+        if rec_score is not None and rec_score <= RECOGNITION_RISK_MAX:
+            flags.append(f"Recognition/accreditation risk — check {', '.join(targets)} status")
+
+    # A student who ticked both Urban and Rural hasn't told us anything about setting —
+    # flag it once per row so it surfaces in the spreadsheet rather than silently steering
+    # location_pref_fit one way or the other.
+    loc_prefs = (preferences.get("location_prefs") if isinstance(preferences, dict) else None) or []
+    loc_low = [str(p).lower() for p in loc_prefs]
+    if any("urban" in p for p in loc_low) and any("rural" in p for p in loc_low):
+        flags.append("Location preference contradictory (Urban+Rural)")
 
     return flags
 

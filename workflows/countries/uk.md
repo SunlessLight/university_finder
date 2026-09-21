@@ -44,6 +44,23 @@ pass).** Same pattern as `ucas.com` and `ox.ac.uk` — go straight to `firecrawl
 course/admissions/fees/scholarships page. The content fetched this way is still the university's own
 page, so it still counts as `source_authority: "Official page"` once read.
 
+**`cardiff.ac.uk` (the whole domain) 403s plain `WebFetch` too (learned 2026-09-18, Shean's UK
+pass).** Same pattern as `ucas.com`/`ox.ac.uk`/`ucl.ac.uk` — go straight to `firecrawl_search.py` for
+any Cardiff course/admissions/fees/scholarships page.
+
+**Cambridge charges a mandatory College fee ON TOP of the University tuition fee for international
+undergrads (learned 2026-09-18) — most aggregators and even some search snippets quote only the
+University figure.** ~GBP 13,300/yr average college fee, on top of ~GBP 46,872/yr University tuition
+(2026/27) — check both, sum them, and say so in `research_notes`. For a 4-yr MEng (the route that
+actually earns full JBM/CEng accreditation) this pushed one student's total right past their budget
+ceiling even though the headline tuition figure alone looked affordable.
+
+**A genuine named, amount-confirmed UK scholarship does turn up occasionally — don't assume the
+`scholarship_opportunity` gap above is universal.** Cardiff's Undergraduate International Excellence
+Scholarship (GBP 10,000 first-year tuition discount, confirmed 2026-09-18) is a real counter-example
+to "no named award survived discovery" — keep checking each university's own scholarships page rather
+than defaulting straight to the modest/uniform score.
+
 > **The UK has NO meets-full-need or need-blind equivalent for internationals — if `scholarship_required`
 > is a hard gate, say so plainly (learned 2026-07-28).** Unlike the USA (see `usa.md`), a wide
 > UK search (9 unis incl. Oxbridge/Imperial/UCL/Russell Group) turned up only generic "international

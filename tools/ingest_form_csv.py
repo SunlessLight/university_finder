@@ -175,35 +175,38 @@ COUNTRY_NORMALIZE = {
 SUPPORTED_DESTINATIONS = ["UK", "Australia", "USA", "Singapore", "Malaysia", "China", "Japan", "Hong Kong"]
 
 # --------------------------------------------------------------------------- #
-# Budget BANDS (the form's dropdown, 2026-07-29) -> a numeric ceiling in MYR.
+# Budget BANDS (the form's dropdown) -> a numeric ceiling in MYR.
 #
 # Budget used to be free text, and free text is what people actually type: "unsure yet",
 # "~1 million? Idk", a sentence about living costs mattering more than tuition. That string
 # went straight into total_budget / total_budget_ceiling, where downstream code expects a
 # number — and budget_ceiling() pulled the digit 1 out of "~ 1 million? Idk" and returned
-# 1.0, which would have flagged every row "Over budget". A four-option dropdown removes the
-# whole class of problem at the source (budget_ceiling() rejects sub-1000 values as a second
-# net, and the "Not sure" band is an honest null, not a zero).
+# 1.0, which would have flagged every row "Over budget". A dropdown removes the whole class
+# of problem at the source (budget_ceiling() rejects sub-1000 values as a second net).
+#
+# 2026-09-17: the live form was cut down to exactly three concrete bands — "< 500000",
+# "500000-1000000", ">1000000" — dropping the open-ended "Not sure" / "Budget is not a
+# problem" options so every new response carries a real number. No code change was needed:
+# the ">" entry below already existed defensively (added when "above" was the only worded
+# top band, in case it ever became a symbol) and now matches ">1000000" for real. The
+# "not sure" / "no fixed" / "not a problem" entries stay only to correctly parse pre-2026-09-17
+# exports if one is ever reprocessed — they can no longer be produced by the live form.
 #
 # Matched by substring on the lowercased label, first match wins — so "under" is checked
-# before the range, and the two null bands last.
+# before the range, and the null bands last.
 BUDGET_BAND_NORMALIZE = [
     ("under", 500000),
-    ("<", 500000),        # current form: "< 500,000" (symbol replaced the word "under")
-    # "Above RM 1,000,000" states a FLOOR, not a ceiling — the student has at least that much.
-    # Pinning the ceiling at 1,000,000 would flag a 1.2M programme "Over budget" for exactly the
-    # students who can afford it, so the top band carries no ceiling, same as "Not sure".
-    ("above", None),
-    (">", None),           # defensive — no live sample of the top band's symbol wording yet, but if
-                            # "above" ever becomes ">" the same way "under" became "<", the fallback
-                            # budget_ceiling() would otherwise misparse it as a numeric CEILING instead
-                            # of "no ceiling", silently flagging affluent students "Over budget".
+    ("<", 500000),         # "< 500,000" / "< 500000" (symbol replaced the word "under")
+    # ">1000000" states a FLOOR, not a ceiling — the student has at least that much. Pinning
+    # the ceiling at 1,000,000 would flag a 1.2M programme "Over budget" for exactly the
+    # students who can afford it, so the top band carries no ceiling.
+    ("above", None),       # legacy wording: "Above RM 1,000,000"
+    (">", None),           # current top band: ">1000000"
     ("1,000,000", 1000000),   # "RM 500,000 - 1,000,000" only reaches here if the above all missed
-    ("1000000", 1000000),
-    ("not sure", None),
-    ("no fixed", None),
-    ("not a problem", None),  # current form: "Budget is not a problem" — same "no ceiling" meaning
-                               # as "above"/"not sure", just a fifth band the form gained later.
+    ("1000000", 1000000),     # current middle band: "500000-1000000"
+    ("not sure", None),       # legacy — removed from the live form 2026-09-17
+    ("no fixed", None),       # legacy — removed from the live form 2026-09-17
+    ("not a problem", None),  # legacy: "Budget is not a problem" — removed from the live form 2026-09-17
 ]
 
 

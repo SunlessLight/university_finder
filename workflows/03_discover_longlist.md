@@ -343,6 +343,15 @@ computed column (`Desirability`, `Tier`, `Admission likelihood`, `Grades vs entr
   eight existing student CSVs were **not** backfilled: they predate the policy and will fail the
   completeness check until someone re-researches them. That's expected, not a regression — the policy
   applies to new students and new country passes.
+- **A row that trips 4+ `feasibility_flags()` at once can overflow the `Warnings` cell budget
+  (learned 2026-09-18, Shean's UK pass).** Each flag string is verbose by design (readable
+  standalone in a spreadsheet cell), so a row with e.g. English-short + grades-unverified +
+  over-budget + contradictory-location joined past the 120-char budget while every other row's
+  3-flag combination fit fine. Fixed by shortening the worst-offending flag's wording in
+  `feasibility_flags()` (`tools/shortlist_schema.py`) rather than truncating data — the same
+  "depth goes elsewhere, cells stay scannable" principle as the rest of this schema. If
+  `sync_shortlist.py --dry-run` reports an over-budget `Warnings` cell, shorten the flag text in
+  the shared function (it's read by every student), not just this one row.
 - **FX rates are offline, dated, and never retro-applied (learned 2026-09-05).** `FX_TO_MYR` in
   `shortlist_schema.py` is a static table with an `FX_AS_OF` stamp; `sync_shortlist.py` prints it and
   warns past `FX_STALE_AFTER_DAYS` (90). It went unreviewed from the repo's first commit until a
