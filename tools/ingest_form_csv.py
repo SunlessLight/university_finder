@@ -169,10 +169,20 @@ COUNTRY_NORMALIZE = {
     "china": "China",
     "japan": "Japan",
     "hong kong": "Hong Kong",
+    # Taiwan added 2026-09-23 (student haotowin named National Taiwan University by
+    # hand). "Chinese Taipei" is the label Taiwan competes/accredits under in several
+    # international bodies — including the Washington Accord — so it can turn up in a
+    # form answer or a source page meaning exactly the same place.
+    "taiwan": "Taiwan",
+    "chinese taipei": "Taiwan",
+    # Germany added 2026-09-23, same student (haotowin) as Taiwan. "Deutschland" is what
+    # the country calls itself and turns up on German-language source pages.
+    "germany": "Germany",
+    "deutschland": "Germany",
 }
 
 # Rendered into the "we dropped this country" message so it never drifts from the map above.
-SUPPORTED_DESTINATIONS = ["UK", "Australia", "USA", "Singapore", "Malaysia", "China", "Japan", "Hong Kong"]
+SUPPORTED_DESTINATIONS = ["UK", "Australia", "USA", "Singapore", "Malaysia", "China", "Japan", "Hong Kong", "Taiwan", "Germany"]
 
 # --------------------------------------------------------------------------- #
 # Budget BANDS (the form's dropdown) -> a numeric ceiling in MYR.

@@ -141,7 +141,8 @@ fine — but keep the substring in bold intact.
 
 **Section 3 — What you want → `preferences.json`**
 - **Which countries** would you consider — checkboxes (UK / Australia / USA / **Singapore** /
-  **Malaysia** / China / Japan / Hong Kong — **8** supported destinations; `COUNTRY_NORMALIZE` in
+  **Malaysia** / China / Japan / Hong Kong / Taiwan / Germany — **10** supported destinations;
+  `COUNTRY_NORMALIZE` in
   `tools/ingest_form_csv.py` is the source of truth for the exact tokens). **Singapore and Malaysia
   are separate** as of 2026-07-29 — they were fused into one `Singapore/Malaysia` token, which gave a
   student who ticked only Malaysia a longlist half-full of Singapore rows. Picking several is fine
@@ -402,9 +403,9 @@ weights into `tools/shortlist_schema.py` — that shared file is exactly what ma
   carries the **raw 3-tier label** ("Must have" / "Important" / "Nice to have") on the current form, not
   a 1-8 number — check the `scoring-weights` skill actually reads it that way before trusting a
   derived `weights.json` for a student ingested through the current form.
-- **Unsupported target countries are reported, not dropped.** A picked country outside the **8**
-  supported destinations (UK / Australia / USA / Singapore / Malaysia / China / Japan / Hong Kong) —
-  e.g. **Canada** or **Germany** — is left out of `target_countries` but recorded in a `_needs_review`
+- **Unsupported target countries are reported, not dropped.** A picked country outside the **10**
+  supported destinations (UK / Australia / USA / Singapore / Malaysia / China / Japan / Hong Kong /
+  **Taiwan** / **Germany**, both added 2026-09-23) — e.g. **Canada** — is left out of `target_countries` but recorded in a `_needs_review`
   line **and** `preferences.notes`, so nothing is lost silently. Decide with the student whether to
   research it out-of-band. (`SUPPORTED_DESTINATIONS` in `tools/ingest_form_csv.py` renders that message,
   so the count never drifts from `COUNTRY_NORMALIZE`.)

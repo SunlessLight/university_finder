@@ -589,6 +589,11 @@ FX_TO_MYR = {
     "JPY": 0.026,  # per 1 JPY, not per 100
     "HKD": 0.52,
     "CAD": 2.93,  # added 2026-09-03 for a Canada one-off row (Canada has no country workflow yet)
+    # TWD added 2026-09-23 when Taiwan became a supported destination. Mid-market
+    # 2026-09-23, cross-checked USD/TWD = 4.04/0.128 = 31.6 (plausible). NOT part of the
+    # 2026-09-05 ECB set above, which is why FX_AS_OF was left alone — a single added
+    # code is not a refresh of the other eleven.
+    "TWD": 0.128,
 }
 
 
