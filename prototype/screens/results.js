@@ -5,13 +5,9 @@
   'use strict';
 
   const esc = App.esc;
-  const BANDS = [['reach', 'Reach'], ['match', 'Match'], ['safety', 'Safety']];
 
   const list = (items) => items.length > 1
     ? items.slice(0, -1).join(', ') + ' and ' + items[items.length - 1] : items[0] || '';
-
-  /* "Singapore · Singapore" reads as a mistake, so a city-state is shown once. */
-  const place = (u) => u.city === u.country ? u.country : u.city + ' · ' + u.country;
 
   const verifiedBadge = (u) => u.verified
     ? '<span class="badge badge-verified">Checked on official page</span>'
@@ -22,7 +18,7 @@
       <article class="card pick pick-${u.band}" data-card="${esc(u.id)}">
         <div class="pick-top">
           <span class="badge badge-${u.band}">${esc(u.admissionLikelihood)}</span>
-          <span class="pick-place muted">${esc(place(u))}</span>
+          <span class="pick-place muted">${esc(u.place)}</span>
         </div>
         <h3>${esc(u.university)}</h3>
         <p class="pick-course">${esc(u.course)}</p>
@@ -48,8 +44,8 @@
       const unis = data.universities;
       const picks = data.top5.map(App.uni).filter(Boolean);
       const rest = unis.length - picks.length;
-      const spread = BANDS.map(([band, label]) =>
-        `<span class="badge badge-${band}">${unis.filter((u) => u.band === band).length} ${label}</span>`).join('');
+      const spread = data.bands.map((b) =>
+        `<span class="badge badge-${b.key}">${unis.filter((u) => u.band === b.key).length} ${b.label}</span>`).join('');
       const download = `<a class="btn btn-ghost" href="${esc(data.files.list.href)}" download>${esc(data.files.list.label)}</a>`;
 
       root.innerHTML = `
@@ -81,7 +77,7 @@
             <div class="card pick-more">
               <h3>${rest > 0 ? 'Plus ' + rest + ' more on your full list' : 'See them side by side'}</h3>
               <p class="muted">Every university with its cost, deadline and scholarship route. Tick the ones you want a deep report on.</p>
-              <button type="button" class="btn btn-primary" data-go="list">See the full list</button>
+              <button type="button" class="btn btn-ghost" data-go="list">See the full list</button>
             </div>
           </div>
         </section>`;

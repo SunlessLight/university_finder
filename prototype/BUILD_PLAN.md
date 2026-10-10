@@ -83,7 +83,7 @@ All 7 screen CSS files are linked in `<head>` after `styles.css`.
 `--gold #b07407`, `--free #17784a`, `--freewash #eaf6ef`; Georgia headings, Segoe UI body.
 Shared classes: `.btn`, `.btn-primary`, `.btn-ghost`, `.card`, `.grid`, `.badge`, `.badge-reach`,
 `.badge-match`, `.badge-safety`, `.badge-verified`, `.section-title`, `.muted`. List them in a
-comment at the top of the file.
+comment at the top of the file. (Session 2 added `.btn-lg` and `.btn-sm`.)
 
 **Screen CSS:** every selector starts with `.screen-<id>`, so one session's styles cannot leak into
 another's screen. Use the shared classes and tokens before inventing new ones.
@@ -122,13 +122,12 @@ Written: `index.html`, `styles.css`, `app.js` (by hand); `data.js` and the 14 `s
 - `gen.py` + `data.template.js` — `data.js` is the template with three blocks injected: the 35
   columns and 15 rows from `sample_master_list.csv`, and the 15 report sections parsed from
   `business/university_report.md`. Everything else in `data.js` (student, findings, report,
-  decision, feedback, pricing) is hand-written in the template. **Re-running `gen.py` overwrites
-  `data.js` and all 14 stubs**, so never run it now that A, B and C are cleared to start. Edit
-  `data.js` directly.
+  decision, feedback, pricing) is hand-written in the template. **Superseded by Session 2:**
+  `gen.py` now skips any screen file that exists, so it only rewrites `data.js`. Edit
+  `data.template.js` and re-run it; never hand-edit `data.js`.
 - `smoke.js` — headless-Chrome click-through over `file://`, no dependencies (Node 24 + local
-  Chrome). Asserts the stub click path, journey bar, `setState`, hash routing, the data contract,
-  and an empty console. Written against the **stubs** (clicks the first `[data-go]` on each
-  screen), so it stops being valid once real screens land.
+  Chrome). **Rewritten by Session 2 against the real screens** (see that section for what it
+  covers); the stub version described here is gone.
   Run: `mkdir -p .tmp/proto-shots && node prototype/_build/smoke.js . .tmp/proto-shots`
 
 Two bugs fixed in `smoke.js` itself during verification (the prototype was fine both times):
@@ -362,3 +361,79 @@ Found outside Session C's files, left alone:
 6. Move any screen-only constants that A, B or C reported into `data.js`.
 7. Even out anything that looks inconsistent between the three sides (button sizes, heading
    sizes, spacing). Fix, don't redesign.
+
+### Session 2 status (2026-10-10) — DONE, VERIFIED
+
+Verified 2026-10-10: `node --check` clean on every script; `smoke.js` prints `145/145 checks
+passed` (exit 0) with an empty console; screenshots of all 7 screens at 1366px and landing at
+1024px reviewed by eye (`.tmp/proto-shots/session-2/`, disposable). **Not committed. Self-review
+only, no independent code review.**
+
+Steps 1-5 passed on the prototype exactly as A, B and C left it; nothing needed fixing.
+
+Run the check: `mkdir -p .tmp/proto-shots && node prototype/_build/smoke.js . .tmp/proto-shots`
+Regenerate `data.js` after editing the template:
+`python prototype/_build/gen.py . prototype/_build/data.template.js`
+
+**`_build/smoke.js` is now the integration check for the real screens.** It covers: the click
+path 1 → 7 with the buttons a presenter uses (3 onboarding steps included); all 4 journey items
+from all 7 screens; waiting before and after skip ahead; both download links resolve to the real
+CSV and PDF on disk; cost and grades on `results` = the same rows on `list` = `DATA`; the list's
+tick / expand / cut-row behaviour; the step 6 and step 7 rules below; cold opens on `#list` and
+`#waiting`; an empty console. `--dump <file.json>` also writes every screen's markup in each of
+its 12 states, so two dumps can be diffed to prove a refactor changed nothing on screen.
+
+**Step 6 — where each reported constant went.** Proven by diffing dumps: all 12 states had
+byte-identical markup before and after the move.
+
+| Was | Now |
+|---|---|
+| `landing.js` `TIER_OF` | `DATA.deliverables[].tier` (`free` / `firstFree` / `paid`) |
+| `onboarding.js` `DEMO_WHATSAPP` | `DATA.student.whatsapp` |
+| `onboarding.js` `QUALIFICATIONS`, `EXTRA_COUNTRIES`, `OTHER_BUDGET_BANDS` | `DATA.intake.{qualifications, extraCountries, budgetBands}`. `budgetBands` is all three; `student.budget.band` is `budgetBands[0]`, so the placeholder is typed once |
+| `results.js`, `list.js`, `decide.js` `BANDS` | `DATA.bands[]` `{key, label}` |
+| `results.js`, `list.js` `place()` | `university.place` (derived per row) |
+| `list.js` `GROUPS` | `DATA.columnGroups[]` |
+| `report.js` `OPEN_SECTION` | `DATA.report.openSection` (section number, still found by title) |
+| `decide.js` `ROUNDS` | `DATA.decision.rounds` |
+| `decide.js` "one per country you apply to" | `DATA.deliverables[apply].scope` |
+
+Ruling — five reported constants stay in their screen file, because each describes that file's
+own markup and moving it would let the data and the markup fall out of step: `landing.js`
+`SHORT_QUOTE` (a character threshold for card placement), `waiting.js` `PREVIEW_KEYS` (tied to
+the 5 hard-coded ghost cells per row), `list.js` `HEADS` and `IN_ROW` (tied to the cell order in
+`row()`), `list.js` `value()` (a formatter). Cost if wrong: five small moves.
+
+**Step 7 — what was evened out.**
+
+- **Buttons were five sizes (53 / 50 / 43 / 35 / 30px tall); now three named ones** in
+  `styles.css`: standard, `.btn-lg` (landing "Start", onboarding "Next" / "Build my list") and
+  `.btn-sm` (waiting "Skip ahead", report "Jump to section"). No screen CSS sets a button size.
+- `waiting` h1 was 30.4px; now the shared 33.6px like screens 2-7. Landing's 40px headline and
+  the 30.4px university name in `decide`'s navy card are deliberate and left.
+- `onboarding`'s card started 12px lower than every other screen's content; now level.
+- `results` had two `.btn-primary`; the one in the last tile is now `.btn-ghost`. `smoke.js`
+  asserts at most one primary per screen.
+- **Top bar no longer overflows at 1024px** (Session C's finding): a `max-width: 1100px` rule in
+  `styles.css` tightens the journey bar. Holds down to about 940px.
+- **UNSW's deadline read "Rolling" on `list` and "To confirm" on `decide`** (Session B's
+  finding). `DATA.decision.deadlines[].rolling` is new; the `decide` tile says "Rolling" when
+  every entry under it is rolling. The "Confirm the exact date" badge stays.
+
+Left as they are, on purpose:
+
+- `.screen-list` is 1300px wide against 1080px elsewhere, so the top bar's edges do not line up
+  with the table. The 8-column table needs the width.
+- `decide` has no `.btn-primary` (it is the end of the path).
+- `results` / `report` / `decide` read the nickname from `DATA.student`; `waiting` reads what was
+  typed in onboarding. They differ only if the presenter retypes the name live.
+- `decide` still reformats ISO dates at render time (`withDates()`); an opened `list` row shows
+  the same `keyDeadline` text raw, as the spreadsheet has it.
+- Truncated sample cells (e.g. NUS `scholarshipAndPortal` = "Two realistic routes. (1)") come
+  from the sample CSV outside `prototype/`.
+
+Incident, for the record: `gen.py` was run unguarded once this session (a failed patch followed by
+the generator on the next shell line) and overwrote all 14 screen files with stubs. They were
+restored from git (commit `1bd2c84`) and confirmed byte-identical to a pre-session backup before
+any other edit. The guard described above is the fix; it was then verified by a run that reported
+"0 written, 14 existing screen files left alone".

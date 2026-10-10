@@ -14,9 +14,14 @@
  *
  * window.DATA
  *   brand         { name, tagline }
- *   student       { nickname, isSample, sampleNote, qualification, grades, subjects[], course,
- *                   countries[], budget { band, ceilingMyr }, scholarshipNeeded, priorities[] }
+ *   student       { nickname, isSample, sampleNote, whatsapp, qualification, grades, subjects[],
+ *                   course, countries[], budget { band, ceilingMyr }, scholarshipNeeded, priorities[] }
+ *   intake        { qualifications[], extraCountries[], budgetBands[] } the choices the sign-up
+ *                   form offers besides the sample student's own answers
+ *   bands[]       { key, label } reach / match / safety, in display order
  *   columns[]     { key, label } for all 35 spreadsheet columns, in spreadsheet order
+ *   columnGroups[] { title, keys[] } how those columns group when a list row is opened. A column
+ *                   named in no group falls into the last one
  *   universities[] one object per spreadsheet row: the 35 column keys, plus
  *                   id            stable id, e.g. "mit"
  *                   shortName     "MIT"
@@ -24,14 +29,17 @@
  *                                 with the .badge-<band> classes)
  *                   verified      true when infoSource is "Official page"
  *                   deadlineDate  first YYYY-MM-DD in keyDeadline, or null
+ *                   place         "City · Country" (a city-state is named once: "Singapore")
  *   top5[]        university ids for the results cards (a Reach / Match / Safety spread)
  *   findings[]    one-line "what we found" strings, computed from the rows
- *   deliverables[] { id, name, oneLine } the three things a student gets
+ *   deliverables[] { id, name, oneLine, tier } the three things a student gets. tier is "free",
+ *                   "firstFree" or "paid"; the Apply Guide also has scope ("one per country...")
  *   report        MIT: { universityId, title, sampleNote, pages, questions[], summary[{label,value}],
- *                   sections[{n,title,tells,question}], whyHere[{theme,text}],
- *                   whyHesitate[{theme,text}], pullQuote{text,source} }
- *   decision      { recommendedId, headline, balance{reach,match,safety},
- *                   plan[{id,round,reason}], deadlines[{universityId,university,date,what,text,confirmed}],
+ *                   sections[{n,title,tells,question}], openSection (the n of the section shown
+ *                   in full), whyHere[{theme,text}], whyHesitate[{theme,text}], pullQuote{text,source} }
+ *   decision      { recommendedId, headline, balance{reach,match,safety}, rounds{early,regular},
+ *                   plan[{id,round,reason}],
+ *                   deadlines[{universityId,university,date,rolling,what,text,confirmed}],
  *                   applySteps[{title,detail}], openRisks[] }
  *   feedback      { label, list{...}, report{...} } exactly as printed on the poster
  *   pricing       { free{label,items[]}, paid{label,items[]}, reportRule{freeCount,text}, pricePerReport }
@@ -67,25 +75,54 @@
       : /^match/i.test(u.admissionLikelihood) ? 'match' : 'safety';
     u.verified = u.infoSource === 'Official page';
     u.deadlineDate = (u.keyDeadline.match(ISO_DATE) || [null])[0];
+    /* "Singapore · Singapore" reads as a mistake, so a city-state is shown once. */
+    u.place = u.city === u.country ? u.country : u.city + ' · ' + u.country;
   });
+
+  const bands = [
+    { key: 'reach', label: 'Reach' },
+    { key: 'match', label: 'Match' },
+    { key: 'safety', label: 'Safety' }
+  ];
+
+  /* How the spreadsheet columns group when a list row is opened. Titles only: each column's
+     label and value still come from COLUMNS and the row. */
+  const columnGroups = [
+    { title: 'The course', keys: ['courseAtAGlance', 'studentLife', 'intake'] },
+    { title: 'Getting in', keys: ['entryRequirements', 'studentGrades', 'englishReq', 'howToApply', 'keyDeadline'] },
+    { title: 'What it costs', keys: ['annualTuition', 'totalTuition', 'estLivingPerYear', 'durationYears', 'moneyToShowVisa'] },
+    { title: 'Scholarships', keys: ['scholarshipAndPortal', 'scholarshipCoverage', 'scholarshipCompetitiveness', 'howToGetScholarship'] },
+    { title: 'After you graduate', keys: ['workRightsAfterGraduating', 'recognisedInMalaysia'] },
+    { title: 'How it ranks', keys: ['subjectRank', 'overallRank', 'desirability', 'tier', 'listStatus'] },
+    { title: 'Good to know', keys: [] }
+  ];
 
   /* ---- Student (anonymised sample) ---- */
 
   const priorities = ['Scholarship', 'Hands-on experience', 'Ranking', 'Location', 'Employability',
     'Recognition (hard gate)'];
 
+  /* What the sign-up form offers. All placeholder choices for the demo, none are facts about
+     the sample student. budgetBands are the intake form's three bands, lowest first. */
+  const intake = {
+    qualifications: ['A-Levels', 'STPM', 'IB', 'UEC', 'Foundation'],
+    extraCountries: ['Hong Kong', 'Germany', 'Taiwan'],
+    budgetBands: ['Under RM 500,000', 'RM 500,000 to 1,000,000', 'Above RM 1,000,000']
+  };
+
   const student = {
     nickname: 'Arif',
     isSample: true,
     sampleNote: 'Sample student. A real end-to-end search with the name, school and family finances removed.',
-    qualification: 'A-Levels',
+    whatsapp: '012-345 6789',   /* made up, so the sign-up form has something to show */
+    qualification: intake.qualifications[0],
     grades: ROWS[0].studentGrades,
     subjects: ['Maths', 'Further Maths', 'Physics', 'Chemistry'],
     course: 'Mechanical Engineering (robotics)',
     countries: ROWS.map((u) => u.country).filter((c, i, all) => all.indexOf(c) === i),
     /* The sample pack only says "a lower-income band". This is the intake form's lowest budget
        option, used so the onboarding screen has something to pre-fill. */
-    budget: { band: 'Under RM 500,000', ceilingMyr: 500000 },
+    budget: { band: intake.budgetBands[0], ceilingMyr: 500000 },
     scholarshipNeeded: true,
     priorities: priorities
   };
@@ -119,12 +156,13 @@
   /* ---- The three deliverables (names from the poster, one-liners from service-tiers.md) ---- */
 
   const deliverables = [
-    { id: 'list', name: 'The List',
+    { id: 'list', name: 'The List', tier: 'free',
       oneLine: 'Know your real options, costed in ringgit and sorted into reaches and safeties.' },
-    { id: 'report', name: 'The Report',
+    { id: 'report', name: 'The Report', tier: 'firstFree',
       oneLine: 'For your favourites: can I get in, will I belong, and what will it take?' },
-    { id: 'apply', name: 'The Apply Guide',
-      oneLine: 'Now go do it: every deadline in one place, every application costed and checklisted.' }
+    { id: 'apply', name: 'The Apply Guide', tier: 'paid',
+      oneLine: 'Now go do it: every deadline in one place, every application costed and checklisted.',
+      scope: 'one per country you apply to' }
   ];
 
   /* ---- Report (MIT) ---- */
@@ -151,6 +189,7 @@
       { label: 'Your priorities', value: priorities.map((p, i) => (i + 1) + '. ' + p).join(' · ') }
     ],
     sections: REPORT_SECTIONS,
+    openSection: (REPORT_SECTIONS.find((s) => /why here/i.test(s.title)) || { n: null }).n,
     whyHere: [
       { theme: 'Scholarship — your top priority',
         text: 'The best answer on your entire list, and not close. Need-blind for internationals, meets 100% of need with grants and no loans, zero expected parent contribution at your family\'s income.' },
@@ -212,6 +251,7 @@
       universityId: u.id,
       university: u.shortName,
       date: date,
+      rolling: !date && /^rolling/i.test(u.keyDeadline),
       what: p.round === 'early' ? 'Early round application' : 'Application deadline',
       text: u.keyDeadline,
       confirmed: !!date && !/approx|confirm|~/i.test(u.keyDeadline)
@@ -225,6 +265,7 @@
     recommendedId: mit.id,
     headline: `Put ${mit.shortName} first, and make sure the rest of your list carries the weight.`,
     balance: balance,
+    rounds: { early: 'Early round', regular: 'Regular round' },
     plan: plan,
     deadlines: deadlines,
     applySteps: [
@@ -332,7 +373,10 @@
       tagline: 'Real universities that actually fit your grades and budget — not just the famous names.'
     },
     student: student,
+    intake: intake,
+    bands: bands,
     columns: COLUMNS,
+    columnGroups: columnGroups,
     universities: ROWS,
     top5: top5,
     findings: findings,

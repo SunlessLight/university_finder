@@ -1,6 +1,10 @@
-"""One-off generator for prototype/data.js and the 14 screen stubs (Session 1).
+"""Generator for prototype/data.js (and, on a first run only, the 14 screen stubs).
 
 usage: python gen.py <repo_root> <data_template>
+
+data.js is always rewritten from the template: edit data.template.js and re-run, never hand-edit
+data.js. A screen file that already exists is never touched (the real screens replaced the stubs
+on 2026-10-10; an unguarded re-run that day overwrote all 14 and they had to come back from git).
 """
 import csv
 import json
@@ -134,6 +138,7 @@ SCREENS = [
      "Back to the start", "landing"),
 ]
 (proto / "screens").mkdir(exist_ok=True)
+written = 0
 for n, (sid, owner, heading, line, label, nxt) in enumerate(SCREENS, 1):
     if sid == "waiting":
         action = ("      '<button type=\"button\" class=\"btn btn-ghost stub-skip\" data-skip>Skip ahead (demo)</button>' +\n")
@@ -166,8 +171,12 @@ for n, (sid, owner, heading, line, label, nxt) in enumerate(SCREENS, 1):
         f"/* Screen {n} of 7: {sid}. Owner: Session {owner}.\n"
         f"   Every selector in this file must start with .screen-{sid} so nothing leaks into\n"
         f"   another screen. Use the shared classes and tokens in ../styles.css first. */\n")
-    (proto / "screens" / f"{sid}.js").write_text(js_text, encoding="utf-8", newline="\n")
-    (proto / "screens" / f"{sid}.css").write_text(css_text, encoding="utf-8", newline="\n")
+    for ext, text in (("js", js_text), ("css", css_text)):
+        target = proto / "screens" / f"{sid}.{ext}"
+        if target.exists():  # a real screen lives here now: never overwrite it
+            continue
+        target.write_text(text, encoding="utf-8", newline="\n")
+        written += 1
 
 print(f"data.js: {len(rows)} rows x {len(COLUMNS)} columns, {len(sections)} report sections")
-print(f"stubs: {len(SCREENS) * 2} files")
+print(f"stubs: {written} written, {len(SCREENS) * 2 - written} existing screen files left alone")

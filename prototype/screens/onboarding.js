@@ -6,20 +6,13 @@
    inputs update it in place, without a re-render, so the keyboard focus stays where it is; only
    moving between steps calls App.setState.
 
-   Screen-only constants (not in DATA; named here so Session 2 can move them):
-     DEMO_WHATSAPP       placeholder phone number
-     QUALIFICATIONS      the other qualification choices
-     EXTRA_COUNTRIES     countries offered but not picked by the sample student
-     OTHER_BUDGET_BANDS  the intake form's other two budget bands */
+   The choices offered besides the sample student's own answers (qualifications, extra
+   countries, budget bands) come from DATA.intake. */
 (function () {
   'use strict';
 
   const esc = App.esc;
 
-  const DEMO_WHATSAPP = '012-345 6789';
-  const QUALIFICATIONS = ['A-Levels', 'STPM', 'IB', 'UEC', 'Foundation'];
-  const EXTRA_COUNTRIES = ['Hong Kong', 'Germany', 'Taiwan'];
-  const OTHER_BUDGET_BANDS = ['RM 500,000 to 1,000,000', 'Above RM 1,000,000'];
   const TOP_PRIORITIES = 3;
 
   const STEPS = [
@@ -31,7 +24,7 @@
   function defaults(student) {
     return {
       nickname: student.nickname,
-      whatsapp: DEMO_WHATSAPP,
+      whatsapp: student.whatsapp,
       qualification: student.qualification,
       grades: student.grades,
       course: student.course,
@@ -75,22 +68,24 @@
       </div>`;
   }
 
-  function aboutFields(form, student) {
+  function aboutFields(form, data) {
+    const student = data.student;
     return textField(form, 'nickname', 'What should we call you?') +
       textField(form, 'whatsapp', 'WhatsApp number', { type: 'tel', inputmode: 'tel', hint: 'Your list is sent here. Nothing else is.' }) +
-      chipField(form, 'qualification', 'What are you studying now?', withValue(QUALIFICATIONS, student.qualification)) +
+      chipField(form, 'qualification', 'What are you studying now?', withValue(data.intake.qualifications, student.qualification)) +
       textField(form, 'grades', 'Your grades', { hint: student.subjects.join(', ') + '. Predicted grades are fine.' });
   }
 
-  function wantFields(form, student) {
+  function wantFields(form, data) {
+    const student = data.student;
     const priorities = student.priorities.map((p) => ({ value: p, label: p.replace(/\s*\(.*\)$/, '') }));
     return textField(form, 'course', 'What do you want to study?') +
-      chipField(form, 'countries', 'Where would you go?', student.countries.concat(EXTRA_COUNTRIES), { hint: 'Pick as many as you like.' }) +
+      chipField(form, 'countries', 'Where would you go?', student.countries.concat(data.intake.extraCountries), { hint: 'Pick as many as you like.' }) +
       chipField(form, 'priorities', 'What matters most to you?', priorities, { hint: 'Pick your top ' + TOP_PRIORITIES + '.' });
   }
 
-  function moneyFields(form, student) {
-    return chipField(form, 'budget', 'Total budget for the whole degree', withValue(OTHER_BUDGET_BANDS, student.budget.band),
+  function moneyFields(form, data) {
+    return chipField(form, 'budget', 'Total budget for the whole degree', withValue(data.intake.budgetBands, data.student.budget.band),
         { big: true, hint: 'Fees and living costs together, for all the years.' }) +
       chipField(form, 'scholarship', 'Do you need a scholarship to go?',
         [{ value: 'yes', label: 'Yes, I need one' }, { value: 'no', label: 'No' }], { big: true });
@@ -121,13 +116,13 @@
           <h1 tabindex="-1">${esc(step.title)}</h1>
           <p class="ob-lede muted">${esc(step.lede)}</p>
 
-          ${step.fields(form, data.student)}
+          ${step.fields(form, data)}
 
           <div class="ob-actions">
             ${n > 1 ? '<button type="button" class="btn btn-ghost" data-back>Back</button>' : '<span></span>'}
             ${last
-              ? '<button type="submit" class="btn btn-primary ob-next" data-go="waiting">Build my list</button>'
-              : '<button type="submit" class="btn btn-primary ob-next">Next</button>'}
+              ? '<button type="submit" class="btn btn-primary btn-lg ob-next" data-go="waiting">Build my list</button>'
+              : '<button type="submit" class="btn btn-primary btn-lg ob-next">Next</button>'}
           </div>
         </form>
         <p class="ob-foot muted">About 2 minutes. No account, no login.</p>`;

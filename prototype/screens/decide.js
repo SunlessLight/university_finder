@@ -5,8 +5,6 @@
   'use strict';
 
   const esc = App.esc;
-  const BANDS = [['reach', 'Reach'], ['match', 'Match'], ['safety', 'Safety']];
-  const ROUNDS = { early: 'Early round', regular: 'Regular round' };
 
   /* DATA keeps dates in year-month-day form inside its sentences; show them the way
      App.fmt.date does. */
@@ -51,7 +49,7 @@
           <p class="dc-pick-name">
             <strong>${esc(uni.shortName)}</strong>
             <span class="badge badge-${uni.band}">${esc(uni.admissionLikelihood)}</span>
-            <span class="dc-round">${ROUNDS[pick.round] || esc(pick.round)}</span>
+            <span class="dc-round">${esc(decision.rounds[pick.round] || pick.round)}</span>
             ${uni.id === decision.recommendedId ? '<span class="dc-first">First choice</span>' : ''}
           </p>
           <p class="muted dc-pick-course">${esc(uni.course)} · ${esc(uni.country)}</p>
@@ -65,7 +63,8 @@
       </li>`;
   }
 
-  /* One calendar entry per date, so universities sharing a deadline sit under one tile. */
+  /* One calendar entry per date, so universities sharing a deadline sit under one tile.
+     No date: "Rolling" when the row says so (the same word the list uses), else "To confirm". */
   function calendar(deadlines) {
     const groups = [];
     deadlines.forEach((d) => {
@@ -78,7 +77,7 @@
       return `<li class="dc-day${i === 0 ? ' is-next' : ''}">
           <div class="dc-tile">${parts
             ? `<span class="dc-tile-day">${parts[0]}</span><span class="dc-tile-month">${parts.slice(1).join(' ')}</span>`
-            : `<span class="dc-tile-open">${App.fmt.date(g.date)}</span>`}</div>
+            : `<span class="dc-tile-open">${g.items.every((d) => d.rolling) ? 'Rolling' : App.fmt.date(g.date)}</span>`}</div>
           <div class="dc-day-items">
             ${i === 0 ? '<p class="dc-next-label">First deadline</p>' : ''}
             ${g.items.map((d) => `<div class="dc-deadline" data-deadline="${esc(d.universityId)}">
@@ -115,7 +114,7 @@
               <h2>${decision.plan.length} applications, balanced on purpose</h2>
             </div>
             <p class="dc-balance">
-              ${BANDS.map(([band, label]) => `<span class="badge badge-${band}">${decision.balance[band]} ${label}</span>`).join('')}
+              ${data.bands.map((b) => `<span class="badge badge-${b.key}">${decision.balance[b.key]} ${b.label}</span>`).join('')}
             </p>
           </div>
           <ol class="card dc-plan">
@@ -157,7 +156,7 @@
             <p class="section-title">Going deeper</p>
             <h2>${esc(guide.name)} <span class="badge dc-paid">${esc(data.pricing.paid.label)}</span></h2>
             <p>${esc(guide.oneLine)}</p>
-            <p class="muted">The steps on this page are the outline. The guide is the full version, one per country you apply to.</p>
+            <p class="muted">The steps on this page are the outline. The guide is the full version, ${esc(guide.scope)}.</p>
           </section>` : ''}
         </div>
 

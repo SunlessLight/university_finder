@@ -108,7 +108,7 @@
             <div class="wt-actions">
               ${ready
                 ? '<button type="button" class="btn btn-primary" data-go="results">See your list</button>'
-                : '<button type="button" class="btn btn-ghost wt-skip" data-skip>Skip ahead (demo)</button>'}
+                : '<button type="button" class="btn btn-ghost btn-sm wt-skip" data-skip>Skip ahead (demo)</button>'}
             </div>
           </section>
           ${preview(data, ready)}

@@ -1,20 +1,17 @@
 /* Screen 1 of 7: landing. Owner: Session A.
    The pitch, a peek at a real list, the three deliverables, early-tester feedback, and one
-   button into onboarding.
-
-   Screen-only constant (not in DATA; named here so Session 2 can move it):
-     TIER_OF  which pricing tier each deliverable sits in. The words come from DATA.pricing. */
+   button into onboarding. Which pricing tier a deliverable sits in is its `tier` in DATA; the
+   words for each tier come from DATA.pricing. */
 (function () {
   'use strict';
 
   const esc = App.esc;
 
-  const TIER_OF = { list: 'free', report: 'firstFree', apply: 'paid' };
   const PEEK_BANDS = ['reach', 'match', 'safety'];
   const SHORT_QUOTE = 120;   // characters; shorter quotes sit under their score card
 
-  function tierTag(id, pricing) {
-    const tier = TIER_OF[id];
+  function tierTag(d, pricing) {
+    const tier = d.tier;
     if (tier === 'paid') return { cls: 'is-paid', text: pricing.paid.label };
     if (tier === 'free') return { cls: 'is-free', text: pricing.free.label };
     const n = pricing.reportRule.freeCount;
@@ -51,7 +48,7 @@
   }
 
   function deliverable(d, i, pricing) {
-    const tag = tierTag(d.id, pricing);
+    const tag = tierTag(d, pricing);
     return `
       <article class="card ld-deliverable">
         <div class="ld-deliverable-head">
@@ -113,7 +110,7 @@
             <h1>${esc(data.brand.tagline)}</h1>
             <p class="ld-lede">Fill in a 2-minute form. We research the universities that fit you, cost each
               whole degree in ringgit, and send the list to your WhatsApp.</p>
-            <button type="button" class="btn btn-primary ld-start" data-go="onboarding">Start, 2 minutes</button>
+            <button type="button" class="btn btn-primary btn-lg ld-start" data-go="onboarding">Start, 2 minutes</button>
             <p class="ld-hero-note muted">No account, no login.</p>
           </div>
           ${peek(data)}

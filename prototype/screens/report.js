@@ -5,7 +5,6 @@
   'use strict';
 
   const esc = App.esc;
-  const OPEN_SECTION = /why here/i;   /* the one section this screen shows in full */
 
   function names(list) {
     return list.length > 1 ? list.slice(0, -1).join(', ') + ' and ' + list[list.length - 1] : list[0] || '';
@@ -22,7 +21,7 @@
   }
 
   function sectionRow(s, report) {
-    const open = OPEN_SECTION.test(s.title);
+    const open = s.n === report.openSection;   /* the one section this screen shows in full */
     return `<li class="rp-section${open ? ' is-open' : ''}" data-section="${s.n}">
         <span class="rp-num">${s.n}</span>
         <div class="rp-section-text">
@@ -42,7 +41,7 @@
       const report = data.report;
       const uni = App.uni(report.universityId);
       const rule = data.pricing.reportRule;
-      const open = report.sections.find((s) => OPEN_SECTION.test(s.title));
+      const open = report.sections.find((s) => s.n === report.openSection);
       const alsoPicked = state.picked.filter((id) => id !== uni.id).map(App.uni).filter(Boolean)
         .map((u) => u.shortName);
 
@@ -101,7 +100,7 @@
               <p class="section-title">The rest of the report</p>
               <h2>${report.sections.length} sections, one opened here</h2>
             </div>
-            ${open ? `<button type="button" class="btn btn-ghost rp-jump" data-jump>Jump to section ${open.n}: ${esc(open.title.toLowerCase())}</button>` : ''}
+            ${open ? `<button type="button" class="btn btn-ghost btn-sm rp-jump" data-jump>Jump to section ${open.n}: ${esc(open.title.toLowerCase())}</button>` : ''}
           </div>
           <ol class="card rp-sections">
             ${report.sections.map((s) => sectionRow(s, report)).join('')}

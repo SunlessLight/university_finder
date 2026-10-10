@@ -11,38 +11,27 @@
   'use strict';
 
   const esc = App.esc;
-  const BANDS = [['reach', 'Reach'], ['match', 'Match'], ['safety', 'Safety']];
   const HEADS = ['Report', 'University', 'Course', 'Likelihood', 'Grades vs bar', 'Total, whole degree',
     'Deadline', 'Official page'];
 
-  /* Columns the collapsed row already shows; the detail panel shows all the others. */
+  /* Columns the collapsed row already shows; the detail panel shows all the others, grouped the
+     way DATA.columnGroups says. HEADS and IN_ROW stay here because they describe this file's
+     own row markup: the cells in row() below are in exactly this order. */
   const IN_ROW = ['university', 'course', 'country', 'city', 'admissionLikelihood', 'gradesVsEntryBar',
     'approxTotalMyr', 'infoSource', 'warnings'];
 
-  /* How the detail panel groups the remaining spreadsheet columns. Layout only: labels and
-     values come from DATA.columns and the row. A column not named here lands in the last group. */
-  const GROUPS = [
-    { title: 'The course', keys: ['courseAtAGlance', 'studentLife', 'intake'] },
-    { title: 'Getting in', keys: ['entryRequirements', 'studentGrades', 'englishReq', 'howToApply', 'keyDeadline'] },
-    { title: 'What it costs', keys: ['annualTuition', 'totalTuition', 'estLivingPerYear', 'durationYears', 'moneyToShowVisa'] },
-    { title: 'Scholarships', keys: ['scholarshipAndPortal', 'scholarshipCoverage', 'scholarshipCompetitiveness', 'howToGetScholarship'] },
-    { title: 'After you graduate', keys: ['workRightsAfterGraduating', 'recognisedInMalaysia'] },
-    { title: 'How it ranks', keys: ['subjectRank', 'overallRank', 'desirability', 'tier', 'listStatus'] },
-    { title: 'Good to know', keys: [] }
-  ];
-
-  const place = (u) => u.city === u.country ? u.country : u.city + ' · ' + u.country;
   const isCut = (u) => u.listStatus === 'Rejected';
   const has = (v) => v !== '' && v != null;
 
-  function groupsFor(columns) {
+  /* A column named in no group lands in the last one. */
+  function groupsFor(columns, groups) {
     const byKey = {};
     columns.forEach((c) => { byKey[c.key] = c; });
-    const placed = IN_ROW.concat(...GROUPS.map((g) => g.keys));
+    const placed = IN_ROW.concat(...groups.map((g) => g.keys));
     const leftover = columns.filter((c) => !placed.includes(c.key));
-    return GROUPS.map((g, i) => ({
+    return groups.map((g, i) => ({
       title: g.title,
-      cols: g.keys.map((k) => byKey[k]).filter(Boolean).concat(i === GROUPS.length - 1 ? leftover : [])
+      cols: g.keys.map((k) => byKey[k]).filter(Boolean).concat(i === groups.length - 1 ? leftover : [])
     }));
   }
 
@@ -94,7 +83,7 @@
           <button type="button" class="row-toggle" aria-expanded="${open}"${open ? ` aria-controls="detail-${esc(u.id)}"` : ''}>
             <span class="chev" aria-hidden="true"></span><span>${esc(u.university)}</span>
           </button>
-          <span class="uni-sub muted">${esc(place(u))}</span>
+          <span class="uni-sub muted">${esc(u.place)}</span>
           ${cut ? '<span class="uni-sub tag-cut">Cut from your list. Open the row to see why.</span>' : ''}
           ${u.id === ctx.sampleId ? '<span class="uni-sub tag-sample">Sample report ready</span>' : ''}
         </td>
@@ -151,12 +140,12 @@
       const ctx = {
         picked: state.picked || [],
         open: state.listOpen || [],
-        groups: groupsFor(data.columns),
+        groups: groupsFor(data.columns, data.columnGroups),
         warningsLabel: (data.columns.find((c) => c.key === 'warnings') || { label: 'Warning' }).label,
         sampleId: data.report.universityId
       };
-      const spread = BANDS.map(([band, label]) =>
-        `<span class="badge badge-${band}">${unis.filter((u) => u.band === band).length} ${label}</span>`).join('');
+      const spread = data.bands.map((b) =>
+        `<span class="badge badge-${b.key}">${unis.filter((u) => u.band === b.key).length} ${b.label}</span>`).join('');
 
       root.innerHTML = `
         <header class="head">
