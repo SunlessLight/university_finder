@@ -1,6 +1,23 @@
 # Intake plan — match returning students by email, not nickname
 
-_Written 2026-09-23. Execute in a fresh session (CLAUDE.md rule 6). Not yet executed._
+_Written 2026-09-23. **EXECUTED 2026-09-23** — all 5 changes shipped, all 5 verification steps
+passed. Kept for incident history, not an open task._
+
+**Two deviations from the plan as written, both found during execution:**
+
+1. **The plan's regex captured trailing sentence punctuation.** Six of the 25 legacy profiles read
+   `Contact: a@b.com. Finalized 2026-...` because a finalize note was appended as a new sentence, so
+   `Contact:\s*([^\s,]+@[^\s,]+)` returned `a@b.com.` — which would never match a real
+   re-submission. Fixed with a shared `_normalize_email()` in `ingest_form_csv.py` (strip trailing
+   `.,;:)]}>'"`, lowercase), used by both the guard and the backfill. Note the dry-run's *counts*
+   (25 filled / 4 None) matched the plan exactly; only reading the values exposed this.
+2. **The guard also covers two rows sharing an email inside one CSV**, not just a match against
+   disk. Same bug, same run: two rows, one email, two nicknames, two folders. Mirrors the existing
+   `seen_slugs` in-CSV check, including the fact that `--force` does not override it.
+
+**Also found:** `tofu` and `zephry` both carry Evan's own email, so his own form test submissions
+now trip the guard. Use a plus-address for test rows.
+
 
 ## Problem
 

@@ -47,9 +47,12 @@ fine — but keep the substring in bold intact.
   - **Race/ethnicity → `profile.ethnicity`** (PDPA-sensitive). Captured because it drives
     **scholarship eligibility** in Malaysia (e.g. Bumiputra-only vs open funds) — the agent uses it as a
     research signal in Stage 3/4. It is **never** a desirability-score input.
-  - **The respondent's email is stored**, not just used to dedupe: the tool writes it into
-    `profile.notes` as `Contact: <email>` (PDPA-sensitive, same class as the rest of the data bank —
-    it stays under gitignored `data/students/`).
+  - **The respondent's email is the identity key.** The tool writes it to
+    **`profile.contact_email`** (structured, added 2026-09-23) *and* keeps the legacy
+    `Contact: <email>` line in `profile.notes`. The structured field is what the re-submission guard
+    in step 2 matches on; the notes line is the fallback for profiles ingested before that date.
+    PDPA-sensitive, same class as the rest of the data bank — it stays under gitignored
+    `data/students/`.
   - **`home_country` always stays "Malaysia".** The tool never overwrites it. *(A legacy form asked
     "where do you want to **live and work after** graduating"; the current form dropped it, and
     `intent_to_migrate` comes from the "work abroad" question in Section 2 instead. If you ever
@@ -255,6 +258,21 @@ Four commands, in this order. Steps 1-3 are safe to repeat; step 4 is the one th
    The tool creates `data/students/<slug>/{profile.json,preferences.json,reports/}` per consenting
    respondent, copies budget/scholarship into **both** files, and prints a per-student
    **"Needs agent review"** list. Add `--force` only to intentionally overwrite an existing folder.
+   - **A re-submission by an existing email is skipped, and the skip names the existing slug** —
+     e.g. `email already belongs to student 'ng-kai-wang' (already on disk) — likely a re-submission`.
+     The slug comes from the **nickname**, so a returning student who retypes it ("Ng Kai Wang" →
+     "NgKW") used to sail past both slug checks and silently earn a second folder (hit for real
+     2026-09-23). Matching is on `profile.contact_email`, case-insensitive, falling back to the
+     `Contact:` line in `notes` for older profiles; students with no email recorded never match,
+     which is correct. It **skips, never overwrites** — the existing folder holds the research.
+     `--force` overrides the on-disk match, but it also disables the folder-exists guard for the
+     whole run, so prefer fixing the row. The guard separately catches two rows sharing an email
+     **inside one CSV**; `--force` does *not* override that one (same as the duplicate-slug check —
+     the second row would clobber a folder the same run just wrote).
+   - **Testing the form with your own email now trips this.** `tofu` and `zephry` both carry
+     Evan's address, so a third test submission from it is reported as a re-submission of `tofu`.
+     Use a plus-address (`you+test3@gmail.com`) for test rows — Gmail delivers it to the same inbox
+     but it is a distinct identity to the guard.
    - `--assume-consent` — **internal-only escape hatch.** If the form has no consent question (e.g. a
      friends-only test intake where the formal checkbox was dropped as too heavy), this treats a
      blank/absent consent as consent given so the row isn't skipped. It does **not** relax an explicit
@@ -378,8 +396,8 @@ weights into `tools/shortlist_schema.py` — that shared file is exactly what ma
 
 - **Provisional (self-predicted) grades.** The form asks for grades the student is *"confident of
   getting"* → `grade_status = "expected"`. This is weaker than official predicted grades and than actual
-  results, so the longlist surfaces it automatically: `sync_shortlist.py` adds a **"Grades unverified
-  (self-predicted)"** warning to every row. Admission likelihood is still computed (the list stays
+  results, so the longlist surfaces it automatically: `sync_shortlist.py` adds a **"Grades
+  self-predicted"** warning to every row. Admission likelihood is still computed (the list stays
   actionable) — just never reads as settled. When real results / official predicted grades arrive, set
   `grade_status` to `actual`/`predicted` and re-sync to drop the caveat.
   (It used to *also* suffix the grade column with "(provisional — self-predicted, confirm at results)".
@@ -453,6 +471,11 @@ weights into `tools/shortlist_schema.py` — that shared file is exactly what ma
 - **No consent / no name** → row skipped (reported in the summary). This is the PDPA gate — respect it.
 - **Duplicate names** → same slug; the second is skipped rather than clobbering the first. Disambiguate
   the name (or `--force` deliberately) if two real people share a name.
+- **Same person, different nickname** → caught by the email guard (step 2), not by the slug checks.
+  The row is skipped and the message names the existing slug, so there is no longer any need to grep
+  the roster for the email by hand before finalizing. Deciding what a re-submission's *updated* facts
+  (new grades, a changed budget) should do to the existing student is still a conversation — the tool
+  only stops the silent second folder, it never merges.
 - **Messy multi-select** → Forms joins checkbox answers with commas and doesn't escape commas inside a
   label; a rare answer may split oddly. Spot-check `target_countries` / `location_prefs` after ingest.
 - **Everything the form couldn't capture stays `null`/empty** — the tool never invents values, and

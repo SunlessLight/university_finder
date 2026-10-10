@@ -35,7 +35,7 @@ Everything else the old skill did by judgment is gone:
     accreditation risk" Warnings flag (checks recognition_fit against
     profile.recognition_targets regardless of weight).
   - contradictory Urban+Rural location -> dropped as a weight adjustment. Now the
-    "Location preference contradictory" Warnings flag instead.
+    "Urban+Rural both ticked" Warnings flag instead.
   - budget-null interpretation, notes/deal-breakers overriding structured fields,
     "distrust a flat slider spread", ranking_importance scale-reading -> all dropped.
     ranking_importance is no longer read by this tool at all; the full 8-way

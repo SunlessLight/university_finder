@@ -1,0 +1,353 @@
+/* Screen 6 of 7: report. Owner: Session C.
+   Every selector in this file must start with .screen-report so nothing leaks into
+   another screen. Use the shared classes and tokens in ../styles.css first. */
+
+/* ---- header ---- */
+
+.screen-report .rp-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 32px;
+  margin-bottom: 18px;
+}
+
+.screen-report .rp-head h1 {
+  margin-bottom: 6px;
+}
+
+.screen-report .rp-course {
+  margin: 0 0 12px;
+  font-size: 1.05rem;
+  color: var(--gray);
+}
+
+.screen-report .rp-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+}
+
+.screen-report .rp-actions {
+  flex: none;
+  max-width: 300px;
+  text-align: right;
+}
+
+.screen-report .rp-actions .muted {
+  margin: 10px 0 0;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+/* ---- "first report is free" strip ---- */
+
+.screen-report .rp-note {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0 0 20px;
+  padding: 10px 14px;
+  border-left: 4px solid var(--free);
+  border-radius: var(--radius);
+  background: var(--freewash);
+  font-size: 0.95rem;
+}
+
+.screen-report .rp-free {
+  background: var(--free);
+  color: #fff;
+}
+
+/* ---- the three questions ---- */
+
+.screen-report .rp-questions {
+  margin-bottom: 20px;
+  padding: 18px 22px 20px;
+  border-radius: var(--radius);
+  background: var(--navy);
+  color: #fff;
+}
+
+.screen-report .rp-questions-title {
+  margin: 0 0 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.screen-report .rp-questions ol {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: rp-question;
+}
+
+.screen-report .rp-questions li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.15rem;
+  line-height: 1.25;
+  counter-increment: rp-question;
+}
+
+.screen-report .rp-questions li::before {
+  content: counter(rp-question);
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+/* ---- one-page summary ---- */
+
+.screen-report .rp-summary {
+  padding-bottom: 10px;
+}
+
+.screen-report .rp-summary dl {
+  margin: 14px 0 0;
+}
+
+.screen-report .rp-row {
+  display: grid;
+  grid-template-columns: 230px 1fr;
+  gap: 20px;
+  padding: 11px 0;
+  border-top: 1px solid var(--line);
+}
+
+.screen-report .rp-row dt {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--gray);
+}
+
+.screen-report .rp-row dd {
+  margin: 0;
+}
+
+/* ---- pull quote ---- */
+
+.screen-report .rp-quote {
+  margin: 24px 0 32px;
+  padding: 4px 0 4px 22px;
+  border-left: 4px solid var(--gold);
+}
+
+.screen-report .rp-quote blockquote {
+  margin: 0 0 6px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.2rem;
+  font-style: italic;
+  line-height: 1.4;
+  color: var(--navy);
+}
+
+.screen-report .rp-quote figcaption {
+  font-size: 0.85rem;
+}
+
+/* ---- section list ---- */
+
+.screen-report .rp-inside-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 14px;
+}
+
+.screen-report .rp-inside-head h2 {
+  margin: 0;
+}
+
+.screen-report .rp-jump {
+  flex: none;
+  padding: 8px 14px;
+  font-size: 0.88rem;
+}
+
+.screen-report .rp-sections {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow: hidden;
+}
+
+.screen-report .rp-section {
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  align-items: start;
+  gap: 4px 16px;
+  padding: 14px 22px;
+  border-top: 1px solid var(--line);
+  scroll-margin-top: 70px;
+}
+
+.screen-report .rp-section:first-child {
+  border-top: 0;
+}
+
+.screen-report .rp-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--wash);
+  color: var(--navy);
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.screen-report .rp-section h3 {
+  margin: 3px 0 2px;
+}
+
+.screen-report .rp-section-text p {
+  margin: 0;
+  font-size: 0.93rem;
+}
+
+.screen-report .rp-q {
+  margin-top: 4px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--wash);
+  color: var(--navy);
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.screen-report .rp-section.is-open {
+  padding-top: 18px;
+  padding-bottom: 22px;
+  box-shadow: inset 4px 0 0 var(--navy);
+}
+
+.screen-report .rp-section.is-open .rp-num {
+  background: var(--navy);
+  color: #fff;
+}
+
+.screen-report .rp-section.is-open .rp-q {
+  background: var(--navy);
+  color: #fff;
+}
+
+/* ---- why here / why hesitate, shown in full ---- */
+
+.screen-report .rp-verdict {
+  grid-column: 2 / -1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.screen-report .rp-why {
+  padding: 16px 18px 4px;
+  border-top: 3px solid var(--free);
+  border-radius: var(--radius);
+  background: var(--freewash);
+}
+
+.screen-report .rp-why-hesitate {
+  border-top-color: var(--gold);
+  background: var(--goldwash);
+}
+
+.screen-report .rp-why-title {
+  margin: 0 0 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--free);
+}
+
+.screen-report .rp-why-hesitate .rp-why-title {
+  color: var(--gold);
+}
+
+.screen-report .rp-why-item h4 {
+  margin: 0 0 3px;
+  font-size: 1rem;
+  color: var(--navy);
+}
+
+.screen-report .rp-why-item p {
+  margin: 0 0 14px;
+  font-size: 0.95rem;
+}
+
+/* ---- next step ---- */
+
+.screen-report .rp-next {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 28px;
+  border-top: 3px solid var(--navy);
+}
+
+.screen-report .rp-next h2 {
+  margin-bottom: 4px;
+}
+
+.screen-report .rp-next p {
+  margin: 0;
+}
+
+.screen-report .rp-next-actions {
+  flex: none;
+  display: flex;
+  gap: 10px;
+}
+
+@media (max-width: 860px) {
+  .screen-report .rp-head,
+  .screen-report .rp-inside-head,
+  .screen-report .rp-next {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .screen-report .rp-actions {
+    max-width: none;
+    text-align: left;
+  }
+
+  .screen-report .rp-questions ol,
+  .screen-report .rp-verdict {
+    grid-template-columns: 1fr;
+  }
+
+  .screen-report .rp-row {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+
+  .screen-report .rp-verdict {
+    grid-column: 1 / -1;
+  }
+}

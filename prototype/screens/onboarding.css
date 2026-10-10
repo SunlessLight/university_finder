@@ -1,0 +1,192 @@
+/* Screen 2 of 7: onboarding. Owner: Session A.
+   Every selector in this file must start with .screen-onboarding so nothing leaks into
+   another screen. Use the shared classes and tokens in ../styles.css first. */
+
+.screen-onboarding .ob-card {
+  max-width: 640px;
+  margin: 12px auto 0;
+  padding: 28px 36px 30px;
+  border-top: 3px solid var(--navy);
+}
+
+/* ---- progress ---- */
+
+.screen-onboarding .ob-progress {
+  margin-bottom: 26px;
+}
+
+.screen-onboarding .ob-progress-text {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.screen-onboarding .ob-progress-text .section-title {
+  margin: 0;
+}
+
+.screen-onboarding .ob-progress-names {
+  display: flex;
+  gap: 14px;
+  font-size: 0.82rem;
+}
+
+.screen-onboarding .ob-progress-names .is-current {
+  color: var(--navy);
+  font-weight: 700;
+}
+
+.screen-onboarding .ob-progress-names .is-done {
+  color: var(--free);
+}
+
+.screen-onboarding .ob-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--wash);
+  overflow: hidden;
+}
+
+.screen-onboarding .ob-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--free);
+}
+
+/* ---- heading ---- */
+
+.screen-onboarding h1 {
+  margin-bottom: 0.2em;
+  outline: none;
+}
+
+.screen-onboarding .ob-lede {
+  margin-bottom: 24px;
+}
+
+/* ---- fields ---- */
+
+.screen-onboarding .ob-field {
+  display: block;
+  margin-bottom: 22px;
+}
+
+.screen-onboarding .ob-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.screen-onboarding .ob-hint {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.85rem;
+}
+
+.screen-onboarding .ob-input {
+  display: block;
+  width: 100%;
+  min-height: 50px;
+  padding: 10px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  font-size: 1.05rem;
+}
+
+.screen-onboarding .ob-input:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 1px;
+  border-color: var(--accent);
+}
+
+.screen-onboarding .ob-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.screen-onboarding .ob-chip {
+  min-height: 48px;
+  padding: 10px 18px;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--navy);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.12s, border-color 0.12s, color 0.12s;
+}
+
+.screen-onboarding .ob-chip:hover {
+  border-color: var(--navy);
+}
+
+.screen-onboarding .ob-chip[aria-pressed="true"] {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: #fff;
+}
+
+.screen-onboarding .ob-chip[aria-pressed="true"]::before {
+  content: "\2713\00a0";
+  font-weight: 800;
+}
+
+.screen-onboarding .ob-chip:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* One choice per row: the budget bands and the scholarship answer. */
+.screen-onboarding .ob-chips.is-big {
+  flex-direction: column;
+}
+
+.screen-onboarding .ob-chips.is-big .ob-chip {
+  min-height: 56px;
+  border-radius: var(--radius);
+  font-size: 1.05rem;
+  text-align: left;
+}
+
+/* ---- actions ---- */
+
+.screen-onboarding .ob-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 30px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+
+.screen-onboarding .ob-next {
+  min-width: 170px;
+  padding: 14px 28px;
+  font-size: 1.05rem;
+}
+
+.screen-onboarding .ob-foot {
+  max-width: 640px;
+  margin: 14px auto 0;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+@media (max-width: 560px) {
+  .screen-onboarding .ob-card {
+    padding: 22px 20px 24px;
+  }
+
+  .screen-onboarding .ob-progress-names {
+    display: none;
+  }
+}

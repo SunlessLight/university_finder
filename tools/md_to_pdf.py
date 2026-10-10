@@ -4,7 +4,7 @@ md_to_pdf.py — manually convert a single report or application-prep Markdown f
 The pipeline tools (report_to_pdf.py, apply_prep_to_pdf.py) only take a --student slug and
 render every .md inside that student's reports/ or application_prep/ folder, writing the PDF
 beside the source. That's right for the pipeline but awkward for one-off / sales work, where the
-source is a redacted copy that doesn't live in a student folder (see sales/sample_pack/README.md).
+source is a redacted copy that doesn't live in a student folder (see business/sales/sample_pack/README.md).
 
 This tool converts an *arbitrary* .md file to a PDF at an *arbitrary* output path. It reuses the
 exact styling and render engines from the two pipeline tools (imported, not duplicated), so a

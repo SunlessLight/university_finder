@@ -91,6 +91,58 @@ part aggregators always drop.
 > one, and the IGP is not a rate. NTU's IGP is a **PDF that Firecrawl/WebFetch won't render** — if you can't
 > get the real bar, say the entry margin is inferred and flag it for Stage 4, don't fake precision.
 >
+> **Update 2026-09-23 (zhiqi's NUS pass) — the soft door above is now the ONLY door, and the major was
+> renamed.** NUS's Faculty of Science route was **Data Science and Analytics (DSA)** for cohorts
+> AY2019/20–AY2025/26 and is superseded by **Data Science and Applied AI (DSAAI)** from AY2026/27 onward.
+> DSAAI has **no direct-admit course** — you apply for admission to the Faculty of Science and read the
+> major after. So don't go looking for a DSA course page to compare against; for anyone entering AY2026/27
+> or later the Faculty route *is* the route, and it is still the softer-profile backup worth putting in a
+> Reach row's report. Separately, **NUS School of Computing now admits Computer Science and Artificial
+> Intelligence in ONE common pool** (AY2025/26 onward, `comp.nus.edu.sg/programmes/ug/ai/`): applicants
+> don't choose between the two at application and pick the degree after years 1–2. That is a real hedge
+> built into the admission — say so in `Course at a glance` and in the report's entry-route section. The
+> official degree name as written is "Bachelor of Computing in Artificial Intelligence (with Honours)".
+>
+> **`nus.edu.sg/oam/*` is JS-rendered and returns an EMPTY BODY to a plain WebFetch — HTTP 200, no error,
+> no content (confirmed 2026-09-23, cost two fetches).** This is the textbook case of guardrail 6's "a
+> response that doesn't contain the fact you went there for" counting as *blocked*. Go **straight to
+> `firecrawl_search.py`** for every OAM page — fees, living costs, scholarships, important dates, the
+> international-qualifications requirements. The same pass also found the official fee PDF
+> (`nus.edu.sg/registrar/docs/default-source/administrative-policies-procedures/ugtuitioncurrent.pdf`)
+> comes back **garbled** on a plain fetch but clean via Firecrawl — it carries the real five-tier table
+> (AY2026/27 Computing: Citizen 8,300 / PR 11,600 / **Intl-with-grant ASEAN 18,050** / Intl-with-grant
+> non-ASEAN 21,400 / Intl-without-grant 39,700, SGD/yr).
+>
+> **NUS asks EVERY applicant for more than grades — and it is an ADMISSION risk, not a scholarship
+> footnote (confirmed 2026-09-23 against NUS's own Aptitude-Based Admissions page).** Every applicant to
+> every degree must list **up to four** achievements / co-curricular / non-academic activities *and*
+> answer short-response questions in the same section. NUS's official page and its sample PDF confirm the
+> section is mandatory and the four-achievement cap, but **do not state how many questions** — applicants
+> on r/nus report five, most capped around 500 characters. Attribute it that way; don't assert five as
+> official. Two consequences: (1) a straight-A student with nothing on file is **not** a safe applicant
+> here, and (2) since the ASEAN Undergraduate Scholarship is interview-selected *from admitted
+> applicants*, the same four achievements gate both admission and funding. Our Google Form does not
+> collect any of this — expect `profile.achievements` to be null and raise it at the Stage 4 checkpoint.
+>
+> **A standardised test (SAT / ACT-with-Writing / AP) is required from applicants who finish their final
+> exam AFTER the closing date** (official international A-Level page, 2026-09-23). A Malaysian sitting
+> A2 in Oct/Nov with January results lands in the "completed" column before a mid-February close — but it
+> is tight, and the consequence of being on the wrong side is a whole extra test. Tell the student to
+> confirm the sequencing with NUS in writing rather than assuming it.
+>
+> **Two NUS scholarship traps:** the **AI Talent Scholarship is Singapore Citizens only** — don't put it
+> in an international student's row. And the ASEAN Undergraduate Scholarship's official page (reachable
+> via Firecrawl) carries figures the aggregators miss: 100% of post-grant tuition + **S$5,800/yr living +
+> S$3,000/yr accommodation** + S$1,750 one-time computer allowance, GPA 3.50 to renew, interviews Jan–Jul,
+> outcomes mid-July, 75%-of-units-in-Singapore cap, no stacking without approval. Third-party pages
+> routinely drop the accommodation allowance entirely.
+>
+> **NUS's official undergraduate living-cost figure** (`nus.edu.sg/oam/financial-aid/living-costs`, via
+> Firecrawl): **S$6,000/yr EXCLUDING accommodation** (meals 2,600 + personal 2,200 + transport 800 +
+> books 400), plus on-campus hostel **S$4,000–10,290/yr**. All-in ≈ S$10,000–16,300/yr; S$14,000 is a
+> defensible working mid-point. This supersedes the "S$12,000–18,000, not an official number" estimate
+> used before 2026-09-23 — that guess is no longer necessary.
+>
 > **Singapore's intake is August — it maps cleanly to a "Sept" preference** (unlike Australia, which has no
 > September intake). One intake a year. Public degrees are **4 years** (direct honours). A private
 > trimester campus can run a bachelor's in **2 years** (JCU Singapore) — the inverse of the Australian

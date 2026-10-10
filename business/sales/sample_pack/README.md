@@ -35,7 +35,7 @@ regenerate them from a different student, re-run the same scan and re-read them.
 ## How they were built (to regenerate)
 
 `sample_master_list.csv`, `sample_glossary.csv` and `sample_university-report_MIT.pdf` are built by
-`build_sample_pack.py` — run `python sales/sample_pack/build_sample_pack.py`. It pulls the same 15
+`build_sample_pack.py` — run `python business/sales/sample_pack/build_sample_pack.py`. It pulls the same 15
 universities from the source student's current `master_list.csv`, redacts each cell, regenerates the
 glossary from that redacted list (`build_glossary_sheet.py`), and redacts + renders the MIT report
 (`md_to_pdf.py`, same engine as `report_to_pdf.py`) with the "Sample — anonymized demo" banner inserted

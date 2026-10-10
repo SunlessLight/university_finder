@@ -102,7 +102,7 @@ def candidate_to_row(c, score, tier, admission, flags):
 
     "Grades vs entry bar" is derived from entry_margin alone (grade_fit_label) — there is no
     per-candidate override, and no caveat for self-predicted grades: feasibility_flags()
-    already stamps "Grades unverified (self-predicted)" in Warnings for such a student, and
+    already stamps "Grades self-predicted" in Warnings for such a student, and
     repeating it in a second column just costs 45 chars a row.
 
     A clean row's "Warnings" is written as "None", not left blank: the master list is the

@@ -516,7 +516,7 @@ def feasibility_flags(candidate, profile=None, preferences=None, today=None):
     # Provisional grades: when the student's grades are self-predicted ("confident of getting"),
     # every admission judgement is provisional — flag it so the longlist never reads as settled.
     if isinstance(profile, dict) and profile.get("grade_status") == "expected":
-        flags.append("Grades unverified (self-predicted)")
+        flags.append("Grades self-predicted")
 
     myr = candidate_total_myr(candidate)
     budget = None
@@ -539,7 +539,7 @@ def feasibility_flags(candidate, profile=None, preferences=None, today=None):
         except (TypeError, ValueError):
             rec_score = None
         if rec_score is not None and rec_score <= RECOGNITION_RISK_MAX:
-            flags.append(f"Recognition/accreditation risk — check {', '.join(targets)} status")
+            flags.append(f"Recognition risk — check {'/'.join(targets)}")
 
     # A student who ticked both Urban and Rural hasn't told us anything about setting —
     # flag it once per row so it surfaces in the spreadsheet rather than silently steering
@@ -547,7 +547,7 @@ def feasibility_flags(candidate, profile=None, preferences=None, today=None):
     loc_prefs = (preferences.get("location_prefs") if isinstance(preferences, dict) else None) or []
     loc_low = [str(p).lower() for p in loc_prefs]
     if any("urban" in p for p in loc_low) and any("rural" in p for p in loc_low):
-        flags.append("Location preference contradictory (Urban+Rural)")
+        flags.append("Urban+Rural both ticked")
 
     return flags
 

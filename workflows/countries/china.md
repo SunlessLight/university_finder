@@ -68,3 +68,53 @@ portal in any useful way — go to each one's own international-admissions page,
 >   accessible to a student with no demonstrated Chinese/HSK proficiency.
 > - Also checked and excluded for Humanities: **University of Nottingham Ningbo China** offers only
 >   English/Communications/Applied-Linguistics majors, no History or Philosophy.
+
+## Traps — Engineering (learned 2026-09-23, HaotoWin's Mechanical Engineering pass)
+
+The Humanities block above is about a missing *subject*. These are about the English-taught
+international tracks generally, and they bit every row of a 6-university engineering pass.
+
+1. **The English-taught double wall — check this BEFORE building a row for a scholarship-dependent
+   student.** The tracks a non-Chinese-speaking student can actually take are the same tracks that
+   (a) CSC undergraduate funding structurally excludes and (b) CEEAA accreditation visibly doesn't
+   cover. Confirmed independently across four universities:
+   - **Funding** — at **Wuhan University of Technology** *no* scholarship route applies to the
+     English-taught bachelor's at all: its own CSC Bilateral option and CSC Type A/B both require
+     Chinese-taught registration at bachelor's level. Not WHUT-specific — it is the CSC rule.
+   - **Recognition** — CEEAA accreditation (China's Washington Accord carrier, see the constants
+     template) was found only for the **Chinese-taught** majors at **BIT** (2014/2017) and **WHUT**
+     (accredited 2015, **expired Dec 2023** on its face), and was **unconfirmed** at **Tsinghua**
+     for the Zijing English track.
+   So "China is a full Washington Accord signatory since June 2016" is true and still does not
+   settle a row. Verify per programme; if you cannot, say so — do not let the country-level yes stand in.
+
+2. **The joint ventures do NOT cleanly rescue recognition.** A foreign parent's accreditation does
+   not automatically extend to the China campus, and nobody publishes a clear statement either way:
+   - **XJTLU** routes via University of Liverpool to **IET / UK Engineering Council — not IMechE**,
+     and only **partially** meets CEng (fully meets IEng). Likely fine for BEM, not certain.
+   - **ZJU-UIUC (ZJUI)**: UIUC's own BS Mechanical Engineering is ABET-accredited, but no page
+     confirms that accreditation for the **Haining delivery**; the ZJU BEng half's CEEAA status is
+     unconfirmed too.
+
+3. **XJTLU has no programme titled "Mechanical Engineering."** Confirmed against XJTLU's full
+   52-programme list and the Liverpool mirror. The closest real match is **BEng (Hons) Mechatronics
+   and Robotic Systems**. Don't dispatch a row-filler for a course title that doesn't exist.
+   **XJTLU's fee is now CNY 99,000/yr** (official), not the CNY 93,000 recorded in the Humanities
+   block above — that figure is stale.
+
+4. **Tongji has no English-taught Mechanical Engineering bachelor's.** Its own International
+   Students Office list of English-taught bachelor's programmes (updated Nov 2025) names exactly
+   three: Civil Engineering (International Class), MBBS, and Architecture (International Class).
+   Aggregators (BestEduChina, older SICAS/CUCAS listings) advertise a Tongji "Mechanical
+   Engineering" in English; CUCAS's own page for it actually describes a **Chinese-taught doctoral**
+   programme requiring HSK Band 4. Returning no fragment is the correct outcome here.
+
+5. **`key_deadline` for a student more than a year out: use the sentinel, not the last published
+   date.** Chinese universities publish one cycle at a time. Copying the most recent closed date
+   (e.g. `2026-06-30`) makes `feasibility_flags()` stamp **"Deadline passed"**, which tells a
+   student they *missed* something when the truth is it *hasn't opened*. Use
+   `Not published — check portal` and put the historical date in `research_notes`.
+
+6. **HSK is usually not required for admission to an English-taught track, but may be required to
+   graduate** — confirmed not-required for admission at BIT and WHUT; the graduation requirement
+   could not be confirmed at either. Check it and state which of the two you mean.

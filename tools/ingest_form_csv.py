@@ -692,6 +692,11 @@ def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None,
     email = get(row, col_index, "email")
 
     # --- profile: identity -------------------------------------------------- #
+    # Structured identity key (2026-09-23). The duplicate guard in main() matches on this,
+    # not on the slug — the slug comes from the nickname, which a returning student retypes.
+    # The "Contact: <email>" line in notes below is kept deliberately: it is what the 29
+    # pre-2026-09-23 profiles are matched on until they are backfilled.
+    profile["contact_email"] = email or None
     profile["ethnicity"] = get(row, col_index, "ethnicity") or None  # scholarship-eligibility research only
     # NOTE: home_country stays the template default ("Malaysia"). The "where do you want to live
     # and work after graduating" answer is a post-study *aspiration* (captured in notes below +
@@ -734,7 +739,7 @@ def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None,
         profile["grade_status"] = "predicted"
     # NOTE: no needs_review flag for grade_status="expected" (self-predicted) — that's the
     # NORMAL case for this form, not something to check per-student. sync_shortlist.py already
-    # surfaces it automatically as a "Grades unverified (self-predicted)" warning on every row of
+    # surfaces it automatically as a "Grades self-predicted" warning on every row of
     # the master list once the student reaches Stage 3, so flagging it again here was pure
     # duplication. Just leave it; upgrade grade_status by hand only if real/official results arrive.
     # Legacy paragraph-grades form (no structured columns) — stage the free-text for the agent.
@@ -1141,6 +1146,58 @@ def _check_headers(fieldnames, col_index, grid_cols, slider_cols, subject_cols, 
 
 
 # --------------------------------------------------------------------------- #
+# Re-submission guard: match a form row against the students already on disk.
+# --------------------------------------------------------------------------- #
+_LEGACY_EMAIL_RE = re.compile(r"Contact:\s*([^\s,]+@[^\s,]+)")
+# Trailing sentence punctuation. Several legacy profiles read "Contact: a@b.com. Finalized
+# 2026-..." because a finalize note was appended as a new sentence, so the regex above
+# captures the full stop. A real address can never end in punctuation, so stripping is safe —
+# and without it 6 of the 25 legacy students would silently fail to match on re-submission.
+_EMAIL_TRAILING_PUNCT = ".,;:)]}>'\""
+
+
+def _normalize_email(value):
+    """Lowercased, whitespace- and punctuation-stripped email, or "" if there is none."""
+    if not value:
+        return ""
+    return str(value).strip().strip(_EMAIL_TRAILING_PUNCT).strip().lower()
+
+
+def _existing_by_email():
+    """{lowercased email: slug} for every student already on disk.
+
+    Reads the structured profile.contact_email, falling back to the legacy
+    "Contact: <addr>" line in profile.notes so students ingested before 2026-09-23
+    still match without waiting on the backfill. Students with no email recorded
+    at all (4 pre-form/hand-built ones as of 2026-09-23) simply never match — that
+    is correct, not a failure: nickname stays their only identity.
+
+    Unreadable or malformed profile.json files are skipped rather than fatal: a
+    missing guard entry costs a duplicate folder, a crash costs the whole ingest.
+    """
+    index = {}
+    if not STUDENTS_DIR.exists():
+        return index
+    for profile_path in sorted(STUDENTS_DIR.glob("*/profile.json")):
+        try:
+            data = json.loads(profile_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if not isinstance(data, dict):
+            continue
+        email = _normalize_email(data.get("contact_email"))
+        if not email:
+            match = _LEGACY_EMAIL_RE.search(data.get("notes") or "")
+            email = _normalize_email(match.group(1)) if match else ""
+        if not email:
+            continue
+        # First writer wins: if two folders somehow share an email, name the earlier
+        # (alphabetically first) one rather than silently picking at random.
+        index.setdefault(email, profile_path.parent.name)
+    return index
+
+
+# --------------------------------------------------------------------------- #
 # Main.
 # --------------------------------------------------------------------------- #
 def main():
@@ -1187,6 +1244,9 @@ def main():
 
     created, skipped, review_flags = [], [], {}
     seen_slugs = set()
+    # Built ONCE, outside the row loop — a 30-row CSV must not re-read 29 profiles 30 times.
+    existing_emails = {} if args.force else _existing_by_email()
+    seen_emails = {}
 
     for i, row in enumerate(rows, start=1):
         slug, profile, prefs, needs_review, skip_reason = map_row(
@@ -1205,6 +1265,26 @@ def main():
         if student_dir.exists() and not args.force:
             skipped.append((i, profile["name"], f"folder '{slug}' exists (use --force)"))
             continue
+        # Re-submission guard (2026-09-23): same person, different nickname, so both the
+        # slug checks above pass and a second folder gets created silently. Skip, never
+        # overwrite — the existing folder holds the research. Naming the existing slug is
+        # the whole value: without it the operator still has to go grepping.
+        email_key = _normalize_email(profile.get("contact_email"))
+        if email_key:
+            prior = existing_emails.get(email_key) or seen_emails.get(email_key)
+            if prior and prior != slug:
+                if email_key in existing_emails:
+                    where, hint = "already on disk", "use --force to override"
+                else:
+                    # --force overrides the folder-exists guard, not a collision inside one CSV —
+                    # same as the duplicate-slug check above, and for the same reason: the second
+                    # row would overwrite a folder this very run just created.
+                    where, hint = "earlier in this CSV", "--force will not override this; fix the row"
+                skipped.append((i, profile["name"],
+                                f"email already belongs to student '{prior}' ({where}) — "
+                                f"likely a re-submission, not a new student ({hint})"))
+                continue
+            seen_emails.setdefault(email_key, slug)
         seen_slugs.add(slug)
 
         if not args.dry_run:

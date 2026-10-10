@@ -20,6 +20,7 @@ tools/       Python execution scripts (firecrawl_search, init_student, ingest_fo
              shortlist_schema, sync_shortlist, compare_universities, build_report, build_calendar)
 data/students/   One private data bank per student (gitignored — PII)
 data/form/       Google Form CSV exports dropped here for batch intake (gitignored — PII)
+business/    Product review + sales material (poster, scripts, sample pack) — not part of the pipeline
 .tmp/        Disposable intermediates (gitignored)
 .env         Secrets only (gitignored)
 ```

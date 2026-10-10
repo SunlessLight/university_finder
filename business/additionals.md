@@ -1,0 +1,587 @@
+# Additionals — inconsistencies noticed but not fixed
+
+*Started 2026-10-10, while writing [university_report.md](university_report.md). Each entry is a
+place where two parts of the project say different things about the University Report stage
+("Stage 4"). Nothing here has been changed yet. Tick an item off when it is fixed.*
+
+The entries are grouped by how much they matter:
+
+- **A. A customer could see it.** Sales material that describes the product wrongly.
+- **B. It could cause a wrong result.** Instructions that an AI session follows, where the stale
+  version could lead it to produce the wrong thing.
+- **C. Stale notes only.** Comments inside the programs that are out of date. The programs
+  themselves behave correctly.
+
+Two of these (A1 and C1) were reported in the session that wrote the explainer. The other five
+turned up on a second, closer pass through the same files.
+
+**Added later the same day:** a separate part at the bottom, [Decision stage (Stage 5)](#decision-stage-stage-5),
+holds what turned up while writing [decide_report.md](decide_report.md). It has its own numbering
+(D for things found, V for things not verified) so the A/B/C entries above stay as they were.
+
+**Also added the same day:** a third part, [Intake stage (Stage 1)](#intake-stage-stage-1), holds
+what turned up while writing [intake_report.md](intake_report.md). Its numbering is I for things
+found and U for things not verified.
+
+**Also added the same day:** a fourth part, [Longlist stage (Stage 3)](#longlist-stage-stage-3),
+holds what turned up while writing [longlist_report.md](longlist_report.md). Its numbering is L for
+things found and N for things not verified.
+
+---
+
+## A. A customer could see it
+
+### - [ ] A1. The tiers file says the report covers visas
+
+- **Where:** [sales/service-tiers.md:82](sales/service-tiers.md#L82), under Tier 2.
+- **What it says:** "Visa, work rights after graduating, recognition back home."
+- **What is true:** Visa paperwork was moved out of the report on 2026-09-06 and into the separate
+  apply guide. The report still covers whether you may stay and work after graduating, and whether
+  the degree is recognised in Malaysia. Source:
+  [workflows/04_university_report.md:306](../workflows/04_university_report.md#L306).
+- **Suggested fix:** Drop the word "Visa" from that line. If visas should be mentioned, put them
+  under Tier 3 (the Apply Pack), which is where they now live.
+
+### - [ ] A2. The tiers file says a human confirms each row
+
+- **Where:** [sales/service-tiers.md:56](sales/service-tiers.md#L56), under Tier 1.
+- **What it says:** A row reads `Not verified` "until a human confirmed it on the official page".
+- **What is true:** Since 2026-07-29 the checking is done by the AI research sessions that build each
+  row from official pages, and they mark the row `Official page` themselves. Source:
+  [workflows/04_university_report.md:17](../workflows/04_university_report.md#L17).
+- **Suggested fix:** Reword to say the facts were "checked against the official page", without
+  claiming a person did it. This sits next to con #1 in the
+  [product review](product_review_2026-09-25.md), which is about the same promise.
+
+*Already tracked elsewhere, so not repeated here:* the same file says "34-column" on line 35 and
+"35 columns" on line 45. That is part of con #3 in the product review.
+
+---
+
+## B. It could cause a wrong result
+
+### - [ ] B1. Two descriptions of how a deadline should be written down
+
+When a report is researched, its deadlines are saved in a small structured list so the Stage 5
+calendar can collect them. Two files describe the shape of that list differently.
+
+- **Where:** [tools/build_report.py:84](../tools/build_report.py#L84) (the notes at the top of the
+  program that assembles the report).
+- **What it says:** each deadline is written as `{"item": ..., "date": ...}`.
+- **What is true:** the calendar program reads `date`, `label` and `action`
+  ([tools/build_calendar.py:91-97](../tools/build_calendar.py#L91-L97)), which matches the workflow
+  ([workflows/04_university_report.md:397](../workflows/04_university_report.md#L397)).
+- **Why it matters:** the workflow tells the AI researcher that `build_report.py`'s notes are "the
+  exact, authoritative shape". A researcher that follows them would write `item`. The calendar would
+  then show the date with the placeholder name "Date" and no action beside it.
+- **Suggested fix:** change the note in `build_report.py` to `{"date": ..., "label": ..., "action": ...}`.
+
+### - [ ] B2. The AI researcher's instructions use old section names and numbers
+
+- **Where:** [.claude/agents/report-writer.md](../.claude/agents/report-writer.md) (the instruction
+  sheet the AI researcher reads before writing a report), lines 84 and 169.
+- **What it says:** line 84 refers to "Scholarships (§6), Recognition (§9)". Line 169 refers to the
+  `course_details` and `student_life_culture` sections.
+- **What is true:** those are from the old report layout. In the current 15-section layout,
+  Scholarships is section 11 and recognition is part of section 12. The two sections are now called
+  `what_youll_study` and `student_life`.
+- **Why it matters:** the researcher is told to correct a spreadsheet line when one of those sections
+  contradicts it. Pointing at section names that no longer exist makes that instruction easy to miss.
+- **Suggested fix:** update the two numbers and the two names.
+
+---
+
+## C. Stale notes only
+
+### - [ ] C1. The automatic inspector's notes count the sections wrongly
+
+- **Where:** [tools/check_report.py](../tools/check_report.py), lines 264 and 413.
+- **What it says:** line 264, "All 16 sections ... numbered 1..16". Line 413, a message that reads
+  "too thin for 14 researched sections".
+- **What is true:** a report has 15 sections, of which 13 are researched. The program checks the
+  correct 15. Line 413 is a message printed on screen, so someone running the inspector could see
+  the wrong number.
+- **Suggested fix:** change "16" to "15" and "14" to "13".
+
+### - [ ] C2. Two places still call the PDF "optional, on request"
+
+- **Where:** [workflows/00_overview.md:165](../workflows/00_overview.md#L165) and
+  [tools/report_to_pdf.py:13](../tools/report_to_pdf.py#L13).
+- **What it says:** the PDF is "optional, on request" and "export on request".
+- **What is true:** the PDF is now made automatically as part of the same job that writes the report.
+  Source: [workflows/04_university_report.md:446](../workflows/04_university_report.md#L446).
+- **Suggested fix:** reword both to say the PDF is automatic, with a manual re-export available.
+
+### - [ ] C3. The PDF program points at the wrong workflow file
+
+- **Where:** [tools/report_to_pdf.py](../tools/report_to_pdf.py), lines 56 and 85.
+- **What it says:** the rule about red warning boxes is in "workflows/05".
+- **What is true:** that rule is in `workflows/04_university_report.md`, under "Writing rules".
+- **Suggested fix:** change "05" to "04" in both comments.
+
+---
+
+## Decision stage (Stage 5)
+
+*Added 2026-10-10, while writing [decide_report.md](decide_report.md). Nothing here has been changed
+or fixed. No student is named: "the finished student" means the one student the progress report
+(`python tools/progress_dashboard.py`) shows as "Stage 5 done".*
+
+Read D1 first. It is the only entry where doing something ordinary could lose work.
+
+### Things found
+
+#### - [ ] D1. Rebuilding the finished student's calendar would shrink it from 78 lines to 17
+
+- **Severity:** higher than group B. This one can destroy a finished deliverable.
+- **Where:** [tools/build_calendar.py:74-76](../tools/build_calendar.py#L74-L76) (where the calendar
+  program looks for the report researchers' dated notes) and
+  [line 141-142](../tools/build_calendar.py#L141-L142) (where it writes the calendar file).
+- **What happens:** the calendar is built from two places. One is the spreadsheet, which is
+  permanent. The other is the dated notes each report researcher saves in `.tmp/<student>/` (the
+  scratch folder the project treats as throwaway). The finished student's calendar has 78 lines:
+  17 from the spreadsheet and 61 from those notes.
+- **What is true today:** that student's scratch folder no longer exists. If the calendar program
+  runs again for them, it finds only the 17 spreadsheet lines and writes a 17-line calendar over
+  the 78-line one, with no warning.
+- **Why it matters:** student folders are gitignored (kept out of the project's saved history), so
+  there is no undo. The `/decide` command (the launcher for this stage) runs the calendar program as
+  its third step, so running `/decide` again for that student would trigger it.
+- **Until it is fixed:** do not run `build_calendar.py` or `/decide` for the finished student. If
+  you need to, copy `calendar.md` somewhere safe first.
+- **Wider effect:** of the 14 students whose reports are all done and who are waiting for this
+  stage, only 3 still have those notes on file. For the other 11, a calendar built today would hold
+  the application deadline from the spreadsheet and nothing else.
+- **Suggested fix:** save the dated notes in the student's permanent folder when a report is built,
+  and have the calendar program read them from there. A cheaper stop-gap: make the calendar program
+  refuse to overwrite an existing calendar with one that has fewer lines.
+
+#### - [ ] D2. Only one student has finished this stage, and five more could have it now
+
+- **Severity:** not a fault. A business observation that needs a decision from you.
+- **The counts (2026-10-10):** 29 students. 1 has finished Stage 5. 14 have all their reports
+  written and are waiting. 14 are at an earlier step.
+- **Inside the 14 who are waiting:** 5 have two or more finalists (between two and six each), so
+  the full stage could be run for them today with no further research. The other 9 picked exactly
+  one university, so there is nothing to rank or balance. For them the stage shrinks to a calendar
+  and a how-to-apply recap.
+- **Why it matters:** this matches con #2 in the [product review](product_review_2026-09-25.md)
+  (very few students reach the end). The number has not moved since that review was written on
+  2026-09-25.
+- **To decide:** whether to run the stage for the five, and what the nine single-finalist students
+  should receive.
+
+#### - [ ] D3. The stage's instruction file points at a report section that has moved
+
+- **Severity:** group B (an AI session follows this file).
+- **Where:** [workflows/05_decide_and_apply.md:44](../workflows/05_decide_and_apply.md#L44).
+- **What it says:** for how-to-apply details, point "back to each report's section 12".
+- **What is true:** since 2026-09-06, section 12 of a report is "Outcomes, network and practising in
+  Malaysia". The how-to-apply detail moved to the separate apply guide. Source:
+  [workflows/04_university_report.md:306](../workflows/04_university_report.md#L306).
+- **Why it matters:** a session following the instruction would send the student to a section that
+  no longer answers the question.
+- **Suggested fix:** change the pointer to the apply guide (`workflows/08_application_prep.md`), or
+  drop the bracketed clause.
+
+#### - [ ] D4. Three files still use the old names "5a" and "5b" for stages
+
+- **Severity:** group C (stale labels), except the first, which a customer-facing file uses.
+- **Where:** [sales/service-tiers.md:94](sales/service-tiers.md#L94) ("Stages 5b + 8"),
+  [workflows/08_application_prep.md:209](../workflows/08_application_prep.md#L209) ("Use 5b when..."),
+  and [sales/sample_pack/README.md:52](sales/sample_pack/README.md#L52) ("a Stage 5a report rebuild").
+- **What is true:** the reports are now Stage 4 and the decision is Stage 5. No workflow file
+  defines a "5a" or a "5b" any more.
+- **Suggested fix:** "5a" becomes "Stage 4" and "5b" becomes "Stage 5".
+
+#### - [ ] D5. A real deadline in the finished student's plan is five days away
+
+- **Severity:** time-sensitive, and about a real student, not about the project's files.
+- **What the plan says:** the recommendation written on 2026-09-02 says the student must choose
+  between Oxford and Cambridge before **2026-10-15**, because the UK's shared application form
+  (UCAS) does not allow both in one year.
+- **What I do not know:** whether that choice has already been made. The student's hand-over note
+  was last changed on 2026-09-06, and I did not read it.
+- **Suggested action:** check with the student, or read their `status.md` (the hand-over note in
+  their folder).
+
+*Already tracked above, so not repeated here:* the calendar's dated notes are described in two
+different shapes. That is entry **B1**. It affects this stage directly, because the calendar is what
+reads them.
+
+*Not listed here:* the smaller calendar limits (the same event appearing twice, dates written in
+words landing in the "to confirm" list, US reports contributing only their main deadline). They are
+written up with their counts in the "Honest limits" section of [decide_report.md](decide_report.md).
+
+### Things in decide_report.md that I did not verify
+
+Each of these is a statement in the report that rests on something I did not check for myself.
+
+#### - [ ] V1. The seven UK dates in the example calendar table
+
+- **Where:** [decide_report.md](decide_report.md), under "What a finished one looks like", the table
+  of seven lines.
+- **Where the dates came from:** copied from the finished student's calendar, which was built on
+  2026-09-02 from what the report researchers found on official pages at that time.
+- **What I did not do:** re-check any of them on the official pages today. Universities do move
+  dates.
+- **To settle it:** look up the seven dates on the UCAS and Cambridge pages before the report is
+  shown to anyone outside.
+
+#### - [ ] V2. "Probably the cheapest step to deliver"
+
+- **Where:** [decide_report.md](decide_report.md), under "What this means for the business".
+- **What it rests on:** reasoning only. The stage does almost no new web research, and two of its
+  four steps are programs with no AI in them.
+- **What is missing:** nobody has measured how long the stage takes or how much AI usage it costs.
+  The report says so in the same paragraph.
+- **To settle it:** time one real run, and note the AI usage for it.
+
+#### - [ ] V3. The poster explains why nine students picked only one university
+
+- **Where:** [decide_report.md](decide_report.md), at the end of "Where things stand today".
+- **What it says:** the poster invites a student to "pick 1 uni to go deep on", most students did
+  exactly that, and the decision stage was designed for three to five.
+- **What it rests on:** my reading of the counts. No student has said this, and the report labels
+  it as the author's interpretation.
+- **To settle it:** ask two or three of the single-finalist students why they picked one.
+
+---
+
+## Intake stage (Stage 1)
+
+*Added 2026-10-10, while writing [intake_report.md](intake_report.md). Nothing here has been changed
+or fixed. No student is named; every count is a total across the 29 student folders.*
+
+Each entry says which of the groups at the top of this file it belongs to (A, B or C). I1 and I2
+are the two worth reading first, because both affect what a student receives.
+
+### Things found
+
+#### - [ ] I1. "Universities you already have in mind" is saved and then never read
+
+- **Severity:** group B. It does not produce a wrong fact, but it lets a list go out without the
+  names the student asked for.
+- **Where it is saved:** [tools/ingest_form_csv.py:844](../tools/ingest_form_csv.py#L844) (the
+  program that turns form answers into a student record) stores the answer as
+  `preferred_universities` in the student's "what you want" file.
+- **What is true:** nothing reads it afterwards. I searched every workflow file, every AI
+  instruction sheet and every program. The only mentions are the place it is saved, the blank
+  template, and the intake workflow describing the question
+  ([workflows/01_intake.md:219](../workflows/01_intake.md#L219)), which says a student naming
+  universities "is no longer silently ignored". That is true of the saving and not of the research.
+- **How many students it touches:** 8 of 29 filled this question in.
+- **Why it matters:** con #7 in the [product review](product_review_2026-09-25.md) is that students
+  judge a list by whether the famous names they expected are on it. This answer is the student
+  telling us those names in advance.
+- **Suggested fix:** add one step to the long-list workflow
+  (`workflows/03_discover_longlist.md`): read this answer for the country being researched and make
+  sure each named university is on the list, marked Reach (a long shot) if it is one.
+
+#### - [ ] I2. Sales material lists halal food and prayer facilities as a strength; the form never asks
+
+- **Severity:** group A. A customer could notice.
+- **Where it is claimed:** [product_review_2026-09-25.md:61](product_review_2026-09-25.md#L61)
+  ("Local detail") and [sales/service-tiers.md:80](sales/service-tiers.md#L80) ("Malaysian / halal /
+  prayer angle where it matters").
+- **What is true:** the form's "Any other perferences?" question offers six ticks: low crime,
+  Malaysian community nearby, four seasons, public transport, affordable living cost and good food.
+  Halal food and prayer facilities are not among them. Neither are disability access, mental health
+  support or LGBT-friendliness. The intake workflow already records this as an open question for
+  you ([workflows/01_intake.md:131-137](../workflows/01_intake.md#L131-L137)). Only 1 of 29 records
+  has either need marked, and it came through an older form.
+- **What still works:** the report itself does cover prayer facilities and halal food for the
+  universities it describes. The gap is narrower than "we don't research it": the system cannot
+  tell *which* students need it, so "where it matters" in the tiers file cannot be acted on.
+- **Suggested fix:** add "Halal food" and "Prayer facilities" as two more ticks on that question.
+  The program already recognises both words
+  ([tools/ingest_form_csv.py:392](../tools/ingest_form_csv.py#L392) and line 398), so no program
+  change is needed. If you would rather not ask, change the wording in the tiers file to say every
+  report covers it.
+
+#### - [ ] I3. 12 of 29 students have no spending limit on record
+
+- **Severity:** not a fault. A business observation that needs a decision from you.
+- **What it means:** the "Over budget" warning compares a university's total cost against the
+  student's limit. With no limit there is nothing to compare, so the warning can never appear for
+  these students.
+- **Why each one is blank:** 5 answered "Not Sure". 1 answered "Budget is not a problem". 1 answered
+  "> 1,000,000", which is a minimum and not a limit. The other 5 have no saved answer at all (older
+  records, from before the program started keeping the original wording).
+- **Why it matters:** the first three reasons are honest answers. The last five are unknown: I
+  cannot tell whether the student was never asked or the answer was lost.
+- **To decide:** whether to ask the 5 "Not Sure" students and the 5 with no saved answer for a band.
+
+#### - [ ] I4. Three student records hold the budget as text where a number is expected
+
+- **Severity:** group C. Untidy, and harmless today.
+- **What is there:** two records hold `"500000"` in quote marks (text), and one holds the range
+  `"400000-800000"`. The same value sits in both of each student's files.
+- **The rule it breaks:** the intake workflow says only a number or a blank may be stored there
+  ([workflows/01_intake.md:103](../workflows/01_intake.md#L103)).
+- **Why it is harmless today:** the cost check was written to cope. It reads text, and for a range
+  it takes the top figure, so the three students are checked against RM 500,000, RM 500,000 and
+  RM 800,000. Source: [tools/shortlist_schema.py:651-676](../tools/shortlist_schema.py#L651-L676).
+- **Correction to what I first reported:** in the chat I said these three "may be skipped or
+  misread". I had not read the cost check at that point. Having read it, that was wrong.
+- **Suggested fix:** replace the three with plain numbers. For the range, confirm with the student
+  whether RM 800,000 is the real limit.
+
+#### - [ ] I5. The intake workflow describes four budget options; the program says there are three
+
+- **Severity:** group B (an AI session follows the workflow).
+- **Where:** [workflows/01_intake.md:98-101](../workflows/01_intake.md#L98-L101) says the budget
+  question is "a four-option dropdown" that includes "Not Sure". The table lower down
+  ([lines 434-440](../workflows/01_intake.md#L434-L440)) lists the options with older wording again.
+- **What the program says:** a dated note in
+  [tools/ingest_form_csv.py:197-203](../tools/ingest_form_csv.py#L197-L203) says the live form was
+  cut to exactly three bands on 2026-09-17, removing "Not sure" and "Budget is not a problem" so
+  that every new student gives a real figure.
+- **What I do not know:** which is true of the live form today. I did not open the form.
+  [intake_report.md](intake_report.md) follows the program and describes three bands.
+- **Suggested fix:** open the form, count the options, and correct whichever file is wrong.
+
+#### - [ ] I6. The intake workflow asks for a check that was settled three weeks ago
+
+- **Severity:** group B. The cost is a wasted step, not a wrong result.
+- **Where:** [workflows/01_intake.md:205-211](../workflows/01_intake.md#L205-L211) and
+  [lines 420-423](../workflows/01_intake.md#L420-L423).
+- **What it says:** a stored answer called `ranking_importance` (how much the student cares about
+  university ranking) steers part of the score, and a session should check that the
+  `scoring-weights` skill (the instruction sheet for building a student's scoring formula) reads it
+  correctly before trusting any formula.
+- **What is true:** since 2026-09-17 the scoring formula is made by a program that does not read
+  that answer at all. It uses the full ordering of the eight importance answers. Source:
+  [tools/derive_weights.py:39-42](../tools/derive_weights.py#L39-L42) and the skill file itself.
+- **Suggested fix:** delete both warnings, and say the answer is kept for reference only.
+
+#### - [ ] I7. The `/intake` launcher lists review items that no longer need reviewing
+
+- **Severity:** group B, minor.
+- **Where:** [.claude/commands/intake.md:30-33](../.claude/commands/intake.md#L30-L33) (the short
+  file that starts the intake stage when you type `/intake`).
+- **What it says:** the human review covers a "grades sanity-check" and "degree level", among others.
+- **What is true:** the workflow it launches says there is "nothing to check" for either
+  ([workflows/01_intake.md:321](../workflows/01_intake.md#L321) and
+  [line 375](../workflows/01_intake.md#L375)). The program now fills both in by itself.
+- **Suggested fix:** trim the launcher's list to what the workflow still flags: an extra field of
+  interest typed in the student's own words, a country we do not cover, and a missing course.
+
+#### - [ ] I8. Four notes inside the programs are out of date
+
+- **Severity:** group C. The programs behave correctly.
+- **"8 destinations" where there are 10:**
+  [tools/ingest_form_csv.py:148](../tools/ingest_form_csv.py#L148),
+  [line 980](../tools/ingest_form_csv.py#L980) and
+  [tools/init_student.py:99](../tools/init_student.py#L99). The last one says "8" and then lists
+  all ten. Taiwan and Germany were added on 2026-09-23.
+- **A note about the old 1-to-8 sliders:**
+  [tools/ingest_form_csv.py:288-290](../tools/ingest_form_csv.py#L288-L290) says the importance
+  answers are a 1-to-8 scale and repeats the request in I6. The form now uses three levels.
+- **Suggested fix:** change "8" to "10" in the three places, and delete the slider note.
+
+*Not listed here:* the limits that are design choices and not contradictions between files (ties
+between importance answers, the form assuming an A-Level student, the spreadsheet that must not be
+sorted by hand, the casual consent wording). They are in the "What is still rough" section of
+[intake_report.md](intake_report.md).
+
+### Things in intake_report.md that I did not verify
+
+#### - [ ] U1. "The poster advertises it as taking two minutes"
+
+- **Where:** [intake_report.md](intake_report.md), under "What the student sees".
+- **Where the figure came from:** the poster
+  ([sales/pitch/university-research-service-poster.html:581](sales/pitch/university-research-service-poster.html#L581)
+  and line 772).
+- **What I did not do:** time anyone filling in the form. It has about 22 items, counting the
+  12-subject grade grid and the 8-topic importance grid as one each. The report only repeats the
+  poster's claim and does not say it is accurate.
+- **To settle it:** time two or three people on a phone.
+
+#### - [ ] U2. Whether student records are copied to Microsoft's cloud
+
+- **Where:** [intake_report.md](intake_report.md), under "The safety nets" and "Why this stage
+  matters to the business".
+- **What the report says:** student records are kept out of the project's saved history. That is
+  true and I checked it.
+- **What it does not say, and I did not check:** the whole project folder sits inside a OneDrive
+  folder (`...\OneDrive\Documents\...`). OneDrive is Microsoft's service that copies folders to its
+  servers. If that copying is switched on, the student records are stored there too.
+- **Why it matters:** it changes the honest answer to "where is student data kept?", which a paying
+  parent or an investor may ask.
+- **To settle it:** look at the OneDrive icon on this folder in File Explorer, or OneDrive's
+  settings, to see whether it is being copied. Then decide whether that is acceptable.
+
+#### - [ ] U3. "21 of the 29 students are aiming at a course where one of these bodies matters"
+
+- **Where:** [intake_report.md](intake_report.md), under "The checklist on the course, explained".
+- **What it rests on:** a count of records that have at least one professional body on their
+  checklist.
+- **What I did not do:** compare each checklist against the course that student chose. Some older
+  records had the checklist filled in by the earlier keyword method or by hand, so a few could be
+  wrong in either direction.
+- **To settle it:** spot-check the older records' checklists against their chosen course.
+
+#### - [ ] U4. "It costs almost nothing to run"
+
+- **Where:** [intake_report.md](intake_report.md), under "Why this stage matters to the business".
+- **What it rests on:** reasoning. Three of the four steps are programs with no AI in them.
+- **What is missing:** nobody has measured the time or the AI usage of the human review step.
+- **To settle it:** time one real intake run from fetch to tick-off.
+
+---
+
+## Longlist stage (Stage 3)
+
+*Added 2026-10-10, while writing [longlist_report.md](longlist_report.md). Nothing here has been
+changed or fixed. No student is named; every count is a total across the 28 student spreadsheets.*
+
+L1 is the one to read first, because a customer can see it.
+
+### Things found
+
+#### - [ ] L1. Every ringgit total in the sample spreadsheet uses an old exchange rate
+
+- **Severity:** group A. This is the file shown to people deciding whether to buy.
+- **Where:** [sales/sample_pack/sample_master_list.csv](sales/sample_pack/sample_master_list.csv),
+  the "Approx total (MYR)" column (the whole-degree cost in ringgit), on all 15 rows.
+- **What it says:** MIT's whole degree costs RM 1,743,888. That is USD 371,040 converted at 4.70
+  ringgit per US dollar.
+- **What is true:** the exchange-rate table was corrected on 2026-09-05 and now uses 4.04. At that
+  rate the same degree comes to about RM 1,499,000. The sample was not rebuilt afterwards. Source:
+  [tools/shortlist_schema.py:573-597](../tools/shortlist_schema.py#L573-L597).
+- **How far off the rows are:** I recalculated all 15 from their own tuition and living-cost cells.
+  Every row is too high, by between RM 28,000 (Tsinghua) and about RM 348,000 (Oxford). The seven
+  US rows are each 16% to 18% too high.
+
+  | Currency | Rate the sample used | Rate today |
+  |---|---|---|
+  | US dollar | 4.70 | 4.04 |
+  | British pound | 5.90 | 5.47 |
+  | Singapore dollar | 3.50 | 3.19 |
+  | Australian dollar | 3.10 | 2.91 |
+  | Chinese yuan | 0.65 | 0.60 |
+
+- **Two rows I could not fully explain:** Oxford and Carnegie Mellon work out to a rate that matches
+  neither the old table nor the new one (6.57 and 4.76). Their totals probably include an extra
+  cost that has no cell of its own. I did not trace it.
+- **Two more things in the same file:**
+  - 14 of the 15 rows have an empty "Warnings" cell. The current rule is that a row with no problems
+    says "None", so the reader knows it was checked
+    ([tools/sync_shortlist.py:108-110](../tools/sync_shortlist.py#L108-L110)).
+  - 2 of the 15 rows (Rose-Hulman and Northeastern) are labelled "Not verified". That sits badly
+    next to the "every fee checked" promise, which is con #1 in the
+    [product review](product_review_2026-09-25.md).
+- **Why it matters:** "total cost in ringgit" is one of the product's selling points, and the sample
+  is the proof of it. This is the same problem as con #8 in the product review (stale demo files),
+  with a number attached.
+- **Effect on longlist_report.md:** the example row in the report is taken from this sample. I left
+  the ringgit total out of it for this reason.
+- **Suggested fix:** rebuild the sample pack from a current student list. That is already next move
+  #5 in the product review. It fixes the totals, the empty warnings and the two unverified rows in
+  one go.
+
+#### - [ ] L2. 228 of 503 rows are still labelled "Not verified", all but 4 of them in eight older lists
+
+- **Severity:** not a new fault. This is con #1 in the
+  [product review](product_review_2026-09-25.md), with today's counts and one extra finding.
+- **The counts (2026-10-10):** 28 students have a spreadsheet, holding 503 rows in total. 228 rows
+  are labelled "Not verified" (the facts were not confirmed on the university's own page).
+- **Where they sit:** 224 of the 228 are in eight lists. The other 20 lists hold 213 rows, and 4 of
+  those are unverified, one each in four lists.
+- **What I checked:** each list has a score record with the date every row was scored. All eight
+  lists were started between 2026-07-15 and 2026-07-28. All 20 others were started on 2026-08-06 or
+  later. The rule that every row must be built from official pages came in on 2026-07-29. So the
+  split lines up exactly with the rule change.
+- **Correction to what I first reported:** in the chat I said I had inferred "older" from the
+  workflow notes and had not checked the dates. I have now checked them, and the inference holds.
+  I tightened the wording in [longlist_report.md](longlist_report.md) to match.
+- **What has not moved:** the four worst lists read 52 of 56, 41 of 44, 33 of 36 and 17 of 18
+  unverified. Those are the same four figures the product review recorded on 2026-09-25.
+- **Why it matters:** the report states this gap openly, under "Where things stand today". It is the
+  honest position, and it is also the first thing an investor will ask about. The better half of the
+  story is that the current method gives verified lists (209 of 213 rows).
+- **To decide:** whether to run the repair process (`apply_backfill.py`, the program that
+  re-researches only the unchecked cells of rows already on a list) over the eight older lists
+  before the report is shown to anyone. Two of the eight are partly done already (24 of 44 and
+  16 of 43 unverified), because newer countries were added to them after the rule change.
+
+#### - [ ] L3. The master instruction file still describes this stage the old way
+
+- **Severity:** group B (an AI session follows this file, and is told to read it first).
+- **Where:** [workflows/00_overview.md:21-22](../workflows/00_overview.md#L21-L22), the table of
+  stages near the top. The same wording is in [README.md:33](../README.md#L33) (the setup guide at
+  the top of the project).
+- **What it says:** this stage is "Broad, cheap, snippet-level discovery — 20-40 candidates". A
+  snippet is the two-line preview a search engine shows under a result. The next line of the table
+  says the following stage is where hard facts get verified from official sources.
+- **What is true:** since 2026-07-29 this stage builds 8 to 12 rows per country, each with all 35
+  cells read from official pages, and it owns the fact-checking. The stage after it writes reports
+  and only spot-checks dates. Source:
+  [workflows/03_discover_longlist.md:282-285](../workflows/03_discover_longlist.md#L282-L285) and
+  [lines 289-292](../workflows/03_discover_longlist.md#L289-L292).
+- **The same file contradicts itself:** further down, the overview's own rule 2 says this stage
+  "owns" verification ([workflows/00_overview.md:286-292](../workflows/00_overview.md#L286-L292)).
+  Only the table at the top was left behind.
+- **About the number:** "20-40" is not wrong as a total for a student with three or four countries.
+  It is wrong as a description of one run, and the stage's own file says so in those words ("not
+  20-40 in one go").
+- **Why it matters:** a session that reads only the table could treat a row built from search
+  previews as acceptable. It is also one more source for the mismatched list sizes in con #3 of the
+  [product review](product_review_2026-09-25.md).
+- **Suggested fix:** reword the table row to "8-12 officially sourced rows per country, one country
+  per session", and move "verify their hard facts" out of the next row. Make the same change in
+  `README.md`.
+
+#### - [ ] L4. Two files list eight country notebooks; there are ten
+
+- **Severity:** group B, minor.
+- **Where:** [.claude/agents/row-filler.md:40-41](../.claude/agents/row-filler.md#L40-L41) (the
+  instruction sheet each AI researcher reads before filling a row) and
+  [workflows/03_discover_longlist.md:123-124](../workflows/03_discover_longlist.md#L123-L124).
+- **What it says:** both name the country notebooks as UK, USA, Australia, Singapore, Malaysia,
+  China, Hong Kong and Japan.
+- **What is true:** `workflows/countries/` also holds `taiwan.md` and `germany.md`. Both countries
+  were added on 2026-09-23.
+- **Why it matters:** the researcher is told that reading its country's notebook "is not optional".
+  A researcher sent to a Taiwanese or German university is given a list that does not include its
+  country. It would probably still find the file, because the sheet also gives the general pattern
+  for the file name, but the list invites it to conclude there is nothing to read.
+- **Related, already tracked:** entry **I8** above is the same miss in the intake programs ("8
+  destinations" where there are 10).
+- **Not counted:** [workflows/00_overview.md:77](../workflows/00_overview.md#L77) also lists eight,
+  but that line is a dated note about what was moved on 2026-07-30, when there were eight. It is
+  history, not an instruction.
+- **Suggested fix:** add `taiwan.md` and `germany.md` to both lists. Better, replace both lists
+  with "the file named after your country in `workflows/countries/`", so the next country added
+  does not need the same edit.
+
+### Things in longlist_report.md that I did not verify
+
+#### - [ ] N1. "Roughly 70,000 tokens per university" and the cost of a full country
+
+- **Where:** [longlist_report.md](longlist_report.md), under "What limits this stage".
+- **Where the figure came from:** copied from con #5 in the
+  [product review](product_review_2026-09-25.md#L129). A token is the unit of AI usage you are
+  billed for.
+- **What I did not do:** measure it. I also do not know whether that figure was measured for the
+  longlist stage or for the in-depth report stage, which is a different and heavier job.
+- **What is missing altogether:** the cost of researching one full country for one student. The
+  workflow says nobody has taken that measurement
+  ([workflows/03_discover_longlist.md:239-241](../workflows/03_discover_longlist.md#L239-L241)),
+  and the report repeats that.
+- **Why it matters:** cost per student is the number an investor will use to judge whether the
+  service can make money at RM50.
+- **To settle it:** on the next country run, write down the AI usage and the time taken, as step 7
+  of the workflow already asks.
+
+#### - [ ] N2. The facts in the example row
+
+- **Where:** [longlist_report.md](longlist_report.md), under "One row, as the student sees it".
+- **Where they came from:** the MIT row of the sample spreadsheet in L1. That includes the deadline
+  (1 January 2027), "up to 3 years of work after the degree", and the statement that MIT covers
+  international students' full financial need.
+- **What I did not do:** re-check any of them on MIT's own pages. The sample pack is already known
+  to carry outdated facts elsewhere (con #8 in the product review).
+- **To settle it:** rebuilding the sample pack (L1) settles this too. Until then, check the deadline
+  and the work-rights line on the official pages before the report goes to anyone outside.

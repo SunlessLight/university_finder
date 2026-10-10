@@ -1,0 +1,249 @@
+/* Screen 3 of 7: waiting. Owner: Session A.
+   Every selector in this file must start with .screen-waiting so nothing leaks into
+   another screen. Use the shared classes and tokens in ../styles.css first. */
+
+.screen-waiting .wt-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.screen-waiting .wt-status {
+  padding: 28px 32px;
+  border-top: 3px solid var(--navy);
+}
+
+.screen-waiting .wt-status h1 {
+  font-size: 1.9rem;
+  margin-bottom: 0.3em;
+}
+
+.screen-waiting .wt-lede {
+  margin-bottom: 22px;
+}
+
+/* ---- progress steps ---- */
+
+.screen-waiting .wt-steps {
+  list-style: none;
+  margin: 0 0 22px;
+  padding: 0;
+}
+
+.screen-waiting .wt-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 14px;
+  padding-bottom: 16px;
+}
+
+.screen-waiting .wt-step:last-child {
+  padding-bottom: 0;
+}
+
+/* the line joining one dot to the next */
+.screen-waiting .wt-step:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: 13px;
+  top: 28px;
+  bottom: 0;
+  width: 2px;
+  background: var(--line);
+}
+
+.screen-waiting .wt-step.is-done:not(:last-child)::before {
+  background: var(--free);
+}
+
+.screen-waiting .wt-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  background: #fff;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.screen-waiting .wt-step.is-done .wt-dot {
+  background: var(--free);
+  border-color: var(--free);
+}
+
+.screen-waiting .wt-step.is-active .wt-dot {
+  border-color: var(--line);
+  border-top-color: var(--accent);
+  animation: wt-spin 0.9s linear infinite;
+}
+
+.screen-waiting .wt-step-title {
+  margin: 2px 0 0;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.screen-waiting .wt-step-detail {
+  margin: 2px 0 0;
+  font-size: 0.88rem;
+}
+
+.screen-waiting .wt-step.is-pending .wt-step-title {
+  color: var(--gray);
+  font-weight: 600;
+}
+
+.screen-waiting .wt-step.is-pending .wt-step-detail {
+  display: none;
+}
+
+/* ---- WhatsApp note and actions ---- */
+
+.screen-waiting .wt-note {
+  margin: 0;
+  padding: 14px 16px;
+  border-left: 3px solid var(--free);
+  border-radius: var(--radius);
+  background: var(--freewash);
+}
+
+.screen-waiting .wt-note strong {
+  color: var(--free);
+}
+
+.screen-waiting .wt-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+
+.screen-waiting .wt-skip {
+  padding: 6px 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--gray);
+}
+
+/* ---- preview of what is coming ---- */
+
+.screen-waiting .wt-preview {
+  padding: 28px 28px 24px;
+}
+
+.screen-waiting .wt-ghost {
+  margin-top: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.screen-waiting .wt-ghost-row {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 1fr 1fr 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 12px;
+  border-top: 1px solid var(--line);
+}
+
+.screen-waiting .wt-ghost-head {
+  border-top: 0;
+  background: var(--wash);
+  color: var(--gray);
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.screen-waiting .wt-bone {
+  display: block;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--line) 25%, var(--wash) 50%, var(--line) 75%);
+  background-size: 200% 100%;
+  animation: wt-shimmer 1.6s linear infinite;
+}
+
+/* the likelihood cell: a pill in the Reach / Match / Safety colour */
+.screen-waiting .wt-bone.wt-bone-pill {
+  width: 52px;
+  height: 18px;
+  animation: none;
+}
+
+.screen-waiting .wt-bone-pill.badge-reach {
+  background: var(--goldwash);
+}
+
+.screen-waiting .wt-bone-pill.badge-match {
+  background: var(--accentwash);
+}
+
+.screen-waiting .wt-bone-pill.badge-safety {
+  background: var(--freewash);
+}
+
+.screen-waiting .wt-preview-note {
+  margin: 10px 0 0;
+  font-size: 0.85rem;
+}
+
+.screen-waiting .wt-later-title {
+  margin-top: 24px;
+}
+
+.screen-waiting .wt-later {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.screen-waiting .wt-later li {
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+}
+
+.screen-waiting .wt-later strong {
+  display: block;
+  font-family: Georgia, "Times New Roman", serif;
+  color: var(--navy);
+}
+
+.screen-waiting .wt-later span {
+  font-size: 0.9rem;
+}
+
+@keyframes wt-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes wt-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+
+  to {
+    background-position: 0 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .screen-waiting .wt-step.is-active .wt-dot,
+  .screen-waiting .wt-bone {
+    animation: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .screen-waiting .wt-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

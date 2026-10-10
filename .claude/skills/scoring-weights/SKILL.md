@@ -29,10 +29,10 @@ not the weight vector. Evan's call: make it mechanical, and move everything that
 to *adjust a weight* into a **Warnings-column flag** instead (surfaced next to the
 score, the same place "Over budget" and "Deadline passed" already live) — see
 `feasibility_flags()` in `tools/shortlist_schema.py`. Two flags exist for this:
-- `Recognition/accreditation risk — check <targets> status` — fires when the student
+- `Recognition risk — check <targets>` — fires when the student
   has `recognition_targets` set and the row's `recognition_fit` sub-score is low
   (≤2/5), regardless of that row's weight.
-- `Location preference contradictory (Urban + Rural both selected)` — fires whenever
+- `Urban+Rural both ticked` — fires whenever
   both are ticked, so it's visible on the spreadsheet instead of silently steering
   (or failing to steer) `location_pref_fit`.
 

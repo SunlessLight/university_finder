@@ -1,0 +1,286 @@
+/* Screen 1 of 7: landing. Owner: Session A.
+   Every selector in this file must start with .screen-landing so nothing leaks into
+   another screen. Use the shared classes and tokens in ../styles.css first. */
+
+/* ---- hero ---- */
+
+.screen-landing .ld-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: 40px;
+  align-items: center;
+  padding: 20px 0 8px;
+}
+
+.screen-landing .ld-hero h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.4em;
+  text-wrap: balance;
+}
+
+.screen-landing .ld-lede {
+  font-size: 1.12rem;
+  color: var(--gray);
+  max-width: 34em;
+  margin-bottom: 1.5em;
+}
+
+.screen-landing .ld-start {
+  padding: 15px 30px;
+  font-size: 1.1rem;
+}
+
+.screen-landing .ld-hero-note {
+  margin: 14px 0 0;
+  font-size: 0.85rem;
+  max-width: 36em;
+}
+
+/* ---- the sample-list peek ---- */
+
+.screen-landing .ld-peek {
+  border-top: 3px solid var(--navy);
+  padding: 18px 20px 16px;
+}
+
+.screen-landing .ld-peek-who {
+  margin: 0 0 12px;
+  font-size: 0.9rem;
+}
+
+.screen-landing .ld-peek-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.screen-landing .ld-peek-row {
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+}
+
+.screen-landing .ld-peek-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.screen-landing .ld-peek-main strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.1rem;
+  color: var(--navy);
+}
+
+.screen-landing .ld-peek-cost {
+  margin-left: auto;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.screen-landing .ld-peek-sub {
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.screen-landing .ld-peek-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 10px;
+  margin-top: 6px;
+  font-size: 0.82rem;
+}
+
+.screen-landing .ld-peek-foot {
+  margin: 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-size: 0.8rem;
+}
+
+/* ---- sections ---- */
+
+.screen-landing .ld-section {
+  margin-top: 56px;
+}
+
+.screen-landing .ld-section h2 {
+  margin-bottom: 20px;
+}
+
+/* ---- deliverables ---- */
+
+.screen-landing .ld-deliverables {
+  --grid-min: 260px;
+}
+
+.screen-landing .ld-deliverable h3 {
+  font-size: 1.3rem;
+}
+
+.screen-landing .ld-deliverable p {
+  margin: 0;
+}
+
+.screen-landing .ld-deliverable-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.screen-landing .ld-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-weight: 800;
+}
+
+.screen-landing .ld-tier {
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.screen-landing .ld-tier.is-free {
+  background: var(--freewash);
+  color: var(--free);
+}
+
+.screen-landing .ld-tier.is-paid {
+  background: var(--goldwash);
+  color: var(--gold);
+}
+
+.screen-landing .ld-rule {
+  margin: 14px 0 0;
+  font-size: 0.9rem;
+}
+
+/* ---- early-tester feedback ---- */
+
+.screen-landing .ld-scores {
+  --grid-min: 340px;
+  align-items: start;
+}
+
+.screen-landing .ld-score-figure {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  color: var(--navy);
+  line-height: 1;
+}
+
+.screen-landing .ld-score-figure strong {
+  font-size: 3rem;
+}
+
+.screen-landing .ld-score-figure span {
+  font-size: 1.2rem;
+  color: var(--gray);
+}
+
+.screen-landing .ld-score-who {
+  margin: 6px 0 2px;
+  font-weight: 700;
+}
+
+.screen-landing .ld-score-question {
+  margin: 0;
+  font-size: 0.92rem;
+  font-style: italic;
+}
+
+.screen-landing .ld-bars {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.screen-landing .ld-bars-title {
+  margin: 0 0 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.screen-landing .ld-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 11em) minmax(40px, 1fr) 4.2em;
+  align-items: center;
+  gap: 10px;
+  padding: 3px 0;
+  font-size: 0.85rem;
+}
+
+.screen-landing .ld-bar-track {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--wash);
+  overflow: hidden;
+}
+
+.screen-landing .ld-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+.screen-landing .ld-bar-count {
+  color: var(--gray);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.screen-landing .ld-score-col,
+.screen-landing .ld-quotes {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.screen-landing .ld-quotes {
+  margin-top: 16px;
+}
+
+.screen-landing .ld-quote {
+  margin: 0;
+  border-left: 3px solid var(--gold);
+}
+
+.screen-landing .ld-quote blockquote {
+  margin: 0 0 10px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.02rem;
+  line-height: 1.5;
+  color: var(--navy);
+}
+
+.screen-landing .ld-quote figcaption {
+  font-size: 0.82rem;
+}
+
+@media (max-width: 860px) {
+  .screen-landing .ld-hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+
+  .screen-landing .ld-hero h1 {
+    font-size: 2rem;
+  }
+}

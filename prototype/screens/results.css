@@ -1,0 +1,177 @@
+/* Screen 4 of 7: results. Owner: Session B.
+   Every selector in this file must start with .screen-results so nothing leaks into
+   another screen. Use the shared classes and tokens in ../styles.css first. */
+
+.screen-results .hero h1 {
+  max-width: 24em;
+}
+
+.screen-results .lede {
+  max-width: 46em;
+  font-size: 1.06rem;
+}
+
+.screen-results .spread {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.screen-results .spread-label {
+  margin-right: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--gray);
+}
+
+.screen-results .hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.screen-results .block {
+  margin-top: 40px;
+}
+
+.screen-results .block > .muted {
+  margin-bottom: 18px;
+}
+
+/* ---- what we found ---- */
+
+.screen-results .findings {
+  --grid-min: 400px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: finding;
+}
+
+.screen-results .findings li {
+  position: relative;
+  padding-left: 62px;
+  counter-increment: finding;
+}
+
+.screen-results .findings li::before {
+  content: counter(finding);
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  line-height: 28px;
+  text-align: center;
+}
+
+/* ---- top picks ---- */
+
+.screen-results .picks {
+  --grid-min: 300px;
+}
+
+.screen-results .pick {
+  display: flex;
+  flex-direction: column;
+  border-top: 3px solid var(--line);
+}
+
+.screen-results .pick-reach {
+  border-top-color: var(--gold);
+}
+
+.screen-results .pick-match {
+  border-top-color: var(--accent);
+}
+
+.screen-results .pick-safety {
+  border-top-color: var(--free);
+}
+
+.screen-results .pick-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 10px;
+  margin-bottom: 12px;
+}
+
+.screen-results .pick-place {
+  font-size: 0.82rem;
+}
+
+.screen-results .pick h3 {
+  margin-bottom: 4px;
+}
+
+.screen-results .pick-course {
+  margin-bottom: 16px;
+  font-size: 0.92rem;
+  color: var(--gray);
+}
+
+.screen-results .pick-facts {
+  display: grid;
+  gap: 14px;
+  margin: 0 0 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.screen-results .pick-facts dt {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+
+.screen-results .pick-facts dd {
+  margin: 0;
+}
+
+.screen-results .pick-cost {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--navy);
+}
+
+.screen-results .pick-grades {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--free);
+}
+
+.screen-results .pick-note {
+  font-size: 0.82rem;
+}
+
+/* The badge sits on the card's bottom edge whatever the height of the text above it. */
+.screen-results .pick-foot {
+  margin-top: auto;
+}
+
+.screen-results .pick-more {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  background: var(--wash);
+  border-style: dashed;
+}
+
+.screen-results .pick-more .btn {
+  margin-top: 4px;
+}

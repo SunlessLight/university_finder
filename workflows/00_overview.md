@@ -281,7 +281,7 @@ These are *why this project exists* — they stop a tidy-looking list from being
    A\*A\*A\*A at Duke. `check_master_list.py` now fails on that contradiction.
    **Provisional grades:** when `profile.grade_status == "expected"` (grades the student is only
    *confident of getting*, e.g. from the form intake), admission likelihood is still computed but is
-   **provisional** — `sync_shortlist.py` stamps a "Grades unverified (self-predicted)" warning on every
+   **provisional** — `sync_shortlist.py` stamps a "Grades self-predicted" warning on every
    row. The list must not read as settled until actual/official predicted results arrive.
 2. **Official sources for hard facts.** Fees, entry requirements, English, deadlines, and intake must be
    verified against the **official** university / UCAS / Common App page. **Stage 3 owns this** — the

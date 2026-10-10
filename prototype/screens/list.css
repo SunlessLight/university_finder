@@ -1,0 +1,285 @@
+/* Screen 5 of 7: list. Owner: Session B.
+   Every selector in this file must start with .screen-list so nothing leaks into
+   another screen. Use the shared classes and tokens in ../styles.css first. */
+
+/* Eight columns need more room than the default centred column. */
+.screen-list {
+  max-width: 1300px;
+}
+
+.screen-list .head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 24px;
+  margin-bottom: 20px;
+}
+
+.screen-list .spread {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+}
+
+/* ---- table ---- */
+
+.screen-list .table-wrap {
+  padding: 0;
+  overflow-x: auto;
+}
+
+.screen-list table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.screen-list th {
+  padding: 11px 12px;
+  background: var(--wash);
+  border-bottom: 1px solid var(--line);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-align: left;
+  text-transform: uppercase;
+  vertical-align: bottom;
+  white-space: nowrap;
+  color: var(--gray);
+}
+
+.screen-list td {
+  padding: 14px 12px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.screen-list tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* The short columns shrink to their content, so University and Course share what is left. */
+.screen-list th:nth-child(n+4),
+.screen-list .row td:nth-child(n+4) {
+  width: 1%;
+  white-space: nowrap;
+}
+
+/* Its heading is wider than its figures, so let the heading wrap instead. */
+.screen-list th.num {
+  white-space: normal;
+}
+
+.screen-list .num {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.screen-list td.num {
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.screen-list .row {
+  cursor: pointer;
+}
+
+.screen-list .row:hover {
+  background: var(--wash);
+}
+
+.screen-list .row.is-picked,
+.screen-list .row.is-picked:hover {
+  background: var(--accentwash);
+}
+
+.screen-list .row.is-open td {
+  border-bottom-color: transparent;
+}
+
+/* The label fills the cell, so the whole cell is the tick target. */
+.screen-list .col-pick {
+  width: 1%;
+  padding: 0;
+}
+
+.screen-list .tick {
+  display: flex;
+  justify-content: center;
+  padding: 15px 14px;
+  cursor: pointer;
+}
+
+.screen-list .tick input {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--navy);
+  cursor: inherit;
+}
+
+.screen-list .is-cut .tick {
+  cursor: not-allowed;
+}
+
+.screen-list .col-uni {
+  min-width: 230px;
+}
+
+.screen-list .row-toggle {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-weight: 700;
+  line-height: 1.35;
+  text-align: left;
+  color: var(--navy);
+  cursor: pointer;
+}
+
+.screen-list .row-toggle:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.screen-list .chev {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-right: 2px solid var(--gray);
+  border-bottom: 2px solid var(--gray);
+  transform: translateY(-2px) rotate(-45deg);
+  transition: transform 0.12s;
+}
+
+.screen-list .row-toggle[aria-expanded="true"] .chev {
+  transform: translateY(-3px) rotate(45deg);
+}
+
+/* Indented by the chevron's width plus its gap, to line up under the name. */
+.screen-list .uni-sub {
+  display: block;
+  margin-left: 17px;
+  font-size: 0.82rem;
+}
+
+.screen-list .tag-cut {
+  font-weight: 600;
+  color: var(--gold);
+}
+
+.screen-list .tag-sample {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.screen-list .is-cut .row-toggle,
+.screen-list .is-cut .col-course,
+.screen-list .is-cut td.num {
+  color: var(--gray);
+}
+
+.screen-list .approx {
+  font-size: 0.78rem;
+}
+
+/* ---- expanded row ---- */
+
+.screen-list .detail td {
+  padding: 4px 28px 26px 61px;
+  background: var(--wash);
+  border-top: 1px dashed var(--line);
+}
+
+.screen-list .warn {
+  margin: 18px 0 0;
+  padding: 10px 14px;
+  background: var(--goldwash);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.screen-list .detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 0 32px;
+}
+
+.screen-list .detail .section-title {
+  margin-top: 22px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--line);
+  color: var(--navy);
+}
+
+.screen-list .detail dl {
+  margin: 0;
+}
+
+.screen-list .detail dt {
+  margin-top: 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--gray);
+}
+
+.screen-list .detail dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+/* ---- report picks bar ---- */
+
+.screen-list .pickbar {
+  position: sticky;
+  bottom: 16px;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 28px;
+  margin-top: 20px;
+  padding: 14px 20px;
+  border-color: var(--navy);
+  box-shadow: 0 8px 28px rgba(16, 35, 63, 0.16);
+}
+
+.screen-list .pickbar-text,
+.screen-list .pickbar-price {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.9rem;
+}
+
+.screen-list .pickbar-text {
+  flex: 1 1 260px;
+}
+
+.screen-list .pickbar-text strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.1rem;
+  color: var(--navy);
+}
+
+.screen-list .tally {
+  display: flex;
+  gap: 6px;
+}
+
+.screen-list .badge-free {
+  background: var(--freewash);
+  color: var(--free);
+}
+
+.screen-list .badge-paid {
+  background: var(--wash);
+  border-color: var(--line);
+  color: var(--navy);
+}

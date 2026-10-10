@@ -1,0 +1,347 @@
+/*
+ * styles.css — tokens, base and shared classes. Owner: Session 1. Read-only for Sessions A, B, C.
+ *
+ * Tokens (from the poster): --navy --navy2 --ink --gray --line --wash --accent --gold --free
+ *                           --freewash, plus --goldwash --accentwash --radius --maxw
+ * Fonts: Georgia for headings (h1-h3 get it automatically), Segoe UI for body.
+ *
+ * Shared classes
+ *   .btn             base button; combine with one of:
+ *   .btn-primary     the one main action on a screen (navy)
+ *   .btn-ghost       secondary action (outline)
+ *   .card            white box with a border
+ *   .grid            responsive columns with a gap; set --grid-min to change the column width
+ *   .badge           small pill; combine with one of:
+ *   .badge-reach     Reach   (gold)       use "badge badge-" + university.band
+ *   .badge-match     Match   (blue)
+ *   .badge-safety    Safety  (green)
+ *   .badge-verified  "Checked on official page" (green tick), for rows where verified is true
+ *   .badge-unverified "Not verified" (gray), for the rest          [extra, not in the plan]
+ *   .section-title   small uppercase label above a block
+ *   .muted           gray secondary text
+ *
+ * Layout: app.js wraps every screen in <div class="screen screen-<id>">, a centred column
+ * (--maxw wide). A screen that wants the full width can override that on .screen-<id>.
+ */
+
+:root {
+  --navy: #10233f;
+  --navy2: #123a66;
+  --ink: #1a1a1a;
+  --gray: #5b6b7f;
+  --line: #d7dee7;
+  --wash: #f4f6f9;
+  --accent: #1157b8;
+  --gold: #b07407;
+  --free: #17784a;
+  --freewash: #eaf6ef;
+  --goldwash: #fbf3e2;
+  --accentwash: #e8f0fb;
+  --radius: 6px;
+  --maxw: 1080px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--wash);
+}
+
+h1,
+h2,
+h3 {
+  font-family: Georgia, "Times New Roman", serif;
+  color: var(--navy);
+  line-height: 1.15;
+  margin: 0 0 0.45em;
+}
+
+h1 {
+  font-size: 2.1rem;
+  letter-spacing: -0.01em;
+}
+
+h2 {
+  font-size: 1.45rem;
+}
+
+h3 {
+  font-size: 1.12rem;
+}
+
+p {
+  margin: 0 0 1em;
+}
+
+a {
+  color: var(--accent);
+}
+
+button {
+  font: inherit;
+}
+
+/* ---- top bar and journey bar ---- */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+}
+
+.topbar-inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.brand {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  color: var(--navy);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.journey {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.journey-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px 6px 7px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--gray);
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.journey-step:hover {
+  background: var(--wash);
+}
+
+.journey-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+  background: #fff;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.journey-step.is-done {
+  color: var(--navy);
+}
+
+.journey-step.is-done .journey-num {
+  background: var(--free);
+  border-color: var(--free);
+  color: #fff;
+}
+
+.journey-step.is-current,
+.journey-step.is-current:hover {
+  background: var(--navy);
+  color: #fff;
+}
+
+.journey-step.is-current .journey-num {
+  border-color: #fff;
+  color: var(--navy);
+}
+
+.journey-sep {
+  width: 22px;
+  height: 1.5px;
+  background: var(--line);
+}
+
+.demo-chip {
+  font-size: 0.75rem;
+  color: var(--gray);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+
+/* ---- screen container ---- */
+
+.screen {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 36px 24px 72px;
+}
+
+/* ---- shared classes ---- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 22px;
+  border: 1.5px solid transparent;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.12s, border-color 0.12s, color 0.12s;
+}
+
+.btn-primary {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.btn-ghost {
+  background: #fff;
+  border-color: var(--line);
+  color: var(--navy);
+}
+
+.btn-ghost:hover {
+  border-color: var(--navy);
+}
+
+.btn:focus-visible,
+.journey-step:focus-visible,
+.brand:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--grid-min, 240px), 1fr));
+  gap: 16px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 9px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.badge-reach {
+  background: var(--goldwash);
+  color: var(--gold);
+}
+
+.badge-match {
+  background: var(--accentwash);
+  color: var(--accent);
+}
+
+.badge-safety {
+  background: var(--freewash);
+  color: var(--free);
+}
+
+.badge-verified {
+  background: #fff;
+  border-color: var(--free);
+  color: var(--free);
+}
+
+.badge-verified::before {
+  content: "\2713";
+  font-weight: 800;
+}
+
+.badge-unverified {
+  background: #fff;
+  border-color: var(--line);
+  color: var(--gray);
+}
+
+.section-title {
+  margin: 0 0 8px;
+  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+
+.muted {
+  color: var(--gray);
+}
+
+/* ---- Session 1 stubs and the render-error fallback ---- */
+
+.stub {
+  max-width: 620px;
+  margin: 48px auto 0;
+  padding: 32px 36px 36px;
+  border-top: 3px solid var(--navy);
+}
+
+.stub .btn {
+  margin-top: 6px;
+}
+
+.stub .stub-skip {
+  padding: 6px 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--gray);
+}
+
+.error-card {
+  max-width: 620px;
+  margin: 48px auto 0;
+  border-top: 3px solid var(--gold);
+}

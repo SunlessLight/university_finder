@@ -1,5 +1,5 @@
 """
-build_sample_pack.py — regenerate sales/sample_pack/ from a real, verified student's data
+build_sample_pack.py — regenerate business/sales/sample_pack/ from a real, verified student's data
 with identity redacted (name -> stand-in, school/family finances generalized; university
 facts, fees, deadlines and aid numbers left intact, since that's the part that's real and
 public). See README.md for the redaction policy and what each output file shows.
@@ -9,7 +9,7 @@ Re-run this whenever the source student's master_list.csv or reports/ change mat
 from what the pipeline actually produces today.
 
 Usage:
-    python sales/sample_pack/build_sample_pack.py [--report REPORT_SLUG]
+    python business/sales/sample_pack/build_sample_pack.py [--report REPORT_SLUG]
 
     --report defaults to the MIT report. Pass a different reports/<slug>.md name to
     regenerate the sample university-report PDF from a different finalist instead.
@@ -25,7 +25,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+REPO_ROOT = Path(__file__).resolve().parents[3]
 OUT_DIR = Path(__file__).resolve().parent
 TOOLS_DIR = REPO_ROOT / "tools"
 

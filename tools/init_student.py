@@ -41,6 +41,11 @@ def profile_template(slug, name):
     return {
         "student_slug": slug,
         "name": name,
+        # Identity key for re-submissions. The slug comes from the nickname, which a returning
+        # student retypes differently ("Ng Kai Wang" -> "NgKW") and so silently earns a second
+        # folder; the email is stable. ingest_form_csv.py matches new rows against this field.
+        # Added 2026-09-23. Stays None for hand-built students who never filled the form.
+        "contact_email": None,
         "ethnicity": None,           # PDPA-sensitive; informs scholarship-eligibility research (e.g. Bumiputra vs non-Bumiputra funds), never a desirability input
         "home_country": "Malaysia",
         "recognition_targets": [],  # e.g. ["MQA","MMC"] — only for regulated professions
