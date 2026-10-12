@@ -12,3 +12,4 @@ The business side of the university research service. None of it is part of the 
 | [decide_report.md](decide_report.md) | Plain-English explainer of the decision stage (Stage 5: recommendation + deadline calendar) for a non-technical reader, e.g. an investor. |
 | [additionals.md](additionals.md) | Running list of inconsistencies noticed between files but not yet fixed, grouped by how much they matter. Tick off as fixed. |
 | [sales/](sales/) | Everything used to sell: positioning, service tiers, go-to-market plan, WhatsApp scripts, the poster, and the sample pack. |
+| [launchx/](launchx/) | Material for the LaunchX Bootcamp 2 investor pitch on 24 October 2026: survey and chat questions, market size, competitors, cost to serve one student, slide wording, and the hardest-questions drill. |

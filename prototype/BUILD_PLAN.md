@@ -16,6 +16,8 @@ Session 1  Foundation            alone, first (blocks everything)
    +-- Session C  Report side    screens 6-7  /
    |
 Session 2  Integration check     alone, last
+   |
+Session 3  Design pass           optional, after Session 2; one screen per sitting
 ```
 
 A, B and C never touch the same file, so they can run at the same time. If time is short, C is the
@@ -437,3 +439,110 @@ the generator on the next shell line) and overwrote all 14 screen files with stu
 restored from git (commit `1bd2c84`) and confirmed byte-identical to a pre-session backup before
 any other edit. The guard described above is the fix; it was then verified by a run that reported
 "0 written, 14 existing screen files left alone".
+
+## Session 3 — Design pass from Figma references (optional, after Session 2)
+
+Restyle the screens using layouts from five Figma Community templates Evan picked on 2026-10-11.
+**Borrow layout, not branding:** structure, spacing, density and component shapes come from the
+reference; colours, fonts, wording and every number stay the prototype's own.
+
+### Session 3 status (2026-10-12) — NOT STARTED, waiting on Evan's frame links
+
+Nothing is built. The table below has no frame links yet; a screen cannot start until its row has
+one (or a screenshot, see "Fallback").
+
+### Evan's steps, once per template (no code needed)
+
+1. Open the Community link in the table and click **Open in Figma**. That saves a copy to your own
+   Figma account. The connector can only read files in your account, not the public gallery.
+2. Click once on the one screen (Figma calls it a "frame") you like most.
+3. Right-click it, choose **Copy link to selection**, and paste the link into the "Frame link"
+   column below. One frame per row is enough.
+
+### References
+
+| Screen | Order | Reference (Community link) | Frame link (Evan pastes) |
+|---|---|---|---|
+| `list` | 1 | [Quick Commerce Admin Dashboard: Table & Card Views](https://www.figma.com/community/file/1592210243828177821/quick-commerce-admin-dashboard-ui-table-card-views-free-figma-template) | |
+| `list` | 1 | [Figma data tables UI kit (Untitled UI)](https://www.figma.com/community/file/1332203037536263387/figma-data-tables-ui-kit-untitled-ui) | |
+| `report` | 2 | [Documentation Website Template](https://www.figma.com/community/file/1504770835230036645/documentation-website-template) | |
+| `landing` | 3 | [Website Pricing Tables (BRIX Templates)](https://www.figma.com/community/file/1098325138756147704/website-pricing-tables-brix-templates) | |
+| `landing`, `onboarding` | 3 | [Learning Education Website: Responsive Design](https://www.figma.com/community/file/1567639061099198600/learning-education-website-responsive-design-free) | |
+
+`results` has no reference of its own: restyle its cards after `list`, from the same card view.
+`waiting` and `decide` are out of scope unless a restyled neighbour makes them look out of place.
+
+None of the five files has been opened. "Free" and "still available" come from search listings
+only; confirm on the listing when the file is copied.
+
+### Figma access (checked 2026-10-11)
+
+- Connector `plugin:figma:figma` is signed in as handle "Evan", team "Evan's Cave", **View seat,
+  Starter tier**. If its tools are missing in a new session: `/mcp` → figma → authenticate.
+- **Assume a very small monthly call allowance** (believed to be about 6 tool calls a month at
+  this seat level; not confirmed). Check
+  https://developers.figma.com/docs/figma-mcp-server/rate-limits-access/ before the first call and
+  write the real figure here.
+- Spend calls on `get_design_context` for the linked frame only (it returns the layout, the
+  values and a screenshot together). No exploratory `get_metadata` / `get_screenshot` calls, no
+  re-reading a frame already read. Save what comes back to `.tmp/proto-refs/<screen>/` so a later
+  sitting never pays for the same frame twice.
+- Before the first call: invoke the `figma:figma-design-to-code` skill, then `create_session` with
+  the file key (both are required by the connector).
+- The connector cannot search or browse Figma Community. New references are found by web search.
+
+**Fallback (no allowance left, or a file will not copy):** Evan saves plain screenshots of the
+frame to `.tmp/proto-refs/<screen>/`. Rebuild from the picture. Spacing is then by eye, not
+measured.
+
+### Rules (on top of "Rules for every session", which all still apply)
+
+- **The connector's code draft is React + Tailwind. Never paste it.** Use it as a measurement
+  sheet and write plain HTML/CSS in the existing `render()` functions.
+- **Poster tokens stay.** No new colour or font. If a reference needs a value the tokens lack
+  (a row height, a shadow, a radius), add it as a named token in `styles.css` and list it in that
+  file's header comment.
+- **No web fonts, no icon libraries.** Any image or icon taken from a reference is saved under
+  `prototype/assets/` (create it) and linked by relative path, so `file://` still works.
+- **Reference content is never copied.** Template text and sample data (shop orders, prices) stay
+  out; every value on screen still comes from `window.DATA`.
+- **One screen per sitting, in the table's order.** Each screen is finished and checked before the
+  next starts, so the prototype is demo-ready after any sitting.
+- Screen CSS keeps the `.screen-<id>` prefix. A style wanted by two screens goes in `styles.css`
+  as a shared class.
+- **Behaviour does not change.** Everything under "Behaviour Session 2 should know" in sections
+  A, B and C still holds (tick order in `state.picked`, cut rows cannot be ticked, the two states
+  of `waiting`, at most one `.btn-primary` per screen, and so on).
+
+### What to take from each reference (confirm against the frame; these are from listings)
+
+- **`list`** — the table/card switch from Quick Commerce (new state key, e.g. `state.listView`,
+  default table); row density, header and status-badge treatment from Untitled UI. The expanded
+  row, tick boxes and the sticky bar keep their behaviour.
+- **`report`** — the docs template's side menu for the 15 `DATA.report.sections` plus an "on this
+  page" list. The "Jump to section" control must stay a `scrollIntoView` listener, not an anchor
+  link: `app.js` routes on the hash.
+- **`landing`** — side-by-side tier cards from the pricing template for free / first report free
+  / paid, driven by `DATA.deliverables[].tier` and `DATA.pricing`. Must still cope with
+  `pricePerReport: null`. Hero and section rhythm from the education template.
+- **`onboarding`** — step layout only, from the education template, if it has one worth taking.
+
+### Done when (per screen)
+
+1. `node --check` clean on the screen's script.
+2. `mkdir -p .tmp/proto-shots && node prototype/_build/smoke.js . .tmp/proto-shots` exits 0 with
+   an empty console. Markup will change, so a check tied to the old markup may fail: **rewrite
+   that check to assert the same behaviour on the new markup; never delete it.** Record the new
+   total here (it is 145 before Session 3).
+3. Screenshots at 1366px and 1024px reviewed by eye; no sideways scroll at either.
+4. The screen still reads as the same product as the screens not yet restyled.
+
+### Credits
+
+Several of these files are CC BY 4.0 (free to use with credit to the creator); BRIX has its own
+licence on its listing. For each reference actually used, add a line here with the file name,
+creator and licence, and the same line in the header comment of the screen's CSS file.
+
+| Reference used | Creator | Licence | Screen |
+|---|---|---|---|
+| | | | |
