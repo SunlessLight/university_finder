@@ -440,7 +440,19 @@ L1 is the one to read first, because a customer can see it.
 
 ### Things found
 
-#### - [ ] L1. Every ringgit total in the sample spreadsheet uses an old exchange rate
+#### - [x] L1. Every ringgit total in the sample spreadsheet uses an old exchange rate
+
+- **Resolved 2026-10-12.** The sample pack was rebuilt from the source student's current list and
+  MIT report ([sample_pack_fix_plan.md](../sample_pack_fix_plan.md), Tasks 1 to 4). MIT's whole
+  degree now reads RM 1,499,002, the MIT report states 4.04 ringgit per US dollar, all 15 rows are
+  labelled "Official page" and no "Warnings" cell is empty. The text below is kept as the record of
+  what was wrong.
+- **Correction to the suggested fix below.** It said a rebuild alone would also fill the empty
+  "Warnings" cells and clear the two "Not verified" rows. It would not have: the rebuild copies the
+  source student's list, and that list had the same gaps. They were fixed at the source first
+  (Task 1 and Task 1b of the plan), then the rebuild carried them through. Rose-Hulman's course
+  also changed, to "BS Mechanical Engineering (Robotics minor)", because the robotics degree the
+  row named does not exist. Its score was not recalculated for the new course.
 
 - **Severity:** group A. This is the file shown to people deciding whether to buy.
 - **Where:** [sales/sample_pack/sample_master_list.csv](sales/sample_pack/sample_master_list.csv),

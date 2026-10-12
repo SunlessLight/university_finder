@@ -249,7 +249,7 @@ const check = (name, ok, detail) => results.push({ name, ok: !!ok, detail });
     check('list: clicking a row opens its detail', (await count('#detail-nus')) === 1);
     const colsShown = await ev('(() => { const t = document.querySelector(\'[data-row="nus"]\').innerText + document.querySelector("#detail-nus").innerText;' +
       ' return DATA.columns.filter((c) => App.uni("nus")[c.key] !== "" && !t.includes(c.label) && !t.includes(String(App.uni("nus")[c.key]).slice(0, 12))).map((c) => c.key).join(); })()');
-    // The collapsed row shows two columns reworded ("RM 451,500", "Checked"), so those two may differ.
+    // The collapsed row shows two columns reworded ("RM 383,438", "Checked"), so those two may differ.
     check('list: an open row shows every filled column',
       colsShown.split(',').filter(Boolean).every((k) => ['approxTotalMyr', 'infoSource'].includes(k)), colsShown);
     await click('[data-row="nus"] .row-toggle');
@@ -334,16 +334,20 @@ const check = (name, ok, detail) => results.push({ name, ok: !!ok, detail });
     check('15 unique ids', new Set(d.ids).size === 15, d.ids.join(','));
     check('every row has a band', d.bands.every((b) => ['reach', 'match', 'safety'].includes(b)), d.bands.join(','));
     check('numeric columns are numbers', d.numeric);
-    check('13 verified rows (2 "Not verified" in the sample)', d.verified === 13, d.verified);
+    check('15 verified rows (none "Not verified" in the sample since 2026-10-12)', d.verified === 15, d.verified);
     check('top5 is a Reach/Match/Safety spread', d.top5.length === 5 && ['reach', 'match', 'safety'].every((b) => d.top5.includes(b)), d.top5.join(','));
     check('3-4 findings', d.findings.length >= 3 && d.findings.length <= 4, d.findings.length);
+    // Findings are built from counts and name lists, so an empty list must not leave "0 ()" on screen.
+    check('findings: no empty name list or zero count', !d.findings.some((f) => /\(\)|\bother 0\b/.test(f)), d.findings.join(' || '));
+    // The sample CSV spells it "Need blind" (MIT's own wording) as well as "need-blind".
+    check('findings: aid finding names MIT', d.findings.some((f) => /^MIT, .*decide admission/.test(f)), d.findings[2]);
     check('15 report sections, why here + why hesitate filled', d.sections === 15 && d.whyHere > 0 && d.whyHesitate > 0);
     check('recommended id is a real row', d.ids.includes(d.rec), d.rec);
     check('feedback as on poster, labelled early testers', d.scores[0] === 4.1 && d.scores[1] === 4.2 && /early testers/i.test(d.scores[2]), d.scores.join(','));
     check('no price has been invented', d.price === null, d.price);
     check('no "undefined"/NaN leaked into DATA', d.undef === false);
     check('App.esc escapes', d.esc === '&lt;b&gt;&quot;R&amp;D&quot;&lt;/b&gt;', d.esc);
-    check('money format', d.mit.join('|') === 'RM 1,743,888|RM 1.74M|RM 452k', d.mit.join('|'));
+    check('money format', d.mit.join('|') === 'RM 1,499,002|RM 1.50M|RM 383k', d.mit.join('|'));
     // Rules for every session: no blanket "every fee checked" claim anywhere on screen.
     const claims = [];
     for (const id of ORDER) {

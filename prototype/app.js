@@ -15,8 +15,8 @@
  *   App.current         id of the screen being shown
  *   App.esc(text)       escape text before putting it in innerHTML
  *   App.uni(id)         look up one university in DATA.universities
- *   App.fmt.myr(n)      1743888      -> "RM 1,743,888"
- *   App.fmt.myrShort(n) 1743888      -> "RM 1.74M"     (451500 -> "RM 452k")
+ *   App.fmt.myr(n)      1499002      -> "RM 1,499,002"
+ *   App.fmt.myrShort(n) 1499002      -> "RM 1.50M"     (383438 -> "RM 383k")
  *   App.fmt.date(iso)   "2027-01-01" -> "1 Jan 2027"   (null -> "To confirm")
  *   index.html#<id>     opens straight on that screen (handy while building one screen)
  */

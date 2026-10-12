@@ -75,13 +75,10 @@ for r in raw:
         row[key] = value
     rows.append(row)
 assert len(rows) == 15 and len({r["id"] for r in rows}) == 15
-# Corrections to the sample CSV, which is older than the sample MIT report (Evan, 2026-10-10:
+# Corrections for when the sample CSV is older than the sample MIT report (Evan, 2026-10-10:
 # "follow the report, the spreadsheet is outdated"). (id, key): (text in the CSV, text shown).
-OVERRIDES = {
-    ("mit", "entryRequirements"): (
-        "Holistic; no fixed grades. SAT/ACT optional-ish; top academics expected",
-        "Holistic; no fixed grades. SAT or ACT required; top academics expected"),
-}
+# The MIT entryRequirements entry was retired on 2026-10-12 once the sample CSV caught up.
+OVERRIDES = {}
 for (uid, key), (old, new) in OVERRIDES.items():
     row = next(r for r in rows if r["id"] == uid)
     assert row[key] == old, (uid, key, row[key])  # the CSV changed: re-check the override

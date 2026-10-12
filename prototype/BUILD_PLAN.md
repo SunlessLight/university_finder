@@ -169,11 +169,11 @@ Flags — all settled by Evan on 2026-10-10. A, B, C: build on these, do not re-
    "first report free, then paid" and must cope with `null` (no "RM null").
 4. **15 sections.** `DATA.report.sections` is the current 15-section list and is what the report
    screen shows. The downloadable sample MIT PDF is the older 16-section layout; leave it.
-5. **SAT: the MIT report wins, the spreadsheet is outdated.** MIT's `entryRequirements` in
-   `data.js` now says "SAT or ACT required" (an override in `gen.py`, so a re-run keeps it). The
-   sample CSV outside `prototype/` still says "optional-ish", so the downloaded spreadsheet does too.
-6. **Ringgit totals stay as they are.** They come from an old exchange rate (MIT shows
-   RM 1,743,888); for a prototype the exact numbers do not matter.
+5. **SAT: resolved 2026-10-12.** The sample CSV now says the SAT or ACT is required, so the
+   downloaded spreadsheet, `data.js` and the MIT report agree. The `gen.py` override that used
+   to patch MIT's `entryRequirements` is gone (`OVERRIDES = {}`).
+6. **Ringgit totals: resolved 2026-10-12.** The sample pack was rebuilt at the 2026-09-05
+   rates (USD 4.04) and `data.js` regenerated from it; MIT shows RM 1,499,002.
 
 ## Session A — Sign-up side (parallel)
 

@@ -42,6 +42,11 @@ glossary from that redacted list (`build_glossary_sheet.py`), and redacts + rend
 after the title. It ends by re-running the same leak scan by hand ("zero hits") described below, so a
 regeneration re-proves the guarantee instead of assuming it still holds.
 
+**Last rebuilt: 2026-10-12**, at the exchange rates stamped `FX_AS_OF 2026-09-05` in
+`tools/shortlist_schema.py` (USD 4.04). Every ringgit figure in the list and the MIT report is at
+those rates. If `FX_AS_OF` moves, the source student's list and report need re-converting first, then
+this rebuild — the script copies the source's ringgit figures, it does not recompute them.
+
 Re-run it whenever the source student's list or reports change materially — a report rebuild, a
 corrected fact, a re-scored row — so the sample stops drifting from what the pipeline produces today.
 `check_master_list.py --file sample_master_list.csv` and `check_report.py --file <redacted .md>` should

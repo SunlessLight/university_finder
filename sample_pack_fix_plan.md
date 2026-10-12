@@ -39,13 +39,28 @@ run at any point.
     `check_master_list.py` clean. It hit its stop condition on Rose-Hulman (no robotics major
     exists, minor only): that row was left untouched and `Not verified`, so step 8 fails on that
     one assert. Evan's call: fix the row — carried by Task 1b. Detail: the student's `status.md`.
-- [ ] Task 1b — Rose-Hulman course fix + the two unchecked rows
+- [x] Task 1b — Rose-Hulman course fix + the two unchecked rows
+  - Run 2026-10-12. **Do not re-run.** 21 cells across 3 rows; Rose-Hulman is now
+    `BS Mechanical Engineering (Robotics minor)`, `Official page`, total 1147360 → 1365391. Step 7
+    prints `Task 1 + 1b OK: 43 rows; 14 Not verified left`; `check_master_list.py` 0 findings.
+    Step 6's `feasibility_flags` call passes only the deadline, so it cannot see "Over budget" —
+    checked separately: the profile has no budget ceiling, the flag cannot fire. `status.md` was
+    over its 3000-char budget after Task 1; its history moved to `research_notes.md`
+    ("Session history — 2026-10-12"). Row not re-scored, as planned.
 - [x] Task 2 — source MIT report (2026-10-12; script prints `replaced 18 figures`, not 19 — the
   counts in `PAIRS` sum to 18, all 14 asserts passed, diffed against the backup)
 - [x] Task 3 — poster (2026-10-12; re-render also moved the page-2 contact line from WhatsApp to
   Email — the HTML has said Email since 3caedbc, the committed PDF was never re-rendered after it)
-- [ ] Task 4 — rebuild sample pack
-- [ ] Task 5 — prototype + final sweep
+- [x] Task 4 — rebuild sample pack (2026-10-12; `Scan clean`, `0 finding(s)`, `Task 4 OK: 19
+  pages`; the glossary gained 5 terms from the re-verified rows, so `sample_glossary.csv` changed too)
+- [x] Task 5 — prototype + final sweep (2026-10-12; `data.js: 15 rows x 35 columns`, step 6 no hits,
+  step 9 only this file + `business/additionals.md`, smoke `147/147`.) Two things the steps did not
+  foresee, both in `data.template.js` findings and both caused by the list getting cleaner:
+  - Finding 4 printed `The other 0 () stay marked "Not verified"` once no sample row was
+    unverified — now a zero-case sentence. `smoke.js` expected 13 verified rows; now 15.
+  - Finding 3 dropped MIT: Task 1b's cell says "Need blind" (MIT's spelling), the template matched
+    `/need-blind/` only — now `/need[- ]blind/`. Two smoke checks added for these (seen failing
+    first), hence 147 not 145.
 
 ## Shared facts
 
@@ -59,8 +74,9 @@ run at any point.
   - `data/students/toru/master_list.csv`: `Approx total (MYR)` at current rates. 43 rows. As of
     2026-10-12 (Task 1): no blank `Warnings`; MIT's test rule, deadline and aid dates corrected;
     Northeastern re-verified and `Official page` (its `Course` was renamed, total now 1588884).
-    15 rows are `Info source = Not verified`, one of them a sample row — Rose-Hulman, whose listed
-    degree does not exist (Task 1b).
+    After Task 1b (same day): Rose-Hulman's `Course` is `BS Mechanical Engineering (Robotics
+    minor)` and the row is `Official page`. 14 rows are `Info source = Not verified`, none of them
+    a sample row.
   - `data/students/toru/reports/massachusetts-institute-of-technology.md`: prose still at 4.70. No
     research JSON survives, so the `.md` is the source — edit it directly.
 - **`data/students/` is gitignored — no git undo.** Back up before writing:

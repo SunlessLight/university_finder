@@ -138,7 +138,7 @@
   const cheapest = byCost[0];
   const dearest = byCost[byCost.length - 1];
   const needBlind = ROWS.filter((u) => u.listStatus !== 'Rejected' &&
-    /need-blind/i.test(u.scholarshipAndPortal + ' ' + u.scholarshipCoverage + ' ' + u.scholarshipCompetitiveness));
+    /need[- ]blind/i.test(u.scholarshipAndPortal + ' ' + u.scholarshipCoverage + ' ' + u.scholarshipCompetitiveness));
   const cut = ROWS.filter((u) => u.listStatus === 'Rejected');
   const unverified = ROWS.filter((u) => !u.verified);
 
@@ -150,7 +150,9 @@
     `${names(needBlind)} decide admission without looking at whether you asked for aid, then cover the full gap. ` +
       `${names(cut)} gives international undergraduates no aid, so we cut it from your list.`,
     `${total - unverified.length} of ${total} rows are checked on the official university page. ` +
-      `The other ${unverified.length} (${names(unverified)}) stay marked "Not verified" until they are.`
+      (unverified.length
+        ? `The other ${unverified.length} (${names(unverified)}) stay marked "Not verified" until they are.`
+        : 'Any row we cannot check stays marked "Not verified" until it is.')
   ];
 
   /* ---- The three deliverables (names from the poster, one-liners from service-tiers.md) ---- */
@@ -168,8 +170,8 @@
   /* ---- Report (MIT) ---- */
 
   const mit = byId('mit');
-  const NET_COST_PER_YEAR = 25000;   /* "your share" after aid, from the report's Snapshot */
-  const NET_COST_TOTAL = 102000;
+  const NET_COST_PER_YEAR = 22000;   /* "your share" after aid, from the report's Snapshot */
+  const NET_COST_TOTAL = 87000;
 
   const report = {
     universityId: mit.id,
