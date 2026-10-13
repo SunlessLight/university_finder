@@ -80,6 +80,9 @@ built-in.) `/commit` is the odd one out: it launches repo *maintenance*, not a p
 dispatches `commit-drafter` to read the working tree and draft a commit split into `.tmp/commit_plan.md`.
 I approve the split; nothing stages itself. `/social [topic]` is also outside the student pipeline: it dispatches
 `social-post-drafter` to draft a post about repo/dev work, never posts itself, pull-only.
+`/notion [slug]` is outside the pipeline too: it mirrors each student's stage, what was delivered
+and whether feedback came back onto my Notion client board (`workflows/notion_sync.md`). Local
+files stay the source of truth, and it shows me the changes before writing.
 
 **5. Subagents fan out over volume; you keep the judgement.** A subagent is a stateless worker: fresh
 context every dispatch, nothing from the conversation, no per-agent history and **no way to ask a

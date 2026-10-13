@@ -79,6 +79,10 @@ when free is *blocked* (an error, **or a response missing the fact you went ther
 needed. In practice this stage barely escalates: deadlines, test policy, aid forms/dates, fees and
 supplement counts live on official admissions/financial-aid pages that fetch cleanly — all of the US
 research used free search/fetch only. A fee PDF or a login-walled aid page is the exception.
+Known blocks as of 2026-10-12 (HTTP 403 to `WebFetch`, fine through `firecrawl_search.py
+--scrape-top`): `undergrad.admissions.columbia.edu`, `admission.princeton.edu/cost-aid/…`,
+`travel.state.gov`, `isso.columbia.edu`. Go straight to Firecrawl for those. University sites also
+move pages often — a 404 on a remembered URL means search the site, not that the fact is gone.
 
 ### What to capture for the region (visa mechanics)
 
@@ -134,8 +138,10 @@ the test lead-time gate, aid-model tiers, the fee budget, and an aid-forms cheat
 - **`start_here`** — 3-6 imperative next actions, longest-lead-time first, rendered as an ordered list
   straight after the Contents. The guide runs ~15 pages; without this the student has to read it all to
   find out what to do on Monday. Put dates in it.
-- **`fx`** — `{"rate": "USD 1 ≈ RM 4.08", "as_of": "<date>"}`. Every `~RM` figure in a guide is a derived
+- **`fx`** — `{"rate": "USD 1 ≈ RM 4.04", "as_of": "<date>"}`. Every `~RM` figure in a guide is a derived
   conversion; **an unstated rate makes every one of them uncheckable.** Render it once, use it everywhere.
+  The rate comes from `FX_TO_MYR` (and the date from `FX_AS_OF`) in `tools/shortlist_schema.py`, read at
+  run time — not from this example.
 - **`cost_cycle_note`** — which cycle the cost figures are from, when the entry-year figures publish, and
   roughly how much they rise. You are almost always quoting the *current* year's cost at a student
   applying for the *next* one — say so next to the money rather than letting it read as their bill.
@@ -148,7 +154,7 @@ Write `.tmp/<slug>/apply_prep_<region>.json` (exact shape in `build_application_
 {
   "student_slug": "<slug>", "region": "us", "region_title": "United States",
   "start_here": ["**Book the SAT now.** Sit it by **3 Oct 2026** …", "…3-6 imperatives"],
-  "fx": {"rate": "USD 1 ≈ RM 4.08", "as_of": "2026-07-20 (date of research)"},
+  "fx": {"rate": "USD 1 ≈ RM 4.04", "as_of": "2026-09-05 (FX_AS_OF — the rate the list is built on)"},
   "cost_cycle_note": "These are the published **2026-27** figures; you enter **Fall 2027** …",
   "overview": "markdown — the cross-cutting apply strategy",
   "visa": "markdown — the region's visa mechanics",

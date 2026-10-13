@@ -96,13 +96,14 @@ GLOSSARY = {
     },
     "PFAA": {
         "aliases": ["Princeton Financial Aid Application"],
-        "definition": "**Princeton Financial Aid Application** — Princeton's own aid form, filed "
-                      "alongside the CSS Profile.",
+        "definition": "**Princeton Financial Aid Application** — Princeton's own free aid form, filed "
+                      "in its applicant portal. Princeton uses it instead of the CSS Profile.",
     },
     "ISAFA": {
-        "aliases": ["International Student Financial Aid Application"],
-        "definition": "**International Student Financial Aid Application** — Stanford's alternative aid "
-                      "form if you can't pay the CSS Profile fee.",
+        "aliases": ["International Student Application for Financial Assistance",
+                    "International Student Financial Aid Application"],
+        "definition": "**International Student Application for Financial Assistance** — Stanford's "
+                      "alternative aid form if you can't pay the CSS Profile fee.",
     },
     "fee waiver": {
         "aliases": [],

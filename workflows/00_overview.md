@@ -42,6 +42,10 @@ deadlines) via `build_application_prep.py`. Report-free and **read-only** (never
 
 **Social media posting:** `social_media.md` (utility, not a stage) — draft a confidentiality-checked social post about recent repo work — pull-only, never posts anything itself.
 
+**Notion client board:** `notion_sync.md` (utility, not a stage) — mirrors each student's stage, what
+was delivered and whether feedback came back onto Evan's Notion board via `/notion`. One-way: local
+files are the source of truth, Notion never drives pipeline work, and no PII beyond the name goes up.
+
 **Quick university report:** `quick_university_report.md` (utility, not a stage) — a facts-only
 15-section report for a student who already knows which university they want, via `/quick-report`.
 Unlike every stage above, this needs **no student at all** — no `profile.json`, `preferences.json`,
@@ -258,6 +262,7 @@ slug, and re-asserts that workflow's own checkpoint — the workflow file stays 
 | `/decide <slug>` | `05_decide_and_apply.md` — recommendation + calendar |
 | `/apply-prep <slug> <region>` | `08_application_prep.md` — one region per pass |
 | `/quick-report <university>[: course][; ...]` | `quick_university_report.md` — facts-only report, no student needed |
+| `/notion [slug]` | `notion_sync.md` — mirror stage / delivered / feedback onto the Notion client board |
 
 It's `/catchup`, not `/resume`, because `/resume` is a built-in Claude Code command (resume a past
 conversation) and a project command of that name would collide with it.
@@ -334,6 +339,8 @@ not-yet-ingested form responses from the sheet; `--confirm` stamps them done) ·
 (batch-scaffold from a Google Form CSV) · `shortlist_schema.py` (single source of truth) · `merge_candidates.py`
 (collect + gate the discovery fragments) · `sync_shortlist.py` (score/dedupe/**append** new rows) ·
 `apply_backfill.py` (**patch** blank cells in rows that already exist — the one sync can't do) ·
+`apply_report_fx.py` (re-convert the ringgit prose in a delivered `.md` from a checked pairs fragment,
+one pass; `--inventory <slug>` lists the rate each file states) ·
 `check_master_list.py` (the gate; `--blanks` lists what a backfill needs to fill) ·
 `check_social_post.py` (confidentiality gate for a drafted social post — scans for live
 student slugs, `data/` paths, and credential-shaped secrets) ·

@@ -12,8 +12,8 @@
 ## Where things stand
 
 The product works and has been used by 29 students. All of them are friends and none paid.
-Desk research and the cost sums are done. The Google Form is built; not known whether it has
-been sent. No survey answers or parent chats exist yet, so whether strangers or parents want it
+Desk research and the cost sums are done. The Google Form is built and now offers both the list
+and the single-university report; not known whether it has been sent. No survey answers or parent chats exist yet, so whether strangers or parents want it
 is still unknown. Evan is in exams.
 
 ## Decided
@@ -55,6 +55,21 @@ is still unknown. Evan is in exams.
 - [ ] Decide (mentor recommended yes): add one tick-all question, "which of these have you
       actually looked up?" (visa funds, work rights, recognition, jobs, safety), to measure the
       gap behind "why not just ask Gemini". If added, copy it into survey.md.
+- [ ] Decide (mentor recommended yes): add one sorting question, "how far along are you in
+      choosing?" (not started / know the country / a few universities in mind / know exactly
+      which one). Evan's worry: people who already picked a university want the single-university
+      report, not the list, and the form only offers the list. This measures how big that group
+      is before a second offer is built for it. If added, copy it into survey.md.
+- [ ] Copy the report offer into survey.md. Evan added the single-university report to the live
+      form next to the RM50 list on 12 Oct (mentor had advised one offer only; his call). The
+      price and wording he used are not in any file yet. Add a row for it to survey.md's "what to
+      count" table.
+- [ ] Decide: show the sample list and sample report on the form. Mentor recommended yes, as one
+      screenshot of the clearest part placed inside the offer question only (never earlier), with
+      the full links as an optional extra and a one-line "sample, layout may change" label, not
+      a paragraph. Reason: most people fill forms on a phone and will not open a link, and a
+      wide spreadsheet on a phone shows the known "too much text" problem at its worst. The
+      sample must be of a made-up student, shared view-only.
 - [ ] Send the form beyond classmates. Target 30 answers.
 - [ ] Three to five parent chats. The most valuable hour in the plan.
 - [ ] One chat with a Sunway College counsellor or the placement office.
@@ -89,6 +104,9 @@ is still unknown. Evan is in exams.
 
 - The switching between studies and running the service has taken a toll. Suggested on 12 Oct:
   one fixed slot a day. Not yet known whether he tried it.
+- He fears RM50 is too much, and says that may be because RM50 is a lot where he comes from
+  (12 Oct). One person's feeling, so a guess: questions 5 and 9 of the form are what test it.
+  Mentor advice: do not lower the price before the counts are in.
 - His five observations of A-level students (scholarships first, they don't know what to ask,
   money worries push them to familiar names, they fear essays, they won't pay and feel awkward
   taking help from a classmate) are from his own circle, so each is a guess to test.
