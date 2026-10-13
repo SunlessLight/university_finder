@@ -198,7 +198,7 @@ CELL_BUDGETS = {
     # These two were set to 100/80 and then raised once measured against the real data:
     # a visa figure ("AUD 29,710/yr living costs + first-year tuition + return airfare")
     # runs ~92 chars of pure fact, and the essential English statement ("TOEFL 105 /
-    # IELTS 7.5 normally required, but waived for English-medium secondary instruction")
+    # IELTS 7.5 normally required; waived only after 3+ years of schooling taught in English")
     # runs ~106. The tighter numbers were forcing mid-sentence cuts on cells that had
     # nothing to trim — a budget should catch bloat, not shred facts.
     "English req": 120,

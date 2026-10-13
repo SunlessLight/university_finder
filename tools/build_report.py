@@ -6,7 +6,8 @@ Reads a research JSON the agent assembles in Stage 4 and renders a fixed-order,
 answer three decision questions — can I get in? will I belong & thrive? what will
 it take to apply? — so the student can decide, not just compare. Writes it to
 data/students/<slug>/reports/<slug>.md, plus a small FINALIST MARKER fragment at
-.tmp/<slug>/finalists/<report-slug>.json.
+.tmp/<slug>/finalists/<report-slug>.json, plus — when the JSON carries "dated_items" —
+a permanent copy of them at data/students/<slug>/dated_items/<report-slug>.json.
 
 This tool does NOT touch master_list.csv. It used to — it read and rewrote the
 whole file to flip one row to Finalist, which is exactly why report-writer
@@ -81,9 +82,18 @@ whole-institution Snapshot:
       "corrections": {"Course at a glance": "...", "Student life": "..."}
     }
 
-dated_items (optional, top-level, unchanged by the 2026-09-06 merge): a list of
-{"item": "...", "date": "..."} the Stage 5 calendar tool globs for directly out of
-this JSON — see build_calendar.py. sources and corrections are unchanged too.
+dated_items (optional, top-level): every deadline this report's research turned up, for
+the Stage 5 calendar (build_calendar.py):
+    "dated_items": [
+      {"date": "2027-01-15", "label": "UCAS deadline", "action": "Submit application"}
+    ]
+"date" is YYYY-MM-DD where the page gives one (anything else lands in the calendar's
+"Undated / to confirm" list), "label" names the event, "action" is optional. This tool
+copies the list to data/students/<slug>/dated_items/<report-slug>.json, because the input
+JSON lives in .tmp/ and .tmp/ is disposable: a calendar built after a cleanup used to
+lose every date that was not in master_list.csv. A rebuild whose JSON has no dated_items
+leaves an earlier copy alone. --quick saves nothing (no student folder).
+sources and corrections are unchanged by the 2026-09-06 merge.
 """
 
 import argparse
@@ -99,6 +109,10 @@ if hasattr(sys.stdout, "reconfigure"):
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 STUDENTS_DIR = REPO_ROOT / "data" / "students"
+
+# Folder inside a student's (permanent, gitignored) folder holding one dated_items file per
+# report. build_calendar.py imports this name, so writer and reader cannot drift apart.
+DATED_ITEMS_DIRNAME = "dated_items"
 
 # (section key, heading). Snapshot (1) is generated; Sources (last) is a list.
 # ONE schema for every country since 2026-09-06 (see report_merge_plan.md). --mode no longer
@@ -297,6 +311,67 @@ def render_report(data, mode):
     return "\n".join(parts)
 
 
+def normalize_dated_items(raw):
+    """Return dated_items as a list of {"date", "label", "action"} strings.
+
+    Absent/empty is fine (the field is optional) and returns []. Anything that is not a
+    list of objects fails loudly, same as an empty section. The old {"item", "date"}
+    wording — which this file's header documented until 2026-10-13, so real JSONs carry
+    it — is accepted and saved as "label", so the calendar never shows a nameless date.
+    """
+    if not raw:
+        return []
+    if not isinstance(raw, list) or not all(isinstance(it, dict) for it in raw):
+        sys.exit(
+            "ERROR: 'dated_items' must be a list of objects like "
+            '{"date": "2027-01-15", "label": "UCAS deadline", "action": "Submit application"}. '
+            "See the JSON shape in this file's header."
+        )
+    items = []
+    for it in raw:
+        label = str(it.get("label") or it.get("item") or "").strip()
+        if not label:
+            sys.exit(f"ERROR: a 'dated_items' entry has no 'label' (what the date is for): {it}")
+        items.append({
+            "date": str(it.get("date") or "").strip(),
+            "label": label,
+            "action": str(it.get("action") or "").strip(),
+        })
+    return items
+
+
+def save_dated_items(student_dir, slug, data, mode, overwrite=True):
+    """Keep a permanent copy of a report's dated_items in the student's own folder.
+
+    One file per report at <student_dir>/dated_items/<slug>.json, named with the SAME slug
+    as the report (and its finalist marker), so a re-render replaces its own dates instead
+    of stacking a second copy. Carries university + course + mode so build_calendar.py can
+    match it to a master_list row the way flip_finalists.py matches a marker: course mode by
+    University+Course, university mode (US-only, no course) by university name alone.
+
+    Returns the path written, or None when there was nothing to save — no dated_items in
+    the JSON, or overwrite=False and a file is already there. Never deletes: a rebuild from
+    a JSON without dated_items must not wipe dates an earlier build found.
+    """
+    items = normalize_dated_items(data.get("dated_items"))
+    if not items:
+        return None
+    out_dir = Path(student_dir) / DATED_ITEMS_DIRNAME
+    out_path = out_dir / f"{slug}.json"
+    if out_path.exists() and not overwrite:
+        return None
+    out_dir.mkdir(parents=True, exist_ok=True)
+    record = {
+        "university": data["university"],
+        # University mode has no course by design — the calendar matches on name alone.
+        "course": data.get("course") if mode == "course" else None,
+        "mode": mode,
+        "dated_items": items,
+    }
+    out_path.write_text(json.dumps(record, indent=2, ensure_ascii=False), encoding="utf-8")
+    return out_path
+
+
 def write_finalist_marker(student_slug, slug, data, mode):
     """Write the finalist marker fragment this report is claiming a CSV flip with.
 
@@ -369,6 +444,8 @@ def main():
 
     data = json.loads(input_path.read_text(encoding="utf-8"))
     validate(data, args.mode)
+    # Before anything is written: a malformed dated_items stops the build, like an empty section.
+    dated_items = normalize_dated_items(data.get("dated_items"))
 
     if args.mode == "university":
         # Slug on the university alone so a general report (massachusetts-institute-of-technology.md)
@@ -388,6 +465,13 @@ def main():
         return
 
     write_finalist_marker(args.student, slug, data, args.mode)
+    dates_path = save_dated_items(STUDENTS_DIR / args.student, slug, data, args.mode)
+    if dates_path:
+        print(f"Saved {len(dated_items)} dated item(s) for the calendar: {dates_path}")
+    else:
+        kept = STUDENTS_DIR / args.student / DATED_ITEMS_DIRNAME / f"{slug}.json"
+        note = f" The earlier saved dates are kept: {kept}" if kept.exists() else ""
+        print(f"No dated_items in this JSON — nothing saved for the calendar.{note}")
     print(
         f"\nNext (main session, ONCE after every dispatch is back):\n"
         f"      python tools/flip_finalists.py --student {args.student}\n"

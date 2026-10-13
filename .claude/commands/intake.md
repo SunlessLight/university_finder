@@ -28,10 +28,12 @@ python tools/ingest_form_csv.py "<csv>"
 ```
 
 Then do the part the tool can't: **finalize every `_needs_review` item per student** (that
-workflow's "Finalize each student" section) — grades sanity-check, ethnicity for scholarship
-eligibility only, degree level, and the profession → regulator mapping (MMC / BEM+Washington
-Accord / LPQB / MIA+ACCA / LAM). Delete `_needs_review` and `_intake_raw` when each student is
-genuinely settled; a student parked mid-finalize looks complete otherwise.
+workflow's "Finalize each student" section). The tool now fills grades, ethnicity, the scholarship
+gate, degree level and the course → regulator mapping by itself, so none of those raise a line.
+What it still flags is short: an extra field of study typed in the student's own words (verify the
+regulator keyword it matched, in both directions — a missed profession and a false hit), a picked
+country we don't cover, and a missing course. Delete `_needs_review` and `_intake_raw` when each
+student is genuinely settled; a student parked mid-finalize looks complete otherwise.
 
 **Checkpoint:** settle the `_needs_review` items *with me* before anything gets scored (CLAUDE.md).
 Bring me the flagged list per student rather than resolving judgment calls silently.

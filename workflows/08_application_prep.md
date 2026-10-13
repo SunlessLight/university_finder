@@ -113,8 +113,14 @@ For each Shortlist/Finalist uni in the region, from official sources:
 - **Deadlines** — application (incl. early type: EA / ED / SCEA / REA / RD) **and** the financial-aid
   deadline (they often differ).
 - **Tests** — SAT/ACT (required / optional?) + the sit-by date; English test (IELTS/TOEFL) **or the
-  waiver** (English-medium A-Levels waive it for the US + 3 UK unis, but NOT Singapore / China /
-  Australia).
+  waiver — never assume one.** A waiver is set per university, usually as a number of years of
+  schooling taught in English (2 to 4 among the US universities read on 2026-10-13: Yale 2,
+  Princeton and Penn 3, Cornell 4), and A-Levels are only a two-year course — so "English-medium
+  A-Levels waive it" is wrong as a blanket rule (it went out in one July guide). Read each
+  university's rule off its own page, **state the rule**, and tell the student to count their years:
+  `profile.json` has no field for years of English-medium schooling, so write "waived if you have N
+  years", never "waived for you". Singapore / China / Australia do not waive on A-Levels; the UK
+  universities have not been re-checked, so read those per university too.
 - **Essays** — the shared essay (Common App / UCAS personal statement) + this uni's supplements/count.
 - **Fees** — application fee + international **fee-waiver** eligibility.
 - **Financial aid** — capture it into the object's fixed keys: **`model`** (need-blind vs need-aware for
@@ -212,7 +218,7 @@ research. `checklist` fields as arrays are back-compatible: old string guides re
   before the new one opens (e.g. Common App supplement prompts publish ~1 Aug). State the figure with a
   "confirm when the 20XX-YY cycle opens" flag rather than guessing.
 - **Overlap with `05_decide_and_apply.md`.** Stage 5's `recommendation.md` also groups an apply strategy
-  by system; this workflow is the standalone, per-region, report-free version. Use 5b when the student
+  by system; this workflow is the standalone, per-region, report-free version. Use Stage 5 when the student
   wants a ranked *decision*; use this when they've decided to apply broadly and just need the mechanics.
 - **PDPA** — output lives in the gitignored `data/students/<slug>/`, never committed. (Free search is
   the default here for coverage, not cost — most apply-mechanics pages fetch cleanly.)

@@ -81,7 +81,7 @@ change:
 - There is no `corrections` object (nothing to correct — there's no master-list row) and no
   finalist marker — see the render/lint/PDF/status notes below for the command differences.
 
-**For the Scholarships (§6), Recognition (§9), and rank fields, start from
+**For the Scholarships (§11), Recognition (inside §12), and rank fields, start from
 `workflows/sources.md`** before searching from scratch — it's known-good *locations* for the
 Malaysian sponsors (JPA/MARA/Yayasan/PTPTN/Kijang/Khazanah), MQA + the professional bodies
 (BEM/EAC, MMC, LPQB, MIA/ACCA, MBOT…), and rankings, plus which of those 403 a plain fetch (go
@@ -166,7 +166,7 @@ look if this finalist's visa/application-system facts feel like they need re-der
   `master_list.csv` row and no `corrections` object in a quick report's JSON.) Since
   2026-07-29 **Stage 3 fills both cells**, so they
   arrive already written. You are not backfilling them. But you now hold far deeper research
-  than the row-filler did — if your `course_details` or `student_life_culture` section shows
+  than the row-filler did — if your `what_youll_study` or `student_life` section shows
   the existing one-liner is **wrong or misleading**, put the replacement in the report JSON's
   optional top-level `corrections` object:
   ```json

@@ -261,7 +261,7 @@ def excerpt(line):
 # --- Checks ----------------------------------------------------------------------------
 
 def check_structure(sections, mode, ambiguous):
-    """All 16 sections, the right headings, in the right order, numbered 1..16.
+    """All 15 sections, the right headings, in the right order, numbered 1..15.
 
     build_report.py renders this itself, so a failure here means the file was NOT rendered by
     the current tool — an older section spec, or a hand-edited report. Either way the rest of
@@ -410,7 +410,7 @@ def check_sources(sections):
 
     out = []
     if len(sources) < MIN_SOURCES:
-        out.append(f"{len(sources)} source(s) (minimum {MIN_SOURCES}) — too thin for 14 "
+        out.append(f"{len(sources)} source(s) (minimum {MIN_SOURCES}) — too thin for 13 "
                    f"researched sections")
     for title, url, auth, year in sources:
         if not url:

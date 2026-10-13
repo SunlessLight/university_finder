@@ -41,7 +41,9 @@ This aggregates every dated item across finalists — application deadlines (fro
 chronological `calendar.md`. Review it with the student and flag the earliest actions.
 
 ### 4. Per-finalist how-to-apply recap
-In `recommendation.md` (or pointing back to each report's section 12), restate for each recommended
+In `recommendation.md` (or pointing at the student's apply guide, `application_prep/<region>.md`, when
+one exists — `workflows/08_application_prep.md`; the reports no longer carry a how-to-apply section,
+it moved there on 2026-09-06), restate for each recommended
 university: the portal, the steps, and the documents needed (transcripts, personal statement/essays,
 references, English test, portfolio/interview if required). For reference and planning — not tracked as
 state in v1.

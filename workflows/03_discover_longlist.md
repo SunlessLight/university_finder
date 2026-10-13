@@ -35,6 +35,8 @@ small enough to research 35 columns a row, and it's now a hard gate (`--country`
 0. Pick the country      — from the files, never ask. See "Pick the next country".
 1. Roster sweep          — free WebSearch, 6-10 queries -> 8-12 rows of
                            university + course + city + course URL ONLY.
+                           Then add every university the student named in
+                           preferences.preferred_universities for this country.
 2. Country constants     — researched ONCE, reused by every row: visa money, work
                            rights, how to apply, intake, living benchmark, ranks.
                            -> .tmp/<slug>/country_<code>.json
@@ -120,8 +122,9 @@ best universities for <course> <country>
 
 **Each country's block — query list, dated traps, and lore — now lives in its own file, not inline
 here.** Read yours before the roster sweep (main session) or before researching your row (row-filler):
-`workflows/countries/uk.md`, `usa.md`, `australia.md`, `singapore.md`, `malaysia.md`, `china.md`,
-`hong-kong.md`, `japan.md`. Same invariant as before: a trap lives in exactly one place — this core
+the file named after the country in `workflows/countries/` (`uk.md`, `usa.md`, `hong-kong.md`, … —
+one per supported country; list the folder rather than trusting a list written here, so the next
+country added needs no edit to this line). Same invariant as before: a trap lives in exactly one place — this core
 file keeps the pointer, the country file keeps the lore.
 
 ## Step 1 — Roster sweep (free WebSearch, main session)
@@ -137,6 +140,28 @@ now means paying for the same page twice and filling this session's context with
 worth of detail. Aim for **8-12 rows**: enough to cut from, few enough that each can carry 35
 researched columns. Aggregators (StudyPortals, QS, THE) are welcome *here* — this is the one step
 where they're the right tool.
+
+**Add the universities the student already named (added 2026-10-13).** Before you call the roster
+done, read `preferences.json → preferred_universities`. It is free text in the student's own words
+(names joined with "and", not a list — read it, don't split it mechanically). Pick out the names
+that are in **this session's country**:
+
+- Each one goes on the roster even if the sweep didn't surface it, paired with the student's chosen
+  course. It counts toward the 8-12; it doesn't sit on top of them.
+- **Don't drop it for being a long shot.** Desirability ≠ admissibility: a named university the
+  student is unlikely to get into still belongs on the list, and scoring labels it `Reach` by
+  itself. The Reach/Match/Safety spread is met by the other rows, not by removing this one.
+- Drop it only for a reason the student would accept — it doesn't teach the course, doesn't teach
+  it in English, or fails a stated deal-breaker. Then **say so**: name the university and the reason
+  in `status.md` and again when you hand the list over, so the student isn't left wondering why a
+  name they asked for is missing.
+- A named university in a country that is **not** in `target_countries` is not researched in this
+  pass. Note it in `status.md` and raise it with the student — it may mean a country is missing
+  from their list.
+
+A blank field is the normal case (8 of 29 students had filled it in as of 2026-10-10) — then there
+is nothing to do. Until this step existed the answer was saved at intake and read by nothing, so a
+list could go out without the names the student had asked for.
 
 Sanity-check the roster before dispatching: drop anything that plainly fails a stated deal-breaker,
 doesn't teach the field in English, or is a name collision (`smu.edu` is **Texas**, not Singapore).

@@ -37,9 +37,10 @@ Everything below is common to both except the "What you produce" section, which 
 dispatch researching 6 named columns has no use for the 0-5 scoring guide, and reading it
 anyway is the exact cost this mode exists to avoid.
 
-1. **Your country's file at `workflows/countries/<code>.md`** (`uk.md`, `usa.md`,
-   `australia.md`, `singapore.md`, `malaysia.md`, `china.md`, `hong-kong.md`, or `japan.md` —
-   your dispatch prompt names the country). This is not optional and not background reading —
+1. **Your country's file at `workflows/countries/<code>.md`** — the file named after the
+   country your dispatch prompt names, lower-case and hyphenated (`uk.md`, `usa.md`,
+   `hong-kong.md`, `germany.md`, …). Every supported country has one; list the folder if the
+   name isn't obvious rather than concluding there is nothing to read. This is not optional and not background reading —
    it holds the accumulated traps that a cold researcher gets wrong every time: the Australian
    domestic-fee trap, Singapore's five-tier fee table, the SMU name collision, XJTLU's
    entry-into-Year-2, the need-blind cohort drift. They live there and only there, so this

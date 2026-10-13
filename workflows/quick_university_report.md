@@ -64,7 +64,7 @@ silently skipped by the renderer when absent.
    ```powershell
    python tools/build_report.py --quick --input .tmp/quick/report_<slug>.json [--mode university]
    python tools/check_report.py --file data/quick_reports/<slug>.md --quick
-   python tools/report_to_pdf.py --file data/quick_reports/<slug>.md   # optional, on request
+   python tools/report_to_pdf.py --file data/quick_reports/<slug>.md   # automatic — report-writer runs it in the same dispatch
    ```
    `build_report.py --quick` writes only the `.md` — no finalist marker, nothing for a later
    main-session step to fold in. There is no equivalent of `flip_finalists.py`/

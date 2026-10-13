@@ -53,8 +53,8 @@ What you get:
     academically over-qualified for never reads as if your grades fell short. Enforced in code, not promised.
 - **Total cost of the whole degree in ringgit** — not annual tuition. A 3-year UK degree and a 4-year
   US one are finally comparable.
-- **`Info source`** on every row: `Not verified` until a human confirmed it on the official page,
-  `Official page` after. You can see exactly what's been checked.
+- **`Info source`** on every row: `Official page` once its facts have been checked against the
+  university's own page, `Not verified` until then. You can see exactly what's been checked.
 - **Recognised in Malaysia?** — for regulated professions (medicine / engineering / law / accounting),
   whether the degree lets you actually practise back home. A dealbreaker, flagged as one.
 - Scholarship route, coverage and how competitive it is, per uni.
@@ -79,7 +79,7 @@ What you get, **as a PDF per finalist** (3–5 of them):
 - **Will I belong** — study intensity, the student archetype, clubs and city feel, the
   Malaysian / halal / prayer angle where it matters.
 - **Full cost, scholarships and financial aid** — including Malaysian sponsors (JPA, MARA, Yayasan).
-- **Visa, work rights after graduating, recognition back home.**
+- **Work rights after graduating, and recognition back home.**
 - **"Why here / why hesitate"** — and yes, it includes *reasons to hesitate*. A list that only says
   nice things about every uni is a list nobody trusts. Every report tells you where a uni is weak for
   *you*. This is the most credibility-building thing in the whole package.
@@ -91,7 +91,7 @@ spreadsheet," this is the tier they don't know they're leaving on the table.
 
 ## Tier 3 — The Apply Pack
 
-*Stages 5b + 8 · `recommendation.md` + `calendar.md` + `application_prep/<region>.pdf`*
+*Stages 5 + 8 · `recommendation.md` + `calendar.md` + `application_prep/<region>.pdf`*
 
 **One line:** *Now go do it — every deadline in one place, every application costed and checklisted.*
 
@@ -106,6 +106,8 @@ What you get:
   fees, essays and — the load-bearing part for a scholarship student — the **exact financial-aid
   mechanics**: the real cost of attendance, what aid actually covers, the residual you still pay, which
   forms (CSS Profile / IDOC) and their dates.
+- **The visa, once per country** — which visa you need, who issues it and what it costs. One visa
+  system serves every uni in a country, so it lives here rather than being repeated in each report.
 - The grouping-by-system move is **product design, not research** — no prompt produces it, because you
   don't know to ask for it.
 

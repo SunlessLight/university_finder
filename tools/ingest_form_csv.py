@@ -145,7 +145,7 @@ QUESTION_MAP = [
     # inside that area. See workflows/01_intake.md, finalize step 5.
 ]
 
-# The eight supported destinations (preferences.target_countries). Normalize the form's
+# The ten supported destinations (preferences.target_countries). Normalize the form's
 # checkbox labels onto these exact tokens.
 #
 # Singapore and Malaysia were ONE fused "Singapore/Malaysia" token until 2026-07-29, even
@@ -284,10 +284,6 @@ CANONICAL_SLIDER_ORDER = [
     "cost", "scholarship", "ranking", "course_quality",
     "employability", "recognition", "location", "hands-on experience",
 ]
-
-# NOTE: priority sliders are now a 1-8 linear scale (were 1-7). The ordering below is scale-agnostic
-# (it sorts by value), so nothing breaks; but `ranking_importance` now carries a 1-8 value — the
-# scoring-weights skill should read it on that scale.
 
 # Subject dropdown labels -> canonical subject names. The form's subject dropdowns use short/quirky
 # labels (e.g. "Physic", "Math"); normalise them to clean names for profile.subjects[]. Keyed by the
@@ -977,7 +973,7 @@ def _normalize_intake(value):
 
 
 def _normalize_countries(value):
-    """Map the checkbox labels onto the 8 supported destinations.
+    """Map the checkbox labels onto the 10 supported destinations.
 
     Returns (kept_tokens, dropped_labels): dropped_labels are answers we couldn't map (e.g. "Canada",
     which isn't supported) so the caller can report them instead of losing them silently.

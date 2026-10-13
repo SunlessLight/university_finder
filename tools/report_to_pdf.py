@@ -10,8 +10,10 @@ glossary, A4 margins, footer page numbers) written alongside the .md, so a stude
 asks for their reports gets something they can open and skim directly.
 
 It only ever *reads* the existing Markdown — it does no research and never touches
-master_list.csv. Build first (build_report.py), export on request (here). Sibling of
-apply_prep_to_pdf.py, which does the same for the application-prep guides.
+master_list.csv. Build first (build_report.py), then export (here). The export is automatic:
+the report-writer agent runs this tool in the same dispatch that writes the .md. The commands
+below stay for a manual re-export — a report built by hand, or one edited after the fact.
+Sibling of apply_prep_to_pdf.py, which does the same for the application-prep guides.
 
 Engine = WeasyPrint (real CSS: styled callouts, reliable internal links for the glossary
 jumps, paged footers, proper table/list styling). On Windows WeasyPrint needs native
@@ -53,7 +55,7 @@ STUDENTS_DIR = REPO_ROOT / "data" / "students"
 
 # WeasyPrint gives us real CSS. Navy report palette kept; the load-bearing additions vs
 # the old xhtml2pdf sheet are: a paged footer via counter(page), a red *warning callout*
-# (blockquotes are reserved for make-or-break rules — see workflows/05), and tables that
+# (blockquotes are reserved for make-or-break rules — see workflows/04), and tables that
 # actually render. Markdown extensions attr_list + md_in_html let a section drop a
 # `<div class="callout-note">` when it needs a softer aside.
 PAGE_CSS = """
@@ -82,7 +84,7 @@ strong { color: #10233f; }
 em { color: #333; }
 
 /* Warning / critical callout — the one make-or-break rule (e.g. "request aid at
-   application or be barred forever") must be unmissable. workflows/05 reserves
+   application or be barred forever") must be unmissable. workflows/04 reserves
    blockquotes for these. */
 blockquote { margin: 10pt 0 12pt 0; padding: 8pt 12pt; background: #fdecea;
              border-left: 4px solid #c0392b; color: #611a15; break-inside: avoid; }

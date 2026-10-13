@@ -30,8 +30,8 @@ business/    Product review + sales material (poster, scripts, sample pack) — 
 | Stage | Output | What you get |
 |---|---|---|
 | 1 Intake | `profile.json` + `preferences.json` | Grades, budget, English, recognition needs — plus countries, field and priorities. Built from the Google Form CSV |
-| 3 Discover | `master_list.csv` (Longlist) | 20-40 candidates, scored |
-| 4 Verify + Report | `reports/<uni>.md` | Student picks 3-5 finalists; verify their facts against official sources (Reach/Match/Safety), then a deep 15-section **university report** each |
+| 3 Discover | `master_list.csv` (Longlist) | 8-12 officially sourced rows per country, one country per session — every fact read off official pages, scored, with Reach/Match/Safety. Three or four countries add up to 20-40 rows in total |
+| 4 Report | `reports/<uni>.md` | Student picks 3-5 finalists; a quick check that the already-verified facts are still current, then a deep 15-section **university report** each |
 | 5 Decide | `recommendation.md` + `calendar.md` | Ranked picks, application strategy, deadlines |
 
 There is **no Stage 2** — intake and aspirations merged into Stage 1 on 2026-07-25, when the Google

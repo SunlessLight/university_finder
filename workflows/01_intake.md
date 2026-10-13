@@ -202,13 +202,12 @@ fine — but keep the substring in bold intact.
   still gives a full 8-way ranking including **Course Ranking** (`course_quality` → `course_match`).
   *(Legacy forms with **#1/#2/#3 priority** dropdowns still work — the tool falls back automatically
   when neither marker is present.)*
-- **`ranking_importance`** steers the `subject_reputation` sub-score (subject-specific standing +
-  graduate outcomes, not overall vanity rank). If the form has a dedicated *"how much does your subject's
-  strength matter"* question the tool uses it; otherwise it reads the **[University Ranking]** tick
-  answer verbatim — a **3-tier label** now ("Must have" / "Important" / "Nice to have"), not the old
-  **1-8** numeric slider value. **Check the `scoring-weights` skill reads this on the new scale** before
-  deriving a `weights.json` for a student ingested through the current form — it hasn't been re-checked
-  against the 2026-09 rework as of this writing.
+- **`ranking_importance`** is kept for reference only. It holds the **[University Ranking]** tick
+  answer verbatim — a **3-tier label** on the current form ("Must have" / "Important" / "Nice to
+  have"), a **1-8** number on older records — or the answer to a dedicated *"how much does your
+  subject's strength matter"* question if the form has one. Since 2026-09-17 nothing in scoring reads
+  it: `tools/derive_weights.py` builds `weights.json` from the full ordering in
+  `preferences.priorities` alone, so there is no scale to check before deriving weights.
 - Do you want to **work abroad** after graduating — Yes / No / Unsure. → `intent_to_migrate` (and the
   raw answer into `post_study_work_importance`).
 - **Dealbreakers is gone from the live form (2026-09), permanently.** It used to be its own optional
@@ -219,7 +218,9 @@ fine — but keep the substring in bold intact.
 - **Preferred universities** — ✅ **wired (2026-08+).** *"Universities you already have in mind ( if
   any )? Can write more than 1."* → `preferences.preferred_universities`, free text (answers use
   "and" between names, not commas — don't split it into a list). A student naming unis they already
-  care about is no longer silently ignored.
+  care about is no longer silently ignored: since 2026-10-13 Stage 3's roster sweep reads this field
+  and puts each named university in the country being researched on the roster
+  (`03_discover_longlist.md` → Step 1). Before that date it was saved here and read by nothing.
 - **Additional requirements is gone from the live form (2026-09), permanently.** The old *"Is there any
   specific information you want to know about universities..."* free-text question — the one that
   originally prompted this whole redesign, feeding Stage 4 §3 ("Who actually gets in") and §13
@@ -336,7 +337,7 @@ check per student is whatever the tool actually flagged in `profile.json`'s **`_
 3. **Scholarship** — nothing to check. `scholarship_required` comes straight from the clean "Is
    scholarship a must?" Yes/No gate. `scholarship_interests` stays null by design (its question was
    dropped from the form) — Stage 3/4 already researches every available scholarship for every
-   finalist regardless (per `04_university_report.md` §6), so treat `scholarship_required = true` alone
+   finalist regardless (per `04_university_report.md` §11), so treat `scholarship_required = true` alone
    as "research broadly."
 4. **Recognition** — two independent sources, only one of which is ever flagged:
    - **The "Choose your desired course" dropdown** is a **closed, known set of 38 titles**
@@ -417,10 +418,8 @@ weights into `tools/shortlist_schema.py` — that shared file is exactly what ma
   (Cost → Scholarship → University Ranking → Course Ranking → Employability → Recognition → Location →
   Hands-On), deterministic but arbitrary among ties — **sanity-check the ordering** against any
   free-text notes before deriving `weights.json`, since the top band drives the weights, and a 3-tier
-  scale means the top band is now much more crowded than it used to be under 1-8. `ranking_importance`
-  carries the **raw 3-tier label** ("Must have" / "Important" / "Nice to have") on the current form, not
-  a 1-8 number — check the `scoring-weights` skill actually reads it that way before trusting a
-  derived `weights.json` for a student ingested through the current form.
+  scale means the top band is now much more crowded than it used to be under 1-8. (`ranking_importance`
+  is not part of this — it is kept for reference only and weight derivation does not read it.)
 - **Unsupported target countries are reported, not dropped.** A picked country outside the **10**
   supported destinations (UK / Australia / USA / Singapore / Malaysia / China / Japan / Hong Kong /
   **Taiwan** / **Germany**, both added 2026-09-23) — e.g. **Canada** — is left out of `target_countries` but recorded in a `_needs_review`

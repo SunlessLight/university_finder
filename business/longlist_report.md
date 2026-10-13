@@ -93,7 +93,7 @@ This is a cut-down row from our sample pack, showing 11 of the 35 cells:
 | Work rights after graduating | Up to 3 years of work after the degree |
 | Recognised in Malaysia? | Accredited engineering degree in a country whose engineering degrees Malaysia's engineering board accepts; confirm the exact entry with the Malaysian Qualifications Agency |
 | How to apply | MIT's own application, not the shared US one |
-| Key deadline | 1 January 2027 |
+| Key deadline | 4 January 2027 |
 | Info source | Official page |
 
 Look at the fourth and fifth lines together. This student's grades are *well above* what MIT asks

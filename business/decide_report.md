@@ -326,9 +326,15 @@ Here are seven of the 78 lines, for the UK only, with the wording lightly simpli
 | 12 Oct 2026 | Entrance test window opens (12 to 16 October) | Cambridge | Sit the maths and physics papers |
 | 15 Oct 2026 | UCAS deadline for Cambridge, 6pm UK time | Cambridge | Submit the UCAS form |
 | 22 Oct 2026 | Deadline for Cambridge's own extra form | Cambridge | Submit the form, a short statement, the transcript and a £60 fee |
-| 7 Dec 2026 | Interviews begin (7 to 18 December) | Cambridge | Take the interview online from Malaysia |
+| 7 Dec 2026 | Interviews begin (7 to 18 December) | Cambridge | Take the interview. Most colleges hold it online for students abroad |
 | 13 Jan 2027 | UCAS deadline for most other courses, 6pm UK time | Heriot-Watt | The form must have arrived at UCAS |
-| 1 Mar 2027 | Earliest day to apply for a UK student visa | Heriot-Watt | Apply; the required money must already have sat in the bank for 28 days |
+| 1 Mar 2027 (estimate) | Earliest day to apply for a UK student visa | Heriot-Watt | Apply; the required money must already have sat in the bank for 28 days |
+
+The first six dates were re-read on the official UCAS, Cambridge and test-provider pages on
+13 October 2026, and all six still stand. The visa line is an estimate, not a published date. The
+UK accepts a student visa application from six months before the course starts, and Heriot-Watt
+has not yet published its 2027 start date. If the course starts in early to mid September, as it
+did in 2026, the earliest day falls a week or two later than the one shown.
 
 Read down that table and three lessons appear that no single report would have taught:
 

@@ -96,7 +96,7 @@ def profile_template(slug, name):
 def preferences_template():
     """Stage-2 preferences.json template."""
     return {
-        # subset of the 8 supported destinations — SUPPORTED_DESTINATIONS in ingest_form_csv.py
+        # subset of the 10 supported destinations — SUPPORTED_DESTINATIONS in ingest_form_csv.py
         # is the source of truth: UK / Australia / USA / Singapore / Malaysia / China / Japan /
         # Hong Kong / Taiwan / Germany
         "target_countries": [],

@@ -26,6 +26,8 @@ OPT STEM <field> post study work
 |---|---|---|
 | Which universities take the Common App, their requirements and deadlines | `https://www.commonapp.org/apply/first-year-students` | free |
 | CSS Profile — the aid form internationals usually **must** file at application | `https://cssprofile.collegeboard.org/` | free |
+| Columbia undergraduate admissions — requirements, deadlines, testing policy, international aid | `https://undergrad.admissions.columbia.edu/` | **blocked** (whole site; 403 on 2026-10-13, twice) |
+| Princeton financial aid — which aid form Princeton wants (it has its own; don't assume the CSS Profile) | `https://finaid.princeton.edu/apply-aid-prospective-students` | free (403'd for one session on 2026-10-13, then loaded on four re-tests the same day — retry once before escalating) |
 | Official cost, aid and graduate-earnings data per institution | `https://collegescorecard.ed.gov/` | free |
 | Official admissions/enrolment stats (admit rate, test ranges) | `https://nces.ed.gov/collegenavigator/` | free |
 | Is the engineering/computing programme ABET-accredited (feeds BEM/Washington Accord) | `https://amspub.abet.org/` | free |

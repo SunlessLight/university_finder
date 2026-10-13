@@ -207,8 +207,8 @@ Of the 38 courses on the form, 14 carry a checklist like this. The other 24, suc
 computer science and design, carry none, because no licence is needed and inventing a requirement
 would be misleading.
 
-**21 of the 29 students on file are aiming at a course where one of these bodies matters.** For
-roughly seven in ten of our students, "will this degree count back home?" is a question that can
+**18 of the 29 students on file are aiming at a course where one of these bodies matters.** For
+roughly six in ten of our students, "will this degree count back home?" is a question that can
 ruin the whole investment, and general-purpose AI chat tools do not check it.
 
 ---

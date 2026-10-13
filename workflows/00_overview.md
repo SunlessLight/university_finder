@@ -18,8 +18,8 @@ university that hasn't passed the cheap cut first.
 | Stage | Workflow | Output | What it does |
 |---|---|---|---|
 | 1 | `01_intake.md` | `profile.json` + `preferences.json` | Who the student is (grades, budget, English, recognition needs) **and** what they want (countries, field, priorities) — batch-built from the Google Form CSV, then finalized by you |
-| 3 | `03_discover_longlist.md` | `master_list.csv` (Longlist) | Broad, cheap, snippet-level discovery — 20-40 candidates |
-| 4 | `04_university_report.md` | `reports/<uni>.md` | Student picks 3-5 finalists off the Longlist; **verify their hard facts from official sources** (Reach/Match/Safety, feasibility gates), then a full 15-section decision **university report** per finalist — the same sections for every country. `--mode` selects only which claim it makes: course-specific (default) or **university-general (US-only)** for whole-institution fit |
+| 3 | `03_discover_longlist.md` | `master_list.csv` (Longlist) | **8-12 officially sourced rows per country, one country per session** — all 35 columns read off official pages, scored, with Reach/Match/Safety and the feasibility gates. **This stage owns fact verification** (guardrail 2). A student with three or four countries ends up with 20-40 rows in total; no single run produces that many |
+| 4 | `04_university_report.md` | `reports/<uni>.md` | Student picks 3-5 finalists off the Longlist; a cheap pre-flight cut (are the already-verified facts still current, is the set balanced), then a full 15-section decision **university report** per finalist — the same sections for every country. `--mode` selects only which claim it makes: course-specific (default) or **university-general (US-only)** for whole-institution fit |
 | 5 | `05_decide_and_apply.md` | `recommendation.md` + `calendar.md` | Recommendation, application strategy, one deadline calendar |
 
 > **Stage 3 and Stage 4 are independent — don't gate one on the other.** Stage 4 operates on
@@ -166,7 +166,7 @@ data/students/<student-slug>/
   weights.json         # Stage 3: this student's desirability weights (scoring-weights skill; sync refuses without it)
   master_list.csv      # Stages 3-4: every candidate + a "List status" column
   score_log.jsonl      # Stage 3: append-only audit — weights_id + sub-scores + entry_margin behind each scored row
-  reports/<uni>.md     # Stage 4  (reports/<uni>.pdf — optional, on request via report_to_pdf.py)
+  reports/<uni>.md     # Stage 4  (reports/<uni>.pdf — exported automatically by report-writer; manual re-export via report_to_pdf.py)
   recommendation.md    # Stage 5
   calendar.md          # Stage 5
   application_prep/<region>.md  # 08_application_prep.md — per-region "how to apply" guide (optional)

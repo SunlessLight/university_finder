@@ -192,6 +192,10 @@ to this stage:
   Instagram / Discord — which Firecrawl either can't scrape (IG / FB / TikTok / X are hard-skipped in
   `firecrawl_search.py`) or handles unreliably. Capture the URL + a snippet; don't try to scrape.
   Escalating here isn't blocked-fallback, it's a worse result for credits.
+  - **Reddit is often unreachable** (free search could not open reddit.com at all on 2026-10-12).
+    Don't burn retries on it and don't escalate: go straight to the fallbacks — The Student Room,
+    the university's own admissions / student blog, YouTube — and write `Not found — <why>` only
+    if those are thin too.
 - Firecrawl doesn't offload the agent's reasoning — fetched content still lands in context; the win is
   reliability on protected pages + fewer failed-fetch retries.
 
