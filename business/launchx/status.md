@@ -1,6 +1,6 @@
 # LaunchX status
 
-*As of 2026-10-12. Rewritten whenever something changes. See [mentor.md](mentor.md) for how.*
+*As of 2026-10-15. Rewritten whenever something changes. See [mentor.md](mentor.md) for how.*
 
 ## Dates
 
@@ -42,6 +42,13 @@ is still unknown. Evan is in exams.
 - **A:** parents feel the problem and would pay; students do not.
 - **B:** scholarships are what students want help with first.
 - **C:** essays and the application are a bigger fear than choosing a university.
+- **D (new, 15 Oct):** education businesses would pay more for this than families. Idea came
+  from a friend who sells automations to businesses. Mentor view: don't switch yet, test it.
+  Better fit is paid consultants (paid by families, e.g. Inquota) and college counselling
+  offices, not agents (paid by universities, would want partner universities ranked first).
+  The product today is Evan running sessions himself, so a first B2B offer is a done-for-you
+  service, not software. Cheapest test: the counsellor chat already planned, plus 2 consultancy
+  chats, plus one of the three panel questions on 24 Oct.
 
 ## Open: Evan
 

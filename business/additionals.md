@@ -82,7 +82,7 @@ clear those. The rest are real gaps in how a program was designed (lane 1, and s
 | **3. Instruction files** | L3, L4, I1, B2, D3, I6, I7, C2 (the line in the overview), D4 (the line in the apply-guide workflow), S9 (the workflow sentence), S5, S7 (the two blocked US sites) | everything in `workflows/`, `README.md`, `.claude/agents/`, `.claude/commands/intake.md` | Medium. I1 is the only one that adds a new step; the rest are corrections. |
 | **4. Sales files and business reports** | A1, A2, D4 (the line in the tiers file), N2, V1, U3 | `business/sales/service-tiers.md`, `business/decide_report.md`, `business/intake_report.md`, `business/longlist_report.md` | Small, plus one web check (V1: seven UK dates). |
 | **5. The source student's files and the sample pack** | S8 (Task 8b), then S10, then Task 9 of the sample pack plan (it also carries D4's line in the sample pack's README), then S6, S7 (the unlabelled source and the doubled score line), then P1 | that student's folder, `business/sales/sample_pack/`, the prototype, `sample_pack_fix_plan.md` | Large. Strictly in this order: every step reads the list the step before it wrote. |
-| **6. The other students' files** | P2, then I4, then L2 | every other student's folder | P2 is medium and mostly one program. L2 is very large (214 rows of web research) and waits for Evan's decision. |
+| **6. The other students' files** | P2, then I4, then L2, plus I9 (added 2026-10-15, small) | every other student's folder | P2 is medium and mostly one program. L2 is very large (214 rows of web research) and waits for Evan's decision. |
 
 Notes on the lanes:
 
@@ -137,7 +137,7 @@ on Evan's own computer. In date order.
 - **S7, first bullet** (the research agent cannot add an abbreviation to the shared glossary) and
   **S7, fourth bullet** (MIT's two cost figures) need no action.
 - **U3** is in lane 4 as a spot-check. If the check finds wrong checklists, fixing them is new
-  work for lane 6.
+  work for lane 6. *It did: that work is entry I9, now listed in lane 6.*
 
 ---
 
@@ -507,6 +507,30 @@ are the two worth reading first, because both affect what a student receives.
   answers are a 1-to-8 scale and repeats the request in I6. The form now uses three levels.
 - **Suggested fix:** change "8" to "10" in the three places, and delete the slider note.
 
+#### - [ ] I9. Three student records carry the wrong checklist of professional bodies
+
+- **Added 2026-10-15**, from lane 4's spot-check of U3. The first case below was confirmed against
+  the files on 2026-10-15; the other three are lane 4's report, not re-checked.
+- **Severity:** group B for the first case, group C for the rest. Data left over from the older
+  keyword method, not a fault in a program: the current rule
+  ([tools/ingest_form_csv.py:544](../tools/ingest_form_csv.py#L544)) matches the course chosen in
+  the form's dropdown and gives each course a fixed checklist.
+- **Where:** `recognition_targets` in each student's `profile.json` (the list of bodies that decide
+  whether a degree is recognised in Malaysia).
+- **What is there:**
+  - A Software Engineering student carries the accounting bodies (MIA and ACCA). Confirmed.
+  - A Computer Science student and a Data Science student each carry MQA alone. The current rule
+    gives those courses an empty checklist. Harmless.
+  - The other way round: a student who chose Data Science and also typed "Mechanical engineering"
+    in the free-text box has an empty checklist. Borderline; it depends which course they mean.
+- **Why it matters:** the "recognised in Malaysia?" column and the reports check whatever this
+  list names. For the Software Engineering student they would look up accounting recognition, which
+  is irrelevant, and could show a recognition warning where none applies.
+- **Is it urgent:** no. Fix it before that student's next list or report.
+- **Suggested fix:** set the Software Engineering student's checklist to what the current rule
+  gives that course. Optionally clear the two MQA-only lists to match. Ask the borderline student
+  whether mechanical engineering is a real option; if it is, it needs the engineering bodies.
+
 *Not listed here:* the limits that are design choices and not contradictions between files (ties
 between importance answers, the form assuming an A-Level student, the spreadsheet that must not be
 sorted by hand, the casual consent wording). They are in the "What is still rough" section of
@@ -548,6 +572,8 @@ sorted by hand, the casual consent wording). They are in the "What is still roug
   records had the checklist filled in by the earlier keyword method or by hand, so a few could be
   wrong in either direction.
 - **To settle it:** spot-check the older records' checklists against their chosen course.
+- **Update 2026-10-15:** lane 4 did the spot-check and found wrong checklists on three records,
+  now entry **I9**. The count of 21 in the report was not re-done.
 
 #### - [ ] U4. "It costs almost nothing to run"
 
