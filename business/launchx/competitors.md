@@ -5,10 +5,10 @@ its own website, linked at the bottom.*
 
 ## The four alternatives
 
-| | **You** | **ChatGPT / Gemini** | **Education agents and free portals** (IDP, MABECS, Uni Enrol, EasyUni, EduAdvisor) | **College counsellor** | **Paid admissions consultants** (Inquota's paid packages, Crimson Education) |
+| | **You** | **ChatGPT / Gemini** | **Education agents and free portals** (IDP, MABECS, Uni Enrol, EasyUni, EduAdvisor) | **College counsellor** | **Paid admissions consultants** (Crimson Education, KL boutiques; Inquota's paid packages\*) |
 |---|---|---|---|---|---|
 | Cost to the family | RM50 | Free | Free | Free | From RM2,000, up to USD 25,000 and more |
-| Who pays them | The family | Nobody | **The universities** | The college | The family |
+| Who pays them | The family | Nobody | **The universities** | The college | The family\* |
 | Which universities they cover | Any | Any | Mainly their partner universities | Any | Varies by firm |
 | Built around this student's grades and budget | ✅ | Only if you know what to ask | ✅ | ✅ | ✅ |
 | Total cost of the whole degree in ringgit | ✅ | ❌ | Partly | ❌ | Partly |
@@ -18,6 +18,8 @@ its own website, linked at the bottom.*
 | Files the application and visa for you | ❌ | ❌ | ✅ | Partly | ✅ |
 | Helps write essays | ❌ | Partly | Partly | Partly | ✅ |
 | A person to talk to | ❌ (form only) | ❌ | ✅ | ✅ | ✅ |
+
+\*Inquota also lists 100+ partner universities and agency-network ties, and its site doesn't say whether universities pay it. Unconfirmed: it may also earn commission, which would put it with the agents. Don't use it as the example of a family-paid firm until it answers "who pays you?" (`business/b2b_research/report.md`, section 4.2).
 
 The cost and "who pays them" rows come from the competitors' own websites (sources at the
 bottom). The other ticks and crosses are my reading of what each one offers, and the counsellor

@@ -100,6 +100,8 @@ blockquote p:last-child { margin: 0; }
 table { border-collapse: collapse; margin: 6pt 0 10pt 0; width: 100%; }
 th, td { border: 0.5pt solid #b7c2d0; padding: 4pt 6pt; text-align: left; vertical-align: top; }
 th { background-color: #eef2f7; color: #10233f; }
+/* Keep each row on one page; a split row leaves its label cell stranded on the page before. */
+tr { break-inside: avoid; }
 /* First column holds titles/labels: bound it to ~20% and let it WRAP, so a long title
    (e.g. section 6's route names) can't stretch the table onto one line. Short labels still
    fit on one line and won't wrap; the remaining info columns auto-size within the rest. */
@@ -138,25 +140,31 @@ def _insert_key_terms(text, block):
     return "\n".join(lines[:at] + [block, ""] + lines[at:])
 
 
-def _prepare_markdown(text):
+def _prepare_markdown(text, glossary=True):
     """Run the readability passes on the raw report Markdown, returning the final
     Markdown string to hand to the HTML renderer. Glossary terms are detected from the
     raw text (so the 'Key terms' list matches what's used), jargon in the body is linked
-    to those anchors, then the Key terms block is dropped in after the Snapshot."""
+    to those anchors, then the Key terms block is dropped in after the Snapshot.
+
+    glossary=False skips the Key terms pass: the glossary is admissions jargon, so a
+    non-student document (business research) gets irrelevant entries matched from its
+    source list and should define its own terms inline instead."""
     text = _checkboxes(text)
+    if not glossary:
+        return text
     glossary_md = apply_glossary.build_glossary_section(text, title="Key terms")
     linked = apply_glossary.link_terms(text)
     return _insert_key_terms(linked, glossary_md)
 
 
-def render_pdf(md_path, weasyprint, out_path=None):
+def render_pdf(md_path, weasyprint, out_path=None, glossary=True):
     """Convert one report .md to a .pdf (beside it by default). Returns the output Path.
 
     `weasyprint` is the loaded module (load once in the caller). `out_path` lets the
     manual/sales path (md_to_pdf.py) write to an arbitrary location; the pipeline leaves
-    it None to write <slug>.pdf next to the source."""
+    it None to write <slug>.pdf next to the source. `glossary` -> see _prepare_markdown."""
     text = md_path.read_text(encoding="utf-8")
-    body = markdown.markdown(_prepare_markdown(text), extensions=MD_EXTENSIONS)
+    body = markdown.markdown(_prepare_markdown(text, glossary), extensions=MD_EXTENSIONS)
     html = HTML_TEMPLATE.format(css=PAGE_CSS, body=body)
 
     out_path = out_path or md_path.with_suffix(".pdf")

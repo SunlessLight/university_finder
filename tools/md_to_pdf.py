@@ -21,6 +21,8 @@ Usage:
     python tools/md_to_pdf.py --type apply --input path/to/us.md --output out/apply.pdf
 
     # --output is optional; it defaults to the input path with a .pdf suffix.
+    # --no-glossary (report only) skips the auto "Key terms" block, which is admissions
+    # jargon: use it for non-student documents (e.g. business/b2b_research/report.md).
 """
 
 import argparse
@@ -33,16 +35,16 @@ if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
 
-def _render_report(md_path, out_path):
+def _render_report(md_path, out_path, glossary=True):
     """Render a report .md exactly as report_to_pdf.py does, to out_path."""
     import report_to_pdf as report
     from apply_prep_to_pdf import _load_weasyprint
 
     weasyprint = _load_weasyprint()
-    report.render_pdf(md_path, weasyprint, out_path=out_path)
+    report.render_pdf(md_path, weasyprint, out_path=out_path, glossary=glossary)
 
 
-def _render_apply(md_path, out_path):
+def _render_apply(md_path, out_path, glossary=True):
     """Render an application-prep .md exactly as apply_prep_to_pdf.py does, to out_path."""
     import apply_prep_to_pdf as apply
 
@@ -71,6 +73,11 @@ def main():
     parser.add_argument(
         "--output", help="Output .pdf path (default: input path with a .pdf suffix).",
     )
+    parser.add_argument(
+        "--no-glossary", action="store_true",
+        help="Report type only: skip the auto 'Key terms' block (admissions jargon). "
+             "Use for non-student documents that define their own terms inline.",
+    )
     args = parser.parse_args()
 
     md_path = Path(args.input)
@@ -82,7 +89,7 @@ def main():
         sys.exit(f"ERROR: --output must end in .pdf, got: {out_path}")
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
-    RENDERERS[args.type](md_path, out_path)
+    RENDERERS[args.type](md_path, out_path, glossary=not args.no_glossary)
     print(f"Wrote PDF: {out_path}")
 
 

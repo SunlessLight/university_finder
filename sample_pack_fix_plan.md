@@ -131,12 +131,45 @@ waits for Task 6; Task 7's step 5 must not run while a Task 6 session is between
     with official pages:** Brown's `Key deadline` says Regular Decision 2027-01-01, Brown's
     checklist says 5 January; Princeton's and Yale's `How to get the scholarship` name the CSS
     Profile. None of the three is a `Not verified` row, so Task 10 will not reach them unprompted.
-- [ ] Task 8b — **proposed 2026-10-13, not yet approved by Evan**: the Princeton cells the new
-  apply guide contradicts. See the "Before you start" block at the top of Task 9.
-- [ ] Task 9 — rebuild the sample pack (with the apply guide) + prototype + sweep
-- [ ] Task 10 — source list: the other 14 `Not verified` rows
-  - **PARKED 2026-10-12 (Evan). Do not run in this round.** Tracked as P1 in
-    `business/additionals.md`. Its steps below stay valid; read Task 6's notes above first.
+- [x] Task 8b — approved and run 2026-10-16 (as additionals.md S8). **Do not re-run.** Widened to
+  all 9 US `English req` cells (every one concluded the student qualified): 12 cells across 9 rows
+  via `apply_backfill.py --overwrite`, dispatch file
+  `data/students/toru/plans/backfill_2026-10-16_us_english_aid.md`; `check_master_list.py` 0 findings.
+  - Yale's aid cell: the row-filler read admissions.yale.edu/financial-aid-international-applicants
+    ("CSS Profile ... required for all financial aid applicants"). finaid.yale.edu/faq and
+    /apply/prospective say internationals file it only if asked. The aid office's pages were
+    followed; the guide's Yale entry carries a ⚠️ naming the conflict.
+- [x] Task 9 — rebuild the sample pack (with the apply guide) + prototype + sweep
+  - Run 2026-10-16. `Scan clean`, `0 finding(s)`, `Task 9 pack OK: 25 report pages, 28 apply-guide
+    pages`, smoke `147/147`. Before this, S10 re-read the Stanford and Yale essays and the Brown and
+    Columbia English rules and re-rendered the guide (27 → 28 pages).
+  - The report and the guide name the college in 13 phrasings; each is an explicit pair. The scan
+    gained the USD 4.04 income forms.
+  - Predicted grades are **kept**: the README's policy removes name, school and finances only, and
+    `Student grades` is a column on every sample row. A grade needle was tried and reverted. Hiding
+    grades is a policy change for Evan, not this task.
+  - Prototype: two lines changed "zero parent contribution" to "likely zero", as the report says.
+    The other hand-copied facts still matched.
+  - Sweep: only the expected hits, plus `tools/apply_report_fx.py:43` (a format example in a
+    comment, harmless). `business/sales/positioning.md:164` ("16 sections, 6 pages", and "41
+    columns" where the list has 35) is Evan's wording, reported, not edited.
+  - `status.md` trimmed to 2973 chars; history and open questions moved verbatim to
+    `research_notes.md` "Session history — 2026-10-16".
+- [x] Task 10 — source list: the other 14 `Not verified` rows
+  - Run 2026-10-18 (additionals.md group 1 step 3, P1). **Do not re-run.** `Task 10 OK: 42 of 43
+    Official page; still Not verified: ['University of Sheffield']` (no published international
+    living-cost figure; the old GBP 11000 was unsourced and was left in place). 208 cells across 14
+    rows, `check_master_list.py` 0 findings. Dispatch file `plans/backfill_2026-10-18_not_verified.md`.
+  - 11 courses renamed (no such track/minor, or a lab/master's in the name), not re-scored: Notre
+    Dame, Vanderbilt, Rice, Northwestern, Duke, WPI, Case Western, Michigan, Dartmouth, Olin, JHU.
+    All 14 totals moved; largest Dartmouth 1442765 → 1988225 (AB + BE = 5 years).
+  - **Michigan Robotics BSE is not ABET-accredited** (U-M bulletin). `Recognised in Malaysia?`
+    rewritten and `Warnings` set to Recognition risk by hand; its 83/A score predates this.
+  - Things the steps did not foresee: step 1's `"rose-hulman"` assert never matches (search
+    `"rose hulman"`); `.tmp/toru/backfill/` still held S8's 9 applied fragments (moved to
+    `backfill_applied_2026-10-16/`); 7 of 18 agent runs stalled on a stream watchdog and were
+    re-dispatched (Bristol and Northwestern twice); `status.md` had 27 chars of room, so the
+    2026-10-12/13 entry moved verbatim to `research_notes.md` "Session history — 2026-10-18".
 - [x] Task 11 — ringgit prose: the tool, then the source student's other files
   - Run 2026-10-12. **Do not re-run.** Self-test matched. 13 fragments, `0 refused`, no `WARN`:
     231 figures replaced, 11 left alone; `findings unchanged` (16 reports, 0 findings); re-run

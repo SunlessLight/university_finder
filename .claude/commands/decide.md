@@ -17,11 +17,15 @@ if there are none, say so and go back to Stage 4 rather than recommending off un
    `priorities`, confirmation the set spans Reach/Match/Safety, the application strategy under the
    real constraints (UCAS 5 choices and no Oxford+Cambridge in one cycle; Common App per-school
    fees budgeted; direct-application portals for Singapore/Malaysia/China), and the open risks.
-3. Build the calendar:
+3. Build the calendar (rescue first — it only copies dates still sitting in `.tmp/$1/`):
    ```powershell
+   python tools/build_calendar.py --student $1 --rescue-dates
    python tools/build_calendar.py --student $1
    ```
    Review it and flag the earliest actions. Scholarship deadlines sequence *before* deposits.
+   A `REFUSED:` message means the rebuild would shrink the existing calendar — **stop and tell
+   Evan**. Never reach for `--allow-shrink` to get past it; if a shorter calendar is truly right,
+   copy `calendar.md` to `.tmp/` first (see the workflow's step 3).
 
 **The decision is the student's** — present the recommendation and the trade-offs, don't
 over-promise. Keep the strategy conditional where grades are still predicted.

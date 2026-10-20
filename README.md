@@ -18,7 +18,9 @@ workflows/   Markdown SOPs (00_overview, 01_intake, 03_discover_longlist, 04_uni
              05_decide_and_apply, + 08_application_prep, resume)
 tools/       Python execution scripts (firecrawl_search, init_student, ingest_form_csv,
              shortlist_schema, sync_shortlist, compare_universities, build_report, build_calendar)
-data/students/   One private data bank per student (gitignored — PII)
+data/students/   One private data bank per student (gitignored — PII). Each holds profile/preferences,
+                 master_list.csv, reports/, dated_items/ (each report's deadlines, kept for the
+                 calendar), recommendation.md, calendar.md — full list in workflows/00_overview.md
 data/form/       Google Form CSV exports dropped here for batch intake (gitignored — PII)
 business/    Product review + sales material (poster, scripts, sample pack) — not part of the pipeline
 .tmp/        Disposable intermediates (gitignored)

@@ -130,8 +130,8 @@ Every failure is a chance to make the system stronger: (1) identify what broke, 
 ## This project — University & Course Finder
 
 Take a **Malaysian student** from *"who am I / what do I want"* to *"here is exactly how I apply to
-these specific universities"* — via a **four-stage narrowing pipeline** (intake → discover/longlist →
-verify + university report → decide), with research depth escalating as options survive each cut. Sibling of the
+these specific universities"* — via a **four-stage narrowing pipeline** (intake → discover/longlist
+(officially sourced) → university report → decide), with research depth escalating as options survive each cut. Sibling of the
 `guest_speakers/` WAT project; reuses its Firecrawl-discovery + single-source-schema +
 score/dedupe/append-into-CSV patterns.
 

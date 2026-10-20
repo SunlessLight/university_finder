@@ -187,14 +187,14 @@
       { label: 'How to apply', value: 'MIT\'s own application portal, not the Common App; non-binding Early Action or Regular Action' },
       { label: 'Admission likelihood', value: 'Reach — 4.6% overall, 2.0% for international applicants' },
       { label: 'Full price, whole degree', value: rm(mit.approxTotalMyr) },
-      { label: 'Est. net cost after aid', value: `~${rm(NET_COST_PER_YEAR)}/yr your share (~${rm(NET_COST_TOTAL)} over four years); expected parent contribution RM 0` },
+      { label: 'Est. net cost after aid', value: `~${rm(NET_COST_PER_YEAR)}/yr your share (~${rm(NET_COST_TOTAL)} over four years); parent contribution likely RM 0` },
       { label: 'Your priorities', value: priorities.map((p, i) => (i + 1) + '. ' + p).join(' · ') }
     ],
     sections: REPORT_SECTIONS,
     openSection: (REPORT_SECTIONS.find((s) => /why here/i.test(s.title)) || { n: null }).n,
     whyHere: [
       { theme: 'Scholarship — your top priority',
-        text: 'The best answer on your entire list, and not close. Need-blind for internationals, meets 100% of need with grants and no loans, zero expected parent contribution at your family\'s income.' },
+        text: 'The best answer on your entire list, and not close. Need-blind for internationals, meets 100% of need with grants and no loans, a likely-zero parent contribution at your family\'s income.' },
       { theme: 'Hands-on experience — your second priority',
         text: 'Maxed out. Undergraduate research from first year, 2.007\'s robot competition, 2.009\'s product build, open machine shops, and an entrepreneurship stack that speaks directly to your goal of building products.' },
       { theme: 'Ranking',

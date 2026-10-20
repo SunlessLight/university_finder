@@ -14,8 +14,8 @@ Usage:
     --report defaults to the MIT report. Pass a different reports/<slug>.md name to
     regenerate the sample university-report PDF from a different finalist instead.
 
-Does NOT touch sample_apply-guide_US.pdf — build that manually once the source student's
-application_prep/<region>.md is itself current (see README.md).
+Also builds sample_apply-guide_US.pdf from the source student's application_prep/us.md, with
+the same redaction contract as the report (explicit pairs, hard stop on a missing target).
 """
 
 import argparse
@@ -108,12 +108,14 @@ def build_glossary(master_list_path: Path) -> Path:
 # explicit find/replace pairs (not regex) so a failed match is loud (ValueError) rather
 # than silently leaving PII in a sales asset.
 REPORT_TEXT_REDACTIONS = [
-    ("about RM 150,000, roughly USD 32,000", "a lower-income band"),
-    ("English-medium A-Levels at Sunway put you outside that condition",
-     "English-medium A-Levels at your college put you outside that condition"),
-    ("**Mid-February 2027 — midyear grades due**, submitted by Sunway.",
-     "**Mid-February 2027 — midyear grades due**, submitted by your college."),
-    ("from your Sunway counsellor", "from your school counsellor"),
+    ("the family income on your file is under about RM 150,000 a year, roughly USD 37,000, far below",
+     "the family income on your file is in a lower-income band, far below"),
+    ("You study in English at Sunway,", "You study in English at your college,"),
+    ("Ask Sunway early;", "Ask your college early;"),
+    ("if Sunway has no humanities", "if your college has no humanities"),
+    ("Confirm Sunway can send", "Confirm your college can send"),
+    ("than Bandar Sunway,", "than a Malaysian suburb,"),
+    ("Not open to a Sunway College student", "Not open to a private-college student"),
 ]
 
 
@@ -152,9 +154,59 @@ def build_report_pdf(report_slug: str) -> Path:
     return out_pdf
 
 
+# Same contract as REPORT_TEXT_REDACTIONS, for the apply guide's prose.
+APPLY_TEXT_REDACTIONS = [
+    ("On the income in your file (under about RM 150,000 a year, roughly USD 37,000) you sit",
+     "On the income in your file (a lower-income band) you sit"),
+    ("your Sunway counselor", "your college counselor"),
+    ("Have Sunway send", "Have your college send"),
+    ("with Sunway for February", "with your college for February"),
+    ("Ask a Sunway teacher", "Ask a teacher"),
+    ("**Sunway official transcript**", "**Official transcript**"),
+    ("Ask Sunway to send it", "Ask your college to send it"),
+]
+
+
+def build_apply_guide_pdf(region: str = "us") -> Path:
+    src_md = STUDENT_DIR / "application_prep" / f"{region}.md"
+    if not src_md.exists():
+        sys.exit(f"ERROR: {src_md} not found.")
+
+    text = redact(src_md.read_text(encoding="utf-8"))
+    for before, after in APPLY_TEXT_REDACTIONS:
+        before_r, after_r = redact(before), redact(after)
+        if before_r not in text:
+            sys.exit(
+                f"ERROR: expected redaction target not found in {src_md.name}:\n  {before_r!r}\n"
+                "The source guide text has likely changed — update APPLY_TEXT_REDACTIONS."
+            )
+        text = text.replace(before_r, after_r)
+
+    # The guide opens with a "How to use this guide" block, so the banner goes right under the title.
+    lines = text.splitlines()
+    h1_at = next(i for i, ln in enumerate(lines) if ln.startswith("# "))
+    text = "\n".join(lines[:h1_at + 1] + ["", BANNER, ""] + lines[h1_at + 1:])
+
+    tmp_md = OUT_DIR / ".sample_apply_redacted.md"
+    tmp_md.write_text(text, encoding="utf-8")
+    try:
+        out_pdf = OUT_DIR / f"sample_apply-guide_{region.upper()}.pdf"
+        subprocess.run(
+            [sys.executable, str(TOOLS_DIR / "md_to_pdf.py"),
+             "--type", "apply", "--input", str(tmp_md), "--output", str(out_pdf)],
+            check=True,
+        )
+    finally:
+        tmp_md.unlink(missing_ok=True)
+    print(f"Wrote {out_pdf}")
+    return out_pdf
+
+
 def scan_for_leaks(*paths: Path) -> None:
     """Same check the README promises: zero hits for the name/school/income figures."""
-    needles = [SOURCE_STUDENT.capitalize(), "Sunway", "RM 150,000", "USD 32,000"]
+    needles = [SOURCE_STUDENT.capitalize(), "Sunway", "RM 150,000", "USD 32,000",
+               # The 2026-10 rebuilds state the income at USD 4.04. Grades stay by policy (README).
+               "USD 37,000", "37,000 a year", "RM 150k"]
     hits = []
     for path in paths:
         blob = path.read_bytes().decode("utf-8", errors="ignore") if path.suffix != ".pdf" else None
@@ -178,7 +230,8 @@ def main():
     csv_path = build_master_list()
     glossary_path = build_glossary(csv_path)
     pdf_path = build_report_pdf(args.report)
-    scan_for_leaks(csv_path, glossary_path, pdf_path)
+    apply_path = build_apply_guide_pdf()
+    scan_for_leaks(csv_path, glossary_path, pdf_path, apply_path)
 
 
 if __name__ == "__main__":

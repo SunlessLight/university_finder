@@ -9,8 +9,10 @@ document-style .pdf (title block, clickable Contents, styled "Key terms", tickab
 checklists, page-number footer, A4) written alongside the .md.
 
 It only ever *reads* the existing Markdown — no research, never touches master_list.csv.
-Build first (build_application_prep.py), export on request (here). Sibling of
-report_to_pdf.py, which does the same for reports.
+Build first (build_application_prep.py), then export (here). The export is automatic: it is
+step 4 of workflows/08_application_prep.md, and the /apply-prep launcher runs it right after the
+build. The commands below stay for a manual re-export — a guide edited after the fact.
+Sibling of report_to_pdf.py, which does the same for reports.
 
 Engine = WeasyPrint (real CSS: reliable internal links for the Contents/glossary jumps,
 paged footers, proper list styling). On Windows WeasyPrint needs the native GTK/Pango/Cairo

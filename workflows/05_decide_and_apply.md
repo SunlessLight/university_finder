@@ -34,11 +34,21 @@ Save to `data/students/<slug>/recommendation.md`. Include:
 
 ### 3. Build the deadline calendar
 ```powershell
+python tools/build_calendar.py --student <slug> --rescue-dates   # first: copies any dates still only in .tmp/; writes no calendar
 python tools/build_calendar.py --student <slug>
 ```
-This aggregates every dated item across finalists — application deadlines (from `master_list.csv`) plus any
-`dated_items` in the report JSONs (scholarship deadlines, test dates, visa lead times) — into one
+This aggregates every dated item across finalists — application deadlines (from `master_list.csv`) plus the
+reports' `dated_items` (scholarship deadlines, test dates, visa lead times), read from
+`data/students/<slug>/dated_items/` and, for reports built before 2026-10-13, `.tmp/<slug>/` — into one
 chronological `calendar.md`. Review it with the student and flag the earliest actions.
+
+> **A `REFUSED:` message is a stop, not an obstacle.** The calendar program will not write a calendar with
+> fewer items over an existing one, because the usual cause is report dates that were lost when `.tmp/` was
+> cleaned — and then the existing `calendar.md` is the only copy left (`data/students/` has no git undo).
+> Run `--rescue-dates` if you haven't, and tell Evan. Only re-run with `--allow-shrink` when the shorter
+> calendar is genuinely right (finalists were dropped), and **copy `calendar.md` to `.tmp/` first**.
+> Never use it for the finished student whose calendar predates the fix — 61 of its 78 dates exist nowhere
+> else.
 
 ### 4. Per-finalist how-to-apply recap
 In `recommendation.md` (or pointing at the student's apply guide, `application_prep/<region>.md`, when

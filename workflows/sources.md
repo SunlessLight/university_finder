@@ -35,6 +35,11 @@ Each row is **the question it answers → the URL → whether a plain fetch work
   proving it again. If Firecrawl also fails, fall back to the university's own page for the same
   fact (a uni press page usually states its own QS position) and say so in `research_notes`.
 - **`quirk`** — reachable, but not at the address you'd guess. Use the exact URL given.
+- **`browser`** — the page loads, but the answer sits behind a search form that a plain fetch
+  cannot fill in, so `WebFetch` returns the empty form and nothing else. Firecrawl is no help
+  either. Only a session that drives a real browser (the `mcp__claude-in-chrome__*` tools) or
+  Evan by hand can read it. Subagents have no browser, so they write `Not checked` and leave
+  the lookup to the main session. The row's own note says how to drive the form.
 
 **If a URL 404s, do not guess a deeper path** — the deep links here are the ones that rot (five of
 the twelve deep paths tried while building this file were already dead). Go up to the section root,
@@ -98,7 +103,7 @@ this is only where each body's register is.
 | Answers | URL | Fetch |
 |---|---|---|
 | Is a **Malaysian** programme MQA-registered? (the searchable register) | `https://www2.mqa.gov.my/mqr/` | free |
-| Is a **foreign** qualification recognised in Malaysia? (eSISRAF) | `https://www2.mqa.gov.my/esisraf/` | free |
+| Is a **foreign** qualification recognised in Malaysia? (eSISRAF; the search is at `kelayakan.cfm`) | `https://www2.mqa.gov.my/esisraf/kelayakan.cfm` | **browser** |
 | MQA generally | `https://www.mqa.gov.my/` | free |
 | **Engineering** — Board of Engineers Malaysia (registration) | `https://www.bem.org.my/` | **blocked** |
 | **Engineering** — Engineering Accreditation Council (accredited programmes, Washington Accord) | `http://www.eac.org.my/` | **quirk** |
@@ -114,6 +119,30 @@ Two quirks worth the line they cost, because each one has a failure mode that lo
 down" rather than "wrong address": **EAC serves `http://` only** — `https://www.eac.org.my/` fails
 TLS handshake outright. **LPQB works on the bare host only** — `https://www.lpqb.org.my/` fails TLS,
 `https://lpqb.org.my/` is fine.
+
+**eSISRAF can only be read in a real browser (checked 2026-10-17, MIT).** A plain `WebFetch` of
+`kelayakan.cfm` returns only the four column headings. The lists are filled in by the page's own
+scripts after you choose a country, and the results only appear after you choose an institution.
+To look a university up:
+1. Open `kelayakan.cfm` in Chrome.
+2. In **Negara** (country), type the English country name, e.g. `UNITED`, then pick `UNITED STATES`.
+   The Malay name (`AMERIKA`) finds nothing.
+3. In **Institusi**, type part of the name, e.g. `INSTITUTE OF TECHNOLOGY`. The list is long, so
+   reading every option through the accessibility tree gets cut off around the letter H. Pull the
+   matching option's text with a short page script instead, then click it.
+4. Read the results table with `get_page_text`. Each row is one field (`Bidang`) and one
+   qualification (`Kelayakan`).
+
+The MIT result was 4 rows: Naval Architecture (degree), Agriculture (BSc), Science (BSc), and Arts
+and Social Science (BA). How to read a result:
+- **It is the public-service register** ("Sistem Pengiktirafan Kelayakan *Perkhidmatan Awam*").
+  A listing means the qualification is recognised for a Malaysian government post.
+- **It lists qualifications by broad field, not by programme.** An MIT engineering degree is
+  awarded as an SB (Bachelor of Science), so it most likely falls under the "Science / Bachelor of
+  Science" row. Say "most likely" in the report, not "confirmed".
+- **For a regulated profession it is not the whole gate.** Engineering still goes through
+  EAC/BEM (for a US programme, the Washington Accord via ABET accreditation). Medicine goes through
+  MMC, and so on, as in the rows above.
 
 **LPQB's actual recognised-degree list is a separate block even from the bare host (learned
 2026-09-11, Rey's UK pass).** `https://lpqb.org.my/clp/list-of-qualifications-recognised-to-sit-for-pass-the-clp-examination`

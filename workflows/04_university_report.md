@@ -311,8 +311,10 @@ a non-US example so you don't skip them for a UK or Singapore finalist.
 > live in `workflows/08_application_prep.md` — they are region-level facts that were being rewritten
 > once per finalist despite being identical for every university a student applies to in that region.
 > **`dated_items` stays in this report's JSON** even though `key_dates` is gone as a *section* —
-> `build_calendar.py` globs `.tmp/<slug>/report_*.json` for it directly, and dropping the field would
-> silently empty the Stage 5 deadline calendar.
+> `build_report.py` copies it into `data/students/<slug>/dated_items/<report-slug>.json` (permanent,
+> since 2026-10-13), and `build_calendar.py` reads that folder first, falling back to
+> `.tmp/<slug>/report_*.json` / `uni_*.json` only for reports built before then. Dropping the field
+> would silently empty the Stage 5 deadline calendar.
 
 ## Writing rules — make it skimmable (non-negotiable, both modes)
 
@@ -486,6 +488,12 @@ silently, and the fix is to re-run the manual command above once the environment
   rather than scraping the page.
 - **Recognition is a gate, not a footnote** — for regulated professions, if the degree isn't recognised by
   MQA / the professional body, say so prominently; it may demote the finalist.
+- **The foreign-degree register (eSISRAF) needs a browser, and `report-writer` has none.** It is a
+  search form a plain fetch can't fill in (`sources.md`, flag `browser`). The agent writes
+  `Not checked (eSISRAF needs a browser)`, not `Not found`, and moves on. After the reports are back,
+  the main session looks each finalist up with the Chrome tools, following the steps in `sources.md`,
+  and corrects the line. If Chrome isn't connected, it goes to Evan as a hand lookup. Do this only
+  where recognition matters: a regulated profession or a government-sponsored student.
 
 ## Done when
 

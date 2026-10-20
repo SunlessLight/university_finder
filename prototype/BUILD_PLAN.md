@@ -167,8 +167,9 @@ Flags — all settled by Evan on 2026-10-10. A, B, C: build on these, do not re-
    the wording himself; read it from `DATA`, never retype it.
 3. **No price yet.** `DATA.pricing.pricePerReport` stays `null` until Evan picks one. Screens show
    "first report free, then paid" and must cope with `null` (no "RM null").
-4. **15 sections.** `DATA.report.sections` is the current 15-section list and is what the report
-   screen shows. The downloadable sample MIT PDF is the older 16-section layout; leave it.
+4. **15 sections: resolved 2026-10-16.** `DATA.report.sections` is the current 15-section list and
+   is what the report screen shows. The downloadable sample MIT PDF is now the same 15-section
+   layout, rebuilt by `build_sample_pack.py`.
 5. **SAT: resolved 2026-10-12.** The sample CSV now says the SAT or ACT is required, so the
    downloaded spreadsheet, `data.js` and the MIT report agree. The `gen.py` override that used
    to patch MIT's `entryRequirements` is gone (`OVERRIDES = {}`).

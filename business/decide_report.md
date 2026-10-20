@@ -425,18 +425,20 @@ Listed with the most serious first.
   none. Its quality rests on the AI model and on the founder reading it. A missing balance check or
   a forgotten Oxford-or-Cambridge clash would not be caught by a machine.
 
-- **The calendar's richest ingredient is stored in a temporary place.** The researchers' dated
-  notes are kept in a working folder that the project treats as disposable. For the one student
-  who has a calendar, that folder has since been cleared. The calendar document itself is safe.
-  But if the calendar program were run again for that student today, it would find only the 17
-  spreadsheet deadlines and would replace the 78-line calendar with a 17-line one. Of the 14
-  students waiting for this stage, only 3 still have those notes on file. The repair is small
-  (keep the notes in the student's permanent folder) and has not been made yet.
+- **The one calendar that exists cannot be rebuilt.** The researchers' dated notes used to be kept
+  in a working folder that the project treats as disposable. Since 13 October 2026 each report's
+  dates are also saved in the student's permanent folder, and the calendar program reads them from
+  there. It also refuses to replace a calendar with a shorter one, so dates cannot be lost by
+  running it again. But the one student who has a calendar was done before that repair, and their
+  notes had already been cleared. Their 78-line calendar is safe, but a rebuild would find only
+  the 17 spreadsheet deadlines, so the program will not run for them. If their finalists change,
+  that calendar has to be edited by hand.
 
-- **American universities bring fewer dates into the calendar.** Reports on US universities are
-  saved under a different file name from other reports, and the calendar program does not look for
-  that name. In the one calendar we have, all eight US universities appear with their main
-  deadline only. Their other dates are covered in the separate apply guide for the US.
+- **American universities now bring all their dates into the calendar.** Reports on US
+  universities are saved under a different file name from other reports, and until 13 October 2026
+  the calendar program did not look for that name. It does now. The one calendar we have predates
+  the fix, so there all eight US universities still appear with their main deadline only. Their
+  other dates are covered in the separate apply guide for the US.
 
 - **The calendar only places a date on the timeline if it is written one exact way** (year, month,
   day, in numbers). Across all 42 finalist rows on file today, 33 are written that way. The other

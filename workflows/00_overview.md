@@ -108,7 +108,7 @@ Stage 1's `_needs_review` finalize and Stage 4's finalist pick *are* questions.
 | main session | — | anything | — |
 | `row-filler` (Sonnet, Stage 3, **discovery**) | **parallel, one per university** (~8-12) | `.tmp/<slug>/candidates/<uni-slug>.json`, its own `.tmp/<slug>/fc_<uni-slug>.json` | `master_list.csv`; anything outside `.tmp/<slug>/`; never runs merge/sync/check |
 | `row-filler` (Sonnet, **backfill**) | **parallel, one per university** (~8-12) | `.tmp/<slug>/backfill/<uni-slug>.json`, its own `.tmp/<slug>/fc_<uni-slug>.json` | `master_list.csv`, `research_notes.md`; anything outside `.tmp/<slug>/`; never runs `apply_backfill.py` |
-| `report-writer` (Opus, Stage 4) | **parallel, one per finalist** (~3-5) | `.tmp/<slug>/report_*.json` \| `uni_*.json`, `reports/<uni>.md`, and via `build_report.py` its own `.tmp/<slug>/finalists/<slug>.json` marker | `master_list.csv` (no `Edit` tool at all); anything outside its own report + marker; never runs `flip_finalists.py` |
+| `report-writer` (Opus, Stage 4) | **parallel, one per finalist** (~3-5) | `.tmp/<slug>/report_*.json` \| `uni_*.json`, `reports/<uni>.md`, and via `build_report.py` its own `.tmp/<slug>/finalists/<slug>.json` marker + `dated_items/<slug>.json` | `master_list.csv` (no `Edit` tool at all); anything outside its own report + marker; never runs `flip_finalists.py` |
 
 **The rule that decides concurrency: two agents may run in parallel only if their write sets are
 disjoint.** Row-fillers each own one fragment file and touch nothing shared, so 12 at once is safe —
@@ -167,6 +167,7 @@ data/students/<student-slug>/
   master_list.csv      # Stages 3-4: every candidate + a "List status" column
   score_log.jsonl      # Stage 3: append-only audit — weights_id + sub-scores + entry_margin behind each scored row
   reports/<uni>.md     # Stage 4  (reports/<uni>.pdf — exported automatically by report-writer; manual re-export via report_to_pdf.py)
+  dated_items/<report-slug>.json  # Stage 4: permanent copy of each report's dated_items (build_report.py); build_calendar.py reads it first
   recommendation.md    # Stage 5
   calendar.md          # Stage 5
   application_prep/<region>.md  # 08_application_prep.md — per-region "how to apply" guide (optional)
@@ -359,7 +360,8 @@ finalist marker into `master_list.csv` in one pass — the
 Stage 4 counterpart to `merge_candidates.py`, and the only thing that flips a row to `Finalist`) ·
 `report_to_pdf.py` (export a report to PDF for the student; `--file <path>` instead of `--student`
 for a `--quick` report) · `build_calendar.py`
-(deadline calendar) · `build_application_prep.py` (per-region apply guide grouped by application system) ·
+(deadline calendar; after any change to it or to `build_report.py`'s dated-items saving, run
+`python -m unittest tests.test_calendar_dates` — it guards the shrink refusal and `--rescue-dates`) · `build_application_prep.py` (per-region apply guide grouped by application system) ·
 `progress_dashboard.py` (roster-wide stage report across every student — derives each stage from
 files, never from status.md, so it can't drift; run via `/progress`).
 
