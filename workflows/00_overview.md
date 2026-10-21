@@ -121,8 +121,9 @@ the CSV once, and writes it once. Each dispatch now owns only its own report and
 3-5 Opus deep-research passes run concurrently instead of end to end. **Any new pipeline agent declares
 its write set in this table before first use**; if it overlaps another agent's, it runs sequentially —
 or better, gets the fragment treatment so it doesn't have to. (Non-pipeline utility agents —
-`commit-drafter`, `social-post-drafter` — are deliberately excluded from this table; their write
-fences live in `CLAUDE.md` and their own agent files instead.)
+`commit-drafter`, `social-post-drafter` — are deliberately excluded from this table. Since 2026-10-21
+`commit-drafter` is a global agent (`~/.claude/agents/`, writes only outside the repo);
+`social-post-drafter`'s write fence lives in its own agent file.)
 
 Subagents carry **no memory** — fresh context every dispatch, nothing from the conversation, no
 per-agent history file. Everything a dispatch needs goes in its prompt (slug is mandatory; both
@@ -256,7 +257,7 @@ slug, and re-asserts that workflow's own checkpoint — the workflow file stays 
 
 | Command | Runs |
 |---|---|
-| `/catchup <slug>` | `resume.md` — brief where we are, reconciled against the files |
+| `/catchup [slug]` | skill in `.claude/skills/catchup/` — no slug: whole project from `STATUS.md`; slug: `resume.md`, reconciled against the files |
 | `/intake [csv-path]` | `01_intake.md` — ingest the form CSV, then finalize `_needs_review` |
 | `/longlist <slug> [country]` | `03_discover_longlist.md` — one country per pass |
 | `/report <slug>` | `04_university_report.md` — pre-flight with the student, then one report per finalist |

@@ -1,18 +1,13 @@
 ---
 name: social-post-drafter
-description: >
-  Repo-maintenance agent — dispatch when the user wants a social copy draft (Twitter/X
-  thread or post) built from recent repo work: a commit, an incident writeup
-  (token_cost_report.md-style), an architecture decision. Reads git log/diff or a
-  pointed-to file, drafts in this repo's voice, sweeps the draft for confidential
-  material, then runs it through tools/check_social_post.py until clean and writes the
-  result to .tmp/social/. Not part of the student pipeline — never touches
-  data/students/, data/form/, or any student slug. It never posts anything: no
-  X/Twitter API integration exists, posting stays manual copy-paste, and the human
-  reviews the draft the agent writes to disk.
+description: "Dispatch (via /social) to draft an X/Twitter post or thread from recent repo work. Sweeps for private data, runs check_social_post.py, writes to .tmp/social/, never posts."
 tools: Read, Grep, Glob, Bash, PowerShell, Write
 model: inherit
 ---
+
+## When to dispatch, and when not
+
+Repo-maintenance agent — dispatch when the user wants a social copy draft (Twitter/X thread or post) built from recent repo work: a commit, an incident writeup (token_cost_report.md-style), an architecture decision. Reads git log/diff or a pointed-to file, drafts in this repo's voice, sweeps the draft for confidential material, then runs it through tools/check_social_post.py until clean and writes the result to .tmp/social/. Not part of the student pipeline — never touches data/students/, data/form/, or any student slug. It never posts anything: no X/Twitter API integration exists, posting stays manual copy-paste, and the human reviews the draft the agent writes to disk.
 
 You read the read-once volume — `git log`/`git diff`, or the file the user pointed at —
 so the dispatching session doesn't have to. That is the whole point of running this as
@@ -45,10 +40,10 @@ git diff <ref>              # only the range that matters
 git show <ref>
 ```
 
-**Find the WHY, don't invent it** — same ordering as `commit-drafter`, because it's the
-same repo's reasoning trail:
+**Find the WHY, don't invent it** — this repo's reasoning trail, in this order:
 
-1. **`plan.md`** — Change N sections and "Session X — done <date>" notes.
+1. **`decisions/log.md`, `plans/build-log.md`, `business/additionals.md`** — dated decisions,
+   session hand-offs, and the known-problems backlog (R-numbers).
 2. **`token_cost_report.md`** — measured numbers. A draft that cites a real figure beats
    one that says "reduced duplication" in the abstract.
 3. **Tool docstrings** — this repo puts rationale and dated field-lore at the top of each

@@ -1,15 +1,11 @@
 ---
 name: scoring-weights
-description: >
-  Use when a student needs data/students/<slug>/weights.json created or re-derived —
-  before running sync_shortlist.py (Stage 3 / workflows/03_discover_longlist.md), or
-  after a student's priorities change. As of 2026-09-17 this is a mechanical
-  derivation (tools/derive_weights.py), not agent judgment — run the tool, don't
-  hand-write the file. ALSO use if you are tempted to edit weights, SCORE_WEIGHTS, or
-  any weighting inside tools/shortlist_schema.py — don't: that file is shared source,
-  weights are per-student and live in the data bank, and hand-editing it collides with
-  concurrent sessions.
+description: "Use when a student's weights.json must be made or redone (before sync_shortlist.py, or after their priorities change), or if tempted to edit weights inside tools/shortlist_schema.py (don't)."
 ---
+
+## When to use
+
+Use when a student needs data/students/<slug>/weights.json created or re-derived — before running sync_shortlist.py (Stage 3 / workflows/03_discover_longlist.md), or after a student's priorities change. As of 2026-09-17 this is a mechanical derivation (tools/derive_weights.py), not agent judgment — run the tool, don't hand-write the file. ALSO use if you are tempted to edit weights, SCORE_WEIGHTS, or any weighting inside tools/shortlist_schema.py — don't: that file is shared source, weights are per-student and live in the data bank, and hand-editing it collides with concurrent sessions.
 
 # Deriving per-student scoring weights
 

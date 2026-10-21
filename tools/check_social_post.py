@@ -27,7 +27,7 @@ Checks (use --check to run a subset while iterating on a fix):
            check against each live slug).
   secrets  credential-shaped strings: `sk-...`, `fc-...`, `AKIA...`, an `api_key=`/`password=`
            assignment, a `Bearer <token>` header, or a long base64-looking literal. This is
-           the same regex family `.claude/agents/commit-drafter.md` (Step 4) already
+           the same regex family the global `commit-drafter` agent (Step 2) already
            describes by hand for its own safety sweep, implemented here as real regexes
            instead of prose so a social draft gets the identical check.
 
@@ -62,7 +62,7 @@ CHECKS = ["names", "paths", "secrets"]
 # check_paths() because it needs a live slug to build the fragment.
 _FIXED_PATH_FRAGMENTS = ("data/students/", "data/form/")
 
-# Credential-shaped string families, mirroring the safety sweep commit-drafter.md (Step 4)
+# Credential-shaped string families, mirroring the safety sweep the global commit-drafter (Step 2)
 # already describes by hand: sk-/fc- style API keys, AWS access keys, api_key/password
 # assignments, Bearer auth headers, and long base64-looking literals (access tokens,
 # encoded secrets). The base64 pattern requires a digit, an uppercase and a lowercase

@@ -1,20 +1,13 @@
 ---
 name: row-filler
-description: >
-  Stage 3 longlist row filler for the university-finder pipeline. Dispatch one per
-  university, in parallel, after the roster sweep has named the country's universities and
-  the country-constants file has been written — each researches ONE university+course and
-  writes one .tmp/<slug>/candidates/<uni-slug>.json fragment with all 35 columns' worth of
-  fields, eight 0-5 sub-scores and an entry_margin. Use for step 3 of
-  workflows/03_discover_longlist.md only — not for the roster sweep or the country
-  constants (those stay in the main session), not for merge/sync/check (deterministic
-  tools), and not for Stage 4 university reports (that is the report-writer agent).
-  ALSO has a BACKFILL mode for topping up blank cells in rows that are already on the
-  list: researches only the named columns and writes .tmp/<slug>/backfill/<uni-slug>.json
-  for apply_backfill.py. Use that instead of hand-patching the CSV from agent replies.
+description: "Stage 3: dispatch one per university, in parallel, to research one university+course into a .tmp candidate fragment (step 3 of workflows/03_discover_longlist.md). BACKFILL mode tops up blank cells for apply_backfill.py."
 tools: Read, Write, WebSearch, WebFetch, Bash, PowerShell
 model: sonnet
 ---
+
+## When to dispatch, and when not
+
+Stage 3 longlist row filler for the university-finder pipeline. Dispatch one per university, in parallel, after the roster sweep has named the country's universities and the country-constants file has been written — each researches ONE university+course and writes one .tmp/<slug>/candidates/<uni-slug>.json fragment with all 35 columns' worth of fields, eight 0-5 sub-scores and an entry_margin. Use for step 3 of workflows/03_discover_longlist.md only — not for the roster sweep or the country constants (those stay in the main session), not for merge/sync/check (deterministic tools), and not for Stage 4 university reports (that is the report-writer agent). ALSO has a BACKFILL mode for topping up blank cells in rows that are already on the list: researches only the named columns and writes .tmp/<slug>/backfill/<uni-slug>.json for apply_backfill.py. Use that instead of hand-patching the CSV from agent replies.
 
 You research ONE university+course for one student and write ONE fragment file.
 You are dispatched in parallel with ~8-12 siblings covering the rest of the country's
