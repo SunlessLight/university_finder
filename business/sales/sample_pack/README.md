@@ -41,7 +41,7 @@ glossary from that redacted list (`build_glossary_sheet.py`), redacts + renders 
 after the title, and does the same for the US apply guide (`md_to_pdf.py --type apply`). It ends by re-running the same leak scan by hand ("zero hits") described below, so a
 regeneration re-proves the guarantee instead of assuming it still holds.
 
-**Last rebuilt: 2026-10-16**, at the exchange rates stamped `FX_AS_OF 2026-09-05` in
+**Last rebuilt: 2026-10-20**, at the exchange rates stamped `FX_AS_OF 2026-09-05` in
 `tools/shortlist_schema.py` (USD 4.04). Every ringgit figure in the list, the MIT report and the apply guide is at
 those rates. If `FX_AS_OF` moves, the source student's list and report need re-converting first, then
 this rebuild — the script copies the source's ringgit figures, it does not recompute them.

@@ -41,6 +41,10 @@ has not run.
 
 **Second closing pass 2026-10-17:** round 1 (group 1 step 1, group 2 step 1 with R8, group 3 step 1) and group 2 step 2 are done and checked against the files. R1, R3, R4, R6, R7, R8 and S4 are ticked. One new entry, R13.
 
+**Third closing pass 2026-10-20:** group 1 step 3 ran on 2026-10-18. S6, S7 and P1 are ticked. R13 is half done: the student's report is fixed, the sample pack is not rebuilt yet (new group 1 step 6, before the pitch). Six new entries, R14 to R19, and four new steps (group 1 steps 6 to 9 and group 2 step 6).
+
+**Fourth closing pass 2026-10-20 (later):** group 1 step 6 ran in another session and was checked in the files: the sample MIT report, the sample list, the prototype and the source list no longer carry the old register lines. R12 and R13 are ticked. Evan decided R16 (check every student), R17 (yes) and R18 (the visa office figure). R16 is now group 2 steps 7 to 10, with the per-student detail in the gitignored `notes/r16_scope.md`.
+
 **Re-sorted the same day:** the open entries are now sorted into three groups (student files out of date, systemic problems, miscellaneous) and cut into numbered steps of at most three tasks, with a table of which two steps can run side by side. See "Where things stand" under Start here. One new entry, R9.
 
 ---
@@ -76,8 +80,14 @@ fresh session and type:*
 |---|---|---|---|
 | **1** | ~~Group 1 step 1, then group 2 step 1 (R1, R3, plus R8 if Evan said yes)~~ **done** | ~~Group 3 step 1 (R4, R6, R7)~~ **done** | Done by 2026-10-17 |
 | **2** | ~~Group 1 step 2 (S8, S10, Task 9)~~ **done 2026-10-16** | ~~Group 2 step 2 (S4)~~ **done 2026-10-17** | Done |
-| **3** | Group 1 step 3 (S6, S7, P1) | Group 2 step 3 (S9 + S3, I5, R5) | After the pitch. A: group 1 step 2 done. B: Evan's decision on S9/S3 and his count of the form |
+| **Now** | ~~Group 1 step 6 (R13's second half: the sample pack)~~ **done 2026-10-20** | — | Done |
+| **3** | ~~Group 1 step 3 (S6, S7, P1)~~ **done 2026-10-18** | Group 2 step 3 (S9 + S3, I5, R5) | After the pitch. B: Evan's decision on S9/S3 and his count of the form |
 | **4** | Group 1 step 4 (I9, L2) | Group 2 step 4 (D2, one student) | After the pitch. A: Evan's decision on L2. B: round 1 done and Evan's decision on D2. Never the same student in both sessions |
+| **5** | ⭐ Group 1 step 7 (re-score, part 1) | ⭐ Group 2 step 7 (ABET lookup, part 1) | After the pitch |
+| **6** | Group 1 step 8 (re-score, part 2, and Sheffield) | Group 2 step 8 (ABET lookup, part 2) | After round 5 |
+| **7** | ⭐ Group 2 step 9 (the Malaysian register, in Chrome) | Group 2 step 6 (R19, the backfill tool) | After the pitch. Step 6 must finish before round 8, which runs the backfill tool |
+| **8** | ⭐ Group 1 step 9 (the source student's recognition cells, and R17) | Group 2 step 10 (other students, first two or three) | After group 1 step 8 and group 2 steps 7 to 9 |
+| **9** | Group 2 step 10 (the remaining students) | Group 2 step 3 or step 4, whichever is unblocked | After round 8. Never the same student in both sessions |
 | **Any time** | Group 1 step 5 (P2 drafts, I4, R2) | Group 2 step 5 (I2) | When the step's own "Waits for" is met |
 
 Within a round, sessions A and B never write the same file. A round can start only when its own
@@ -99,6 +109,9 @@ where it says so.
 | Which students get corrected reports. Start with the two whose budget conclusion changed | P2 | The P2 part of group 1 step 5 |
 | Hide predicted grades in the sample pack, or keep them | R10 | Nothing; a one-line change if yes |
 | Add halal and prayer ticks to the form, or reword the tiers file | I2 | Group 2 step 5 |
+| ~~Mark "no published grade bar" on the source student's 9 US Finalist and Shortlist rows too~~ **Yes, 2026-10-20** | R17 | Group 1 step 9 |
+| ~~Which source to use for living costs when a UK university publishes none~~ **The UK visa office's monthly figure, 2026-10-20** | R18 | Group 1 step 8 |
+| ~~How wide R16 goes~~ **Every US row on every student's list, 2026-10-20, split across sessions** | R16 | Group 1 step 9, group 2 steps 7 to 10 |
 
 ---
 
@@ -108,15 +121,21 @@ where it says so.
 |---|---|---|---|---|
 | ✅ **1** | **Done by 2026-10-17** (six students now have `dated_items/`). R1: run `python tools/build_calendar.py --student <slug> --rescue-dates` for every student folder | `data/students/*/dated_items/` (adds files only, overwrites nothing) | nothing | Two minutes. **Now**: the dates are lost the next time `.tmp/` is cleaned. Checked 2026-10-15: no student has a `dated_items/` folder yet |
 | ✅ **2** | **Done 2026-10-16.** S8, then S10, then Task 9 of `sample_pack_fix_plan.md` (Task 9 also fixes D4's README line) | the finished student's folder, `business/sales/sample_pack/`, the prototype, `sample_pack_fix_plan.md` | Evan's yes or no on S8. If no, start at S10 | Large. Strictly in order: each task reads what the one before it wrote. **Before the pitch**, because the panel sees the sample pack |
-| **3** | S6 with R13 (two one-line corrections in that student's reports, then re-export both PDFs), then S7 (second and third notes), then P1 | the finished student's folder, `sample_pack_fix_plan.md` | step 2 done | Medium. P1 is 14 rows of research. After the pitch |
+| ✅ **3** | **Done 2026-10-18** except R13's sample-pack half (now step 6). S6, R13 (student's report), S7, P1 | the finished student's folder, `sample_pack_fix_plan.md` | — | — |
 | ⭐ **4** | I9 (the one student it touches), then L2 (the 22 Shortlist and Finalist rows first) | other students' `profile.json`, `master_list.csv` and `research_notes.md`. Never the finished student's folder | Evan's decision on L2 | Large. If the 22 rows span many students, repeat this step one student per session. After the pitch |
-| **5** | P2 (draft the corrected-report messages), I4, R2 | P2: none, drafts only. I4: one student's `profile.json` and `preferences.json`. R2: the finished student's `dated_items/` | P2: Evan's choice of students. I4: the student confirming RM 800,000. R2: Evan's decision, and step 3 done | Small. Do whichever part is unblocked and skip the rest |
+| **5** | P2 (draft the corrected-report messages), I4, R2 | P2: none, drafts only. I4: one student's `profile.json` and `preferences.json`. R2: the finished student's `dated_items/` | P2: Evan's choice of students. I4: the student confirming RM 800,000. R2: Evan's decision (step 3 is done) | Small. Do whichever part is unblocked and skip the rest |
+| ✅ **6** | **Done 2026-10-20** (another session; checked in the files). R13's second half: the MIT row's recognition cell on the source list, then the sample pack and the prototype rebuilt | the finished student's `master_list.csv` and `research_notes.md`, `business/sales/sample_pack/`, `prototype/data.js`, `sample_pack_fix_plan.md` | — | — |
+| ⭐ **7** | R15 part 1 with R14 first: re-score Michigan, then Notre Dame, Vanderbilt, Rice, Northwestern, Duke. Same method as Task 6 of `sample_pack_fix_plan.md` (read its notes: search the score log by the exact new course key). For each row: set `entry_margin` to `not_published` where the university publishes no grade bar (R17), and have the research agent check the renamed degree on ABET's own search (R16) | the finished student's `master_list.csv`, `research_notes.md`, `score_log.jsonl`, `.tmp/toru/` | nothing (step 6 is done) | Large: six research agents. After the pitch. Longlist rows only |
+| **8** | R15 part 2: re-score WPI, Case Western, Dartmouth, Olin, Johns Hopkins, with the same R17 and R16 rules. Then R18 (decided: the visa office figure): Sheffield's `Est. living/yr` = the UK visa office's monthly maintenance amount for study outside London, read on gov.uk on the day, × 12 (as Bristol's row did with its monthly figure). `Notes` says it is the visa figure, not Sheffield's own. Recompute the total with Task 10 step 6's formula; `Info source` becomes `Official page`. Add one line to `workflows/countries/uk.md`: "No university living-cost figure → the visa office's monthly amount (London or outside London) × 12, said in Notes. Evan, 2026-10-20." | as step 7, plus `workflows/countries/uk.md` | step 7 done | Large: five agents. After the pitch |
+| ⭐ **9** | R16 for the source student: write the 9 US Finalist and Shortlist rows' `Recognised in Malaysia?` cells (MIT, Stanford, Princeton, Cornell, Harvard, Yale, Brown, Columbia, Penn) from the shared lookups that group 2 steps 7 to 9 build. No new research. Then R17 (decided: yes): set the same 9 rows' `Grades vs entry bar` to "Not published" through the scoring program's own label function, never typed, and add a line to `score_log.jsonl` saying why | the finished student's `master_list.csv`, `research_notes.md`, `score_log.jsonl` | step 8 done (same list file), and group 2 steps 7 to 9 done | Medium. After the pitch |
 
 - **Why I9 comes before L2:** I9 fixes the list of professional bodies that L2's research looks up
   for that student. If I9 went second, that student's recognition cells would have to be redone.
 - **S1 was sent before S8 was fixed** (done 2026-10-15). S8 is now done, so a re-sent list matches
   the guide. Whether to re-send is R12.
-- **Step 3 can start after the pitch:** its "step 2 done" condition is met.
+- **Why steps 7 to 9 run one at a time:** all three write the same student's `master_list.csv`.
+- **Steps 7 to 9 change Longlist rows and one recognition column, not the student's ranking.**
+  Re-scoring can move a Longlist row up or down. Nothing becomes a Finalist without Evan.
 
 ### Group 2 — Systemic problems (gaps that affect every student)
 
@@ -127,10 +146,15 @@ where it says so.
 | ⭐ **3** | S9 and S3 together (including the UK half of S9 nobody has checked), then I5, then R5 | `tools/ingest_form_csv.py`, `tools/init_student.py`, the profile template, `workflows/01_intake.md`, `workflows/08_application_prep.md` | Evan's decision on S9/S3. I5 also needs his count of the form | Medium. It changes a program, so after the pitch |
 | **4** | D2 for one student | that student's folder | Evan's decision on D2 (group 1 step 1 and group 2 step 1 are done) | Medium. Repeat once per student (five). After the pitch |
 | **5** | I2 | `business/sales/service-tiers.md` | Evan's choice. If he adds the ticks to the form himself, no session is needed | Small |
+| **6** | R19: after a successful write, `apply_backfill.py` moves the fragments it applied into `.tmp/<slug>/backfill_applied_<date>/`. Add one line to `workflows/03_discover_longlist.md` → "Backfilling an existing longlist", and to `.claude/agents/row-filler.md`: write the fragment early and update it as you go | `tools/apply_backfill.py`, `workflows/03_discover_longlist.md`, `.claude/agents/row-filler.md` | nothing | Small. A program change, so after the pitch. Not while another session is running a backfill |
+| ⭐ **7** | R16 ABET lookup, part 1: universities 1 to 23 in `notes/r16_scope.md`. Write `notes/r16_abet_dispatch_part1.md`: the rules, plus one dispatch per university naming every degree from the scope file. Then one `general-purpose` agent per university, in parallel. Each reads each degree on ABET's own search (`https://amspub.abet.org/`, listed in `workflows/countries/usa.md`; Firecrawl if it will not load) and writes `.tmp/r16/abet/<uni-slug>.json`: accredited yes or no, the programme name as ABET lists it, the date, the source address. Merge into `notes/r16_abet_lookup_part1.csv`, with a ready-to-paste `Recognised in Malaysia?` cell per degree (160 characters at most; "Not accredited" says there is no route to BEM registration) | `notes/r16_abet_dispatch_part1.md`, `notes/r16_abet_lookup_part1.csv`, `.tmp/r16/` | nothing | Large: 23 agents. After the pitch. Student names stay in `notes/` and `.tmp/` |
+| **8** | R16 ABET lookup, part 2: universities 24 to 45, the same way, into `notes/r16_abet_dispatch_part2.md` and `notes/r16_abet_lookup_part2.csv` | those two files, `.tmp/r16/` | nothing. It can run beside step 7 | Large: 22 agents. After the pitch |
+| ⭐ **9** | R16 Malaysian register: look up, in Chrome, the 11 universities listed under "Finalist or Shortlist" in `notes/r16_scope.md` (MIT was done on 2026-10-17; the method is in `workflows/sources.md`). Write `notes/r16_esisraf_lookup.csv`: listed or not, which broad-field rows, the date. The other 33 universities keep "check eSISRAF" in their cells; a lookup for them can come later | `notes/r16_esisraf_lookup.csv` | nothing | Medium: 11 browser lookups, one at a time. After the pitch |
+| **10** | R16 apply, the five other students in `notes/r16_scope.md`, two or three per session. For each student: a script builds one-cell `Recognised in Malaysia?` fragments from the three lookup files, then `apply_backfill.py --overwrite` (dry run first), then `check_master_list.py`, then one line in that student's `status.md`. A degree that is not accredited also gets "Recognition risk" in `Warnings` by hand, as Michigan did, and is listed in the hand-back for Evan | those students' `master_list.csv`, `research_notes.md`, `status.md` | steps 7, 8, 9 done, and step 6 (or move the applied files out by hand) | Medium per session. After the pitch. Never the source student. Not on a student that group 2 step 4 or group 1 step 4 has open |
 
 **Not a session yet** (a decision or a measurement, no file to change): R9 (whether rows should
 carry the date they were checked), R10 (grades in the sample pack), R11 (one line of Evan's sales
-wording), R12 (message the source student), I3 (whether to ask students with no spending limit for one),
+wording), I3 (whether to ask students with no spending limit for one),
 and N1, U4, V2 (measure the next real longlist, intake and decide runs).
 
 ### Group 3 — Miscellaneous (stale wording only; nothing behaves wrongly)
@@ -152,6 +176,14 @@ they picked one).
 - **R1, R3, R8, R4, R6, R7** (by 2026-10-17): round 1, all three steps. Checked in the files on
   2026-10-17; `python -m unittest tests.test_calendar_dates` runs 11 tests, all pass.
 - **S4** (2026-10-17): group 2 step 2. MIT is on the register; see the entry. New entry R13.
+- **S6, S7, P1, and R13's first half** (2026-10-18): group 1 step 3. Hand-back in
+  `sample_pack_fix_plan.md` → Status, Task 10. Checked in the files on 2026-10-20:
+  `check_master_list.py` 0 findings, 42 of 43 rows `Official page`. New entries R14 to R19.
+- **R13's second half** (2026-10-20): group 1 step 6, in another session. Checked in the files: the
+  sample MIT PDF no longer has the three old lines, and the MIT recognition cell is updated on the
+  source list, the sample list and the prototype.
+- **R12** (2026-10-20): Evan says everything about the source student is sorted out, including the
+  deadline message.
 
 *Below is the plan as written on 2026-10-13, kept as the record. Where it disagrees with the
 session plan above, the session plan is current.*
@@ -819,6 +851,10 @@ L1 is the one to read first, because a customer can see it.
 
 #### - [ ] L2. 228 of 503 rows are still labelled "Not verified", all but 4 of them in eight older lists
 
+- **Update 2026-10-20:** the source student's share (P1) is done: 13 of their 14 rows are now
+  `Official page`. What is left is the other students' 212. Lessons for that work: R15 (renamed
+  rows need re-scoring), R16 (re-read the recognition column too), R19 (move applied files).
+
 - **Update 2026-10-13, from lane 6:** a recount gives 212 unverified rows on the other students' lists. 22 of them are Shortlist or Finalist rows, the ones students are deciding on. Lane 6 recommends repairing those 22 first, about a tenth of the research. Still waits on your decision (human-lane item 12). Run it in a fresh session.
 
 - **Severity:** not a new fault. This is con #1 in the
@@ -1061,7 +1097,10 @@ S1 is the one to read first, because it has a date on it.
   (The Student Room, the university's own admissions blog, YouTube). Do not spend time on this
   before the pitch.
 
-#### - [ ] S6. One line in the source student's NUS report quotes an old subject rank
+#### - [x] S6. One line in the source student's NUS report quotes an old subject rank
+
+- **Done 2026-10-18 (group 1 step 3).** The sentence now says the list records #3. PDF re-exported,
+  `check_report.py` 0 findings.
 
 - **Severity:** group A, small. The student has this report.
 - **What it says:** the report's verdict table says the list records the subject rank as
@@ -1069,7 +1108,12 @@ S1 is the one to read first, because it has a date on it.
 - **What is true:** the list now says #3. Found during Task 11 and left open.
 - **Suggested fix:** correct the one sentence and re-export the PDF.
 
-#### - [ ] S7. Five small notes
+#### - [x] S7. Five small notes
+
+- **Done 2026-10-18 (group 1 step 3).** Second note: the Common Data Set source in the MIT report
+  now says "read via search summary", in the report and in its research file. Third note: no
+  change. The score record is append-only by design (`tools/sync_shortlist.py`, `append_score_log`),
+  so the July line under the old course name is history, not an error.
 
 - **Update 2026-10-15:** the fifth note is done. Lane 3 marked both sites in `workflows/countries/usa.md`; Princeton's page loaded on later tries, so it is marked "retry once" rather than blocked. The first and fourth notes need no action. The second and third belong to lane 5 and are still open.
 
@@ -1187,7 +1231,13 @@ are entry **C1**.
 Parked by Evan on 2026-10-12. Both have full step-by-step instructions in the plan, which stay
 valid. Read the "Status" notes of the task named below before starting either.
 
-#### - [ ] P1. Task 10 — 14 rows on the source student's list are still "Not verified"
+#### - [x] P1. Task 10 — 14 rows on the source student's list are still "Not verified"
+
+- **Done 2026-10-18 (group 1 step 3).** 13 of the 14 are now `Official page`; 208 cells changed.
+  Sheffield stays `Not verified` (R18). 11 courses were renamed, because the robotics track in the
+  name did not exist or was a lab or a master's. Every total moved, the largest Dartmouth's
+  (RM 1.44m to RM 1.99m: the route is five years). What it left behind is R14 to R19. Detail:
+  `sample_pack_fix_plan.md` → Status, Task 10.
 
 - **What it is:** 3 UK rows and 11 US rows, all at the long-list stage. None is in the sample pack,
   so no prospect sees them.
@@ -1370,7 +1420,9 @@ R1 is the one to read first, because it has a clock on it.
 - **What is true:** the list has 35 columns; the sample MIT report has 15 sections and 25 pages.
 - **Suggested fix:** Evan's wording, so Evan's edit. Swap in the current numbers.
 
-#### - [ ] R12. The source student has not been told what S8 and S10 changed
+#### - [x] R12. The source student has not been told what S8 and S10 changed
+
+- **Done 2026-10-20:** Evan says everything about this student is sorted out.
 
 - **Added 2026-10-17.**
 - **Severity:** time-sensitive, about a real student, like S1. The first early deadline is
@@ -1382,8 +1434,15 @@ R1 is the one to read first, because it has a clock on it.
   the checklist in the Yale applicant portal.
 - **Suggested action:** one message from Evan. Decide whether to re-send the list and the US guide
   (both are current as of 2026-10-16). A session can draft the message.
+- **Update 2026-10-20:** P1 changed 14 Longlist rows, so a re-sent list now differs more. Worth one
+  line each: Michigan's robotics degree is not accredited for engineer registration in Malaysia
+  (R14); Olin has a single deadline, 15 December 2026, and no early round; several rows no longer
+  claim full aid for international students (Vanderbilt, Johns Hopkins and Duke are need-aware,
+  and Olin gives internationals merit aid only). Every Longlist total went up except Bath's.
 
-#### - [ ] R13. The MIT report still says "Not found" for the Malaysian recognition register
+#### - [x] R13. The MIT report still says "Not found" for the Malaysian recognition register
+
+- **Done 2026-10-20.** Second half by group 1 step 6 (another session), checked in the files.
 
 - **Added 2026-10-17**, from group 2 step 2 (S4).
 - **Severity:** group A, small. The student holds this report, and the sample pack's MIT report is
@@ -1395,3 +1454,109 @@ R1 is the one to read first, because it has a clock on it.
 - **Suggested fix:** correct the line in that student's MIT report, keeping the "most likely", and
   re-export the PDF. Then check whether the sample pack's MIT report needs a rebuild. Paired with S6
   in group 1 step 3, because both are one-line corrections in that student's folder.
+- **Half done 2026-10-18 (group 1 step 3).** The student's report is fixed in three places: the
+  register row, the sentence after it, and the verdict table. The research file it is built from
+  was fixed the same way, and the PDF re-exported. **Still open:** checked 2026-10-18, the sample
+  pack's MIT PDF still has all three old lines. So does the MIT row on the source list
+  (`Recognised in Malaysia?`: "confirm the exact MQA equivalence entry"), which the sample list and
+  the prototype both copy. Both are group 1 step 6, before the pitch.
+
+#### - [ ] R14. ⭐ Michigan's robotics degree is not accredited for engineer registration in Malaysia
+
+- **Added 2026-10-20**, from group 1 step 3 (P1). An agent's finding. I read the evidence it saved
+  (the catalogue quote and its address) but did not open the page myself.
+- **Severity:** group B. Recognition back home is a hard gate for this student, and the row scored
+  83, Tier A.
+- **What is true:** the University of Michigan's engineering catalogue lists its programmes with an
+  ABET column, and the Robotics BSE reads "No". ABET is the US body that accredits engineering
+  degrees, and ABET accreditation is the route to the Board of Engineers Malaysia (BEM) through
+  the Washington Accord. (A different campus, UM-Dearborn, has an accredited robotics degree.)
+- **Already done (2026-10-18):** the row's `Recognised in Malaysia?` cell says so, and its
+  `Warnings` cell was set to "Recognition risk" by hand.
+- **Still open:** the score was given when the row assumed accreditation. Re-scoring it is the
+  first task of group 1 step 7. It is a Longlist row, so nothing the student was sent depends on it.
+
+#### - [ ] R15. ⭐ 11 renamed rows still carry scores given under their old course names
+
+- **Added 2026-10-20**, from P1. Checked in the files.
+- **Severity:** group A for whoever reads the list's order. Tool behaviour is correct: it is the
+  rule Task 10 set ("not re-scored").
+- **Where:** the source student's list. Notre Dame, Vanderbilt, Rice, Northwestern, Duke, WPI,
+  Case Western, Michigan, Dartmouth, Olin, Johns Hopkins. All Longlist.
+- **What is true:** each was renamed to the degree that really exists (for example "robotics
+  concentration" to "robotics via technical electives"). Several also lost claims that fed their
+  scholarship sub-score: "need-blind", "full need met" and "no loans" for international students.
+  So the `Desirability` and `Tier` cells most likely rank these rows too high.
+- **Suggested fix:** re-score each the way Task 6 did Rose-Hulman, one university at a time.
+  Group 1 steps 7 and 8. Not urgent: none of the 11 is a Shortlist or Finalist row.
+
+#### - [ ] R16. ⭐ The recognition cells on the US rows rest on accreditation nobody re-checked
+
+- **Added 2026-10-20**, from P1 (the Michigan finding). Counted in the files.
+- **Severity:** group B. This column is the gate for a regulated profession.
+- **What is true:** 22 of the source student's 23 US rows say the degree is "ABET-accredited". Most
+  of those cells were written at longlist time in July, and P1 did not re-read this column. At
+  least three were confirmed in an official page's own words since (Northeastern, Rose-Hulman, and
+  MIT's Course 2 in its report). Michigan shows a cell like this can simply be wrong. Most of the
+  cells also still say "confirm MQA equivalence", though the register can now be checked in
+  Chrome (S4).
+- **Decided 2026-10-20 (Evan): check every student.** 79 US rows across 6 students, 45 distinct
+  universities; per-student detail in the gitignored `notes/r16_scope.md`. Plan: one shared lookup
+  (group 2 steps 7 to 9: ABET for all 79 degrees, the Malaysian register for the 12 universities
+  behind a Finalist or Shortlist row), then apply it student by student (group 1 step 9 for the
+  source student, group 2 step 10 for the other five). Not yet in scope: 174 non-US rows that claim
+  accreditation (UK, Singapore, Australia and others); a later decision.
+- **Suggested fix (as first written):** group 1 step 9. Re-read the column for the 9 Finalist and Shortlist rows
+  first, the ABET fact on ABET's own search. Other students' engineering rows probably have the
+  same gap; whether to go wider is a decision in the table above.
+
+#### - [ ] R17. US rows say the student's grades are "Well above" a bar the university does not publish
+
+- **Added 2026-10-20**, from P1. Two agents flagged it (Michigan, Duke); the count is mine.
+- **Severity:** group B, and stale data rather than a tool fault.
+- **Where:** `Grades vs entry bar` on 19 of the source student's 23 US rows, 8 of them Finalists.
+- **What is true:** US universities publish no A-Level grade bar. The scoring program has had a
+  "no bar published" value since 2026-07-28 (`entry_margin` = `not_published`, which prints "Not
+  published"), and the agent's instructions tell it to use that value. This student's US rows were
+  scored on 2026-07-17, before the value existed, so they compared the grades to a guessed bar.
+- **Why it matters:** the column tells the student they clear a bar that does not exist. The
+  separate `Admission likelihood` column already says "Reach", so the ranking itself is not hiding
+  how hard these universities are to get into.
+- **Decided 2026-10-20 (Evan): yes**, the 9 Finalist and Shortlist rows too (group 1 step 9).
+- **Suggested fix:** the 11 Longlist rows get `not_published` while steps 7 and 8 re-score them.
+  The 9 Finalist and Shortlist rows wait for Evan's yes (decision table). Checked 2026-10-20: each
+  has a hand-set "Reach (very selective)", which overrides the grade calculation
+  (`classify_admission` in `tools/shortlist_schema.py`). So only `Grades vs entry bar` changes,
+  and `recommendation.md` and the US guide never quote it. If yes, group 1 step 9 sets it for the
+  9 through the program's own label function, not by typing it, and adds a line to
+  `score_log.jsonl` saying why. Other students' US lists built before 2026-07-28 probably have the
+  same cells. Not yet counted.
+
+#### - [ ] R18. Sheffield's living-cost figure has no source
+
+- **Added 2026-10-20**, from P1. An agent's finding.
+- **Severity:** group C. One Longlist row. It is the only row on the source list still
+  `Not verified`.
+- **What is true:** Sheffield publishes no yearly living-cost figure for international students.
+  The cell's GBP 11,000 came from the July longlist and has no source, so the row's total is partly
+  a guess.
+- **Decided 2026-10-20 (Evan): the visa office's monthly figure** (option a), × 12. Group 1 step 8.
+- **Was to decide:** what to use when a UK university publishes no figure. The UK visa office's monthly
+  amount and UKCISA's guidance are both official, but not the university's own page. Whatever is
+  chosen goes in `workflows/countries/uk.md` so the next UK list uses the same rule. Group 1 step 8.
+
+#### - [ ] R19. The backfill tool leaves its applied files where the next run will apply them again
+
+- **Added 2026-10-20**, from group 1 step 3. Seen in the files.
+- **Severity:** group B, a tool gap. Not urgent while each session remembers to move the files.
+- **What is true:** `tools/apply_backfill.py` applies every file in `.tmp/<slug>/backfill/` and
+  leaves them there. Group 1 step 3 found S8's nine files still in the folder two days after they
+  were applied. A second run would have written them over the list again and copied their research
+  notes into `research_notes.md` a second time. Every plan so far has had to say "move the old
+  files first" by hand.
+- **Also seen:** 7 of 18 research agents in that step stalled (no progress for 10 minutes) and
+  wrote nothing. Bristol and Northwestern stalled twice. The ones told to "write the file early and
+  update it as you go" all finished, and the two that stalled after writing left a usable file.
+- **Suggested fix:** group 2 step 6. The tool moves its applied files to
+  `.tmp/<slug>/backfill_applied_<date>/` after a successful write, and the row-filler agent's
+  instructions gain the "write early" line.

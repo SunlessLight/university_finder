@@ -225,7 +225,7 @@
       "howToGetScholarship": "(1) Apply by 2027-01-04; (2) file CSS Profile (code 3514), upload parent tax/income docs to IDOC by aid deadline: 2026-11-30 (Early Action) or 2027-02-15 (Regular Action); (3) offer by email.",
       "moneyToShowVisa": "student visa form financial documentation",
       "workRightsAfterGraduating": "STEM-designated: post-study work permit 12 mo + science post-study work extension 24 mo = up to 3 yrs; strong US tech market + strong USD.",
-      "recognisedInMalaysia": "ABET-accredited (Course 2) + USA is a Washington Accord signatory — supports BEM registration; confirm the exact MQA equivalence entry at mqa.gov.my.",
+      "recognisedInMalaysia": "ABET-accredited (Course 2); USA is a Washington Accord signatory, so supports BEM registration. Listed on MQA's eSISRAF register, most likely under its BSc row.",
       "howToApply": "MIT application (not Common App)",
       "keyDeadline": "2027-01-04 (Regular Action; Early Action 2026-11-01)",
       "intake": "2027 Sept",

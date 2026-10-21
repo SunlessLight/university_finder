@@ -12,15 +12,35 @@
 ## Where things stand
 
 The product works and has been used by 29 students, all friends, none paid. Desk research and the
-cost sums are done. **20 Oct: the survey went out (promoted with the "HEY YOU!" carousel in
-`launchx/HEY YOU!/`) and has 48 answers, not yet read or counted.** No parent chats yet. Evan is
-in exams.
+cost sums are done. The survey went out 12 Oct (promoted with the "HEY YOU!" carousel in
+`launchx/HEY YOU!/`). Responses CSV moved to `data/form/survey_responses_2026-10-20.csv`
+(gitignored; it holds emails and phone numbers). No parent chats yet. Evan is in exams.
+
+## Survey results (20 Oct, 54 rows, 53 unique emails, a few joke answers)
+
+- **Who:** 26 friends, 18 "a little", 10 strangers. 44 pre-university, 7 at university, **0 parents**.
+- **Left a WhatsApp number at RM50: 24 people** (25 rows, 1 repeat): 9 friends, 10 "a little",
+  6 strangers. Prefer: list 11, report 6, both 5. A number left is a sign of interest, not payment.
+- **Nobody pays for help today:** 49 of 54 families paid no one. 2 paid RM100–500. 3 used a paid consultant.
+- **Top worry:** scholarships 19, essays 11, entry requirements 7, **choosing a university only 5**.
+  Strangers: scholarships 5 of 10. Guess B supported; guess C partly (essays 2nd).
+- **Decides vs pays:** students decide (33 mostly me, 19 together, 2 parents); parents pay (33).
+  Guess A still untested: the survey reached no parents.
+- **Already decided:** 25 say "I know exactly which universities". Most "no" reasons are
+  "already chose / already applied (UCAS)". Timing matters: sell before applications, not after.
+- **Used:** uni websites 46, ChatGPT/Gemini 38, rankings 33, seniors 31, fairs 25, school 25,
+  social media 24, agents 14, paid consultant 3.
+- **Looked up:** fees 37, entry reqs 35, scholarships 35, jobs 26, living costs 25, post-study work
+  16, recognition 14, safety 13, visa bank funds 10. The "extras" are the least researched.
 
 **New, 20 Oct:** iLabs check-in before Bootcamp 2. Due beforehand: a Prototype & Insight form
 (A: link to the prototype; B: feedback consolidated from Bootcamp 1 peers) and first NABC answers
-(Needs, Approach, Benefits, Competition). Not yet known: what peer feedback Evan got at
-Bootcamp 1, and the check-in date. Plan: read the 48 answers via the Google Sheet linked to the
-form (Drive connector) or a CSV saved in `data/form/` (git ignores it), counts only.
+(Needs, Approach, Benefits, Competition). No peer feedback exists (Evan left Bootcamp 1 early).
+**Part B submitted 20 Oct** (testers + survey). **Part A in progress:** a Drive folder with
+prototype screenshots + the sample list, MIT report and US apply guide. Before sharing: R13 in
+`business/additionals.md` (sample MIT report wrongly says "Not found" on the Malaysian register;
+group 1 step 6) and R10 (sample shows predicted grades). Mentor flagged pilot capacity (24 people
+in 4 days) as the real readiness gap; China and readability are after-pitch work. Check-in date unknown.
 
 ## Decided
 
@@ -40,7 +60,7 @@ form (Drive connector) or a CSV saved in `data/form/` (git ignores it), counts o
 | Known | Under 1 hour hands-on per student. Tools about RM158 a month; four students at RM50 cover it. |
 | Known (estimate) | At RM50 the reachable market is about RM775,000 a year. Price is the lever. |
 | Known | Every free competitor checked is paid by universities. Paid help starts around RM2,000. |
-| Not known | Whether a stranger or a parent would pay, and how much. Which worry comes first for students: scholarships, essays, cost, or choosing. |
+| Not known | Whether any of the 24 who left a number will actually pay. Whether parents would pay (no parent answered). |
 
 ## Four guesses under test (all untested)
 
@@ -77,7 +97,8 @@ form (Drive connector) or a CSV saved in `data/form/` (git ignores it), counts o
       with its price, wording and a row in the "what to count" table.
 - [ ] Decide on showing a sample on the form. Mentor: yes, one screenshot inside the offer question
       only, full links optional, labelled "sample, layout may change"; made-up student, view-only.
-- [ ] Send the form beyond classmates. Target 30 answers. Ask two or three people to help.
+- [x] Send the form beyond classmates. 54 answers, 10 from strangers.
+- [ ] Mentor suggestion (20 Oct): message the 24 who left a number with a real slot and date, and count replies.
 - [ ] Three to five parent chats. The most valuable hour in the plan.
 - [ ] One chat with a Sunway College counsellor or the placement office (also the first B2B call,
       guess D: use report section 9's pre-U questions).

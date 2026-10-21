@@ -155,6 +155,16 @@ waits for Task 6; Task 7's step 5 must not run while a Task 6 session is between
     columns" where the list has 35) is Evan's wording, reported, not edited.
   - `status.md` trimmed to 2973 chars; history and open questions moved verbatim to
     `research_notes.md` "Session history — 2026-10-16".
+  - **Re-run 2026-10-20** (additionals.md group 1 step 6, R13's second half), no script change.
+    First, MIT's `Recognised in Malaysia?` on the source list: "confirm the exact MQA equivalence
+    entry" → listed on eSISRAF, most likely the BSc row (one-cell `apply_backfill.py --overwrite`,
+    fragment kept in `.tmp/toru/backfill_applied_2026-10-20/`; it used its own `--fragments`
+    folder because `.tmp/toru/backfill/` still holds Task 10's 14 applied fragments, R19). Then
+    the rebuild: `Scan clean`, `0 finding(s)`, `Task 9 pack OK: 25 report pages, 28 apply-guide
+    pages`; the report PDF carries all three corrected R13 lines. `data.js: 15 rows x 35
+    columns`, smoke `147/147`; the template's hand-copied MIT facts still match the report.
+    `status.md` back to 2895 chars (the 2026-10-16 entry moved to `research_notes.md`
+    "Session history — 2026-10-20").
 - [x] Task 10 — source list: the other 14 `Not verified` rows
   - Run 2026-10-18 (additionals.md group 1 step 3, P1). **Do not re-run.** `Task 10 OK: 42 of 43
     Official page; still Not verified: ['University of Sheffield']` (no published international
