@@ -1,6 +1,6 @@
 # LaunchX status
 
-*As of 2026-10-20. Rewritten whenever something changes. See [mentor.md](mentor.md) for how.*
+*As of 2026-10-22. Rewritten whenever something changes. See [mentor.md](mentor.md) for how.*
 
 ## Dates
 
@@ -36,11 +36,15 @@ cost sums are done. The survey went out 12 Oct (promoted with the "HEY YOU!" car
 **New, 20 Oct:** iLabs check-in before Bootcamp 2. Due beforehand: a Prototype & Insight form
 (A: link to the prototype; B: feedback consolidated from Bootcamp 1 peers) and first NABC answers
 (Needs, Approach, Benefits, Competition). No peer feedback exists (Evan left Bootcamp 1 early).
-**Part B submitted 20 Oct** (testers + survey). **Part A in progress:** a Drive folder with
-prototype screenshots + the sample list, MIT report and US apply guide. Before sharing: R13 in
-`business/additionals.md` (sample MIT report wrongly says "Not found" on the Malaysian register;
-group 1 step 6) and R10 (sample shows predicted grades). Mentor flagged pilot capacity (24 people
-in 4 days) as the real readiness gap; China and readability are after-pitch work. Check-in date unknown.
+**Check-in done (by 21 Oct):** Parts A and B both shown to the accelerator staff. Their feedback:
+the prototype is nice but needs a better look, less text, email instead of WhatsApp (already in
+the backlog). Two open questions they raised: (1) what separates this from ChatGPT/Gemini, when
+anyone can ask it for a document; (2) one-time buyers, no repeat customers: keep selling to
+families, or rent the workflow to businesses (guess D). Mentor: the workflow itself is no moat;
+the edge is official-page facts, total cost in ringgit, fit kept apart from quality, recognition
+checks. Unknown whether a ChatGPT user pays RM50 for that: the pre-sale answers it. Don't pick the
+business model before either side has paid. Pilot capacity (24 people in 4 days) is still the
+real readiness gap.
 
 ## Decided
 
@@ -48,6 +52,8 @@ in 4 days) as the real readiness gap; China and readability are after-pitch work
   Known limits ("Sunway A-level only", "intake is a Google Form") and essay help go on a "what we
   build next" slide.
 - **The deck ends on three questions for the panel**, not a funding request (slide 10).
+- **Pre-sell before fixing (21 Oct).** Ask the 24 leads for a yes/no on RM50 first; after 24 Oct
+  fix only what a paying customer would see.
 - **Firecrawl is costed at its paid price** (about RM77 a month) on the slide, not at zero.
 
 ## Known, and not known
@@ -98,7 +104,8 @@ in 4 days) as the real readiness gap; China and readability are after-pitch work
 - [ ] Decide on showing a sample on the form. Mentor: yes, one screenshot inside the offer question
       only, full links optional, labelled "sample, layout may change"; made-up student, view-only.
 - [x] Send the form beyond classmates. 54 answers, 10 from strangers.
-- [ ] Mentor suggestion (20 Oct): message the 24 who left a number with a real slot and date, and count replies.
+- [ ] Draft the RM50 pre-sale message to the 24 who left a number (real slots, a date, a deposit);
+      send after 24 Oct and count replies and deposits.
 - [ ] Three to five parent chats. The most valuable hour in the plan.
 - [ ] One chat with a Sunway College counsellor or the placement office (also the first B2B call,
       guess D: use report section 9's pre-U questions).
@@ -125,6 +132,10 @@ in 4 days) as the real readiness gap; China and readability are after-pitch work
   words plus a short key. A Glossary tab already exists: first find out whether students saw it.
 
 ## Things Evan has said that matter
+
+- **21–22 Oct:** worried his edge over ChatGPT disappears if people learn to make documents with
+  it, and that the product is "just a wrapper". Also afraid asking for a commitment up front
+  lowers how many pay.
 
 - **16 Oct: he wants a side hustle, not a big company.** Worried B2B is more than he can chew.
   Mentor: big-company sales, yes; one 10-student pilot with a small client, no. Asked him what

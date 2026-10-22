@@ -107,7 +107,7 @@ where it says so.
 | Repair the 22 Shortlist and Finalist "Not verified" rows first, or all 212 | L2 | Group 1 step 4 |
 | Whether to run Stage 5 for the five ready students, and what the nine single-university students receive | D2 | Group 2 step 4 |
 | Which students get corrected reports. Start with the two whose budget conclusion changed | P2 | The P2 part of group 1 step 5 |
-| Hide predicted grades in the sample pack, or keep them | R10 | Nothing; a one-line change if yes |
+| ~~Hide predicted grades in the sample pack, or keep them~~ **Keep, 2026-10-21** | R10 | Nothing |
 | Add halal and prayer ticks to the form, or reword the tiers file | I2 | Group 2 step 5 |
 | ~~Mark "no published grade bar" on the source student's 9 US Finalist and Shortlist rows too~~ **Yes, 2026-10-20** | R17 | Group 1 step 9 |
 | ~~Which source to use for living costs when a UK university publishes none~~ **The UK visa office's monthly figure, 2026-10-20** | R18 | Group 1 step 8 |
@@ -153,7 +153,7 @@ where it says so.
 | **10** | R16 apply, the five other students in `notes/r16_scope.md`, two or three per session. For each student: a script builds one-cell `Recognised in Malaysia?` fragments from the three lookup files, then `apply_backfill.py --overwrite` (dry run first), then `check_master_list.py`, then one line in that student's `status.md`. A degree that is not accredited also gets "Recognition risk" in `Warnings` by hand, as Michigan did, and is listed in the hand-back for Evan | those students' `master_list.csv`, `research_notes.md`, `status.md` | steps 7, 8, 9 done, and step 6 (or move the applied files out by hand) | Medium per session. After the pitch. Never the source student. Not on a student that group 2 step 4 or group 1 step 4 has open |
 
 **Not a session yet** (a decision or a measurement, no file to change): R9 (whether rows should
-carry the date they were checked), R10 (grades in the sample pack), R11 (one line of Evan's sales
+carry the date they were checked), R11 (one line of Evan's sales
 wording), I3 (whether to ask students with no spending limit for one),
 and N1, U4, V2 (measure the next real longlist, intake and decide runs).
 
@@ -184,6 +184,8 @@ they picked one).
   source list, the sample list and the prototype.
 - **R12** (2026-10-20): Evan says everything about the source student is sorted out, including the
   deadline message.
+- **R10** (2026-10-21): Evan decided to keep the grades in the sample pack as an example. No file
+  change; the pack carries no name or school that points to the real student.
 
 *Below is the plan as written on 2026-10-13, kept as the record. Where it disagrees with the
 session plan above, the session plan is current.*
@@ -1400,8 +1402,11 @@ R1 is the one to read first, because it has a clock on it.
 - **To decide:** whether rows should carry the date they were checked, and how often a Shortlist
   or Finalist row gets re-read. Not urgent; after the pitch.
 
-#### - [ ] R10. The sample pack shows the source student's predicted grades
+#### - [x] R10. The sample pack shows the source student's predicted grades
 
+- **Decided 2026-10-21: keep them.** Evan: the grades are an example only, and nothing ties them to
+  a real person (stand-in name, no school; the real name is absent from the pack and prototype,
+  checked 2026-10-21). No file change.
 - **Added 2026-10-17**, from group 1 step 2. Checked in the rebuilt files.
 - **Severity:** a decision, not a fault. Not urgent, but decide before the sample pack is sent.
 - **What is true:** the sample list has a `Student grades` column on all 15 rows, and the MIT report
