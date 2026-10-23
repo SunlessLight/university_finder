@@ -277,12 +277,12 @@ on Evan's own computer. In date order.
 
 | # | What | Entry | When |
 |---|---|---|---|
-| 1 | Ask the finished student whether the admissions test for Cambridge and Imperial was booked and sat. The sitting window is 12 to 16 October. | D5 (its last note) | This week |
+| 1 | ~~Ask the finished student whether the admissions test for Cambridge and Imperial was booked and sat. The sitting window is 12 to 16 October.~~ **Done:** covered by R12, 2026-10-20. | D5 (its last note) | Done |
 | 2 | ~~Yes or no on Task 8b.~~ **Yes, 2026-10-16; done.** | S8 | Before lane 5 |
-| 3 | Send the finished student one message about what was corrected. The English test goes first now: ask how many years of their schooling were taught in English, and whether they need to book a test. A session can draft the message. | S1 | This week |
+| 3 | ~~Send the finished student one message about what was corrected. The English test goes first now: ask how many years of their schooling were taught in English, and whether they need to book a test. A session can draft the message.~~ **Done 2026-10-15.** | S1 | Done |
 | 4 | ~~Remind the finished student that Cambridge's own form is due 22 October.~~ **Done:** on 2026-10-15 the student was filling it in (college: Queens'). V1 re-read the date: 22 October, 6pm UK time, which is 1am on 23 October in Malaysia. | D5, V1 | Before 22 October |
 | 5 | Say whether the Oxford row stays on that student's list as a finalist or is marked as dropped. | D5 | Any time |
-| 6 | Look at the OneDrive icon on the project folder: are student records being copied to Microsoft's servers? | U2 | Before the pitch |
+| 6 | ~~Look at the OneDrive icon on the project folder: are student records being copied to Microsoft's servers?~~ **Done 2026-10-15:** Evan's call, not a concern. | U2 | Done |
 | 7 | Decide where family income and years of schooling in English get asked: on the form, or only when a student shortlists a university that needs them. | S3, S9 | Before step 2 |
 | 8 | Add "Halal food" and "Prayer facilities" as ticks on the form, or choose to reword the tiers file. | I2 | Before step 2 |
 | 9 | Open the live form and count the budget options (three or four). | I5 | Before step 2 |
