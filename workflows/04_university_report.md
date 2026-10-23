@@ -504,3 +504,8 @@ positive), `flip_finalists.py` has run and left `.tmp/<slug>/finalists/` empty (
 there is a flip that did *not* happen — read its reason), every finalist shows as **`Finalist`** in the
 master list, and `check_master_list.py` comes back clean. Then proceed to **Stage 5**
 (`05_decide_and_apply.md`).
+
+**Token log (until 2 Dec 2026, Evan's capacity check):** before closing, add one entry to
+`token_cost_report.md` in its `## #N` format: stage, report count, each `report-writer`'s token
+total from its result, and the main session's figure. Ask Evan to run `/cost` and read the
+5-hour-window % off the usage indicator. The file is in git: no student name or slug.

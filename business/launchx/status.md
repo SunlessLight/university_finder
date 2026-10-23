@@ -6,8 +6,10 @@
 
 - **24 Oct 2026:** Bootcamp 2. 15 minutes with an investor panel. A feedback session, not a
   contest: the deck template is optional and Evan can bring whatever he wants feedback on.
+- **2 Nov:** paid lists delivered (Evan, 23 Oct).
 - **10 to 13 Nov:** pilot test with real customers. First paid sales are meant to happen here.
-- **2 Dec:** demo day and seed-funding consideration.
+- **2 Dec:** demo day and seed-funding consideration. Check: 20 paying customers?
+- **10 Dec:** if short of 20, the pause ends: continue, pivot or stop.
 
 ## Where things stand
 
@@ -62,6 +64,15 @@ real readiness gap.
 - **Pre-sale cap: 15 list spots (22 Oct).** Set by his time, not Claude's limits. Leads messaged
   22–23 Oct; replies close 25 Oct, then count.
 - **Firecrawl is costed at its paid price** (about RM77 a month) on the slide, not at zero.
+- **Continue-bar: 20 paying customers by 2 Dec (23 Oct).** On a miss: pause, work out what went
+  wrong, and decide continue / pivot / stop by **10 Dec** (Evan, 23 Oct).
+  20 is over the 15-spot cap, so time per student must drop or delivery spreads past the pilot.
+- **Paid customers get the existing Google Form, sent right after payment (23 Oct).** Not
+  WhatsApp: the form feeds the intake tools.
+- **Report RM30; the list (20–30 universities) stays RM50 (Evan, 23 Oct).** Mentor: count the
+  25 Oct replies at the old price first, then announce RM30 in the nudge.
+- **Referral reward (23 Oct):** a free one-university report per friend who pays. Offered only
+  to people who have paid and received their list.
 
 ## Known, and not known
 
@@ -73,7 +84,7 @@ real readiness gap.
 | Known | Under 1 hour hands-on per student. Tools about RM158 a month; four students at RM50 cover it. |
 | Known (estimate) | At RM50 the reachable market is about RM775,000 a year. Price is the lever. |
 | Known | Every free competitor checked is paid by universities. Paid help starts around RM2,000. |
-| Not known | Whether any of the 24 who left a number will actually pay. Whether parents would pay (no parent answered). |
+| Not known | Whether any of the 29 real leads will actually pay. Whether parents would pay (no parent answered). |
 
 ## Four guesses under test (all untested)
 
@@ -114,6 +125,10 @@ real readiness gap.
 - [ ] 25 Oct: one short nudge to silent leads, then count the 29 as paid / yes-not-paid / no /
       silent. Only "paid" is demand. Ask one "no" why. (Not yet recorded: whether the message
       asked for payment by a date. If not, the nudge asks for it.)
+- [ ] Panel, 24 Oct: swap slide 10's question 2 for "Most of my leads are friends. How would you
+      reach parents and strangers?" Write their answers down word for word.
+- [ ] Two chats with leads who said "too expensive": how did they research, what took longest or
+      went wrong.
 - [ ] Three to five parent chats. The most valuable hour in the plan.
 - [ ] One chat with a Sunway College counsellor or the placement office (also the first B2B call,
       guess D: use report section 9's pre-U questions).
@@ -138,8 +153,19 @@ real readiness gap.
 
 - **Readability of the list and reports:** explain the score and the labels, likely with fewer
   words plus a short key. A Glossary tab already exists: first find out whether students saw it.
+- **Workflow clean-up for capacity (Evan wants it, 23 Oct):** time each step and note token use
+  on the first paid lists (backlog N1), then cut the top one or two costs between 2 Nov and the
+  pilot. No big rewrite before the 2 Nov delivery. Keep one human review per student.
 
 ## Things Evan has said that matter
+
+- **23 Oct:** worried it's a luxury, not a need; running out of people he knows; unsure how to
+  find customers after graduating; drawn to B2B AI automation ("commodity systems"); wants full
+  automation with no human check; feels FOMO from social media; unsure this is the best way to
+  earn. Tutors at RM100–120/hr, about 3 hours every 2 days. Mentor: wait for the 25 Oct count;
+  B2B doesn't escape outreach and guess D already tests it; keep one human review per student
+  (it is the edge over ChatGPT; see the MIT error); park new ideas in a phone list until 2 Dec;
+  tutoring pays more per hour now, this is a bet on income not tied to his hours.
 
 - **21–22 Oct:** worried his edge over ChatGPT disappears if people learn to make documents with
   it, and that the product is "just a wrapper". Also afraid asking for a commitment up front

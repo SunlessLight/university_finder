@@ -91,3 +91,8 @@ silently skipped by the renderer when absent.
 Every named university has a report at `data/quick_reports/<slug>.md`, `check_report.py --quick`
 came back clean on each (or every finding was reviewed and judged a false positive), and — if
 requested — a `.pdf` sits alongside each `.md`.
+
+**Token log (until 2 Dec 2026, Evan's capacity check):** before closing, add one entry to
+`token_cost_report.md` in its `## #N` format: report count, each `report-writer`'s token total
+from its result, and the main session's figure. Ask Evan to run `/cost` and read the
+5-hour-window % off the usage indicator.

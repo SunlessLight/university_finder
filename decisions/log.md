@@ -23,3 +23,11 @@ Earlier decisions stay where they were written (`business/launchx/status.md` →
 [2026-10-21] DECISION: Pre-sell before fixing: ask the 24 survey leads for a yes/no on RM50 first, then fix only what paying customers would see. | REASONING: a payment or deposit is the only evidence that settles 'why not ChatGPT'; it also sizes pilot capacity and picks which bugs matter. | CONTEXT: iLabs check-in feedback; rejected order: fix bugs and update the product first, then test. Business model (families vs renting the workflow) left open until either side pays.
 
 [2026-10-23] DECISION: Pre-sale capped at 15 list spots; replies close 25 Oct, then count leads as paid / yes-not-paid / no / silent. | REASONING: capacity is set by Evan's hands-on hours in exam season (about 1 hour per student), not by Claude usage limits; only payment counts as demand. | CONTEXT: survey grew to 79 responses; 35 left a number but 6 misread the question, leaving 29 real leads, all messaged by 23 Oct.
+
+[2026-10-23] DECISION: Continue-bar is 20 paying customers by 2 Dec. | REASONING: a clear number decides whether to continue, not mood on the day. | CONTEXT: 29 real leads messaged; 20 exceeds the 15-spot pre-sale cap, so capacity must grow. What happens on a miss is still open.
+
+[2026-10-23] DECISION: Paid customers fill the existing Google Form, sent right after payment; not WhatsApp. | REASONING: the form feeds the intake tools automatically; WhatsApp answers would be retyped by hand. | CONTEXT: paid lists due 2 Nov. iLabs' email-over-WhatsApp point left for later.
+
+[2026-10-23] DECISION: Single-university report RM30; the 20-30 university list stays RM50. | REASONING: Evan's call; some leads said too expensive. | CONTEXT: mentor advised counting the 25 Oct replies at the old price first, then announcing RM30 in the nudge.
+
+[2026-10-23] DECISION: If short of 20 paying customers on 2 Dec, pause and decide continue / pivot / stop by 10 Dec. | REASONING: a pause with an end date can't drift for weeks. | CONTEXT: follows the 20-payer continue-bar set the same day.
