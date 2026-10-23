@@ -1,6 +1,6 @@
 # LaunchX status
 
-*As of 2026-10-22. Rewritten whenever something changes. See [mentor.md](mentor.md) for how.*
+*As of 2026-10-23. Rewritten whenever something changes. See [mentor.md](mentor.md) for how.*
 
 ## Dates
 
@@ -15,6 +15,11 @@ The product works and has been used by 29 students, all friends, none paid. Desk
 cost sums are done. The survey went out 12 Oct (promoted with the "HEY YOU!" carousel in
 `launchx/HEY YOU!/`). Responses CSV moved to `data/form/survey_responses_2026-10-20.csv`
 (gitignored; it holds emails and phone numbers). No parent chats yet. Evan is in exams.
+
+**Update, 23 Oct:** 79 responses (12 strangers, 25 "a little", 42 friends), in
+`data/form/` (gitignored). 35 left a number, but 6 misread the question and aren't interested, so
+**29 real leads, all messaged by 23 Oct**. Of the 35: list 19, report 7, both 6. Use 79 / 29 at
+the panel. Breakdown below is still the 20 Oct one.
 
 ## Survey results (20 Oct, 54 rows, 53 unique emails, a few joke answers)
 
@@ -54,6 +59,8 @@ real readiness gap.
 - **The deck ends on three questions for the panel**, not a funding request (slide 10).
 - **Pre-sell before fixing (21 Oct).** Ask the 24 leads for a yes/no on RM50 first; after 24 Oct
   fix only what a paying customer would see.
+- **Pre-sale cap: 15 list spots (22 Oct).** Set by his time, not Claude's limits. Leads messaged
+  22–23 Oct; replies close 25 Oct, then count.
 - **Firecrawl is costed at its paid price** (about RM77 a month) on the slide, not at zero.
 
 ## Known, and not known
@@ -104,8 +111,9 @@ real readiness gap.
 - [ ] Decide on showing a sample on the form. Mentor: yes, one screenshot inside the offer question
       only, full links optional, labelled "sample, layout may change"; made-up student, view-only.
 - [x] Send the form beyond classmates. 54 answers, 10 from strangers.
-- [ ] Draft the RM50 pre-sale message to the 24 who left a number (real slots, a date, a deposit);
-      send after 24 Oct and count replies and deposits.
+- [ ] 25 Oct: one short nudge to silent leads, then count the 29 as paid / yes-not-paid / no /
+      silent. Only "paid" is demand. Ask one "no" why. (Not yet recorded: whether the message
+      asked for payment by a date. If not, the nudge asks for it.)
 - [ ] Three to five parent chats. The most valuable hour in the plan.
 - [ ] One chat with a Sunway College counsellor or the placement office (also the first B2B call,
       guess D: use report section 9's pre-U questions).
