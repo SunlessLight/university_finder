@@ -205,3 +205,19 @@ fewer than 30 answers, report counts, not percentages: "7 of 22", not "32%".
 
 If all three guesses turn out wrong, that is still a slide. "Here is what I tested and what I
 learned" is exactly what a stress test asks for.
+
+---
+
+## Results so far (20 Oct, 54 rows)
+
+*Moved here from status.md on 24 Oct; this is the only copy of these figures. Totals only.*
+
+- **0 parents** answered. 44 pre-university, 7 at university.
+- **Nobody pays for help today:** 49 of 54 paid no one; 2 paid RM100–500; 3 used a paid consultant.
+- Top worry: scholarships 19, essays 11, entry requirements 7, choosing a university only 5.
+- Students decide (33 mostly me, 19 together, 2 parents); parents pay (33).
+- 25 already know their universities; most "no" reasons are "already applied". Sell before applications.
+- Used: uni websites 46, ChatGPT/Gemini 38, rankings 33, seniors 31, fairs 25, school 25, social 24,
+  agents 14, paid consultant 3.
+- Looked up: fees 37, entry reqs 35, scholarships 35, jobs 26, living costs 25, post-study work 16,
+  recognition 14, safety 13, visa funds 10. The "extras" are the least researched.
