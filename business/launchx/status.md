@@ -5,10 +5,10 @@
 ## Dates
 
 - **24 Oct (done):** Bootcamp 2 panel. Their message: ChatGPT can do the research too.
-- **25 Oct:** nudge silent leads, count the 29.
+- **25 Oct:** nudge silent leads, count the 29, ask the 4 payers why they paid.
 - **2 Nov:** paid lists delivered.
 - **10 to 13 Nov:** pilot with real customers.
-- **2 Dec:** demo day. Check: 1 consultancy on a paid pilot **and** 10 paying families?
+- **2 Dec:** demo day. Check: 20 paid family lists?
 - **10 Dec:** if short of the bar, the pause ends: continue, pivot or stop.
 
 ## Where things stand
@@ -16,7 +16,8 @@
 The product works: 29 students used it, all friends, none paid. Survey (out 12 Oct): 79 responses
 by 23 Oct (12 strangers, 25 "a little", 42 friends), CSV in `data/form/` (gitignored, holds contact
 details). 35 left a number at RM50, 6 misread the question, so **29 real leads, all messaged by
-23 Oct** (want: list 19, report 7, both 6). After the panel the main track moved to B2B (see
+23 Oct** (want: list 19, report 7, both 6). **4 have paid a deposit** (Evan, 24 Oct; spreadsheet
+not yet updated). Families are the main track again; consultancies are learning chats (see
 Decided). Evan is in exams.
 
 ## Survey highlights (20 Oct, 54 rows; the only copy of these figures)
@@ -33,15 +34,16 @@ Decided). Evan is in exams.
 
 ## Decided
 
-- **Focus shift (24 Oct):** main track = B2B test using the current workflow, sold to small
-  family-paid consultancies (guess D). Side track = families: light advertising plus referrals.
-  Order: consultancy messages first, then cost cuts measured on the 2 Nov lists, then only fixes a
-  customer or consultant would see. Stale-wording and internal fixes in additionals.md stay parked.
-- **Continue-bar (24 Oct): 1 consultancy on a paid pilot and 10 paying families by 2 Dec.** On a
-  miss: pause, work out what went wrong, decide continue / pivot / stop by 10 Dec.
+- **Focus (24 Oct, evening; replaces the morning's B2B-first shift):** main track = families,
+  with Evan learning marketing and referrals. Consultancies = learning chats only (their problems,
+  whether the product is wanted), no selling. Backend: cost cuts measured on the 2 Nov lists, then
+  only fixes a customer would see. Stale-wording and internal fixes in additionals.md stay parked.
+- **Continue-bar (24 Oct, evening): 20 paid family lists by 2 Dec** (replaces 1 consultancy + 10
+  families). On a miss: pause, work out what went wrong, decide continue / pivot / stop by 10 Dec.
 - **Prices (23 Oct):** list (20–30 universities) RM50, single report RM30. Count the 25 Oct replies
   at the old price, then announce RM30 in the nudge.
-- **Pre-sale cap: 15 list spots (22 Oct)**, set by Evan's time. Pre-sell before fixing (21 Oct).
+- **Pre-sale cap: 20 list spots (raised from 15 on 24 Oct to match the bar)**, set by Evan's
+  time (about 20 hands-on hours). Pre-sell before fixing (21 Oct).
 - **After payment** the customer gets the existing Google Form (feeds the intake tools), not WhatsApp.
 - **Referral reward:** a free one-university report per friend who pays; only for people who have
   paid and received their list.
@@ -59,14 +61,16 @@ Decided). Evan is in exams.
 | Known | Under 1 hour hands-on per student. Tools about RM158 a month. |
 | Known (estimate) | At RM50 the reachable family market is about RM775,000 a year. Price is the lever. |
 | Known | Free competitors are paid by universities. Paid help starts around RM2,000. |
-| Not known | Whether any of the 29 leads pay. Whether parents or consultancies would pay. |
+| Known (panel, 24 Oct) | "ChatGPT can do it. It may hallucinate, but students already use the free one. Most won't pay RM50 for research they could do themselves." |
+| Known (Evan, 24 Oct) | 4 of the 29 leads paid a deposit. Friends or strangers not yet known. |
+| Not known | Why the 4 paid instead of using ChatGPT. Whether parents or consultancies would pay. |
 
 ## Guesses under test
 
 - **A:** parents feel the problem and would pay; students do not. (No parent reached yet.)
 - **B:** scholarships are what students want help with first. (Survey supports.)
 - **C:** essays and the application are a bigger fear than choosing. (Partly: essays 2nd.)
-- **D, now the main track:** consultancies would pay more than families.
+- **D, learning chats only (24 Oct):** consultancies would pay more than families.
   [b2b_research/report.pdf](../b2b_research/report.pdf) ranks international-school counsellors and
   small family-paid consultancies first; agents and private universities are paid by universities
   (talk to learn, not to sell). Inquota may also earn commission (unconfirmed). First offer: a
@@ -77,12 +81,14 @@ Decided). Evan is in exams.
 
 ## Open: Evan
 
-- [ ] Write the panel's feedback down word for word.
-- [ ] 25 Oct: nudge silent leads, then count paid / yes-not-paid / no / silent. Only "paid" is
-      demand. Ask one "no" why. If the first message set no payment date, the nudge does.
+- [ ] 25 Oct: put the 4 deposits in the spreadsheet, nudge silent leads, then count paid /
+      yes-not-paid / no / silent. Only "paid" is demand. Ask one "no" why. If the first message set
+      no payment date, the nudge does.
+- [ ] 25 Oct: ask each of the 4 payers "what made you pay instead of just using ChatGPT?" Their
+      answers are the reply to the panel and the first marketing line.
 - [ ] After the count: message 3 consultancies (PrepWorks, Inquota, one more) for a 15-minute chat
-      on how they research universities. Learn, don't pitch. Before any pitch, decide whether to
-      refuse a partner-only list.
+      on how they research universities and which part takes longest. Learn, don't pitch.
+- [ ] Pitch script says "first paid pilot": fix the wording to match the count.
 - [ ] Sunway counsellor or placement-office chat (also a B2B call: report section 9 questions).
 - [ ] Three to five parent chats.
 - [ ] Two chats with "too expensive" leads; two or three with students who already have a list.
@@ -106,6 +112,10 @@ Decided). Evan is in exams.
 
 ## Things Evan has said that matter
 
+- **24 Oct, evening:** 4 paid, so there is demand, "just not enough"; judges may underrate how
+  many students can't search with AI, but he doesn't know either. Wants to push to 20 family lists
+  and learn marketing and referrals. Mentor: the judge's view is a guess, 4 payments are what
+  people did; ask the payers why; families can pay by 2 Dec, consultancies probably can't.
 - **24 Oct:** after the panel, wanted to pivot to a "big problem"; feels his ideas (credit card
   tracker, SnapIt, this) are small ChatGPT wrappers; thinks free ChatGPT is good enough for
   families; prefers B2B. Mentor: the problem is big, the price is small; the pattern to break is
