@@ -1,6 +1,6 @@
 # Additionals — inconsistencies noticed but not fixed
 
-*Started 2026-10-10, while writing [university_report.md](university_report.md). Each entry is a
+*Started 2026-10-10, while writing [university_report.md](product_report/university_report.md). Each entry is a
 place where two parts of the project say different things about the University Report stage
 ("Stage 4"). Nothing here has been changed yet. Tick an item off when it is fixed.*
 
@@ -16,15 +16,15 @@ Two of these (A1 and C1) were reported in the session that wrote the explainer. 
 turned up on a second, closer pass through the same files.
 
 **Added later the same day:** a separate part at the bottom, [Decision stage (Stage 5)](#decision-stage-stage-5),
-holds what turned up while writing [decide_report.md](decide_report.md). It has its own numbering
+holds what turned up while writing [decide_report.md](product_report/decide_report.md). It has its own numbering
 (D for things found, V for things not verified) so the A/B/C entries above stay as they were.
 
 **Also added the same day:** a third part, [Intake stage (Stage 1)](#intake-stage-stage-1), holds
-what turned up while writing [intake_report.md](intake_report.md). Its numbering is I for things
+what turned up while writing [intake_report.md](product_report/intake_report.md). Its numbering is I for things
 found and U for things not verified.
 
 **Also added the same day:** a fourth part, [Longlist stage (Stage 3)](#longlist-stage-stage-3),
-holds what turned up while writing [longlist_report.md](longlist_report.md). Its numbering is L for
+holds what turned up while writing [longlist_report.md](product_report/longlist_report.md). Its numbering is L for
 things found and N for things not verified.
 
 **Added 2026-10-12:** a fifth part, [Sample pack fix round](#sample-pack-fix-round-2026-10-12),
@@ -161,7 +161,7 @@ and N1, U4, V2 (measure the next real longlist, intake and decide runs).
 
 | Step | Tasks | Files it writes | Waits for | Size and timing |
 |---|---|---|---|---|
-| ✅ **1** | **Done by 2026-10-17.** R4, R6, R7 | `business/decide_report.md`, `tools/apply_prep_to_pdf.py`, `CLAUDE.md` | nothing | Small. R4 before `decide_report.md` is shown outside |
+| ✅ **1** | **Done by 2026-10-17.** R4, R6, R7 | `business/product_report/decide_report.md`, `tools/apply_prep_to_pdf.py`, `CLAUDE.md` | nothing | Small. R4 before `decide_report.md` is shown outside |
 
 **Handled inside other steps:** D4 (group 1 step 2) and R5 (group 2 step 3). **Evan's own, not a
 session's:** U1 (time the form on a phone) and V3 (ask two or three single-university students why
@@ -239,10 +239,10 @@ clear those. The rest are real gaps in how a program was designed (lane 1, and s
 | **1. The calendar program** | D1, then S2, then B1 | `tools/build_calendar.py`, `tools/build_report.py` | Medium. Test on a copy of a calendar, never on the finished student's real one. |
 | **2. Notes inside programs** | C1, C3, C2 (the line in the PDF program), I8, S9 (the example line only) | `tools/check_report.py`, `tools/report_to_pdf.py`, `tools/ingest_form_csv.py`, `tools/init_student.py`, `tools/shortlist_schema.py` | Small. Comments and on-screen messages only; no program may behave differently afterwards. |
 | **3. Instruction files** | L3, L4, I1, B2, D3, I6, I7, C2 (the line in the overview), D4 (the line in the apply-guide workflow), S9 (the workflow sentence), S5, S7 (the two blocked US sites) | everything in `workflows/`, `README.md`, `.claude/agents/`, `.claude/commands/intake.md` | Medium. I1 is the only one that adds a new step; the rest are corrections. |
-| **4. Sales files and business reports** | A1, A2, D4 (the line in the tiers file), N2, V1, U3 | `business/sales/service-tiers.md`, `business/decide_report.md`, `business/intake_report.md`, `business/longlist_report.md` | Small, plus one web check (V1: seven UK dates). |
+| **4. Sales files and business reports** | A1, A2, D4 (the line in the tiers file), N2, V1, U3 | `business/sales/service-tiers.md`, `business/product_report/decide_report.md`, `business/product_report/intake_report.md`, `business/product_report/longlist_report.md` | Small, plus one web check (V1: seven UK dates). |
 | **5. The source student's files and the sample pack** | S8 (Task 8b), then S10, then Task 9 of the sample pack plan (it also carries D4's line in the sample pack's README), then S6, S7 (the unlabelled source and the doubled score line), then P1 | that student's folder, `business/sales/sample_pack/`, the prototype, `sample_pack_fix_plan.md` | Large. Strictly in this order: every step reads the list the step before it wrote. |
 | **6. The other students' files** | P2, then I4, then L2, plus I9 (added 2026-10-15, small) | every other student's folder | P2 is medium and mostly one program. L2 is very large (214 rows of web research) and waits for Evan's decision. |
-| **7. Follow-ups from the lane round** (added 2026-10-15) | R1, then R3, R4, R5, R6, R7 | the `dated_items/` folder in each student's folder (R1 only adds files there), plus the files R3 to R7 name: `workflows/04_university_report.md`, `workflows/05_decide_and_apply.md`, `.claude/commands/decide.md`, `README.md`, `workflows/00_overview.md`, `business/decide_report.md`, `tools/ingest_form_csv.py`, `tools/apply_prep_to_pdf.py`, `CLAUDE.md` | Small. Lanes 2, 3 and 4 are finished, so it shares no file with a running lane. |
+| **7. Follow-ups from the lane round** (added 2026-10-15) | R1, then R3, R4, R5, R6, R7 | the `dated_items/` folder in each student's folder (R1 only adds files there), plus the files R3 to R7 name: `workflows/04_university_report.md`, `workflows/05_decide_and_apply.md`, `.claude/commands/decide.md`, `README.md`, `workflows/00_overview.md`, `business/product_report/decide_report.md`, `tools/ingest_form_csv.py`, `tools/apply_prep_to_pdf.py`, `CLAUDE.md` | Small. Lanes 2, 3 and 4 are finished, so it shares no file with a running lane. |
 
 Notes on the lanes:
 
@@ -413,7 +413,7 @@ calendar can collect them. Two files describe the shape of that list differently
 
 ## Decision stage (Stage 5)
 
-*Added 2026-10-10, while writing [decide_report.md](decide_report.md). Nothing here has been changed
+*Added 2026-10-10, while writing [decide_report.md](product_report/decide_report.md). Nothing here has been changed
 or fixed. No student is named: "the finished student" means the one student the progress report
 (`python tools/progress_dashboard.py`) shows as "Stage 5 done".*
 
@@ -528,7 +528,7 @@ reads them.
 
 *Not listed here:* the smaller calendar limits (the same event appearing twice, dates written in
 words landing in the "to confirm" list, US reports contributing only their main deadline). They are
-written up with their counts in the "Honest limits" section of [decide_report.md](decide_report.md).
+written up with their counts in the "Honest limits" section of [decide_report.md](product_report/decide_report.md).
 
 ### Things in decide_report.md that I did not verify
 
@@ -538,7 +538,7 @@ Each of these is a statement in the report that rests on something I did not che
 
 - **Done 2026-10-13 (lane 4).** Six of the seven dates were re-read on the official pages and still stand. The seventh, the earliest day to apply for the UK visa, is now labelled an estimate: Heriot-Watt has not published its 2027 start date. The interview line now says "most colleges hold it online for students abroad", because four Cambridge colleges (Churchill, Emmanuel, King's, Selwyn) interview in person.
 
-- **Where:** [decide_report.md](decide_report.md), under "What a finished one looks like", the table
+- **Where:** [decide_report.md](product_report/decide_report.md), under "What a finished one looks like", the table
   of seven lines.
 - **Where the dates came from:** copied from the finished student's calendar, which was built on
   2026-09-02 from what the report researchers found on official pages at that time.
@@ -549,7 +549,7 @@ Each of these is a statement in the report that rests on something I did not che
 
 #### - [ ] V2. "Probably the cheapest step to deliver"
 
-- **Where:** [decide_report.md](decide_report.md), under "What this means for the business".
+- **Where:** [decide_report.md](product_report/decide_report.md), under "What this means for the business".
 - **What it rests on:** reasoning only. The stage does almost no new web research, and two of its
   four steps are programs with no AI in them.
 - **What is missing:** nobody has measured how long the stage takes or how much AI usage it costs.
@@ -558,7 +558,7 @@ Each of these is a statement in the report that rests on something I did not che
 
 #### - [ ] V3. The poster explains why nine students picked only one university
 
-- **Where:** [decide_report.md](decide_report.md), at the end of "Where things stand today".
+- **Where:** [decide_report.md](product_report/decide_report.md), at the end of "Where things stand today".
 - **What it says:** the poster invites a student to "pick 1 uni to go deep on", most students did
   exactly that, and the decision stage was designed for three to five.
 - **What it rests on:** my reading of the counts. No student has said this, and the report labels
@@ -569,7 +569,7 @@ Each of these is a statement in the report that rests on something I did not che
 
 ## Intake stage (Stage 1)
 
-*Added 2026-10-10, while writing [intake_report.md](intake_report.md). Nothing here has been changed
+*Added 2026-10-10, while writing [intake_report.md](product_report/intake_report.md). Nothing here has been changed
 or fixed. No student is named; every count is a total across the 29 student folders.*
 
 Each entry says which of the groups at the top of this file it belongs to (A, B or C). I1 and I2
@@ -661,7 +661,7 @@ are the two worth reading first, because both affect what a student receives.
   cut to exactly three bands on 2026-09-17, removing "Not sure" and "Budget is not a problem" so
   that every new student gives a real figure.
 - **What I do not know:** which is true of the live form today. I did not open the form.
-  [intake_report.md](intake_report.md) follows the program and describes three bands.
+  [intake_report.md](product_report/intake_report.md) follows the program and describes three bands.
 - **Suggested fix:** open the form, count the options, and correct whichever file is wrong.
 
 #### - [x] I6. The intake workflow asks for a check that was settled three weeks ago
@@ -736,13 +736,13 @@ are the two worth reading first, because both affect what a student receives.
 *Not listed here:* the limits that are design choices and not contradictions between files (ties
 between importance answers, the form assuming an A-Level student, the spreadsheet that must not be
 sorted by hand, the casual consent wording). They are in the "What is still rough" section of
-[intake_report.md](intake_report.md).
+[intake_report.md](product_report/intake_report.md).
 
 ### Things in intake_report.md that I did not verify
 
 #### - [ ] U1. "The poster advertises it as taking two minutes"
 
-- **Where:** [intake_report.md](intake_report.md), under "What the student sees".
+- **Where:** [intake_report.md](product_report/intake_report.md), under "What the student sees".
 - **Where the figure came from:** the poster
   ([sales/pitch/university-research-service-poster.html:581](sales/pitch/university-research-service-poster.html#L581)
   and line 772).
@@ -756,7 +756,7 @@ sorted by hand, the casual consent wording). They are in the "What is still roug
 - **Closed 2026-10-15.** Evan says it is not a concern. Whether OneDrive copying is on was not
   recorded.
 
-- **Where:** [intake_report.md](intake_report.md), under "The safety nets" and "Why this stage
+- **Where:** [intake_report.md](product_report/intake_report.md), under "The safety nets" and "Why this stage
   matters to the business".
 - **What the report says:** student records are kept out of the project's saved history. That is
   true and I checked it.
@@ -770,9 +770,9 @@ sorted by hand, the casual consent wording). They are in the "What is still roug
 
 #### - [x] U3. "21 of the 29 students are aiming at a course where one of these bodies matters"
 
-- **Done 2026-10-13 (lane 4).** The recount gives 18 of 29, not 21, and [intake_report.md](intake_report.md) now says 18 ("roughly six in ten"). The spot-check found three wrong checklists: entry **I9**.
+- **Done 2026-10-13 (lane 4).** The recount gives 18 of 29, not 21, and [intake_report.md](product_report/intake_report.md) now says 18 ("roughly six in ten"). The spot-check found three wrong checklists: entry **I9**.
 
-- **Where:** [intake_report.md](intake_report.md), under "The checklist on the course, explained".
+- **Where:** [intake_report.md](product_report/intake_report.md), under "The checklist on the course, explained".
 - **What it rests on:** a count of records that have at least one professional body on their
   checklist.
 - **What I did not do:** compare each checklist against the course that student chose. Some older
@@ -782,7 +782,7 @@ sorted by hand, the casual consent wording). They are in the "What is still roug
 
 #### - [ ] U4. "It costs almost nothing to run"
 
-- **Where:** [intake_report.md](intake_report.md), under "Why this stage matters to the business".
+- **Where:** [intake_report.md](product_report/intake_report.md), under "Why this stage matters to the business".
 - **What it rests on:** reasoning. Three of the four steps are programs with no AI in them.
 - **What is missing:** nobody has measured the time or the AI usage of the human review step.
 - **To settle it:** time one real intake run from fetch to tick-off.
@@ -791,7 +791,7 @@ sorted by hand, the casual consent wording). They are in the "What is still roug
 
 ## Longlist stage (Stage 3)
 
-*Added 2026-10-10, while writing [longlist_report.md](longlist_report.md). Nothing here has been
+*Added 2026-10-10, while writing [longlist_report.md](product_report/longlist_report.md). Nothing here has been
 changed or fixed. No student is named; every count is a total across the 28 student spreadsheets.*
 
 L1 is the one to read first, because a customer can see it.
@@ -871,7 +871,7 @@ L1 is the one to read first, because a customer can see it.
   split lines up exactly with the rule change.
 - **Correction to what I first reported:** in the chat I said I had inferred "older" from the
   workflow notes and had not checked the dates. I have now checked them, and the inference holds.
-  I tightened the wording in [longlist_report.md](longlist_report.md) to match.
+  I tightened the wording in [longlist_report.md](product_report/longlist_report.md) to match.
 - **What has not moved:** the four worst lists read 52 of 56, 41 of 44, 33 of 36 and 17 of 18
   unverified. Those are the same four figures the product review recorded on 2026-09-25.
 - **Why it matters:** the report states this gap openly, under "Where things stand today". It is the
@@ -940,7 +940,7 @@ L1 is the one to read first, because a customer can see it.
 
 #### - [ ] N1. "Roughly 70,000 tokens per university" and the cost of a full country
 
-- **Where:** [longlist_report.md](longlist_report.md), under "What limits this stage".
+- **Where:** [longlist_report.md](product_report/longlist_report.md), under "What limits this stage".
 - **Where the figure came from:** copied from con #5 in the
   [product review](product_review_2026-09-25.md#L129). A token is the unit of AI usage you are
   billed for.
@@ -959,7 +959,7 @@ L1 is the one to read first, because a customer can see it.
 
 - **Done 2026-10-13 (lane 4), checked 2026-10-15.** The deadline cell now reads 4 January 2027. The other two facts (up to 3 years of work, and MIT covering full need) match the rebuilt sample row. MIT's page says "January 4" without a year; lane 4 took it as 2027, the cycle now open.
 
-- **Where:** [longlist_report.md](longlist_report.md), under "One row, as the student sees it".
+- **Where:** [longlist_report.md](product_report/longlist_report.md), under "One row, as the student sees it".
 - **Where they came from:** the MIT row of the sample spreadsheet in L1. That includes the deadline
   (1 January 2027), "up to 3 years of work after the degree", and the statement that MIT covers
   international students' full financial need.
@@ -969,7 +969,7 @@ L1 is the one to read first, because a customer can see it.
   and the work-rights line on the official pages before the report goes to anyone outside.
 - **Update 2026-10-12 — one of the three is now known to be wrong.** The sample was rebuilt and
   MIT's row was re-read on MIT's pages: the Regular Action deadline is **4 January 2027**, not
-  1 January. [longlist_report.md:96](longlist_report.md#L96) still shows "1 January 2027". Change
+  1 January. [longlist_report.md:96](product_report/longlist_report.md#L96) still shows "1 January 2027". Change
   that cell. The other two facts were not compared against the rebuilt row; do that at the same
   time.
 
@@ -1044,7 +1044,7 @@ S1 is the one to read first, because it has a date on it.
   report rebuilt today saved 11 dated lines (test sittings, aid deadlines, decision dates). None
   can reach a calendar.
 - **Why it has not hurt yet:** a US university still gets its one main deadline from the
-  spreadsheet. [decide_report.md](decide_report.md) already lists that as a limit. What was not
+  spreadsheet. [decide_report.md](product_report/decide_report.md) already lists that as a limit. What was not
   written down is the cause, and that it applies to every US finalist of every student.
 - **Is it urgent:** no. No calendar is being built this week, and D1 says not to rebuild the one
   that exists.
@@ -1332,7 +1332,7 @@ R1 is the one to read first, because it has a clock on it.
 - **Done by 2026-10-17 (group 3 step 1).** Both bullets rewritten; the existing calendar is still described as predating the fix.
 
 - **Severity:** group A if the report is shown outside.
-- **Where:** [decide_report.md](decide_report.md), "Honest limits". The bullet ending "has not been
+- **Where:** [decide_report.md](product_report/decide_report.md), "Honest limits". The bullet ending "has not been
   made yet" (line 434), and the one starting "American universities bring fewer dates into the
   calendar" (line 436).
 - **What is true:** the repair was made on 2026-10-13 (D1), and US reports now bring all their

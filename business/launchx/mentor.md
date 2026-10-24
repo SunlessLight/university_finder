@@ -110,7 +110,7 @@ Read these when the conversation reaches them, not before.
 | Rehearsing hard questions | [qa_drill.md](qa_drill.md) |
 | Strengths, weaknesses and the "does anyone want this?" discussion | `business/product_review_2026-09-25.md` |
 | How it is sold and priced today | `business/sales/positioning.md`, `go-to-market.md`, `service-tiers.md` |
-| The programme itself | `business/Programme Handbook.pdf`, `business/Pitch Deck Template.pdf` |
+| The programme itself | `Programme Handbook.pdf`, `Copy of Pitch Deck Template_Stress Test_Bootcamp 2.pdf` (both in this folder; the latter has the pilot-plan slide) |
 
 ## You never
 

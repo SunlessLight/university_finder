@@ -103,8 +103,8 @@ as stubs: each stub registers its screen with a heading, one line saying what wi
 `ready: true` and goes to `results`).
 
 Sources: `sample_master_list.csv` (rows), the poster HTML (tokens, quotes, ratings),
-`business/university_report.md` § "What is inside a report" (report sections),
-`business/decide_report.md` and `business/apply_guide_report.md` (decision and apply outline),
+`business/product_report/university_report.md` § "What is inside a report" (report sections),
+`business/product_report/decide_report.md` and `business/product_report/apply_guide_report.md` (decision and apply outline),
 `business/sales/service-tiers.md` (pricing wording).
 
 Done when: `index.html` opens by double-click, all 7 screens click through in order, the journey
@@ -123,7 +123,7 @@ Written: `index.html`, `styles.css`, `app.js` (by hand); `data.js` and the 14 `s
 
 - `gen.py` + `data.template.js` — `data.js` is the template with three blocks injected: the 35
   columns and 15 rows from `sample_master_list.csv`, and the 15 report sections parsed from
-  `business/university_report.md`. Everything else in `data.js` (student, findings, report,
+  `business/product_report/university_report.md`. Everything else in `data.js` (student, findings, report,
   decision, feedback, pricing) is hand-written in the template. **Superseded by Session 2:**
   `gen.py` now skips any screen file that exists, so it only rewrites `data.js`. Edit
   `data.template.js` and re-run it; never hand-edit `data.js`.

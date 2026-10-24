@@ -86,7 +86,7 @@ for (uid, key), (old, new) in OVERRIDES.items():
 
 # --- report sections ---
 sections = []
-for line in (repo / "business/university_report.md").read_text(encoding="utf-8").splitlines():
+for line in (repo / "business/product_report/university_report.md").read_text(encoding="utf-8").splitlines():
     m = re.match(r"^\|\s*(\d+)\s*\|(.+)\|\s*$", line)
     if not m:
         continue

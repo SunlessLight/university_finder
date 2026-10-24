@@ -379,7 +379,7 @@ universities for their country, slightly under the 8 to 12 target.
   web-reading service, which costs a small amount per page.
 
 For the business view of these same limits (pricing, capacity, what to fix first), see the
-[product review](product_review_2026-09-25.md).
+[product review](../product_review_2026-09-25.md).
 
 ---
 

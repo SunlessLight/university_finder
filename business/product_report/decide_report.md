@@ -492,7 +492,7 @@ Put those three points together and the opportunity is plain. The step with the 
 the most direct link to what the customer is afraid of is the one almost nobody has been given.
 
 For pricing, capacity and the order to fix things in, see the
-[product review](product_review_2026-09-25.md).
+[product review](../product_review_2026-09-25.md).
 
 ---
 

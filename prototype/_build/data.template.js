@@ -7,10 +7,10 @@
  * Only the anonymised sample student ("Arif") is used. Sources:
  *   business/sales/sample_pack/sample_master_list.csv          -> columns, universities
  *   business/sales/sample_pack/sample_university-report_MIT.pdf -> report summary, why here / why hesitate
- *   business/university_report.md ("What is inside a report")   -> report.sections
+ *   business/product_report/university_report.md ("What is inside a report")   -> report.sections
  *   business/sales/pitch/university-research-service-poster.html -> brand, feedback, report.pullQuote
  *   business/sales/service-tiers.md                             -> deliverables, pricing wording
- *   business/decide_report.md, business/apply_guide_report.md   -> shape of decision
+ *   business/product_report/decide_report.md, business/product_report/apply_guide_report.md   -> shape of decision
  *
  * window.DATA
  *   brand         { name, tagline }
@@ -54,7 +54,7 @@
 
   const ROWS = /*@UNIVERSITIES@*/;
 
-  /* ---- GENERATED from business/university_report.md, "What is inside a report". ---- */
+  /* ---- GENERATED from business/product_report/university_report.md, "What is inside a report". ---- */
 
   const REPORT_SECTIONS = /*@REPORT_SECTIONS@*/;
 

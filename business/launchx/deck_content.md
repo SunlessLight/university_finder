@@ -3,7 +3,9 @@
 *For LaunchX Bootcamp 2, 24 October 2026. Drafted 2026-10-12. **Read it and correct anything
 that is not true.** I build the slides only after you have done that.*
 
-Follows the 10 slides of `business/Pitch Deck Template.pdf`. For each slide: the words on it,
+Follows the 10 slides of the old `business/Pitch Deck Template.pdf` (deleted 24 Oct; still in git
+history). The Bootcamp 2 version is `Copy of Pitch Deck Template_Stress Test_Bootcamp 2.pdf` in this
+folder. For each slide: the words on it,
 what you say out loud, and where the evidence is. A blank like `[____]` is something only you
 can fill in. `[SURVEY]` is filled on 21 to 22 October from the survey results.
 
