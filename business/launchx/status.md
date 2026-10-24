@@ -1,187 +1,125 @@
 # LaunchX status
 
-*As of 2026-10-23. Rewritten whenever something changes. See [mentor.md](mentor.md) for how.*
+*As of 2026-10-24. Rewritten whenever something changes. See [mentor.md](mentor.md) for how.*
 
 ## Dates
 
-- **24 Oct 2026:** Bootcamp 2. 15 minutes with an investor panel. A feedback session, not a
-  contest: the deck template is optional and Evan can bring whatever he wants feedback on.
-- **2 Nov:** paid lists delivered (Evan, 23 Oct).
-- **10 to 13 Nov:** pilot test with real customers. First paid sales are meant to happen here.
-- **2 Dec:** demo day and seed-funding consideration. Check: 20 paying customers?
-- **10 Dec:** if short of 20, the pause ends: continue, pivot or stop.
+- **24 Oct (done):** Bootcamp 2 panel. Their message: ChatGPT can do the research too.
+- **25 Oct:** nudge silent leads, count the 29.
+- **2 Nov:** paid lists delivered.
+- **10 to 13 Nov:** pilot with real customers.
+- **2 Dec:** demo day. Check: 1 consultancy on a paid pilot **and** 10 paying families?
+- **10 Dec:** if short of the bar, the pause ends: continue, pivot or stop.
 
 ## Where things stand
 
-The product works and has been used by 29 students, all friends, none paid. Desk research and the
-cost sums are done. The survey went out 12 Oct (promoted with the "HEY YOU!" carousel in
-`launchx/HEY YOU!/`). Responses CSV moved to `data/form/survey_responses_2026-10-20.csv`
-(gitignored; it holds emails and phone numbers). No parent chats yet. Evan is in exams.
+The product works: 29 students used it, all friends, none paid. Survey (out 12 Oct): 79 responses
+by 23 Oct (12 strangers, 25 "a little", 42 friends), CSV in `data/form/` (gitignored, holds contact
+details). 35 left a number at RM50, 6 misread the question, so **29 real leads, all messaged by
+23 Oct** (want: list 19, report 7, both 6). After the panel the main track moved to B2B (see
+Decided). Evan is in exams.
 
-**Update, 23 Oct:** 79 responses (12 strangers, 25 "a little", 42 friends), in
-`data/form/` (gitignored). 35 left a number, but 6 misread the question and aren't interested, so
-**29 real leads, all messaged by 23 Oct**. Of the 35: list 19, report 7, both 6. Use 79 / 29 at
-the panel. Breakdown below is still the 20 Oct one.
+## Survey highlights (20 Oct, 54 rows; the only copy of these figures)
 
-## Survey results (20 Oct, 54 rows, 53 unique emails, a few joke answers)
-
-- **Who:** 26 friends, 18 "a little", 10 strangers. 44 pre-university, 7 at university, **0 parents**.
-- **Left a WhatsApp number at RM50: 24 people** (25 rows, 1 repeat): 9 friends, 10 "a little",
-  6 strangers. Prefer: list 11, report 6, both 5. A number left is a sign of interest, not payment.
-- **Nobody pays for help today:** 49 of 54 families paid no one. 2 paid RM100–500. 3 used a paid consultant.
-- **Top worry:** scholarships 19, essays 11, entry requirements 7, **choosing a university only 5**.
-  Strangers: scholarships 5 of 10. Guess B supported; guess C partly (essays 2nd).
-- **Decides vs pays:** students decide (33 mostly me, 19 together, 2 parents); parents pay (33).
-  Guess A still untested: the survey reached no parents.
-- **Already decided:** 25 say "I know exactly which universities". Most "no" reasons are
-  "already chose / already applied (UCAS)". Timing matters: sell before applications, not after.
-- **Used:** uni websites 46, ChatGPT/Gemini 38, rankings 33, seniors 31, fairs 25, school 25,
-  social media 24, agents 14, paid consultant 3.
-- **Looked up:** fees 37, entry reqs 35, scholarships 35, jobs 26, living costs 25, post-study work
-  16, recognition 14, safety 13, visa bank funds 10. The "extras" are the least researched.
-
-**New, 20 Oct:** iLabs check-in before Bootcamp 2. Due beforehand: a Prototype & Insight form
-(A: link to the prototype; B: feedback consolidated from Bootcamp 1 peers) and first NABC answers
-(Needs, Approach, Benefits, Competition). No peer feedback exists (Evan left Bootcamp 1 early).
-**Check-in done (by 21 Oct):** Parts A and B both shown to the accelerator staff. Their feedback:
-the prototype is nice but needs a better look, less text, email instead of WhatsApp (already in
-the backlog). Two open questions they raised: (1) what separates this from ChatGPT/Gemini, when
-anyone can ask it for a document; (2) one-time buyers, no repeat customers: keep selling to
-families, or rent the workflow to businesses (guess D). Mentor: the workflow itself is no moat;
-the edge is official-page facts, total cost in ringgit, fit kept apart from quality, recognition
-checks. Unknown whether a ChatGPT user pays RM50 for that: the pre-sale answers it. Don't pick the
-business model before either side has paid. Pilot capacity (24 people in 4 days) is still the
-real readiness gap.
+- **0 parents** answered. 44 pre-university, 7 at university.
+- **Nobody pays for help today:** 49 of 54 paid no one; 2 paid RM100–500; 3 used a paid consultant.
+- Top worry: scholarships 19, essays 11, entry requirements 7, choosing a university only 5.
+- Students decide (33 mostly me, 19 together, 2 parents); parents pay (33).
+- 25 already know their universities; most "no" reasons are "already applied". Sell before applications.
+- Used: uni websites 46, ChatGPT/Gemini 38, rankings 33, seniors 31, fairs 25, school 25, social 24,
+  agents 14, paid consultant 3.
+- Looked up: fees 37, entry reqs 35, scholarships 35, jobs 26, living costs 25, post-study work 16,
+  recognition 14, safety 13, visa funds 10. The "extras" are the least researched.
 
 ## Decided
 
-- **Business first, backend frozen until 24 Oct.** No bug-fixing, no website, no new features.
-  Known limits ("Sunway A-level only", "intake is a Google Form") and essay help go on a "what we
-  build next" slide.
-- **The deck ends on three questions for the panel**, not a funding request (slide 10).
-- **Pre-sell before fixing (21 Oct).** Ask the 24 leads for a yes/no on RM50 first; after 24 Oct
-  fix only what a paying customer would see.
-- **Pre-sale cap: 15 list spots (22 Oct).** Set by his time, not Claude's limits. Leads messaged
-  22–23 Oct; replies close 25 Oct, then count.
-- **Firecrawl is costed at its paid price** (about RM77 a month) on the slide, not at zero.
-- **Continue-bar: 20 paying customers by 2 Dec (23 Oct).** On a miss: pause, work out what went
-  wrong, and decide continue / pivot / stop by **10 Dec** (Evan, 23 Oct).
-  20 is over the 15-spot cap, so time per student must drop or delivery spreads past the pilot.
-- **Paid customers get the existing Google Form, sent right after payment (23 Oct).** Not
-  WhatsApp: the form feeds the intake tools.
-- **Report RM30; the list (20–30 universities) stays RM50 (Evan, 23 Oct).** Mentor: count the
-  25 Oct replies at the old price first, then announce RM30 in the nudge.
-- **Referral reward (23 Oct):** a free one-university report per friend who pays. Offered only
-  to people who have paid and received their list.
+- **Focus shift (24 Oct):** main track = B2B test using the current workflow, sold to small
+  family-paid consultancies (guess D). Side track = families: light advertising plus referrals.
+  Order: consultancy messages first, then cost cuts measured on the 2 Nov lists, then only fixes a
+  customer or consultant would see. Stale-wording and internal fixes in additionals.md stay parked.
+- **Continue-bar (24 Oct): 1 consultancy on a paid pilot and 10 paying families by 2 Dec.** On a
+  miss: pause, work out what went wrong, decide continue / pivot / stop by 10 Dec.
+- **Prices (23 Oct):** list (20–30 universities) RM50, single report RM30. Count the 25 Oct replies
+  at the old price, then announce RM30 in the nudge.
+- **Pre-sale cap: 15 list spots (22 Oct)**, set by Evan's time. Pre-sell before fixing (21 Oct).
+- **After payment** the customer gets the existing Google Form (feeds the intake tools), not WhatsApp.
+- **Referral reward:** a free one-university report per friend who pays; only for people who have
+  paid and received their list.
+- **Firecrawl is costed at its paid price** (about RM77 a month), not zero.
+- No legal or tax setup until someone pays; SSM registration comes with the first B2B payment.
 
 ## Known, and not known
 
 | | |
 |---|---|
-| Known | Product is usable: 13 list ratings average 4.1 of 5, 6 report ratings average 4.2. One student asked for a second report unprompted. |
-| Known (testers, count not recorded) | Many found the spreadsheet and reports too wordy, and did not understand the score, Match / Safety / Reach, or why a university got its label. |
-| Known (Evan, from delivered lists) | Most listed universities cost more than the student's budget, US and UK most of all. The tool ranks; it does not remove over-budget options. Students still ask for famous names. |
-| Known | Under 1 hour hands-on per student. Tools about RM158 a month; four students at RM50 cover it. |
-| Known (estimate) | At RM50 the reachable market is about RM775,000 a year. Price is the lever. |
-| Known | Every free competitor checked is paid by universities. Paid help starts around RM2,000. |
-| Not known | Whether any of the 29 real leads will actually pay. Whether parents would pay (no parent answered). |
+| Known | Usable: 13 list ratings average 4.1 of 5, 6 report ratings 4.2. One student asked for a second report unprompted. |
+| Known (testers) | Spreadsheet and reports too wordy; score, Match / Safety / Reach and labels not understood. |
+| Known (iLabs, 21 Oct) | Prototype nice; needs a better look, less text, email instead of WhatsApp. Asked: why not ChatGPT? and one-time buyers only? |
+| Known (Evan) | Most listed universities are over the student's budget (US, UK most). The tool ranks; it does not remove. |
+| Known | Under 1 hour hands-on per student. Tools about RM158 a month. |
+| Known (estimate) | At RM50 the reachable family market is about RM775,000 a year. Price is the lever. |
+| Known | Free competitors are paid by universities. Paid help starts around RM2,000. |
+| Not known | Whether any of the 29 leads pay. Whether parents or consultancies would pay. |
 
-## Four guesses under test (all untested)
+## Guesses under test
 
-- **A:** parents feel the problem and would pay; students do not.
-- **B:** scholarships are what students want help with first.
-- **C:** essays and the application are a bigger fear than choosing a university.
-- **D (15 Oct):** education businesses would pay more than families. Mentor view: don't switch,
-  test it. Desk research done: [b2b_research/report.pdf](../b2b_research/report.pdf) (18 pages
-  plus sources). It ranks **international-school counsellors** and **small family-paid
-  consultancies** first. Agents and private universities are paid by universities, so talk to them
-  to learn, not to sell. Inquota is *not* a clean family-paid example: it may also earn commission
-  (unconfirmed). First calls: the Sunway placement-office chat (already planned), Alice Smith or
-  KTJ, PrepWorks, Inquota, Sunway's American-degree transfer office. A first offer is a
-  done-for-you pilot of about 10 students. Software prices schools already pay (about RM19–137 per
-  student) don't support a much higher price for the list alone. Before any pitch, decide whether
-  to refuse a partner-only list. Script and commitment ladder: report section 9.
-  16 Oct paperwork check: talking needs none. First B2B payment needs an SSM sole-proprietor
-  registration (about RM30/yr own name, RM60 trade name, from guides, not SSM itself; minimum
-  age not confirmed) and a plain PDF invoice. E-invoicing is exempt below RM1M turnover (Known,
-  from 1 Jan 2026). No Sdn Bhd needed. Real legal item: the PDPA processor agreement a school
-  may send. Big groups (Sunway procurement, MARA) are out of reach for a sole trader anyway.
+- **A:** parents feel the problem and would pay; students do not. (No parent reached yet.)
+- **B:** scholarships are what students want help with first. (Survey supports.)
+- **C:** essays and the application are a bigger fear than choosing. (Partly: essays 2nd.)
+- **D, now the main track:** consultancies would pay more than families.
+  [b2b_research/report.pdf](../b2b_research/report.pdf) ranks international-school counsellors and
+  small family-paid consultancies first; agents and private universities are paid by universities
+  (talk to learn, not to sell). Inquota may also earn commission (unconfirmed). First offer: a
+  done-for-you pilot of about 10 students. Script and commitment ladder: report section 9.
+  Paperwork: talking needs none; first payment needs an SSM sole-proprietor registration (about
+  RM30–60 a year, from guides) and a PDF invoice; e-invoicing exempt below RM1M. Watch for a PDPA
+  processor agreement from a school.
 
 ## Open: Evan
 
-- [ ] Before sending the survey, watch "How to Pitch Your Startup"
-      (https://startupschool.org/videos/77) and read "How to Talk to Users"
-      (https://ericmigi.com/blog/startup-school-how-to-talk-to-users).
-- [ ] Choose the form's last-question wording ("matched to your budget" isn't true of what is
-      delivered; mentor's wording is in the 12 Oct chat), then copy it into survey.md (still says "8 to 12").
-- [ ] Decide (mentor: yes) on two added questions, then copy any you add into survey.md: "which of these have you
-      actually looked up?" (visa funds, work rights, recognition, jobs, safety) and "how far along are
-      you in choosing?" (sizes the group who'd want the single report, not the list).
-- [ ] Copy the single-university report offer (added to the form 12 Oct, his call) into survey.md,
-      with its price, wording and a row in the "what to count" table.
-- [ ] Decide on showing a sample on the form. Mentor: yes, one screenshot inside the offer question
-      only, full links optional, labelled "sample, layout may change"; made-up student, view-only.
-- [x] Send the form beyond classmates. 54 answers, 10 from strangers.
-- [ ] 25 Oct: one short nudge to silent leads, then count the 29 as paid / yes-not-paid / no /
-      silent. Only "paid" is demand. Ask one "no" why. (Not yet recorded: whether the message
-      asked for payment by a date. If not, the nudge asks for it.)
-- [ ] Panel, 24 Oct: swap slide 10's question 2 for "Most of my leads are friends. How would you
-      reach parents and strangers?" Write their answers down word for word.
-- [ ] Two chats with leads who said "too expensive": how did they research, what took longest or
-      went wrong.
-- [ ] Three to five parent chats. The most valuable hour in the plan.
-- [ ] One chat with a Sunway College counsellor or the placement office (also the first B2B call,
-      guess D: use report section 9's pre-U questions).
-- [ ] Two or three chats with students who already have a list.
-- [ ] Ask iLabs: when is the deck due, and do the 15 minutes include questions?
-- [ ] Read deck_content.md and correct anything untrue. Fill in the slide 2 story, the slide 9
-      line about himself, and a working name.
-- [ ] Open The Sun link in market_sizing.md once to confirm the 54,440 figure.
-- [ ] Confirm the 29 testers were all Sunway A-level students.
-- [ ] Rehearse twice with qa_drill.md on 23 Oct.
+- [ ] Write the panel's feedback down word for word.
+- [ ] 25 Oct: nudge silent leads, then count paid / yes-not-paid / no / silent. Only "paid" is
+      demand. Ask one "no" why. If the first message set no payment date, the nudge does.
+- [ ] After the count: message 3 consultancies (PrepWorks, Inquota, one more) for a 15-minute chat
+      on how they research universities. Learn, don't pitch. Before any pitch, decide whether to
+      refuse a partner-only list.
+- [ ] Sunway counsellor or placement-office chat (also a B2B call: report section 9 questions).
+- [ ] Three to five parent chats.
+- [ ] Two chats with "too expensive" leads; two or three with students who already have a list.
+- [ ] Park "big problem" ideas in a phone list until 2 Dec.
+- [ ] Low priority: copy the form's final wording, added questions and RM30 offer into survey.md;
+      confirm the 29 testers were all Sunway A-level; check The Sun link in market_sizing.md.
 
 ## Open: mentor session
 
-- [ ] About 21 Oct: put survey counts into the `[SURVEY]` blanks in deck_content.md and qa_drill.md.
-- [ ] After the counsellor chat: replace the guessed counsellor column in competitors.md (stream 3
-      found some colleges may also earn commission) and the cohort figures in market_sizing.md.
-- [ ] Build the slides only after Evan has corrected deck_content.md. Add the readability
-      complaint to the "what we build next" slide.
-- [ ] Optional and last: put a price into the demo and rebuild its sample figures.
+- [ ] After the consultancy or counsellor chats: replace the guessed counsellor column in
+      competitors.md and the cohort figures in market_sizing.md.
+- [ ] Before demo day: check deck_content.md and qa_drill.md for unfilled `[SURVEY]` blanks.
 
-## After 24 Oct (backend, frozen until then)
+## Backend (open, within the focus-shift limits)
 
-- **Readability of the list and reports:** explain the score and the labels, likely with fewer
-  words plus a short key. A Glossary tab already exists: first find out whether students saw it.
-- **Workflow clean-up for capacity (Evan wants it, 23 Oct):** time each step and note token use
-  on the first paid lists (backlog N1), then cut the top one or two costs between 2 Nov and the
-  pilot. No big rewrite before the 2 Nov delivery. Keep one human review per student.
+- **Cost:** time each step and note tokens on the 2 Nov paid lists (backlog N1), then cut the top
+  one or two before the pilot. No big rewrite before 2 Nov. Keep one human review per student.
+- **Readability:** explain the score and labels with fewer words plus a short key. A Glossary tab
+  exists: first find out whether students saw it.
+- **Over-budget universities** crowding the lists.
 
 ## Things Evan has said that matter
 
-- **23 Oct:** worried it's a luxury, not a need; running out of people he knows; unsure how to
-  find customers after graduating; drawn to B2B AI automation ("commodity systems"); wants full
-  automation with no human check; feels FOMO from social media; unsure this is the best way to
-  earn. Tutors at RM100–120/hr, about 3 hours every 2 days. Mentor: wait for the 25 Oct count;
-  B2B doesn't escape outreach and guess D already tests it; keep one human review per student
-  (it is the edge over ChatGPT; see the MIT error); park new ideas in a phone list until 2 Dec;
-  tutoring pays more per hour now, this is a bet on income not tied to his hours.
-
-- **21–22 Oct:** worried his edge over ChatGPT disappears if people learn to make documents with
-  it, and that the product is "just a wrapper". Also afraid asking for a commitment up front
-  lowers how many pay.
-
-- **16 Oct: he wants a side hustle, not a big company.** Worried B2B is more than he can chew.
-  Mentor: big-company sales, yes; one 10-student pilot with a small client, no. Asked him what
-  "worth it" by December looks like; answer not yet given.
-
-- Switching between studies and the service has taken a toll. Suggested 12 Oct: one fixed slot a
-  day. Not known whether he tried it.
-- He fears RM50 is too much, perhaps because RM50 is a lot where he comes from (12 Oct). Questions
-  5 and 9 of the form test it. Mentor: don't lower the price before the counts are in.
-- His five observations of A-level students (scholarships first, don't know what to ask, money
-  pushes them to familiar names, fear of essays, won't pay a classmate) are from his own circle:
-  guesses to test.
-- He sees the difference from Gemini as the "extra" facts (visa, jobs after, politics). Most sit in
-  the reports and apply pack, not the RM50 list. Mentor: keep the form's offer as the list only,
-  show the others as a price ladder, test selling the second in the pilot. His call.
+- **24 Oct:** after the panel, wanted to pivot to a "big problem"; feels his ideas (credit card
+  tracker, SnapIt, this) are small ChatGPT wrappers; thinks free ChatGPT is good enough for
+  families; prefers B2B. Mentor: the problem is big, the price is small; the pattern to break is
+  never reaching a count; "automations" is a method, not a problem; change the customer, not the
+  product. Evan chose the focus shift and new bar.
+- **23 Oct:** worried it's a luxury; running out of people he knows; wants full automation with no
+  human check; FOMO from social media. Tutors at RM100–120/hr, about 3 hours every 2 days.
+  Mentor: B2B doesn't escape outreach; keep one human review (the edge over ChatGPT); tutoring
+  pays more per hour now, this is a bet on income not tied to his hours.
+- **21–22 Oct:** fears the edge disappears as people learn ChatGPT. Mentor: the workflow is no
+  moat; the edge is official-page facts, total cost in ringgit, fit kept apart from quality,
+  recognition checks.
+- **16 Oct:** wants a side hustle, not a big company.
+- Switching between studies and the service takes a toll. One fixed daily slot suggested 12 Oct;
+  not known whether he tried it.
+- Fears RM50 is a lot (12 Oct). Mentor: don't lower prices before the counts are in.
+- His five observations of A-level students come from his own circle: guesses to test.

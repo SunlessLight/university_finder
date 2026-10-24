@@ -31,3 +31,7 @@ Earlier decisions stay where they were written (`business/launchx/status.md` →
 [2026-10-23] DECISION: Single-university report RM30; the 20-30 university list stays RM50. | REASONING: Evan's call; some leads said too expensive. | CONTEXT: mentor advised counting the 25 Oct replies at the old price first, then announcing RM30 in the nudge.
 
 [2026-10-23] DECISION: If short of 20 paying customers on 2 Dec, pause and decide continue / pivot / stop by 10 Dec. | REASONING: a pause with an end date can't drift for weeks. | CONTEXT: follows the 20-payer continue-bar set the same day.
+
+[2026-10-24] DECISION: Main track becomes a B2B test with the current workflow (small family-paid consultancies); families become a side track (light advertising, referrals). Backend reopens, limited to measured cost cuts and fixes a customer or consultant would see; consultancy messages go first. | REASONING: Evan thinks free ChatGPT is good enough for families and prefers B2B; changing the customer keeps the product and evidence, changing the product throws both away. | CONTEXT: after the 24 Oct panel ("ChatGPT can do the research too"); Evan had considered a full pivot to a "bigger problem".
+
+[2026-10-24] DECISION: 2 Dec continue-bar is now 1 consultancy on a paid pilot and 10 paying families (replaces 20 paying customers). | REASONING: the old bar measured only families, which are now the side track. | CONTEXT: the 10 Dec continue / pivot / stop gate is unchanged.
