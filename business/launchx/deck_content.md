@@ -3,6 +3,9 @@
 *For LaunchX Bootcamp 2, 24 October 2026. Drafted 2026-10-12. **Read it and correct anything
 that is not true.** I build the slides only after you have done that.*
 
+*Updated 24 Oct after the panel, for demo day on 2 Dec: survey blanks filled from 84 answers,
+"nobody has paid" replaced with the 4 deposits. Recheck the counts the week before demo day.*
+
 Follows the 10 slides of the old `business/Pitch Deck Template.pdf` (deleted 24 Oct; still in git
 history). The Bootcamp 2 version is `Copy of Pitch Deck Template_Stress Test_Bootcamp 2.pdf` in this
 folder. For each slide: the words on it,
@@ -65,7 +68,8 @@ own words, use that instead.
   "from the lists I have built" if asked.
 - The three bullets are your observations of 12 October. Until the survey is in, say "what I
   have seen so far", not "students do X".
-- `[SURVEY]` top worry (question 6) and what tools people used (question 4).
+- Survey (84 answers): top worry is scholarships (29), then essays (18); choosing a university is
+  only 8. 59 of 84 already use ChatGPT or Gemini, 68 use uni websites.
 
 ---
 
@@ -74,7 +78,7 @@ own words, use that instead.
 **On the slide**
 
 > **A list you keep, built around you.**
-> 1. **The List:** 8 to 12 universities matched to your grades and budget. Total cost of the
+> 1. **The List:** 20 to 30 universities matched to your grades and budget. Total cost of the
 >    whole degree in ringgit. Scholarships for each one.
 > 2. **The Report:** a deep file on your favourites, including reasons **not** to go.
 > 3. **The Apply Guide:** every deadline in one place, step by step.
@@ -105,12 +109,14 @@ what students tell me they fear most."
 > - They complained about specifics ("didn't see Warwick"). Polite people don't do that.
 >
 > **What I do not know yet**
-> - All 29 are friends, and it was free. Nobody has paid.
+> - All 29 testers are friends, and it was free.
+> - Why the 4 who paid chose this over free ChatGPT.
+> - Whether parents would pay: 0 parents answered the survey.
 >
 > **What I did about it**
-> - `[SURVEY]` ___ answers, ___ from people I do not know.
-> - `[SURVEY]` ___ left a WhatsApp number to buy a list at RM50. ___ of those were strangers.
-> - `[SURVEY]` ___ of ___ parents said yes to RM50.
+> - 84 survey answers, 12 from people I do not know.
+> - 32 left a WhatsApp number to buy a list at RM50. 5 of those were strangers.
+> - **4 have paid a deposit** (24 Oct). Booth pilot 10 to 13 November.
 
 **Say:** "I have proof the product is usable. I do not yet have proof strangers will pay. Here
 is how I am finding out, and the pilot test in November is where I get the real answer."
@@ -167,7 +173,8 @@ Keep the last row. One row where you lose makes the others believable.
 
 **On the slide**
 
-> 1. **Pilot test, 10 to 13 November:** sell to the people who left a WhatsApp number.
+> 1. **Pre-sale, then a booth pilot (10 to 13 November):** first the people who left a
+>    WhatsApp number (4 paid so far), then a four-day booth with a QR to book a spot.
 > 2. **Sunway A-level (about 477 a cohort):** word of mouth, with a real sample report to
 >    forward.
 > 3. **Parents:** the report is a PDF the student forwards. The file does the introducing.
@@ -178,8 +185,9 @@ Keep the last row. One row where you lose makes the others believable.
 **Say:** "Students choosing a university all talk to each other. One forwarded report is worth
 more than an ad, because it arrives from a friend."
 
-**Evidence:** `business/sales/go-to-market.md`. `[SURVEY]` who decides and who pays
-(question 7) tells you whether step 3 should move to the top.
+**Evidence:** `business/sales/go-to-market.md`. Survey: 47 of 84 students decide mostly alone,
+but parents pay for 57. So the student is the one to reach, and the parent is the one to
+convince: keep step 3, and test it with real parent chats.
 
 ---
 
@@ -187,7 +195,7 @@ more than an ad, because it arrives from a friend."
 
 **On the slide**
 
-> - **Price today:** RM50 for a list. No revenue yet.
+> - **Price today:** RM50 for a list, RM30 for one report. 4 deposits so far (24 Oct).
 > - **My time per student:** under 1 hour of hands-on work (a list plus one report).
 > - **Tools:** about RM158 a month in total. Four students a month cover it.
 > - **What limits growth is interruptions, not hours.** Each student needs me at my laptop at
@@ -254,5 +262,5 @@ Plus your contact: email, and a QR code if you have a page to point it at.
 - [ ] Still to ask iLabs: when the deck is due, and whether the 15 minutes includes questions.
 - [x] The cost figures are in [unit_economics.md](unit_economics.md).
 - [ ] You have picked the feedback questions for slide 10.
-- [ ] The survey counts are in (21 October).
+- [x] The survey counts are in (84 answers, recounted 24 October).
 - [ ] The story on slide 2 is yours and true.

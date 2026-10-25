@@ -45,6 +45,11 @@ colleges, and the LaunchX cohort.
 Under question 9 add this line: *"I'll only use your number to message you about this."* A phone
 number is personal data, so keep the response sheet private and out of anything you share.
 
+**What the live form actually said (checked 24 Oct):** the table above is the 12 Oct draft. The
+live form offered a "Personalised University List: **20 to 30** universities" and, as a second
+choice, "a deep report on ONE university you name" at RM50 (the report is now RM30). A
+"Which would you prefer?" question sits before the number box.
+
 **Why question 9 matters most.** A person who types their number has done something. A person who
 says "I'd pay RM50" has not. The count of numbers left, split by question 2, is your slide-4
 evidence. Those people are also your first customers for the pilot test on 10 to 13 November.
@@ -208,16 +213,22 @@ learned" is exactly what a stress test asks for.
 
 ---
 
-## Results so far (20 Oct, 54 rows)
+## Results so far (24 Oct, 84 rows)
 
-*Moved here from status.md on 24 Oct; this is the only copy of these figures. Totals only.*
+*This is the only copy of these figures. Totals only. Recounted from the CSV on 24 Oct; the
+20 Oct cut had 54 rows and the same pattern.*
 
-- **0 parents** answered. 44 pre-university, 7 at university.
-- **Nobody pays for help today:** 49 of 54 paid no one; 2 paid RM100–500; 3 used a paid consultant.
-- Top worry: scholarships 19, essays 11, entry requirements 7, choosing a university only 5.
-- Students decide (33 mostly me, 19 together, 2 parents); parents pay (33).
-- 25 already know their universities; most "no" reasons are "already applied". Sell before applications.
-- Used: uni websites 46, ChatGPT/Gemini 38, rankings 33, seniors 31, fairs 25, school 25, social 24,
-  agents 14, paid consultant 3.
-- Looked up: fees 37, entry reqs 35, scholarships 35, jobs 26, living costs 25, post-study work 16,
-  recognition 14, safety 13, visa funds 10. The "extras" are the least researched.
+- **Who:** 46 friends, 26 "a little", **12 strangers**. **0 parents** (the form only offered
+  student options). 71 pre-university (29 applying this year), 12 at university.
+- **Leads:** 32 marked "messaged" in the sheet (16 friends, 11 "a little", **5 strangers**).
+  status.md says 29 real leads: Evan to confirm which is right.
+- **Would prefer:** the list 56, the single report 18, neither about 18.
+- **Nobody pays for help today:** 76 of 84 paid no one; 3 paid something; 1 paid over RM2,000.
+- Top worry: scholarships 29, essays 18, entry requirements 11, choosing a university 8, real
+  total cost 6, recognition / jobs 5.
+- Students decide (47 mostly me, 33 together, 4 parents); **parents pay (57)**, scholarships 18.
+- 35 already know exactly where to apply, 30 have a few in mind. Sell before applications.
+- Used: uni websites 68, ChatGPT/Gemini 59, rankings 52, seniors 47, social media 36, school 34,
+  fairs 32, agents 18, paid consultant 3.
+- Looked up: entry reqs 59, fees 55, scholarships 51, living costs 37, jobs 36, recognition 22,
+  safety 20, post-study work 18, visa funds 10. The "extras" are the least researched.
