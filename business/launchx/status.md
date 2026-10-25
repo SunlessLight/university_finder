@@ -8,9 +8,9 @@
 - **24 Oct (done):** Bootcamp 2 panel. Their message: ChatGPT can do the research too.
 - **24 Oct (done):** nudge sent to silent leads.
 - **25 Oct (done):** spreadsheet updated (accidental numbers flagged, contact method, deposits).
-- **25 Oct:** ask the 4 payers why they paid. **27 Oct:** count replies.
-- **2 Nov:** paid lists delivered. (The pre-sale message said "ready by 10 Nov": Evan to confirm
-  which date the payers were promised.)
+- **25 Oct (done):** asked the payers why they paid; waiting on replies. **27 Oct:** count replies.
+- **10 Nov:** paid lists delivered (what the pre-sale message promised; one payer was told "by
+  13 Nov" in chat, so 10 Nov is early for them). Same day the booth opens.
 - **10 to 13 Nov:** pilot = a four-day booth with a bunting and a QR to book. Plan and checklist
   in Notion (URP Marketing: "Plan the pilot", "Make the bunting and booth materials").
 - **2 Dec:** demo day. Check: 20 paid family lists?
@@ -21,7 +21,7 @@
 The product works: 29 friends used it free. Survey (out 12 Oct): 84 responses (12 strangers, 26 "a
 little", 46 friends); figures in [survey.md](survey.md), CSV in `data/form/` (gitignored). **19 real
 leads** (valid WhatsApp numbers; 17 numbers typed by accident don't count), all messaged and nudged;
-7 more who wrote a comment were emailed. **4 have paid a deposit, RM80 in total.** Families are the
+7 more who wrote a comment were emailed. **5 said yes; 4 have paid a deposit, RM80 in total.** Families are the
 main track; consultancies are learning chats. Evan is in exams.
 
 **Slides:** the live deck is the claude.ai Slides artifact
@@ -32,7 +32,7 @@ it into a new deck rather than editing the 24 Oct one.
 ## Decided
 
 - **Focus (24 Oct):** families first, with Evan learning marketing and referrals. Consultancies =
-  learning chats only, no selling. Backend: cost cuts measured on the 2 Nov lists, then only fixes
+  learning chats only, no selling. Backend: cost cuts measured on the 10 Nov lists, then only fixes
   a customer would see. Internal fixes in additionals.md stay parked.
 - **Continue-bar (24 Oct): 20 paid family lists by 2 Dec.** On a miss: pause, work out why,
   decide continue / pivot / stop by 10 Dec.
@@ -53,9 +53,11 @@ it into a new deck rather than editing the 24 Oct one.
 | Known (iLabs, 21 Oct) | Needs a better look, less text, email not WhatsApp. Asked: why not ChatGPT? one-time buyers only? |
 | Known (panel, 24 Oct) | "ChatGPT can do it. It may hallucinate, but students already use the free one. Most won't pay RM50 for research they could do themselves." |
 | Known (sheet, 25 Oct) | 4 of 19 real leads paid a deposit (RM80): 3 "a little", 1 friend, 0 strangers. 2 picked the list, 2 the single report, so only 2 count toward "20 paid lists" so far. Real leads: 4 strangers, 9 "a little", 6 friends. |
+| Known (Evan, 25 Oct) | 5 said yes, 4 paid a deposit. Of the 4: **2 paid willingly** (Evan: strangers; the sheet row above says 0 strangers paid, so check how they answered "do you know me"), 1 to support Evan, 1 after Evan persuaded him and gave a discount to RM40. The 5th said yes after persuasion, no deposit yet. Line that got a yes: "you don't need to know which uni, I'll search for you". A lead's own words for the problem: "the info is scattered at different places". Chats in `notes/customer_chats/` (gitignored, they name people). |
+| Known (feedback forms, to 21 Sept) | List: most useful = course at a glance 4, entry reqs 3, total cost 2; nobody picked the 4 scholarship columns. Report: "getting in / your fit" clearest (5 of 6); culture and student life most interesting. Detail in `data/feedback/`. |
 | Known | Under 1 hour hands-on per student; tools about RM158 a month. Most listed universities are over budget (the tool ranks, it does not remove). |
 | Known (estimate) | At RM50 the reachable family market is about RM775,000 a year. Free competitors are paid by universities; paid help starts around RM2,000. |
-| Not known | Why the 4 paid instead of using ChatGPT. Whether parents would pay. The booth pilot's pass line (not written yet; Notion task due 31 Oct). |
+| Not known | Why the 2 willing payers chose this over ChatGPT (asked 25 Oct). Whether parents would pay. The booth pilot's pass line (not written yet; Notion task due 31 Oct). |
 
 ## Guesses under test
 
@@ -67,12 +69,28 @@ it into a new deck rather than editing the 24 Oct one.
 
 ## Open: Evan
 
-- [x] 24 Oct: nudge silent leads.
-- [x] 25 Oct: put the 4 deposits in the spreadsheet.
+**This week, in order** (each is a Notion task under URP Marketing):
+
+1. [x] 25 Oct: ask the payers "what made you pay instead of just using ChatGPT?" Sent; waiting.
+2. [ ] Nudge the testers who haven't filled the feedback forms (15 list, 10 report; who is in
+       `data/feedback/feedback_report_2026-10-12.md`). Download fresh form replies first: that
+       file only counts replies up to 21 Sept.
+3. [ ] Message the testers who did fill them (13 list, 6 report): what info they want more of,
+       how it reads, does it feel weird or too AI. Plus "which part did you actually read?"
+4. [ ] Test the list against ChatGPT on one anonymised profile, side by side. Before the pilot
+       plan (31 Oct): what it finds becomes the booth demo and the bunting line.
+
+**Then:**
+
 - [ ] 27 Oct: count the 19 as paid / yes-not-paid / no / silent. Only "paid" is demand. Ask one
-      "no" why. (Notion task)
-- [ ] 25 Oct: ask each of the 4 payers "what made you pay instead of just using ChatGPT?" (Notion task)
+      "no" why.
 - [ ] By 31 Oct: plan the pilot (pass line first). By 3 Nov: bunting and booth kit. (Notion tasks)
+- [ ] **Tester chain, one after another** (Notion tasks):
+  1. After tasks 2 and 3: update the list and report from what testers actually read. Aim
+     before 10 Nov, so the paid lists get the better version too.
+  2. Send the 29 testers the improved version.
+  3. Plan how to get more people: referrals from those testers (Notion "Plan how to get more
+     people").
 - [ ] After the count: 15-minute chats with 3 consultancies (PrepWorks, Inquota, one more) on how
       they research universities and which part takes longest. Learn, don't pitch.
 - [ ] Sunway counsellor chat; three to five parent chats; two "too expensive" leads; two or three

@@ -56,3 +56,9 @@ Entry format:
 - Decisions (and why): ask lesson language, not years in English, because students can answer it. See `decisions/log.md`.
 - Problems / lessons: the "perferences" typo in the form title is what the program matches on; fixing the spelling would blank every student's preferences silently. Evan kept it.
 - Next step: group 2 step 3 (read the new question into the profile) before the first paid form is read in; needs a fresh form export first.
+
+## 2026-10-25 · Catch-up, mentor chat, this week's task order
+- Done: read the tester feedback forms (`data/feedback/`, to 21 Sept) and two payer/lead chats. `business/launchx/status.md` now has a numbered "This week, in order" list (payers asked → nudge testers who haven't replied → follow up with those who did → ChatGPT side-by-side test) and two new Known rows. Notion: tester-feedback task rewritten; two tasks added (nudge, ChatGPT test due 30 Oct).
+- Decisions (and why): product work = what testers actually read plus the ChatGPT test, not a rebuild; the test doubles as the booth demo.
+- Problems / lessons: payers corrected by Evan: 5 said yes, 4 paid (2 willingly, 1 to support him, 1 after a push and a discount; the 5th said yes, no deposit). Evan calls the 2 willing ones strangers; the sheet says 0 strangers paid, so check. Paid lists are due **10 Nov** (decision log); every "2 Nov" in status, Now box and additionals.md changed. Notion: "Find better ways…" became "Plan how to get more people (referrals from the 29 testers)", the end of a new tester chain: update list/report (target 7 Nov) → send testers the better version → ask for referrals. Pasted chats sit in `business/` and name people: move to `notes/`.
+- Next step: nudge testers (task 2).
