@@ -20,7 +20,7 @@ Why not just use ChatGPT? It gives confident answers with no sources, and it onl
 
 [1:35] Current status
 
-It works today. 29 students have used it for free. From the survey, 32 asked to buy and 4 have already paid a deposit. Next is a four-day booth pilot, 10 to 13 November.
+It works today. 29 students have used it for free. From the survey, 19 left their number to buy, and 4 of them have already paid a deposit. Next is a four-day booth pilot, 10 to 13 November.
 
 [1:45] Ask
 

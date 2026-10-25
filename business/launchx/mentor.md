@@ -106,7 +106,7 @@ Read these when the conversation reaches them, not before.
 | How many customers exist, and why RM50 makes the market small | [market_sizing.md](market_sizing.md) |
 | What students use instead, and who pays those alternatives | [competitors.md](competitors.md) |
 | His time per student, tool costs, the one-year sums | [unit_economics.md](unit_economics.md) |
-| What goes on each slide | [deck_content.md](deck_content.md) |
+| What goes on each slide | The claude.ai Slides deck linked in [status.md](status.md) ("Slides"); the only copy |
 | Rehearsing hard questions | [qa_drill.md](qa_drill.md) |
 | Strengths, weaknesses and the "does anyone want this?" discussion | `business/product_review_2026-09-25.md` |
 | How it is sold and priced today | `business/sales/positioning.md`, `go-to-market.md`, `service-tiers.md` |
@@ -129,8 +129,8 @@ Evan starts new sessions often, on purpose, so status.md is the only memory that
   line in `decisions/log.md`.
 - **Replace, do not pile up.** Keep it under about 70 lines and put the date at the top. Old log
   lines can go once their content is reflected in the sections above them.
-- **The other files win over the note.** If status.md disagrees with deck_content.md or
-  survey.md, trust the file and fix the note.
+- **The other files win over the note.** If status.md disagrees with the slides deck,
+  survey.md or the form CSV, trust those and fix the note.
 
 ## Privacy
 

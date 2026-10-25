@@ -213,16 +213,19 @@ learned" is exactly what a stress test asks for.
 
 ---
 
-## Results so far (24 Oct, 84 rows)
+## Results so far (25 Oct, 84 rows)
 
-*This is the only copy of these figures. Totals only. Recounted from the CSV on 24 Oct; the
+*This is the only copy of these figures. Totals only. Recounted on 25 Oct from Evan's updated
+sheet (export "(3)", with "Enter number by accident", contact method and deposit columns); the
 20 Oct cut had 54 rows and the same pattern.*
 
 - **Who:** 46 friends, 26 "a little", **12 strangers**. **0 parents** (the form only offered
   student options). 71 pre-university (29 applying this year), 12 at university.
-- **Leads:** 32 marked "messaged" in the sheet (16 friends, 11 "a little", **5 strangers**).
-  status.md says 29 real leads: Evan to confirm which is right.
-- **Would prefer:** the list 56, the single report 18, neither about 18.
+- **Leads:** 78 typed something in the number box, but 17 typed a number by accident and most
+  of the rest wrote a comment. **19 real leads** (valid numbers): 4 strangers, 9 "a little",
+  6 friends; 15 want the list, 4 the report. All 19 messaged on WhatsApp; 7 commenters emailed.
+- **Deposits:** 4 of the 19, RM80 in total. 0 strangers. 2 for the list, 2 for the report.
+- **Would prefer:** the list 56, the single report 11, neither 17.
 - **Nobody pays for help today:** 76 of 84 paid no one; 3 paid something; 1 paid over RM2,000.
 - Top worry: scholarships 29, essays 18, entry requirements 11, choosing a university 8, real
   total cost 6, recognition / jobs 5.

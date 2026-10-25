@@ -21,7 +21,7 @@ This is a read, not research. **Never search the web to catch up.** Don't enter 
    | If the note claims | Check |
    |---|---|
    | Where each student is | `python tools/progress_dashboard.py` |
-   | LaunchX state, what's decided | `business/launchx/status.md`; if it disagrees with `deck_content.md` or `survey.md`, those win |
+   | LaunchX state, what's decided | `business/launchx/status.md`; if it disagrees with `survey.md` or the slides deck it links (read with the Artifact tool), those win |
    | A backlog item (R-number) is fixed | its entry in `business/additionals.md`, then `git log -p` on the file it names |
    | A plan step is done | `git log -p -- <its target files>` (a plan's banner can lag the code) |
 
