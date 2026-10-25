@@ -50,3 +50,9 @@ Entry format:
 - Decisions (and why): the claude.ai deck is the only copy of the slides; demo day gets a copy, not an edit of the 24 Oct deck. See `decisions/log.md`.
 - Problems / lessons: two copies of the slides (an .md draft and the real deck) drifted apart, and a session edited the wrong one. Only 2 of the 4 deposits count toward "20 paid lists" because 2 are for reports.
 - Next step: ask the 4 payers the ChatGPT question; count the 19 on 27 Oct.
+
+## 2026-10-25 · Backlog: form answers close I2 and I5, decide S9
+- Done: Evan added halal/prayer ticks and a lesson-language question to the live form and counted 3 budget options. `workflows/01_intake.md` now matches the form (3 bands, 8 preference ticks, new question noted as not yet read by the program). `business/additionals.md`: I2 and I5 ticked, S9 decision recorded, group 2 steps 3 and 5 and the decision/human-lane tables updated.
+- Decisions (and why): ask lesson language, not years in English, because students can answer it. See `decisions/log.md`.
+- Problems / lessons: the "perferences" typo in the form title is what the program matches on; fixing the spelling would blank every student's preferences silently. Evan kept it.
+- Next step: group 2 step 3 (read the new question into the profile) before the first paid form is read in; needs a fresh form export first.

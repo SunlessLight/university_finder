@@ -95,11 +95,11 @@ fine — but keep the substring in bold intact.
   order silently steals the score question's match and drops the score entirely. Keep this cautionary
   note if either header is reworded again. *Do NOT ask "when will you take it"* — each university sets
   its own bar; that's a research-stage fact, not an intake one.
-- **Total budget** for the whole degree — a **four-option dropdown**, not free text. As of 2026-08 the
-  live labels use **symbols**: **`< 500,000`** / **`500,000 - 1,000,000`** / a top "no ceiling" band
-  (word or symbol — `"above"`/`">"` both map) / **`Not Sure`**. `BUDGET_BAND_NORMALIZE` maps them to a
-  numeric ceiling (500000 / 1000000 / **null** / null — the top band states a *floor*, so it carries no
-  ceiling, exactly like "Not sure"); the **verbatim label** goes to `financial.notes` and the **number**
+- **Total budget** for the whole degree — a **three-option dropdown**, not free text (cut from four on
+  2026-09-17; Evan re-counted the live form 2026-10-25): **`< 500000`** / **`500000-1000000`** /
+  **`>1000000`**. No "Not sure" option. `BUDGET_BAND_NORMALIZE` maps them to a numeric ceiling
+  (500000 / 1000000 / **null** — the top band states a *floor*, so it carries no ceiling; legacy
+  "Not sure" answers in old exports also map to null); the **verbatim label** goes to `financial.notes` and the **number**
   to `financial.total_budget` + `preferences.total_budget_ceiling`. A label string must never reach
   `total_budget_ceiling` — downstream cost checks expect a number or null. **Ask for the total, never
   per-year** — Stage 4 compares whole-programme cost, and a 3-year UK degree against a 4-year US one is
@@ -128,13 +128,19 @@ fine — but keep the substring in bold intact.
   `needs.affordable_cost_of_living`, new) / **Good food** (→ `needs.food_quality`). **Confirmed present
   on the live form 2026-09-09** (two real respondents both ticked it, correctly landing on
   `diaspora_community` via the `NEEDS_NORMALIZE` "community"/"malaysian" match) — this corrects an
-  earlier note in this file that claimed it had been dropped; that was stale, not the code. **The
-  remaining sensitive items — Halal food, Prayer facilities, Stay close to family,
-  disability/accessibility, mental-health/wellbeing support, LGBT-friendly — still do not appear
-  anywhere on the current form.** Confirm with Evan whether that's a deliberate drop or something to
-  add back before treating a student's silence on those as "no need" rather than "not asked" —
-  `profile_template()`'s `needs` keys for them are unchanged, they'll just never get populated by this
-  form as it stands.
+  earlier note in this file that claimed it had been dropped; that was stale, not the code. **Halal
+  food and Prayer facilities were added as ticks 2026-10-25** (→ `needs.diet_halal` /
+  `needs.worship_facilities` via the existing `NEEDS_NORMALIZE` "halal"/"prayer" keys; no code
+  change). Responses before that date were never asked, so their `null` means "not asked", not "no
+  need". **Still not on the form:** Stay close to family, disability/accessibility,
+  mental-health/wellbeing support, LGBT-friendly — their `needs` keys stay `null` = "not asked".
+- **Lesson-language question (added to the live form 2026-10-25, backlog S9):** a dropdown asking what
+  language most lessons (not the English class) were taught in, with options ranging from "English all
+  through secondary and pre-university" to "Not sure" (exact title and labels: read them from the next
+  export). **Not in `QUESTION_MAP` yet**, so
+  `--check-headers` may list it as unmatched and the answer stays only in the CSV. Group 2 step 3 of
+  `business/additionals.md` adds the map entry and a profile field. Until then, read the CSV column by
+  hand when an English-test waiver depends on it.
 - **"Achievements / activities you'd want to write about in your application?"** (optional, new
   2026-08) → `profile.achievements`, free text. This exists specifically so Stage 4's "Who actually
   gets in" section and the application-prep guide can compare the student's real activities against
@@ -426,17 +432,17 @@ weights into `tools/shortlist_schema.py` — that shared file is exactly what ma
   line **and** `preferences.notes`, so nothing is lost silently. Decide with the student whether to
   research it out-of-band. (`SUPPORTED_DESTINATIONS` in `tools/ingest_form_csv.py` renders that message,
   so the count never drifts from `COUNTRY_NORMALIZE`.)
-- **Budget bands, and what each one means downstream.** The form's four-option dropdown removed the
+- **Budget bands, and what each one means downstream.** The form's three-option dropdown removed the
   whole class of budget-parsing problems (see the two retired edge cases in the note below). What lands
-  where:
+  where (live labels, re-counted 2026-10-25):
 
   | Form answer | `total_budget` + `total_budget_ceiling` | Meaning |
   |---|---|---|
-  | `Under RM 500,000` | `500000` | Real ceiling — cost checks apply |
-  | `RM 500,000 - 1,000,000` | `1000000` | Real ceiling — top of the band |
-  | `Above RM 1,000,000` | `null` | A **floor**, not a ceiling: no "Over budget" flag |
-  | `Not sure - no fixed budget` | `null` | "Research everything, I'll decide" |
-  | *(blank)* | `null` | Same as "Not sure" |
+  | `< 500000` | `500000` | Real ceiling — cost checks apply |
+  | `500000-1000000` | `1000000` | Real ceiling — top of the band |
+  | `>1000000` | `null` | A **floor**, not a ceiling: no "Over budget" flag |
+  | `Not sure - no fixed budget` (legacy exports only) | `null` | "Research everything, I'll decide" |
+  | *(blank)* | `null` | Ask the student for a figure at finalize |
 
   The **verbatim label** always goes to `profile.financial.notes` as `Budget answer: <label>`, so the
   nuance survives even though the number is a band edge. A `null` ceiling is a legitimate answer, not a
@@ -533,11 +539,11 @@ weights into `tools/shortlist_schema.py` — that shared file is exactly what ma
   faith/culture-neutral set (`diet_halal`, `worship_facilities`, `diaspora_community`,
   `disability_accessibility`, `wellbeing_support`, `lgbtq_friendly`, `personal_safety`,
   `climate_weather`, `food_quality`, plus `good_public_transport` / `affordable_cost_of_living`, added
-  2026-09), but **the current live form's "Any other perferences?" question only offers 6 of those
+  2026-09), but **the current live form's "Any other perferences?" question offers 8 of those
   options** (crime→safety, community→diaspora, seasons→climate, transport, cost, food — confirmed
-  2026-09-09 against two real respondents, correcting an earlier "5 options, community dropped" note
-  in this file) — the remaining sensitive ones (halal, prayer, disability, mental-health,
-  LGBT-friendly) don't appear on the form at all right now. Only ticked options become `true`;
+  2026-09-09 against two real respondents — plus halal→`diet_halal` and prayer→`worship_facilities`,
+  added 2026-10-25). The remaining sensitive ones (family, disability, mental-health, LGBT-friendly)
+  don't appear on the form at all right now. Only ticked options become `true`;
   everything else stays `null` (not `false`) — these are PDPA-sensitive, so absence ≠ "no need," and on
   the current form it may just mean "not asked." Spot-check the multi-select split, same as countries.
 - **Recognition has two tiers now — course-exact-match (trusted) vs free-text keyword-guess

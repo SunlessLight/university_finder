@@ -45,7 +45,9 @@ has not run.
 
 **Fourth closing pass 2026-10-20 (later):** group 1 step 6 ran in another session and was checked in the files: the sample MIT report, the sample list, the prototype and the source list no longer carry the old register lines. R12 and R13 are ticked. Evan decided R16 (check every student), R17 (yes) and R18 (the visa office figure). R16 is now group 2 steps 7 to 10, with the per-student detail in the gitignored `notes/r16_scope.md`.
 
-**Re-sorted the same day:** the open entries are now sorted into three groups (student files out of date, systemic problems, miscellaneous) and cut into numbered steps of at most three tasks, with a table of which two steps can run side by side. See "Where things stand" under Start here. One new entry, R9.
+**Fifth closing pass 2026-10-25:** Evan's answers on the live form closed I2 and I5 and decided S9's question (on the form). Group 2 step 3 is unblocked except S3's income question, and now has a deadline: before the first paid form is read in.
+
+**Re-sorted the same day (2026-10-20):** the open entries are now sorted into three groups (student files out of date, systemic problems, miscellaneous) and cut into numbered steps of at most three tasks, with a table of which two steps can run side by side. See "Where things stand" under Start here. One new entry, R9.
 
 ---
 
@@ -81,14 +83,14 @@ fresh session and type:*
 | **1** | ~~Group 1 step 1, then group 2 step 1 (R1, R3, plus R8 if Evan said yes)~~ **done** | ~~Group 3 step 1 (R4, R6, R7)~~ **done** | Done by 2026-10-17 |
 | **2** | ~~Group 1 step 2 (S8, S10, Task 9)~~ **done 2026-10-16** | ~~Group 2 step 2 (S4)~~ **done 2026-10-17** | Done |
 | **Now** | ~~Group 1 step 6 (R13's second half: the sample pack)~~ **done 2026-10-20** | — | Done |
-| **3** | ~~Group 1 step 3 (S6, S7, P1)~~ **done 2026-10-18** | Group 2 step 3 (S9 + S3, I5, R5) | After the pitch. B: Evan's decision on S9/S3 and his count of the form |
+| **3** | ~~Group 1 step 3 (S6, S7, P1)~~ **done 2026-10-18** | Group 2 step 3 (S9's program half, S3 if decided, R5) | B: now, before the first paid form is read in (2 Nov) |
 | **4** | Group 1 step 4 (I9, L2) | Group 2 step 4 (D2, one student) | After the pitch. A: Evan's decision on L2. B: round 1 done and Evan's decision on D2. Never the same student in both sessions |
 | **5** | ⭐ Group 1 step 7 (re-score, part 1) | ⭐ Group 2 step 7 (ABET lookup, part 1) | After the pitch |
 | **6** | Group 1 step 8 (re-score, part 2, and Sheffield) | Group 2 step 8 (ABET lookup, part 2) | After round 5 |
 | **7** | ⭐ Group 2 step 9 (the Malaysian register, in Chrome) | Group 2 step 6 (R19, the backfill tool) | After the pitch. Step 6 must finish before round 8, which runs the backfill tool |
 | **8** | ⭐ Group 1 step 9 (the source student's recognition cells, and R17) | Group 2 step 10 (other students, first two or three) | After group 1 step 8 and group 2 steps 7 to 9 |
 | **9** | Group 2 step 10 (the remaining students) | Group 2 step 3 or step 4, whichever is unblocked | After round 8. Never the same student in both sessions |
-| **Any time** | Group 1 step 5 (P2 drafts, I4, R2) | Group 2 step 5 (I2) | When the step's own "Waits for" is met |
+| **Any time** | Group 1 step 5 (P2 drafts, I4, R2) | ~~Group 2 step 5 (I2)~~ **done 2026-10-25** | When the step's own "Waits for" is met |
 
 Within a round, sessions A and B never write the same file. A round can start only when its own
 "Can start when" is met. Round 2 does not have to wait for round 1 to be fully finished, except
@@ -102,13 +104,14 @@ where it says so.
 | ~~Yes or no on fixing the seven wrong cells (Task 8b)~~ **Yes, 2026-10-16** | S8 | Done |
 | ~~Look MIT up by hand on the Malaysian recognition register~~ **Done 2026-10-17 in Chrome by a session** | S4 | Done |
 | Who looks foreign degrees up on the register from now on: the main session in Chrome (written in as the default), or Evan by hand | S4 | Nothing; a one-line change in `sources.md` and the report workflow if Evan prefers to do it himself |
-| Where to ask for years of schooling taught in English and for family income: on the form, or only when a student shortlists a university that needs them | S9, S3 | Group 2 step 3 |
-| Count the budget options on the live form (three or four) | I5 | The I5 part of group 2 step 3 |
+| ~~Where to ask for years of schooling taught in English~~ **On the form, as a lesson-language dropdown; Evan added it 2026-10-25** | S9 | The S9 part of group 2 step 3 |
+| Where to ask for family income: on the form, or only when a student shortlists a university that gives need-based aid. Default: only at shortlist (it is sensitive) | S3 | The S3 part of group 2 step 3 |
+| ~~Count the budget options on the live form (three or four)~~ **Three, 2026-10-25; workflow fixed** | I5 | Done |
 | Repair the 22 Shortlist and Finalist "Not verified" rows first, or all 212 | L2 | Group 1 step 4 |
 | Whether to run Stage 5 for the five ready students, and what the nine single-university students receive | D2 | Group 2 step 4 |
 | Which students get corrected reports. Start with the two whose budget conclusion changed | P2 | The P2 part of group 1 step 5 |
 | ~~Hide predicted grades in the sample pack, or keep them~~ **Keep, 2026-10-21** | R10 | Nothing |
-| Add halal and prayer ticks to the form, or reword the tiers file | I2 | Group 2 step 5 |
+| ~~Add halal and prayer ticks to the form, or reword the tiers file~~ **Ticks added, 2026-10-25** | I2 | Done |
 | ~~Mark "no published grade bar" on the source student's 9 US Finalist and Shortlist rows too~~ **Yes, 2026-10-20** | R17 | Group 1 step 9 |
 | ~~Which source to use for living costs when a UK university publishes none~~ **The UK visa office's monthly figure, 2026-10-20** | R18 | Group 1 step 8 |
 | ~~How wide R16 goes~~ **Every US row on every student's list, 2026-10-20, split across sessions** | R16 | Group 1 step 9, group 2 steps 7 to 10 |
@@ -143,9 +146,9 @@ where it says so.
 |---|---|---|---|---|
 | ✅ **1** | **Done by 2026-10-17.** R3, then R8 if Evan said yes | `workflows/04_university_report.md`, `workflows/05_decide_and_apply.md`, `.claude/commands/decide.md`, `README.md`, `workflows/00_overview.md`. R8: a new `tests/test_calendar_dates.py` | nothing (R8: Evan's yes) | Small. Before the next `/decide` run |
 | ✅ **2** | **Done 2026-10-17.** S4 | `workflows/sources.md`, plus `workflows/04_university_report.md` if the lookup method changes | Evan's hand lookup of MIT, and step 1 done (both write the report workflow) | Small. After the pitch is fine |
-| ⭐ **3** | S9 and S3 together (including the UK half of S9 nobody has checked), then I5, then R5 | `tools/ingest_form_csv.py`, `tools/init_student.py`, the profile template, `workflows/01_intake.md`, `workflows/08_application_prep.md` | Evan's decision on S9/S3. I5 also needs his count of the form | Medium. It changes a program, so after the pitch |
+| ⭐ **3** | S9's program half (read the new question from the form, store it, turn it into years; plus the UK half nobody has checked), then S3 if decided, then R5. I5 is done | `tools/ingest_form_csv.py`, `tools/init_student.py`, the profile template, `workflows/01_intake.md`, `workflows/08_application_prep.md` | S9 and I5: nothing (decided 2026-10-25). S3: Evan's decision on income; skip it if still open | Medium. A program change. **Before the first paid student's form is read in** (paid lists due 2 Nov) |
 | **4** | D2 for one student | that student's folder | Evan's decision on D2 (group 1 step 1 and group 2 step 1 are done) | Medium. Repeat once per student (five). After the pitch |
-| **5** | I2 | `business/sales/service-tiers.md` | Evan's choice. If he adds the ticks to the form himself, no session is needed | Small |
+| ✅ **5** | **Done 2026-10-25, no session needed:** Evan added the ticks to the form (I2) | — | — | — |
 | **6** | R19: after a successful write, `apply_backfill.py` moves the fragments it applied into `.tmp/<slug>/backfill_applied_<date>/`. Add one line to `workflows/03_discover_longlist.md` → "Backfilling an existing longlist", and to `.claude/agents/row-filler.md`: write the fragment early and update it as you go | `tools/apply_backfill.py`, `workflows/03_discover_longlist.md`, `.claude/agents/row-filler.md` | nothing | Small. A program change, so after the pitch. Not while another session is running a backfill |
 | ⭐ **7** | R16 ABET lookup, part 1: universities 1 to 23 in `notes/r16_scope.md`. Write `notes/r16_abet_dispatch_part1.md`: the rules, plus one dispatch per university naming every degree from the scope file. Then one `general-purpose` agent per university, in parallel. Each reads each degree on ABET's own search (`https://amspub.abet.org/`, listed in `workflows/countries/usa.md`; Firecrawl if it will not load) and writes `.tmp/r16/abet/<uni-slug>.json`: accredited yes or no, the programme name as ABET lists it, the date, the source address. Merge into `notes/r16_abet_lookup_part1.csv`, with a ready-to-paste `Recognised in Malaysia?` cell per degree (160 characters at most; "Not accredited" says there is no route to BEM registration) | `notes/r16_abet_dispatch_part1.md`, `notes/r16_abet_lookup_part1.csv`, `.tmp/r16/` | nothing | Large: 23 agents. After the pitch. Student names stay in `notes/` and `.tmp/` |
 | **8** | R16 ABET lookup, part 2: universities 24 to 45, the same way, into `notes/r16_abet_dispatch_part2.md` and `notes/r16_abet_lookup_part2.csv` | those two files, `.tmp/r16/` | nothing. It can run beside step 7 | Large: 22 agents. After the pitch |
@@ -186,6 +189,9 @@ they picked one).
   deadline message.
 - **R10** (2026-10-21): Evan decided to keep the grades in the sample pack as an example. No file
   change; the pack carries no name or school that points to the real student.
+- **I2 and I5, plus S9's decision** (2026-10-25): Evan added the halal and prayer ticks and a
+  lesson-language question to the live form, and counted three budget options.
+  `workflows/01_intake.md` now matches the form. S9 stays open for its program half (group 2 step 3).
 
 *Below is the plan as written on 2026-10-13, kept as the record. Where it disagrees with the
 session plan above, the session plan is current.*
@@ -283,9 +289,9 @@ on Evan's own computer. In date order.
 | 4 | ~~Remind the finished student that Cambridge's own form is due 22 October.~~ **Done:** on 2026-10-15 the student was filling it in (college: Queens'). V1 re-read the date: 22 October, 6pm UK time, which is 1am on 23 October in Malaysia. | D5, V1 | Before 22 October |
 | 5 | Say whether the Oxford row stays on that student's list as a finalist or is marked as dropped. | D5 | Any time |
 | 6 | ~~Look at the OneDrive icon on the project folder: are student records being copied to Microsoft's servers?~~ **Done 2026-10-15:** Evan's call, not a concern. | U2 | Done |
-| 7 | Decide where family income and years of schooling in English get asked: on the form, or only when a student shortlists a university that needs them. | S3, S9 | Before step 2 |
-| 8 | Add "Halal food" and "Prayer facilities" as ticks on the form, or choose to reword the tiers file. | I2 | Before step 2 |
-| 9 | Open the live form and count the budget options (three or four). | I5 | Before step 2 |
+| 7 | Decide where family income ~~and years of schooling in English~~ get asked: on the form, or only when a student shortlists a university that needs them. **English half done 2026-10-25** (on the form). Income still open. | S3, S9 | Before group 2 step 3 |
+| 8 | ~~Add "Halal food" and "Prayer facilities" as ticks on the form, or choose to reword the tiers file.~~ **Done 2026-10-25** | I2 | Done |
+| 9 | ~~Open the live form and count the budget options (three or four).~~ **Three, 2026-10-25** | I5 | Done |
 | 10 | Decide whether to ask the 10 students with no usable spending limit for one, and ask one student whether RM 800,000 is their real limit. | I3, I4 | Any time |
 | 11 | Decide whether to run the decision stage for the five ready students, and what the nine single-university students receive. | D2 | Before step 2 |
 | 12 | Decide whether and when to repair the "Not verified" rows: 212 on the other students' lists (lane 6's recount), 22 of them Shortlist or Finalist, plus the source student's 14 (P1). Lane 6 recommends the 22 first. | L2, P1 | Before lane 6 reaches L2 |
@@ -599,7 +605,9 @@ are the two worth reading first, because both affect what a student receives.
   (`workflows/03_discover_longlist.md`): read this answer for the country being researched and make
   sure each named university is on the list, marked Reach (a long shot) if it is one.
 
-#### - [ ] I2. Sales material lists halal food and prayer facilities as a strength; the form never asks
+#### - [x] I2. Sales material lists halal food and prayer facilities as a strength; the form never asks
+
+- **Done 2026-10-25.** Evan added "Halal food" and "Prayer facilities" as ticks on "Any other perferences?" (title unchanged, typo included, so the program still finds it). Checked in `tools/ingest_form_csv.py`: the "halal" and "prayer" keys file them as `diet_halal` and `worship_facilities`, and the food key is "good food", so "Halal food" does not land as food quality. No program change. `workflows/01_intake.md` updated. The tiers file's wording is now true for new responses; older responses were never asked.
 
 - **Severity:** group A. A customer could notice.
 - **Where it is claimed:** [product_review_2026-09-25.md:61](product_review_2026-09-25.md#L61)
@@ -650,7 +658,9 @@ are the two worth reading first, because both affect what a student receives.
 - **Suggested fix:** replace the three with plain numbers. For the range, confirm with the student
   whether RM 800,000 is the real limit.
 
-#### - [ ] I5. The intake workflow describes four budget options; the program says there are three
+#### - [x] I5. The intake workflow describes four budget options; the program says there are three
+
+- **Done 2026-10-25.** Evan counted the live form: three options, `< 500000`, `500000-1000000`, `>1000000`. The program was right; `workflows/01_intake.md` was wrong in both places (the budget bullet and the bands table) and now matches.
 
 - **Severity:** group B (an AI session follows the workflow).
 - **Where:** [workflows/01_intake.md:98-101](../workflows/01_intake.md#L98-L101) says the budget
@@ -1172,6 +1182,8 @@ S1 is the one to read first, because it has a date on it.
   first. For the four English cells, state the rule and tell the student to count their years.
 
 #### - [ ] S9. The system assumes A-Levels waive the English test at every US university
+
+- **Decided 2026-10-25: ask on the form, as a lesson-language dropdown, not as a count of years.** Students rarely know what "taught in English" means (an English class does not count; SPM at a government school is mostly Malay; DLP is a grey area; IGCSE at an international school and A-Levels usually count). So the form asks what language most lessons were taught in, at secondary and pre-university, with a "Not sure" option, and the system works the years out. Evan added the question to the live form the same day. **Still open (group 2 step 3):** a `QUESTION_MAP` entry and a profile field for it (read the exact title and labels from a fresh export with `--check-headers`), a rule turning each answer into years, and the unchecked UK half.
 
 - **Update 2026-10-16:** the source student's nine US `English req` cells now state each rule
   (S8). Other students' US cells are still unchecked.
