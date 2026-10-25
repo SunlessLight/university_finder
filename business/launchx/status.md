@@ -72,10 +72,10 @@ it into a new deck rather than editing the 24 Oct one.
 **This week, in order** (each is a Notion task under URP Marketing):
 
 1. [x] 25 Oct: ask the payers "what made you pay instead of just using ChatGPT?" Sent; waiting.
-2. [ ] Nudge the testers who haven't filled the feedback forms (15 list, 10 report; who is in
-       `data/feedback/feedback_report_2026-10-12.md`). Download fresh form replies first: that
-       file only counts replies up to 21 Sept.
-3. [ ] Message the testers who did fill them (13 list, 6 report): what info they want more of,
+2. [ ] Nudge the testers who haven't filled the feedback forms (14 list, 5 report; 4 missed
+       both). Names in `data/feedback/feedback_report_2026-10-25.md` (fresh replies, 25 Oct;
+       tofu and zephry are test students, left out).
+3. [ ] Message the testers who did fill them (13 list, 10 report): what info they want more of,
        how it reads, does it feel weird or too AI. Plus "which part did you actually read?"
 4. [ ] Test the list against ChatGPT on one anonymised profile, side by side. Before the pilot
        plan (31 Oct): what it finds becomes the booth demo and the bunting line.

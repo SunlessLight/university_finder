@@ -62,3 +62,15 @@ Entry format:
 - Decisions (and why): product work = what testers actually read plus the ChatGPT test, not a rebuild; the test doubles as the booth demo.
 - Problems / lessons: payers corrected by Evan: 5 said yes, 4 paid (2 willingly, 1 to support him, 1 after a push and a discount; the 5th said yes, no deposit). Evan calls the 2 willing ones strangers; the sheet says 0 strangers paid, so check. Paid lists are due **10 Nov** (decision log); every "2 Nov" in status, Now box and additionals.md changed. Notion: "Find better ways…" became "Plan how to get more people (referrals from the 29 testers)", the end of a new tester chain: update list/report (target 7 Nov) → send testers the better version → ask for referrals. Pasted chats sit in `business/` and name people: move to `notes/`.
 - Next step: nudge testers (task 2).
+
+## 2026-10-25 · intake_report.md checked against the repo
+- Done: `business/product_report/intake_report.md` brought up to date: halal/prayer ticks, the lesson-language question (and that the program doesn't read it yet), "universities in mind" now used, Stage 8 in the stages table, the testing-only consent switch, "about five minutes", and the corrected budget breakdown. `business/additionals.md`: I3 corrected (the 5 "no saved answer" records do have answers), U1 settled at five minutes, I1/I2 note the report caught up.
+- Decisions (and why): the form claim becomes five minutes (Evan), not timed.
+- Problems / lessons: closing a backlog item updated the files under its "Where", never the report that first quoted the problem, so the report went stale. The I3 error was copied from the same 10 Oct session into both files.
+- Next step: Evan puts the formal consent text on the form (title must keep "consent", label must not start with N), then update `workflows/01_intake.md` and report item 7. Poster "2 minutes" (line 772) is Evan's.
+
+## 2026-10-25 · Fresh tester feedback count
+- Done: Evan downloaded fresh replies to both feedback forms. New who-replied note `data/feedback/feedback_report_2026-10-25.md` (4 more report replies; none new on the list form). Task 2 in `business/launchx/status.md` and the two Notion tester tasks (nudge; follow-up) now carry the new counts and file.
+- Decisions (and why): tofu and zephry are Evan's test students, so they are out of every tester count (27 real testers, not 29).
+- Problems / lessons: the report form gained an "Any additional feedback?" question, so its rating column moved; read columns by heading, not position.
+- Next step: nudge the 4 who missed both forms, then the rest (task 2).
