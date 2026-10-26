@@ -20,8 +20,17 @@
  *     ?action=questions&token=...            -> the form linked to this sheet
  *     ?action=questions&token=...&form=<id>  -> any form Evan can edit, by ID
  *
+ *   A fourth, read-only action serves a form's ANSWERS (every response row)
+ *   to tools/fetch_form_answers.py:
+ *
+ *     ?action=answers&token=...              -> {headers, rows} of this sheet
+ *     ?action=answers&token=...&form=<id>    -> {headers, rows} of that form's
+ *                                               responses sheet
+ *
  *   Reading forms other than the linked one needs the full Forms permission
- *   (Apps Script has no read-only Forms scope). This script never edits a form.
+ *   (Apps Script has no read-only Forms scope), and reading their responses
+ *   sheets needs the full Sheets permission. This script never edits a form,
+ *   and never writes to any sheet but its own.
  *
  *   "Not ingested yet" is recorded IN THE SHEET, in a column called
  *   `Ingested at` (see INGESTED_HEADER). Blank cell = pending. A timestamp =
@@ -88,6 +97,9 @@ function doGet(e) {
     }
     if (action === 'questions') {
       return jsonOut(getQuestions(params.form || ''));
+    }
+    if (action === 'answers') {
+      return jsonOut(getAnswers(params.form || ''));
     }
     return jsonOut({ error: 'unknown_action', detail: action });
   } catch (err) {
@@ -251,6 +263,63 @@ function getQuestions(formId) {
 }
 
 
+/**
+ * Every response row of a form, read-only: {headers, rows}.
+ *
+ * With no formId, reads this bound sheet (the intake responses), minus the
+ * `Ingested at` bookkeeping column if it exists. Unlike getPending() it never
+ * creates that column, so this action writes nothing.
+ *
+ * With a formId, opens the spreadsheet the form sends its responses to and
+ * reads the tab linked to that form (a responses spreadsheet can hold several
+ * tabs, and the linked one is not always first).
+ */
+function getAnswers(formId) {
+  var ss, sheet;
+  if (formId) {
+    var form = FormApp.openById(formId);
+    var destId;
+    try {
+      destId = form.getDestinationId();
+    } catch (err) {
+      throw new Error('Form ' + formId + ' is not linked to a responses sheet (Responses tab -> Link to Sheets).');
+    }
+    ss = SpreadsheetApp.openById(destId);
+    // Matched by form ID, not URL: getFormUrl() and the form's own URLs come
+    // in several shapes (/d/<id>/edit, /d/e/<id>/viewform).
+    sheet = ss.getSheets().filter(function (sh) {
+      var url = sh.getFormUrl();
+      if (!url) return false;
+      try { return FormApp.openByUrl(url).getId() === form.getId(); } catch (err) { return false; }
+    })[0] || ss.getSheets()[0];
+  } else {
+    ss = SpreadsheetApp.getActiveSpreadsheet();
+    sheet = getSheet();
+  }
+
+  var lastRow = sheet.getLastRow();
+  var lastCol = sheet.getLastColumn();
+  if (lastCol < 1) return { headers: [], rows: [] };
+
+  var headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+  var markerCol = 0; // 0 = no marker column to strip
+  if (!formId) {
+    for (var c = 0; c < headers.length; c++) {
+      if (String(headers[c]).trim() === INGESTED_HEADER) markerCol = c + 1;
+    }
+  }
+
+  var tz = ss.getSpreadsheetTimeZone();
+  var values = lastRow < 2 ? [] : sheet.getRange(2, 1, lastRow - 1, lastCol).getValues();
+  var rows = [];
+  for (var i = 0; i < values.length; i++) {
+    if (isBlankRow(values[i])) continue;
+    rows.push(stripMarker(values[i], markerCol).map(function (v) { return formatCell(v, tz); }));
+  }
+  return { headers: stripMarker(headers, markerCol).map(String), rows: rows };
+}
+
+
 /* ------------------------------------------------------------------ helpers */
 
 
@@ -272,8 +341,10 @@ function asTyped(item, type) {
 
 
 /**
- * Run once from the editor (select it, click Run) if Google never asked for the
- * Forms permission during deploy. It only lists the linked form's title.
+ * Run once from the editor (select it, click Run) after pasting a new version:
+ * deploying never asks for new permissions, running a function does. Google
+ * asks for every permission the whole file uses (Forms and Sheets) in one
+ * popup. It only lists the linked form's title.
  */
 function authorizeForms() {
   Logger.log(getQuestions('').title);
@@ -343,9 +414,19 @@ function stripMarker(arr, markerCol) {
  * the format THERE rather than reverting this to Google's ambiguous one.
  */
 function normalizeCell(v) {
+  return formatCell(v, SpreadsheetApp.getActiveSpreadsheet().getSpreadsheetTimeZone());
+}
+
+
+/**
+ * normalizeCell() with an explicit timezone, for sheets other than this one.
+ * Kept separate because normalizeCell is passed straight to .map(), which would
+ * hand it the array index as a second argument.
+ */
+function formatCell(v, tz) {
   if (v === null || v === undefined) return '';
   if (Object.prototype.toString.call(v) === '[object Date]') {
-    return Utilities.formatDate(v, SpreadsheetApp.getActiveSpreadsheet().getSpreadsheetTimeZone(), 'yyyy-MM-dd HH:mm:ss');
+    return Utilities.formatDate(v, tz, 'yyyy-MM-dd HH:mm:ss');
   }
   return String(v);
 }

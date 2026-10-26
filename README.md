@@ -89,17 +89,23 @@ and update `.env`. You don't need to create the `Ingested at` column yourself �
 as the last column on first call. If any of this isn't set up, intake still works via the manual CSV
 export; see [workflows/01_intake.md](workflows/01_intake.md).
 
-**5. Let sessions read the forms' questions** (same script, added 2026-10-26):
+**5. Let sessions read the forms' questions and answers** (same script, added 2026-10-26/27):
 `tools/fetch_form_questions.py` saves each form's questions and options to `forms/<name>.json`
-(tracked: questions only, no answers). It is the same script and the same token as step 4: no new
-token, and nothing to add to the other forms or their sheets. The script reads every form you own
-from the intake responses sheet. Whenever `Code.gs` changes:
+(tracked: questions only, no answers). `tools/fetch_form_answers.py` saves every response to
+`data/form/intake_answers.csv` and `data/feedback/<name>.csv` (gitignored: personal data). Both use
+the same script and the same token as step 4: no new token, and nothing to add to the other forms or
+their sheets. The script reads every form you own, and its responses sheet, from the intake
+responses sheet. Whenever `Code.gs` changes:
 
 1. Paste the new `Code.gs` over the old one in the Apps Script editor and save.
 2. Deploy → **Manage deployments** → pencil icon → *Version*: **New version** → Deploy. This keeps the
-   same `/exec` URL; "New deployment" would make a new one. Click **Allow** when Google asks for the
-   Forms permission. (If it never asks: pick `authorizeForms` in the function menu, click Run, Allow.)
-3. Add each form's ID to `.env`, taken from its **edit** address `docs.google.com/forms/d/<ID>/edit`
+   same `/exec` URL; "New deployment" would make a new one.
+3. Deploying never asks for new permissions. So pick `authorizeForms` in the function menu, click
+   **Run**, then **Allow** (one popup covers Forms and Sheets). If no popup appears: Project Settings →
+   tick "Show appsscript.json", and add an `oauthScopes` list holding both
+   `https://www.googleapis.com/auth/forms` and `https://www.googleapis.com/auth/spreadsheets`. Once
+   that list exists Google stops guessing, so a missing entry breaks that part of the script.
+4. Add each form's ID to `.env`, taken from its **edit** address `docs.google.com/forms/d/<ID>/edit`
    (not the Send link `forms/d/e/1FAIpQL.../viewform`, which is a different code and won't work):
    ```
    FORM_ID_INTAKE=              # optional: blank = the form linked to the responses sheet
