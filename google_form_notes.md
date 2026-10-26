@@ -27,7 +27,7 @@ at all), cut bloated hooks, removed hooks that restated their title, and replace
 2. Design — graphic, fashion, product, interior
 3. Performing Arts — music, theatre, dance
 4. Languages & Literature — English, creative writing, linguistics
-5. History & Philosophy — culture, ethics, classical studies
+5. Humanities & Philosophy — culture, ethics, classical studies
 
 ## Media, Communication & Social Sciences
 6. Media & Communication — journalism, PR, film, content creation
@@ -37,7 +37,7 @@ at all), cut bloated hooks, removed hooks that restated their title, and replace
 10. Law — become a lawyer
 
 ## Business, Finance & Management
-11. Business & Management — HR, operations, entrepreneurship
+11. Business Administration & Management — HR, operations, entrepreneurship
 12. Accounting & Finance — audit, banking, FinTech
 13. Marketing & Advertising — branding, ads, social media
 14. Economics — markets, public policy, econometrics

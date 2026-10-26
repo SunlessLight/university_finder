@@ -72,7 +72,8 @@ QUESTION_MAP = [
                                                                           # with current_completion before parsing.
     ("list each subject", "grades_raw"),             # legacy paragraph-grades form; structured subjects handled separately
     ("actual results or predicted", "grade_status"),  # legacy wording
-    ("forecast result or actual", "grade_status"),  # current form: "Are you applying with forecast result or actual?"
+    ("forecast result or actual", "grade_status"),  # legacy: "Are you applying with forecast result or actual?"
+    ("what are you applying with", "grade_status"),  # current form (2026-10-27): "Forecast Grades" / "Actual Grades"
     ("what's the score", "english_score"),   # current form: "If English test taken, what's the score?..."
                                               # MUST precede "english test taken" below — that header
                                               # contains BOTH substrings, and build_col_index() takes
@@ -269,6 +270,8 @@ TICK_IMPORTANCE_NORMALIZE = {
     "must have": 3,
     "important": 2,
     "nice to have": 1,
+    "doesn't matter": 0,  # added to the live form by 2026-10-27; must still rank (last), because
+                          # derive_weights.py refuses a priorities list missing any of the 8 tokens
 }
 SLIDER_CATEGORY_MAP = {
     "cost": "cost",
@@ -330,7 +333,9 @@ def _normalize_subject(name):
 # subject" + "grade" dropdowns with ONE column per subject: "Select the forecast grades for your
 # subjects. ( Or grade ur confident in getting ) [Biology]", one per subject, and a student leaves
 # blank the ones they don't take. Detected by the shared marker substring + a bracketed suffix.
-SUBJECT_GRID_MARKER = "forecast grades for your subjects"
+# 2026-10-27: the live title became "Select the grades for your subjects based on the option you
+# chose above." (no "forecast"), which blanked every new student's grades; the marker now matches both.
+SUBJECT_GRID_MARKER = "grades for your subjects"
 
 
 def _subject_grid_columns(fieldnames):
@@ -493,13 +498,13 @@ COURSE_ACCREDITATION_MAP = {
     "Design": [],
     "Performing Arts": [],
     "Languages & Literature": [],
-    "History & Philosophy": [],
+    "Humanities & Philosophy": [],  # renamed on the live form from "History & Philosophy" (seen 2026-10-27)
     "Media & Communication": [],
     "Psychology": [],  # AHPA 2016 covers the title but practice licensing isn't enforced yet (2026-09)
     "Sociology & Anthropology": [],  # Social Work Profession Bill not yet enacted (2026-09)
     "Political Science & International Relations": [],
     "Law": ["MQA", "LPQB"],
-    "Business & Management": [],
+    "Business Administration & Management": [],  # was "Business & Management" (seen 2026-10-27)
     "Accounting & Finance": ["MQA", "MIA", "ACCA"],
     "Marketing & Advertising": [],
     "Economics": [],
@@ -533,11 +538,13 @@ COURSE_ACCREDITATION_MAP = {
 
 def _course_title(course_answer):
     """Extract the option TITLE from a 'Title — hook' dropdown answer (the format rule in
-    google_form_notes.md). Splits on the first ' — ' (em dash); returns the string unchanged if
-    the separator isn't present (a legacy export, or a title with no hook)."""
+    google_form_notes.md). Splits on the first ' — ' (em dash), or ' - ' (spaced hyphen, as the
+    live "Psychology - clinical, ..." option was typed); returns the string unchanged if neither
+    separator is present (a legacy export, or a title with no hook)."""
     text = _clean(course_answer)
-    if " — " in text:
-        return text.split(" — ", 1)[0].strip()
+    for sep in (" — ", " - "):
+        if sep in text:
+            return text.split(sep, 1)[0].strip()
     return text
 
 

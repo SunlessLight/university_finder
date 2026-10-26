@@ -90,6 +90,9 @@ LAYOUT_TYPES = {"SECTION_HEADER", "PAGE_BREAK", "IMAGE", "VIDEO"}
 # so it never appears in the question list (the sheet still gets the column).
 REQUIRED_KEYS = ["consent", "name", "total_budget", "target_countries", "specific_courses"]
 
+# QUESTION_MAP keys whose answers ingest_form_csv.py splits on commas (_split_multi).
+SPLIT_KEYS = ["needs", "target_countries", "location_prefs"]
+
 # Unfilled template text in the consent notice (I12): [Your name], <email>, XXX, TBD.
 PLACEHOLDER_RE = re.compile(r"\[[^\]]*\]|<[^>]*>|\bX{2,}\b|\bTBD\b", re.IGNORECASE)
 
@@ -194,10 +197,12 @@ def check_intake(form):
                               for c in item.get("columns", []) if c.strip().lower() not in TICK_IMPORTANCE_NORMALIZE]
     report("Priority grid columns", tick_problems)
 
-    # Google Forms joins ticked checkboxes with ", ", and _split_multi() splits on commas.
+    # Google Forms joins ticked checkboxes with ", ", and _split_multi() splits on commas. Only
+    # the fields that go through _split_multi() matter; courses and budget are read whole.
+    split_titles = {col_index.get(k) for k in SPLIT_KEYS} - {None}
     report("Checkbox options with a comma", [
         f"{item['title'][:50]!r}: {o!r} gets split in two on ingest"
-        for item in items if item["type"] == "CHECKBOX" for o in item.get("options", []) if "," in o])
+        for item in items if item["title"] in split_titles for o in item.get("options", []) if "," in o])
 
     # Consent (I12): the only checks that fail the run.
     # A section header titled "consent" is fine (never a column), but the notice text often

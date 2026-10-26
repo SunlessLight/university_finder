@@ -134,7 +134,7 @@
     },
     {
       "title": "Choose your desired course",
-      "type": "CHECKBOX",
+      "type": "LIST",
       "description": "",
       "required": true,
       "options": [
@@ -176,8 +176,7 @@
         "Special Needs & Inclusive Education — teaching students with disabilities",
         "Secondary Education — teaching Form 1–5",
         "Early Childhood & Primary Education — teaching kindergarten to Standard 6"
-      ],
-      "other": true
+      ]
     },
     {
       "title": "Chose your countries",
@@ -260,15 +259,14 @@
     },
     {
       "title": "What's your limit (RM) for the whole degree. (include tuition, living cost, etc)",
-      "type": "CHECKBOX",
+      "type": "LIST",
       "description": "",
       "required": true,
       "options": [
         "500,000",
         "1,000,000",
         "1,500,000"
-      ],
-      "other": false
+      ]
     },
     {
       "title": "Is Scholarship a MUST? ",
@@ -326,7 +324,7 @@
     {
       "title": "Consent to use your information / Persetujuan penggunaan maklumat anda (PDPA)",
       "type": "MULTIPLE_CHOICE",
-      "description": "Before you submit, here's how we handle your answers, as required by Malaysia's Personal Data Protection Act 2010. \n• Who we are: Shortlisted, run by Evan Yeoh, Malaysia. Contact: evannsnv@gmail.com\n• What we collect: everything on this form: your email, nickname, race, grades, English test, budget band, course and country choices, priorities and preferences, and anything you write in the optional boxes.\n• Why: to research universities and courses for you, write your reports, and contact you about them. Race is used only to check which scholarships you can apply for. Halal and prayer ticks are used only to describe campus life for you.\n• Who handles it: only us. We use Google (Forms, Sheets) to collect answers and AI tools to help with research; these services may store or process data on servers outside Malaysia. We never sell your data, and we never share it with universities, agents or anyone else without asking you first. \n• How long we keep it: until [12 months] after we last work with you, then we delete it.\n• Your rights: you can ask to see, correct or delete your data, or withdraw your consent, any time by emailing evannsnv@gmail.com. If you withdraw, we stop working on your record and delete it.\n• Do you have to? Ticking the box is required to use the service. If you don't tick it, we can't research for you and your answers won't be used.\n• Under 18? Please make sure a parent or guardian knows about and agrees to this.\nSebelum anda hantar, ini cara kami mengendalikan jawapan anda, seperti yang dikehendaki oleh Akta Perlindungan Data Peribadi 2010.\n• Siapa kami: Shortlisted, dikendalikan oleh Evan Yeoh, Malaysia. Hubungi: evannsnv@gmail.com\n• Apa yang kami kumpul: semua jawapan dalam borang ini: emel, nama panggilan, kaum, gred, ujian bahasa Inggeris, julat bajet, pilihan kursus dan negara, keutamaan dan pilihan anda (termasuk makanan halal atau kemudahan solat jika anda tandakan), dan apa-apa yang anda tulis dalam ruangan pilihan.\n• Mengapa: untuk mencari universiti dan kursus untuk anda, menyediakan laporan anda, dan menghubungi anda mengenainya. Kaum digunakan hanya untuk menyemak biasiswa yang layak anda mohon. Pilihan halal dan solat digunakan hanya untuk menerangkan kehidupan kampus kepada anda.\n• Siapa yang mengendalikannya: hanya kami. Kami menggunakan Google (Forms, Sheets) untuk mengumpul jawapan dan alat AI untuk membantu penyelidikan; perkhidmatan ini mungkin menyimpan atau memproses data di pelayan luar Malaysia. Kami tidak akan menjual data anda, dan tidak akan berkongsinya dengan universiti, ejen atau sesiapa pun tanpa bertanya kepada anda dahulu.\n• Tempoh simpanan: sehingga [12 bulan] selepas kali terakhir kami berurusan dengan anda, kemudian kami padamkannya.\n• Hak anda: anda boleh meminta untuk melihat, membetulkan atau memadam data anda, atau menarik balik persetujuan, pada bila-bila masa dengan menghantar emel ke evannsnv@gmail.com. Jika anda menarik balik, kami akan berhenti dan memadam rekod anda.\n• Wajibkah? Kotak ini wajib ditanda untuk menggunakan perkhidmatan ini. Jika tidak ditanda, kami tidak dapat membuat penyelidikan untuk anda dan jawapan anda tidak akan digunakan.\n• Bawah 18 tahun? Sila pastikan ibu bapa atau penjaga anda tahu dan bersetuju.",
+      "description": "Before you submit, here's how we handle your answers, as required by Malaysia's Personal Data Protection Act 2010. \n• Who we are: Shortlisted, run by Evan Yeoh, Malaysia. Contact: evannsnv@gmail.com\n• What we collect: everything on this form: your email, nickname, race, grades, English test, budget band, course and country choices, priorities and preferences, and anything you write in the optional boxes.\n• Why: to research universities and courses for you, write your reports, and contact you about them. Race is used only to check which scholarships you can apply for. Halal and prayer ticks are used only to describe campus life for you.\n• Who handles it: only us. We use Google (Forms, Sheets) to collect answers and AI tools to help with research; these services may store or process data on servers outside Malaysia. We never sell your data, and we never share it with universities, agents or anyone else without asking you first. \n• How long we keep it: until 3 months after we last work with you, then we delete it.\n• Your rights: you can ask to see, correct or delete your data, or withdraw your consent, any time by emailing evannsnv@gmail.com. If you withdraw, we stop working on your record and delete it.\n• Do you have to? Ticking the box is required to use the service. If you don't tick it, we can't research for you and your answers won't be used.\n• Under 18? Please make sure a parent or guardian knows about and agrees to this.\nSebelum anda hantar, ini cara kami mengendalikan jawapan anda, seperti yang dikehendaki oleh Akta Perlindungan Data Peribadi 2010.\n• Siapa kami: Shortlisted, dikendalikan oleh Evan Yeoh, Malaysia. Hubungi: evannsnv@gmail.com\n• Apa yang kami kumpul: semua jawapan dalam borang ini: emel, nama panggilan, kaum, gred, ujian bahasa Inggeris, julat bajet, pilihan kursus dan negara, keutamaan dan pilihan anda (termasuk makanan halal atau kemudahan solat jika anda tandakan), dan apa-apa yang anda tulis dalam ruangan pilihan.\n• Mengapa: untuk mencari universiti dan kursus untuk anda, menyediakan laporan anda, dan menghubungi anda mengenainya. Kaum digunakan hanya untuk menyemak biasiswa yang layak anda mohon. Pilihan halal dan solat digunakan hanya untuk menerangkan kehidupan kampus kepada anda.\n• Siapa yang mengendalikannya: hanya kami. Kami menggunakan Google (Forms, Sheets) untuk mengumpul jawapan dan alat AI untuk membantu penyelidikan; perkhidmatan ini mungkin menyimpan atau memproses data di pelayan luar Malaysia. Kami tidak akan menjual data anda, dan tidak akan berkongsinya dengan universiti, ejen atau sesiapa pun tanpa bertanya kepada anda dahulu.\n• Tempoh simpanan: sehingga 3 bulan selepas kali terakhir kami berurusan dengan anda, kemudian kami padamkannya.\n• Hak anda: anda boleh meminta untuk melihat, membetulkan atau memadam data anda, atau menarik balik persetujuan, pada bila-bila masa dengan menghantar emel ke evannsnv@gmail.com. Jika anda menarik balik, kami akan berhenti dan memadam rekod anda.\n• Wajibkah? Kotak ini wajib ditanda untuk menggunakan perkhidmatan ini. Jika tidak ditanda, kami tidak dapat membuat penyelidikan untuk anda dan jawapan anda tidak akan digunakan.\n• Bawah 18 tahun? Sila pastikan ibu bapa atau penjaga anda tahu dan bersetuju.",
       "required": true,
       "options": [
         "I agree to Shortlisted collecting and using my answers as described above, including my race and any halal or prayer preferences. / Saya bersetuju Shortlisted mengumpul dan menggunakan jawapan saya seperti yang diterangkan di atas, termasuk kaum saya dan apa-apa pilihan halal atau solat."

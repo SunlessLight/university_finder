@@ -73,11 +73,12 @@ fine — but keep the substring in bold intact.
   `_normalize_month_year` (`YYYY-MM`), so nothing downstream needs to change — an answer it can't read
   as a month+year is kept verbatim, never guessed.
 - **Subjects & grades — a 12-column fixed-subject grid (2026-08+, replaces the old 4-slot free-choice
-  dropdown pairs).** The form now asks one column per subject — *"Select the forecast grades for your
-  subjects. ( Or grade ur confident in getting ) [`<Subject>`]"* — for exactly these 12: **Biology,
+  dropdown pairs).** The form now asks one column per subject — *"Select the grades for your subjects
+  based on the option you chose above. [`<Subject>`]"* (earlier: *"Select the forecast grades for your
+  subjects…"*; the rewording blanked every student's grades until the marker was widened, 2026-10-27) — for exactly these 12: **Biology,
   Physic, Chemistry, Math, Further Math, English Literature, Economics, Accounting, Computer Science,
   Psychology, History, Law**. A student leaves blank the ones they don't take. `_subject_grid_columns()`
-  detects these columns by the shared marker substring `"forecast grades for your subjects"` plus the
+  detects these columns by the shared marker substring `"grades for your subjects"` plus the
   bracketed subject name, and `_build_subjects_from_grid()` builds `profile.subjects[]` from every
   non-blank cell — this is now the **primary** path; the legacy paired-dropdown detector
   (`_subject_columns()`/`_build_subjects()`) only fires as a fallback for an old-format CSV. Same
