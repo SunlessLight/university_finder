@@ -1,0 +1,102 @@
+{
+  "form_id": "14dw_RfVfLJjw73-cCVVoDtj27GAGfCl5aJuTmHgiKW0",
+  "title": "University Report Feedback Form",
+  "description": "",
+  "items": [
+    {
+      "title": "What section of the 20-page report gave you the most clarity about this university? ",
+      "type": "CHECKBOX",
+      "description": "",
+      "required": true,
+      "options": [
+        "Snapshot",
+        "Identity & mission",
+        "Who it's for - the archetype & this student's fit",
+        "Getting in - admissions & this student's fit",
+        "Academic structure",
+        "Majors, minors & flexibility",
+        "Signature academic experiences",
+        "Culture & vibe",
+        "Student Life & Food",
+        "The city, the area & belonging",
+        "Costs & Financial Aid",
+        "How to Apply",
+        "Outcomes & network",
+        "Unique facts & quirks",
+        "Why here / why hesitate",
+        "Sources"
+      ],
+      "other": false
+    },
+    {
+      "title": "Which section of the report is the most interesting to you? ",
+      "type": "CHECKBOX",
+      "description": "",
+      "required": true,
+      "options": [
+        "Snapshot",
+        "Identity & mission",
+        "Who it's for - the archetype & this student's fit",
+        "Getting in - admissions & this student's fit",
+        "Academic structure",
+        "Majors, minors & flexibility",
+        "Signature academic experiences",
+        "Culture & vibe",
+        "Student Life & Food",
+        "The city, the area & belonging",
+        "Costs & Financial Aid",
+        "How to Apply",
+        "Outcomes & network",
+        "Unique facts & quirks",
+        "Why here / why hesitate",
+        "Sources"
+      ],
+      "other": false
+    },
+    {
+      "title": "Is there any section you found confusing, overwhelming, or unnecessary?  ",
+      "type": "CHECKBOX",
+      "description": "",
+      "required": true,
+      "options": [
+        "Snapshot",
+        "Identity & mission",
+        "Who it's for - the archetype & this student's fit",
+        "Getting in - admissions & this student's fit",
+        "Academic structure",
+        "Majors, minors & flexibility",
+        "Signature academic experiences",
+        "Culture & vibe",
+        "Student Life & Food",
+        "The city, the area & belonging",
+        "Costs & Financial Aid",
+        "How to Apply",
+        "Outcomes & network",
+        "Unique facts & quirks",
+        "Why here / why hesitate",
+        "Sources"
+      ],
+      "other": false
+    },
+    {
+      "title": "  On a scale of 1 to 5, how much time did this report save you in your university research?  ",
+      "type": "SCALE",
+      "description": "",
+      "required": true,
+      "options": [
+        1,
+        5
+      ],
+      "labels": [
+        "",
+        ""
+      ]
+    },
+    {
+      "title": "Any additional feedback? Give me ur worst",
+      "type": "PARAGRAPH_TEXT",
+      "description": "",
+      "required": true
+    }
+  ]
+}

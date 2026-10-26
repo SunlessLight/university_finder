@@ -1,0 +1,188 @@
+{
+  "form_id": "14MVbF_PMAtNm63RUhScZM5MRO5i1nUreqre2blSxXAU",
+  "title": "(How did you/How are you) choosing your Universities? - 5 Minutes",
+  "description": "Hello! I'm an A-Level student building a University Research Service.\nI'm trying to learn how people actually choose their universities, 12 Questions, 5 Minutes. \nThanks a lot for participating in this survey😁🥰",
+  "items": [
+    {
+      "title": "Where are you right now? ",
+      "type": "MULTIPLE_CHOICE",
+      "description": "",
+      "required": true,
+      "options": [
+        "Pre-university, not applying yet",
+        "Pre-university, applying this year",
+        "University Student",
+        "Parent"
+      ],
+      "other": true
+    },
+    {
+      "title": "How far along are you in choosing? ",
+      "type": "MULTIPLE_CHOICE",
+      "description": "",
+      "required": true,
+      "options": [
+        "Haven't started",
+        "I know the country, don't know the universities yet",
+        "I have a few universities in mind",
+        "I know exactly what universities I want to apply"
+      ],
+      "other": false
+    },
+    {
+      "title": "Do you know the person who sent you this form? ",
+      "type": "MULTIPLE_CHOICE",
+      "description": "",
+      "required": true,
+      "options": [
+        "Yes, we're friends/classmates",
+        "A little",
+        "No, it was forwarded to me"
+      ],
+      "other": false
+    },
+    {
+      "title": "So far, roughly how many hours have you spent researching universities and courses?",
+      "type": "MULTIPLE_CHOICE",
+      "description": "",
+      "required": true,
+      "options": [
+        "None yet",
+        "Under 5",
+        "5 to 20",
+        "20 to 50",
+        "More than 50"
+      ],
+      "other": false
+    },
+    {
+      "title": "Which of these have you actually used?",
+      "type": "CHECKBOX",
+      "description": "",
+      "required": true,
+      "options": [
+        "ChatGPT or Gemini",
+        "University Websites",
+        "Ranking sites",
+        "Social media channels (Youtube, Instagram, Tiktok, Rednote, etc)",
+        "Education Agent (IDP, MABECS, etc)",
+        "Seniors or Friends",
+        "Education Fair",
+        "My school/College",
+        "A paid consultant",
+        "Nothing yet"
+      ],
+      "other": true
+    },
+    {
+      "title": "Has your family paid anyone to help with chooing or applying to university?",
+      "type": "MULTIPLE_CHOICE",
+      "description": "",
+      "required": true,
+      "options": [
+        "No",
+        "Yes, under RM100",
+        "Yes, RM 100 to RM 500",
+        "Yes, RM500 to RM2000",
+        "Yes, More than RM2000",
+        "Not sure"
+      ],
+      "other": true
+    },
+    {
+      "title": "Which ONE of these worries you the most? ",
+      "type": "MULTIPLE_CHOICE",
+      "description": "",
+      "required": true,
+      "options": [
+        "Finding a Scholarship",
+        "Knowing the real total cost of attending the university",
+        "University application (essays, personal statements)",
+        "Meeting the entry requirements",
+        "Choosing which University or course",
+        "Visa and Paperwork",
+        "Future job prospects (Whether degree obtained is recognised in Malaysia)",
+        "Student life at university",
+        "None of these"
+      ],
+      "other": true
+    },
+    {
+      "title": "For the University you most serious about, which of these have you actually looked up? Tick any that apply",
+      "type": "CHECKBOX",
+      "description": "",
+      "required": true,
+      "options": [
+        "Tuition Fees",
+        "Living Costs (rent, food)",
+        "Entry requirements",
+        "Scholarships I could get",
+        "How much money the visa needs you to show in bank",
+        "Whether I can stay and work there after graduating",
+        "Whether the Degree is recognised in Malaysia",
+        "What jobs graduates of that course actually get",
+        "Safety or political situation there",
+        "None of these yet"
+      ],
+      "other": true
+    },
+    {
+      "title": "Who makes the final decision",
+      "type": "MULTIPLE_CHOICE",
+      "description": "",
+      "required": true,
+      "options": [
+        "Mostly Me",
+        "Me and Parents",
+        "Parents"
+      ],
+      "other": false
+    },
+    {
+      "title": "Who Pays",
+      "type": "MULTIPLE_CHOICE",
+      "description": "",
+      "required": true,
+      "options": [
+        "Parents",
+        "Scholarships",
+        "Loan (PTPTN)"
+      ],
+      "other": true
+    },
+    {
+      "title": "Think of last time you got stuck researching universities, what was it, and what did you do? \n(Short text, optional)",
+      "type": "PARAGRAPH_TEXT",
+      "description": "",
+      "required": false
+    },
+    {
+      "title": "Which would would you prefer? ",
+      "type": "CHECKBOX",
+      "description": "",
+      "required": true,
+      "options": [
+        "Personalised University List: 20 to 30 universities of your desired country & course. Ranked according to how well they fit you. Includes Total cost of Attendance, Scholarships Avalilable, Whether its a Reach/Match/Safety and much more. RM50",
+        "A deep report on ONE university you name: the full cost in ringgit, scholarships, work rules, whether the degree is recognised in Malaysia, and what students there say about it. RM30",
+        "None"
+      ],
+      "other": false
+    },
+    {
+      "title": "A sample of the list of universities, but with your desired countries and courses",
+      "type": "IMAGE",
+      "description": ""
+    },
+    {
+      "title": "A sneakpeak of the university report, 15 sections, this is just 1 shown.",
+      "type": "IMAGE",
+      "description": ""
+    },
+    {
+      "title": "Leave your WhatsApp number if you WANT the above, slots open November, I will message you personally.\n\nIf not, stating your reason would be helpful.😁🥰",
+      "type": "TEXT",
+      "description": "",
+      "required": false
+    }
+  ]
+}

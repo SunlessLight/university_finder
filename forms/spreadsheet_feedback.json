@@ -1,0 +1,57 @@
+{
+  "form_id": "1R0JJ5mDGdkiyRCp_75iLGYL0v5WjJavGgHqa46BX5TA",
+  "title": "University Spreedsheet Feedback Form",
+  "description": "",
+  "items": [
+    {
+      "title": "How confident do you feel using this spreadsheet to narrow down your university choices? ",
+      "type": "SCALE",
+      "description": "",
+      "required": true,
+      "options": [
+        1,
+        5
+      ],
+      "labels": [
+        "",
+        ""
+      ]
+    },
+    {
+      "title": "Did we miss any countries or specific universities you expected to see?",
+      "type": "PARAGRAPH_TEXT",
+      "description": "",
+      "required": true
+    },
+    {
+      "title": "Which column or data point (e.g., tuition, ranking, location) is most useful to you?",
+      "type": "MULTIPLE_CHOICE",
+      "description": "",
+      "required": true,
+      "options": [
+        "Desirability",
+        "Course at a glance",
+        "Student Life",
+        "Rankings",
+        "Entry Requirements",
+        "Approximate total cost",
+        "Scholarships",
+        "Recognised in Malaysia",
+        "Deadline"
+      ],
+      "other": false
+    },
+    {
+      "title": "What extra column of information do you wish we had included?",
+      "type": "PARAGRAPH_TEXT",
+      "description": "",
+      "required": true
+    },
+    {
+      "title": "What other feedback you have. Give me ur worst",
+      "type": "PARAGRAPH_TEXT",
+      "description": "",
+      "required": true
+    }
+  ]
+}
