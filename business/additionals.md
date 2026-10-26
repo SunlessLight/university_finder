@@ -47,6 +47,8 @@ has not run.
 
 **Fifth closing pass 2026-10-25:** Evan's answers on the live form closed I2 and I5 and decided S9's question (on the form). Group 2 step 3 is unblocked except S3's income question, and now has a deadline: before the first paid form is read in.
 
+**Sixth pass 2026-10-26:** three new intake entries: I10 (a tool so sessions can read the live forms' questions), I11 (the new budget options) and I12 (the consent question is now formal). They make up the new group 2 step 11, which runs before group 2 step 3. I3 decided.
+
 **Re-sorted the same day (2026-10-20):** the open entries are now sorted into three groups (student files out of date, systemic problems, miscellaneous) and cut into numbered steps of at most three tasks, with a table of which two steps can run side by side. See "Where things stand" under Start here. One new entry, R9.
 
 ---
@@ -83,7 +85,8 @@ fresh session and type:*
 | **1** | ~~Group 1 step 1, then group 2 step 1 (R1, R3, plus R8 if Evan said yes)~~ **done** | ~~Group 3 step 1 (R4, R6, R7)~~ **done** | Done by 2026-10-17 |
 | **2** | ~~Group 1 step 2 (S8, S10, Task 9)~~ **done 2026-10-16** | ~~Group 2 step 2 (S4)~~ **done 2026-10-17** | Done |
 | **Now** | ~~Group 1 step 6 (R13's second half: the sample pack)~~ **done 2026-10-20** | — | Done |
-| **3** | ~~Group 1 step 3 (S6, S7, P1)~~ **done 2026-10-18** | Group 2 step 3 (S9's program half, S3 if decided, R5) | B: now, before the first paid form is read in (paid lists due 10 Nov) |
+| **Next** | ⭐ Group 2 step 11 (I10, I12, I11: form-questions tool, consent, budget options) | — | Now |
+| **3** | ~~Group 1 step 3 (S6, S7, P1)~~ **done 2026-10-18** | Group 2 step 3 (S9's program half, S3 if decided, R5) | B: after group 2 step 11, before the first paid form is read in (paid lists due 10 Nov) |
 | **4** | Group 1 step 4 (I9, L2) | Group 2 step 4 (D2, one student) | After the pitch. A: Evan's decision on L2. B: round 1 done and Evan's decision on D2. Never the same student in both sessions |
 | **5** | ⭐ Group 1 step 7 (re-score, part 1) | ⭐ Group 2 step 7 (ABET lookup, part 1) | After the pitch |
 | **6** | Group 1 step 8 (re-score, part 2, and Sheffield) | Group 2 step 8 (ABET lookup, part 2) | After round 5 |
@@ -107,6 +110,8 @@ where it says so.
 | ~~Where to ask for years of schooling taught in English~~ **On the form, as a lesson-language dropdown; Evan added it 2026-10-25** | S9 | The S9 part of group 2 step 3 |
 | Where to ask for family income: on the form, or only when a student shortlists a university that gives need-based aid. Default: only at shortlist (it is sensitive) | S3 | The S3 part of group 2 step 3 |
 | ~~Count the budget options on the live form (three or four)~~ **Three, 2026-10-25; workflow fixed** | I5 | Done |
+| ~~New budget options~~ **`500000` / `1000000` / `1500000`, plus `Not sure` recommended, 2026-10-26** | I11 | Group 2 step 11 |
+| ~~Whether to ask students with no spending limit for one~~ **Evan asks the five older-record students, 2026-10-26** | I3 | Nothing; update their files when they answer |
 | Repair the 22 Shortlist and Finalist "Not verified" rows first, or all 212 | L2 | Group 1 step 4 |
 | Whether to run Stage 5 for the five ready students, and what the nine single-university students receive | D2 | Group 2 step 4 |
 | Which students get corrected reports. Start with the two whose budget conclusion changed | P2 | The P2 part of group 1 step 5 |
@@ -154,10 +159,11 @@ where it says so.
 | **8** | R16 ABET lookup, part 2: universities 24 to 45, the same way, into `notes/r16_abet_dispatch_part2.md` and `notes/r16_abet_lookup_part2.csv` | those two files, `.tmp/r16/` | nothing. It can run beside step 7 | Large: 22 agents. After the pitch |
 | ⭐ **9** | R16 Malaysian register: look up, in Chrome, the 11 universities listed under "Finalist or Shortlist" in `notes/r16_scope.md` (MIT was done on 2026-10-17; the method is in `workflows/sources.md`). Write `notes/r16_esisraf_lookup.csv`: listed or not, which broad-field rows, the date. The other 33 universities keep "check eSISRAF" in their cells; a lookup for them can come later | `notes/r16_esisraf_lookup.csv` | nothing | Medium: 11 browser lookups, one at a time. After the pitch |
 | **10** | R16 apply, the five other students in `notes/r16_scope.md`, two or three per session. For each student: a script builds one-cell `Recognised in Malaysia?` fragments from the three lookup files, then `apply_backfill.py --overwrite` (dry run first), then `check_master_list.py`, then one line in that student's `status.md`. A degree that is not accredited also gets "Recognition risk" in `Warnings` by hand, as Michigan did, and is listed in the hand-back for Evan | those students' `master_list.csv`, `research_notes.md`, `status.md` | steps 7, 8, 9 done, and step 6 (or move the applied files out by hand) | Medium per session. After the pitch. Never the source student. Not on a student that group 2 step 4 or group 1 step 4 has open |
+| ⭐ **11** | I10 (the form-questions tool), then I12 (check the consent question with it, then fix the two files), then I11 (exact budget options) | `tools/appsscript/Code.gs`, a new `tools/fetch_form_questions.py`, a new `forms/` folder, `tools/ingest_form_csv.py`, `workflows/01_intake.md`, `README.md`, `CLAUDE.md`, `business/product_report/intake_report.md` | nothing. Evan must be around mid-session to paste and redeploy the script | Medium. A program change. **Run it before step 3**: the tool gives step 3 the lesson-language question's exact wording. Never alongside step 3 (same files). Before 10 Nov |
 
 **Not a session yet** (a decision or a measurement, no file to change): R9 (whether rows should
 carry the date they were checked), R11 (one line of Evan's sales
-wording), I3 (whether to ask students with no spending limit for one),
+wording), I3 (decided 2026-10-26: Evan asks five students; update their files when they answer),
 and N1, U4, V2 (measure the next real longlist, intake and decide runs).
 
 ### Group 3 — Miscellaneous (stale wording only; nothing behaves wrongly)
@@ -644,6 +650,9 @@ are the two worth reading first, because both affect what a student receives.
   hint worth acting on: "~ 1 million" is close to a real figure, and "living costs are the worry"
   points at a monthly limit, not a total one.
 - **To decide:** whether to ask the 5 "Not Sure" students, and the two with a hint, for a band.
+- **Decided 2026-10-26:** Evan will ask all five older-record students for a band. Update both of
+  each student's files (`profile.financial.total_budget` and `preferences.total_budget_ceiling`)
+  when they answer, then re-sync their list.
 
 #### - [ ] I4. Three student records hold the budget as text where a number is expected
 
@@ -746,6 +755,84 @@ are the two worth reading first, because both affect what a student receives.
 - **Suggested fix:** set the Software Engineering student's checklist to what the current rule
   gives that course. Optionally clear the two MQA-only lists to match. Ask the borderline student
   whether mechanical engineering is a real option; if it is, it needs the engineering bodies.
+
+#### - [ ] I10. No session can see the live forms' questions; every form change waits on Evan
+
+- **Added 2026-10-26** at Evan's request.
+- **Severity:** group B. Every form edit so far was found by Evan describing it or by the next
+  export. Mismatches with the program only show up after real students have answered: the budget
+  options (I5, I11), the "perferences" typo, the consent title (I12), and the lesson-language
+  question, whose exact title and options nobody in the repo has seen yet (S9).
+- **What exists:** the intake form's response sheet has a small Google script
+  ([tools/appsscript/Code.gs](../tools/appsscript/Code.gs)) that hands over *answers* to
+  `tools/fetch_form_responses.py` (actions `pending` and `confirm`, protected by a token in `.env`).
+  The two feedback forms are read by `tools/fetch_feedback.py` through the sheets' public CSV
+  download, with no script. Nothing reads any form's *questions* or *answer options*.
+- **Suggested fix:**
+  1. Add a `questions` action to `Code.gs`, behind the same token check. It opens a form by ID
+     (`FormApp.openById`; with no ID, the form linked to this sheet via
+     `SpreadsheetApp.getActive().getFormUrl()`) and returns, per item: title, type, description,
+     required or not, and the options (multiple choice, checkbox, dropdown, grid rows and columns).
+  2. New `tools/fetch_form_questions.py --form intake|report_feedback|spreadsheet_feedback|survey`.
+     Form IDs live in `.env` as `FORM_ID_<NAME>` (IDs only, not secrets, but `.env` is where the
+     other form settings already are). It writes one JSON file per form. The questions hold no
+     student data, so save them somewhere tracked (default `forms/<name>.json`) and git shows what
+     changed on the form between two runs.
+  3. A `--check` mode for the intake form: compare the saved questions against `QUESTION_MAP`, and
+     the options against `BUDGET_BAND_NORMALIZE`, `NEEDS_NORMALIZE`, `COUNTRY_NORMALIZE` and
+     `COURSE_ACCREDITATION_MAP` in `tools/ingest_form_csv.py`. Print anything unmatched, and fail on
+     the two consent rules in I12.
+  4. Evan's part, written out for him in plain English by the session: paste the new `Code.gs` into
+     the sheet's script editor, then **Deploy → Manage deployments → edit → Version: New version**
+     (this keeps the same web address; "New deployment" would change it), then click Allow when
+     Google asks to read his forms. He also copies each form's ID from its edit address into `.env`.
+  5. Docs: the setup section of `README.md`, a "step 0" in `workflows/01_intake.md` → How to run
+     (run the check after any form edit), and the commands list in `CLAUDE.md`.
+
+#### - [ ] I11. The budget question is being reworded to three plain numbers
+
+- **Decided 2026-10-26 (Evan):** the question asks for a limit, with the options `500000`,
+  `1000000`, `1500000`. No `<` or `>` signs, so the matching is simple.
+- **Two traps for the form edit:**
+  - The **title must keep "total budget" or "whole degree"**. That is how the program finds the
+    column ([tools/ingest_form_csv.py:87-88](../tools/ingest_form_csv.py#L87-L88)). A title of only
+    "What's the limit?" would blank every new student's budget. Default title: *"What's your total
+    budget limit (RM) for the whole degree?"*
+  - **Type the options as plain digits.** Tested 2026-10-26: `500000` and `1500000` already come out
+    right, but only through the backup route for old typed answers (`budget_ceiling()`), and
+    `1.500000` comes out blank with a review flag.
+- **Recommended extra option:** `Not sure`. The program already reads it as "no limit". Without
+  it, an unsure student either skips the question or picks a number they don't mean.
+- **What changes in meaning:** `1500000` is a real limit, where the old top option (`>1000000`) had
+  none. A student who can pay more will see "Over budget" on rows above RM 1.5M. Evan's view
+  (2026-10-26): the budget is secondary, so that is acceptable.
+- **No change needed for unsure students:** with no limit, the program shows no budget warning and
+  still fills in each row's `Approx total (MYR)`
+  ([tools/shortlist_schema.py:527-530](../tools/shortlist_schema.py#L527-L530)). That is already
+  how it works. The idea of an "Over budget by RM X, scholarship must cover it" warning was dropped
+  the same day for the same reason.
+- **Suggested fix:** in `BUDGET_BAND_NORMALIZE`, match the three numbers **exactly**, before the
+  substring entries. `"500000"` is part of `"1500000"` and of `"500000-1000000"`, so a plain
+  substring entry would catch the wrong option. Keep the old entries for old exports. Update the
+  2026-09-17 note above the list, the budget bullet and the bands table in
+  `workflows/01_intake.md`, and the budget row and "still rough" item 6 in
+  [intake_report.md](product_report/intake_report.md). Check the live wording with I10's tool first.
+
+#### - [ ] I12. The consent question is now formal; two files still describe the casual one
+
+- **Added 2026-10-26.** Evan put the formal PDPA consent text (English and Malay notice, one
+  required tick box) on the live form on 2026-10-26.
+- **Still describing the old one:** [workflows/01_intake.md:28](../workflows/01_intake.md#L28)
+  (quotes the casual *"Cool for me to store your answers…"* label) and "What is still rough" item 7
+  in [intake_report.md](product_report/intake_report.md) ("The consent wording is casual").
+- **Check before editing, with I10's tool:** the question title contains the word "consent" (how
+  the program finds it); no other question title contains it; the tick-box label does not start
+  with "N" (the program reads that as an explicit No and skips the student). Also check that the
+  placeholders were filled in: service name, Evan's name and email, and the keep-for period
+  (default 12 months).
+- **Suggested fix:** quote the new title and label in the workflow and keep its explanation of what
+  the gate does. In the report, drop item 7, or reword it to what is left (no lawyer has read the
+  text). Renumber the items after it, and the sentence under the list that groups them.
 
 *Not listed here:* the limits that are design choices and not contradictions between files (ties
 between importance answers, the form assuming an A-Level student, the spreadsheet that must not be

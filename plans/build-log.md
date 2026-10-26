@@ -74,3 +74,9 @@ Entry format:
 - Decisions (and why): tofu and zephry are Evan's test students, so they are out of every tester count (27 real testers, not 29).
 - Problems / lessons: the report form gained an "Any additional feedback?" question, so its rating column moved; read columns by heading, not position.
 - Next step: nudge the 4 who missed both forms, then the rest (task 2).
+
+## 2026-10-26 · Backlog: form-questions tool, budget options, consent
+- Done: `business/additionals.md` gained I10 (tool to read the live forms' questions), I11 (budget options become 500000 / 1000000 / 1500000) and I12 (formal consent is live; the workflow and report still describe the casual one), grouped as group 2 step 11, which runs before step 3. I3 decided (Evan asks five students). STATUS Now box points at step 11.
+- Decisions (and why): budget stays secondary, no new warnings; build the form tool. See `decisions/log.md`.
+- Problems / lessons: the budget question is found by "total budget"/"whole degree" in its title, so a rename to "What's the limit?" would blank every budget. Plain-digit options already parse today, but two only via the legacy fallback.
+- Next step: group 2 step 11.
