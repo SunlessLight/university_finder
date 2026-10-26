@@ -1,6 +1,6 @@
 # LaunchX status
 
-*As of 2026-10-25. Rewritten whenever something changes; keep under about 70 lines. See
+*As of 2026-10-26. Rewritten whenever something changes; keep under about 70 lines. See
 [mentor.md](mentor.md) for how.*
 
 ## Dates
@@ -8,7 +8,10 @@
 - **24 Oct (done):** Bootcamp 2 panel. Their message: ChatGPT can do the research too.
 - **24 Oct (done):** nudge sent to silent leads.
 - **25 Oct (done):** spreadsheet updated (accidental numbers flagged, contact method, deposits).
-- **25 Oct (done):** asked the payers why they paid; waiting on replies. **27 Oct:** count replies.
+- **25 Oct (done):** asked the payers why they paid. **26 Oct:** first replies in
+  (`notes/customer_chats/`). **27 Oct:** count replies.
+- **26 Oct (done):** nudged the testers who hadn't filled the feedback forms.
+- **27 Oct: bunting design due** (the real submission deadline; the Notion task said 3 Nov).
 - **10 Nov:** paid lists delivered (what the pre-sale message promised; one payer was told "by
   13 Nov" in chat, so 10 Nov is early for them). Same day the booth opens.
 - **10 to 13 Nov:** pilot = a four-day booth with a bunting and a QR to book. Plan and checklist
@@ -57,7 +60,8 @@ it into a new deck rather than editing the 24 Oct one.
 | Known (feedback forms, to 21 Sept) | List: most useful = course at a glance 4, entry reqs 3, total cost 2; nobody picked the 4 scholarship columns. Report: "getting in / your fit" clearest (5 of 6); culture and student life most interesting. Detail in `data/feedback/`. |
 | Known | Under 1 hour hands-on per student; tools about RM158 a month. Most listed universities are over budget (the tool ranks, it does not remove). |
 | Known (estimate) | At RM50 the reachable family market is about RM775,000 a year. Free competitors are paid by universities; paid help starts around RM2,000. |
-| Not known | Why the 2 willing payers chose this over ChatGPT (asked 25 Oct). Whether parents would pay. The booth pilot's pass line (not written yet; Notion task due 31 Oct). |
+| Known (replies, 26 Oct) | Why not ChatGPT, one payer: "I don't really know what I should be asking", and its answers are surface level. Wants an admissions checklist, UCAS steps, where to find test / interview dates, cost, college choice. Another wants city lifestyle, scholarships, graduate outcomes, work visa after graduating. |
+| Not known | Why the other willing payer chose this over ChatGPT. Whether parents would pay. The booth pilot's pass line (not written yet; Notion task due 31 Oct). |
 
 ## Guesses under test
 
@@ -72,19 +76,19 @@ it into a new deck rather than editing the 24 Oct one.
 **This week, in order** (each is a Notion task under URP Marketing):
 
 1. [x] 25 Oct: ask the payers "what made you pay instead of just using ChatGPT?" Sent; waiting.
-2. [ ] Nudge the testers who haven't filled the feedback forms (14 list, 5 report; 4 missed
-       both). Names in `data/feedback/feedback_report_2026-10-25.md` (fresh replies, 25 Oct;
-       tofu and zephry are test students, left out).
+2. [x] 26 Oct: nudged the testers who hadn't filled the feedback forms.
 3. [ ] Message the testers who did fill them (13 list, 10 report): what info they want more of,
        how it reads, does it feel weird or too AI. Plus "which part did you actually read?"
 4. [ ] Test the list against ChatGPT on one anonymised profile, side by side. Before the pilot
-       plan (31 Oct): what it finds becomes the booth demo and the bunting line.
+       plan (31 Oct): what it finds becomes the booth demo. (Too late for the bunting, which is due
+       27 Oct: its line comes from the payers' own words instead.)
 
 **Then:**
 
 - [ ] 27 Oct: count the 19 as paid / yes-not-paid / no / silent. Only "paid" is demand. Ask one
       "no" why.
-- [ ] By 31 Oct: plan the pilot (pass line first). By 3 Nov: bunting and booth kit. (Notion tasks)
+- [ ] 27 Oct: submit the bunting design. By 31 Oct: plan the pilot (pass line first). By 3 Nov:
+      the rest of the booth kit. (Notion tasks)
 - [ ] **Tester chain, one after another** (Notion tasks):
   1. After tasks 2 and 3: update the list and report from what testers actually read. Aim
      before 10 Nov, so the paid lists get the better version too.
