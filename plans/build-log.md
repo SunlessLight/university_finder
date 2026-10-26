@@ -86,3 +86,15 @@ Entry format:
 - Decisions (and why): Notion is a one-way copy of the files except task ticks; summary on one page, tasks stay in the Tasks database. See `decisions/log.md`.
 - Problems / lessons: form settings like "collect email addresses" are not form items, so the question list never shows the email column; the check must not require it. The auto-mode classifier blocked one Notion task rename ("27 testers" → 29); the other went through. `.env.example` could not be opened, so it lacks the new FORM_ID keys. The sample spreadsheet shows "$" on the MYR total column.
 - Next step: bunting design by 27 Oct. Then Evan's part of I10 (paste Code.gs, New version, Allow, form IDs in .env) and one real `--check`; then I12 and I11.
+
+## 2026-10-26 (later) · Form access: first live run, and a one-door proposal
+- Done: committed `e69b19c` and `6a39485`. Evan pasted the new `Code.gs`, deployed a new version and added the three form IDs to `.env`. First real `fetch_form_questions.py` run reached the new action (token and version fine) but failed: the script has no Forms permission yet. Backlog R20 written (Claude as project manager / advisor / marketing director, after 10 Nov). CLAUDE.md's Drive-connector line corrected.
+- Decisions (and why): none final. Claude proposed an `answers` action in the same script so all four forms (incl. the survey, which has no answer tool) come through one door, and the feedback sheets can stop being "anyone with the link". Waiting on Evan's "go".
+- Problems / lessons: deploying a new version does not ask for new permissions; only running a function in the editor does (`authorizeForms`). The Drive connector returns only sample rows, so it is no answer source. The Drive connector can't list Google Forms.
+- Next step: Evan says go → build `answers` → Evan pastes, New version, runs `authorizeForms`, Allow → fetch and `--check`.
+
+## 2026-10-27 · Form access working: all four forms, questions and answers
+- Done: `answers` action in `Code.gs` + new `tools/fetch_form_answers.py` (f433672). Evan pasted, deployed and ran `authorizeForms`. All four forms' questions saved to `forms/*.json` (9822ac6) and answers to `data/form/intake_answers.csv` + `data/feedback/*.csv` (intake 10, report fb 12, sheet fb 15, survey 84 = the manual export). README setup step 5 fixed (permission comes from running a function, not deploying).
+- Decisions (and why): `answers` is read-only even for intake (never creates `Ingested at`), and a separate tool from the questions one, so personal data can never land in tracked `forms/`. See `decisions/log.md`.
+- Problems / lessons: `FORM_ID_INTAKE` held a wrong ID (Evan thought the script wanted the spreadsheet ID; it wants form IDs). Found by calling `questions` with no ID: the sheet-link fallback worked. The first `--check` found the live intake form has drifted from `ingest_form_csv.py` (F1–F6 in the carry-over); worst: the renamed grades grid would blank every new student's grades. Nobody has answered since 14 Oct, so no student is affected yet.
+- Next step: fix F1 + F6 in code, Evan fixes F2/F3/F5 in the form, rerun `--check`.
