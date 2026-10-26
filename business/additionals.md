@@ -167,7 +167,7 @@ and N1, U4, V2 (measure the next real longlist, intake and decide runs).
 | ✅ **1** | **Done by 2026-10-17.** R4, R6, R7 | `business/product_report/decide_report.md`, `tools/apply_prep_to_pdf.py`, `CLAUDE.md` | nothing | Small. R4 before `decide_report.md` is shown outside |
 
 **Handled inside other steps:** D4 (group 1 step 2) and R5 (group 2 step 3). **Evan's own, not a
-session's:** U1 (time the form on a phone) and V3 (ask two or three single-university students why
+session's:** ~~U1~~ (settled 2026-10-25: the claim becomes five minutes) and V3 (ask two or three single-university students why
 they picked one).
 
 ### Done since the re-sort
@@ -292,11 +292,11 @@ on Evan's own computer. In date order.
 | 7 | Decide where family income ~~and years of schooling in English~~ get asked: on the form, or only when a student shortlists a university that needs them. **English half done 2026-10-25** (on the form). Income still open. | S3, S9 | Before group 2 step 3 |
 | 8 | ~~Add "Halal food" and "Prayer facilities" as ticks on the form, or choose to reword the tiers file.~~ **Done 2026-10-25** | I2 | Done |
 | 9 | ~~Open the live form and count the budget options (three or four).~~ **Three, 2026-10-25** | I5 | Done |
-| 10 | Decide whether to ask the 10 students with no usable spending limit for one, and ask one student whether RM 800,000 is their real limit. | I3, I4 | Any time |
+| 10 | Decide whether to ask the 5 "Not Sure" students and the 2 with a hint (see I3) for a spending limit, and ask one student whether RM 800,000 is their real limit. | I3, I4 | Any time |
 | 11 | Decide whether to run the decision stage for the five ready students, and what the nine single-university students receive. | D2 | Before step 2 |
 | 12 | Decide whether and when to repair the "Not verified" rows: 212 on the other students' lists (lane 6's recount), 22 of them Shortlist or Finalist, plus the source student's 14 (P1). Lane 6 recommends the 22 first. | L2, P1 | Before lane 6 reaches L2 |
 | 13 | ~~Look MIT up by hand on the Malaysian recognition register.~~ **Done 2026-10-17 by a session in Chrome.** Evan may repeat it to double-check: the steps are in `workflows/sources.md`. | S4 | Done |
-| 14 | Time two or three people filling in the form on a phone. | U1 | Before the report is shown outside |
+| 14 | ~~Time two or three people filling in the form on a phone.~~ **Settled 2026-10-25:** the claim becomes five minutes; update the poster's "2 minutes" (line 772). | U1 | Poster only |
 | 15 | Ask two or three single-university students why they picked one. | V3 | Before the report is shown outside |
 | 16 | P2 is done for 10 students. Decide which of them get corrected reports. Start with the two whose report changed its budget conclusion (see P2). | P2 | Now |
 
@@ -585,7 +585,7 @@ are the two worth reading first, because both affect what a student receives.
 
 #### - [x] I1. "Universities you already have in mind" is saved and then never read
 
-- **Done 2026-10-13 (lane 3).** Step 1 of the longlist workflow now reads `preferred_universities` and puts each named university in that country on the list, including long shots. If one is dropped, the reason is written down and told to the student. The intake workflow now says the same.
+- **Done 2026-10-13 (lane 3).** Step 1 of the longlist workflow now reads `preferred_universities` and puts each named university in that country on the list, including long shots. If one is dropped, the reason is written down and told to the student. The intake workflow now says the same. [intake_report.md](product_report/intake_report.md) caught up on 2026-10-25.
 
 - **Severity:** group B. It does not produce a wrong fact, but it lets a list go out without the
   names the student asked for.
@@ -607,7 +607,7 @@ are the two worth reading first, because both affect what a student receives.
 
 #### - [x] I2. Sales material lists halal food and prayer facilities as a strength; the form never asks
 
-- **Done 2026-10-25.** Evan added "Halal food" and "Prayer facilities" as ticks on "Any other perferences?" (title unchanged, typo included, so the program still finds it). Checked in `tools/ingest_form_csv.py`: the "halal" and "prayer" keys file them as `diet_halal` and `worship_facilities`, and the food key is "good food", so "Halal food" does not land as food quality. No program change. `workflows/01_intake.md` updated. The tiers file's wording is now true for new responses; older responses were never asked.
+- **Done 2026-10-25.** Evan added "Halal food" and "Prayer facilities" as ticks on "Any other perferences?" (title unchanged, typo included, so the program still finds it). Checked in `tools/ingest_form_csv.py`: the "halal" and "prayer" keys file them as `diet_halal` and `worship_facilities`, and the food key is "good food", so "Halal food" does not land as food quality. No program change. `workflows/01_intake.md` and [intake_report.md](product_report/intake_report.md) updated. The tiers file's wording is now true for new responses; older responses were never asked.
 
 - **Severity:** group A. A customer could notice.
 - **Where it is claimed:** [product_review_2026-09-25.md:61](product_review_2026-09-25.md#L61)
@@ -635,11 +635,15 @@ are the two worth reading first, because both affect what a student receives.
   student's limit. With no limit there is nothing to compare, so the warning can never appear for
   these students.
 - **Why each one is blank:** 5 answered "Not Sure". 1 answered "Budget is not a problem". 1 answered
-  "> 1,000,000", which is a minimum and not a limit. The other 5 have no saved answer at all (older
-  records, from before the program started keeping the original wording).
-- **Why it matters:** the first three reasons are honest answers. The last five are unknown: I
-  cannot tell whether the student was never asked or the answer was lost.
-- **To decide:** whether to ask the 5 "Not Sure" students and the 5 with no saved answer for a band.
+  "> 1,000,000", which is a minimum and not a limit. The other 5 are older records from before the
+  budget bands. *Corrected 2026-10-25: this line used to say they had no saved answer. They do.*
+  Three typed an answer the program could not turn into a number ("unsure yet…", "~ 1 million?
+  Idk", and one saying the fees are fine but daily living costs are the worry). Two have a
+  hand-written note saying no limit was given (one adds that scholarships became required).
+- **Why it matters:** all twelve are honest "no fixed limit" answers, not lost data. Two carry a
+  hint worth acting on: "~ 1 million" is close to a real figure, and "living costs are the worry"
+  points at a monthly limit, not a total one.
+- **To decide:** whether to ask the 5 "Not Sure" students, and the two with a hint, for a band.
 
 #### - [ ] I4. Three student records hold the budget as text where a number is expected
 
@@ -750,7 +754,11 @@ sorted by hand, the casual consent wording). They are in the "What is still roug
 
 ### Things in intake_report.md that I did not verify
 
-#### - [ ] U1. "The poster advertises it as taking two minutes"
+#### - [x] U1. "The poster advertises it as taking two minutes"
+
+- **Decided 2026-10-25.** Evan is changing the claim to five minutes. The report now says "about
+  five minutes"; the poster (line 772) is Evan's to update. The form has about 23 items since the
+  lesson-language question was added.
 
 - **Where:** [intake_report.md](product_report/intake_report.md), under "What the student sees".
 - **Where the figure came from:** the poster

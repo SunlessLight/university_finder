@@ -1,9 +1,9 @@
 # Intake report — how a student gets into the system
 
-*Written 2026-10-10. This explains the first stage of the service, called "intake", for a reader with
-no technical background. It is based on the written procedure for the stage, the four small programs
-that carry it out, the question list of the live form, and counts taken from the 29 student records
-on file today.*
+*Written 2026-10-10, updated 2026-10-25. This explains the first stage of the service, called
+"intake", for a reader with no technical background. It is based on the written procedure for the
+stage, the four small programs that carry it out, the question list of the live form, and counts
+taken from the 29 student records on file.*
 
 ---
 
@@ -29,7 +29,8 @@ it will not look wrong.
 
 The service takes a Malaysian student who is finishing A-Levels (the two-year pre-university course
 many Malaysian students take before a degree) and helps them choose where to study. It works in
-four stages, and each stage narrows the options:
+four main stages, each narrowing the options, plus one extra step once the student knows where they
+are applying:
 
 | Stage | Plain name | What comes out |
 |---|---|---|
@@ -37,8 +38,9 @@ four stages, and each stage narrows the options:
 | 3 | The long list | A spreadsheet of candidate universities, scored and with warnings |
 | 4 | The deep reports | A detailed written report on each university the student shortlists |
 | 5 | The decision | A recommendation, an application plan and a calendar of deadlines |
+| 8 | Application prep | A step-by-step "how to apply" guide for each country they are applying to |
 
-There is no Stage 2. Stages 1 and 2 used to be two separate interviews, one about the student and
+There is no Stage 2 (and no Stages 6 or 7). Stages 1 and 2 used to be two separate interviews, one about the student and
 one about their wishes. They were merged into a single form in July 2026, and the other stages kept
 their old numbers.
 
@@ -51,7 +53,7 @@ cannot recommend a university without knowing a student's grades and budget.
 ## What the student sees: one form
 
 The student opens a Google Form (a free online questionnaire tool from Google) on their phone.
-The poster advertises it as taking two minutes. There is no payment, no account to create and no
+The poster advertises it as taking about five minutes. There is no payment, no account to create and no
 call to book.
 
 Here is what it asks, and why each question earns its place.
@@ -64,14 +66,15 @@ Here is what it asks, and why each question earns its place.
 | **Expected grade in each subject** (a grid of 12 A-Level subjects; they skip the ones they don't take) | To judge which universities they can realistically get into. |
 | **The month and year their real results come out**, and whether they are applying with forecast or actual results | To know how firm the grades are. |
 | **English test taken, and the score** | Most overseas universities require one. |
+| **What language most of their lessons were taught in** (added 2026-10-25) | Some universities let a student skip the English test if they were taught in English. A student knows their school's teaching language better than they know how a university would count it. |
 | **Their desired course** (one pick from a list of 38) | To know what to search for. |
 | **Which countries they would consider**, and which one matters most | To know where to search, and where to start. |
 | **How important each of eight things is**: cost, scholarships, university ranking, course ranking, job prospects, recognition back home, location, hands-on experience. Each gets "Must have", "Important" or "Nice to have". | To score universities according to *this* student's taste and not a generic league table. |
 | **Total budget for the whole degree** (three bands: under RM 500,000 / RM 500,000 to 1,000,000 / above RM 1,000,000) | To warn when a university costs more than the family can pay. |
 | **Is a scholarship a must?** (Yes / No) | If yes, a university with no scholarship route is not a real option. |
 | **Do they want to work abroad afterwards?** | It changes which countries make sense. |
-| **Location and lifestyle preferences** (for example low crime, a Malaysian community nearby, good public transport) | To describe daily life accurately in the reports. |
-| **Optional:** other fields they are curious about, universities already in mind, achievements and activities | To compare their activities against what admitted students typically have. |
+| **Location and lifestyle preferences** (for example low crime, a Malaysian community nearby, good public transport, halal food, prayer facilities) | To describe daily life accurately in the reports, and to know which students need halal food or a place to pray. |
+| **Optional:** other fields they are curious about, universities already in mind, achievements and activities | Universities they name are always put on their long list (since 2026-10-13), because students judge a list by whether the names they expected are on it. Activities are compared against what admitted students typically have. |
 | **Consent** | Permission to store and use their answers. Without it we keep nothing. |
 
 ### What we chose not to ask
@@ -244,7 +247,9 @@ Intake handles young people's personal information and feeds every later stage, 
 fail safely. In plain terms:
 
 - **No consent, no record.** If the consent box is not ticked, the program skips that person. An
-  explicit "no" cannot be overridden by anyone.
+  explicit "no" cannot be overridden by anyone. There is one switch for internal testing with
+  friends, on a form with no consent question, that lets a blank answer through; it is never meant
+  for real students.
 - **It never invents an answer.** A blank stays blank. A blank is an open question; a made-up grade
   or budget is a wrong answer that looks right.
 - **It never overwrites an existing student** unless told to in so many words. A student's folder
@@ -285,7 +290,7 @@ handles.
 
 ---
 
-## Where things stand today (2026-10-10)
+## Where things stand today (2026-10-25)
 
 - **29 students** have a record on file.
 - **All 29** have been fully reviewed; none has an unresolved "needs review" item.
@@ -311,18 +316,21 @@ An honest list, most important first.
    hands-on experience last). Within a tie, that order was not chosen by the student.
 3. **Grades are taken on trust.** We have no way to verify them at this stage. We label them
    instead.
-4. **Some needs are not asked about.** The record has room for halal food, prayer facilities,
-   disability access, mental health support and LGBT-friendliness, but the current form does not
-   ask about any of them. Our sales material names halal food and prayer facilities as a strength,
-   so this gap should be closed or the claim softened.
-5. **"Universities already in mind" is collected but not yet used.** The answer is stored, and
-   nothing in the research procedure reads it. Eight of the 29 students filled it in. Students
-   have told us they judge a list by whether
-   the famous names they expected are on it, so this is worth wiring up.
-6. **12 of 29 students have no spending limit on record.** Seven gave an answer that carries no
+4. **Some needs are not asked about.** The record has room for disability access, mental health
+   support, staying close to family and LGBT-friendliness, but the form does not ask about any of
+   them. Halal food and prayer facilities were added as ticks on 2026-10-25, which makes the sales
+   material's claim true for new students. Students who filled the form before that date were never
+   asked, so a blank for them means "not asked", not "no need".
+5. **The teaching-language answer is collected but not yet read.** The new question about lesson
+   language (added 2026-10-25) lands in the spreadsheet, but the program does not copy it into the
+   student's record yet. Until it does, a person has to look it up by hand when an English-test
+   waiver depends on it.
+6. **12 of 29 students have no spending limit on record.** Seven picked an answer that carries no
    limit ("not sure", "budget is not a problem" or "above RM 1,000,000"); the first two options
-   have since been removed from the form. The other five are older records with no saved answer.
-   For all twelve the "over budget" warning can never appear.
+   have since been removed from the form. The other five are older records from before the budget
+   bands existed: three typed an answer that gave no usable figure (for example "unsure yet"), and
+   two have a note saying no limit was given. For all twelve the "over budget" warning can never
+   appear.
 7. **The consent wording is casual.** That was fine while testing with friends. Before charging
    money we need a proper consent sentence and a disclaimer, to comply with Malaysia's PDPA
    (Personal Data Protection Act 2010).
