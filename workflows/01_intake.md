@@ -239,6 +239,14 @@ fine — but keep the substring in bold intact.
 
 Four commands, in this order. Steps 1-3 are safe to repeat; step 4 is the one that changes the sheet.
 
+0. **After any form edit, check the live questions first** (read-only):
+   ```powershell
+   python tools/fetch_form_questions.py --check   # saves forms/intake.json, checks it against this tool's maps
+   ```
+   Prints every unmapped title or option (budget ceilings shown per option) and exits 1 on a broken
+   consent question. `git diff forms/` shows what changed on the form. Fix `ingest_form_csv.py` or the
+   form *before* the first student answers the new version.
+
 1. **Fetch what's pending** — pulls only responses that haven't been ingested yet, straight from the
    responses spreadsheet, into `data/form/responses.csv` (gitignored — it's PII):
    ```powershell

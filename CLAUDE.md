@@ -23,6 +23,7 @@ When you change how a stage runs, check whether these need updating too.
 python tools/progress_dashboard.py                    # which stage every student is at
 python tools/shortlist_schema.py --contract           # the CSV/fragment contract (never read the source for it)
 python tools/check_master_list.py --student <slug>    # gate before a list goes to a student
+python tools/fetch_form_questions.py --check          # live form questions -> forms/*.json, checked vs ingest
 python -m unittest tests.test_calendar_dates -v       # the only automatic tests (calendar dates)
 ```
 
@@ -68,7 +69,7 @@ Privacy and wording:
 
 ## Things that break silently
 
-- If a form question's wording changes, its `QUESTION_MAP` substring in `ingest_form_csv.py` stops matching. Looks like: one field null for **every** respondent. Fix the map (`--check-headers`), not the profiles.
+- If a form question's wording changes, its `QUESTION_MAP` substring in `ingest_form_csv.py` stops matching. Looks like: one field null for **every** respondent. Fix the map, not the profiles. Catch it before anyone answers: `fetch_form_questions.py --check` after every form edit.
 - If a report JSON's course isn't exactly the CSV `Course` string, `build_report.py` course mode still renders but never flips the row to Finalist. Looks like: report exists, row still Shortlist.
 
 ## Generated files: never edit by hand
@@ -79,6 +80,7 @@ Privacy and wording:
 
 - Current status: the **Now** box at the top of `STATUS.md`. Start a session with `/catchup` (or `/catchup <slug>` for one student).
 - At the end of a session that changed files or decided something, add an entry to `plans/build-log.md` (done / decisions / problems / next step) and update the Now box.
+- Then mirror it to Notion, without asking, so Evan can follow on his phone: rewrite the "Shortlisted — Now" page (`40525bdf03ad8167895cf78073e5a1ac`, under 🗓️ Everything) from the Now box, and bring the Tasks database in line with the open items in `business/launchx/status.md` (new item → new task, ticked → Done, new date → Due). Files are the source; Notion is the copy. Only touch tasks that match an item in the files (the rest are Evan's own) and only `Area = University Research Agent`. End the reply with "Notion updated" or why not. Addresses: `workflows/notion_sync.md`.
 
 ## Decision log
 
@@ -86,6 +88,7 @@ Log meaningful decisions (direction changes, trade-offs, things worth rememberin
 
 ## Where the detail lives
 
+- Google Sheets (survey + leads, Clients+feedback, students' sheets): read with the Google Drive connector (`search_files`, then `read_file_content`); no tool needed. Long cells come back cut short, so the feedback CSVs still go through `fetch_feedback.py`. Forms' questions: `forms/*.json`.
 - `workflows/00_overview.md`: read first for any pipeline run (stages, tool reference, subagent fences, guardrails in full).
 - `business/additionals.md`: known problems not yet fixed. Start at its "Start here" index; leftovers a task won't fix go there.
 - `business/launchx/mentor.md` + `status.md`: the business mentor brief and LaunchX state (`/mentor`).

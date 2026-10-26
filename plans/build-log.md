@@ -80,3 +80,9 @@ Entry format:
 - Decisions (and why): budget stays secondary, no new warnings; build the form tool. See `decisions/log.md`.
 - Problems / lessons: the budget question is found by "total budget"/"whole degree" in its title, so a rename to "What's the limit?" would blank every budget. Plain-digit options already parse today, but two only via the legacy fallback.
 - Next step: group 2 step 11.
+
+## 2026-10-26 · Form-questions tool, Sheets via Drive, Notion mirror
+- Done: I10 built (`tools/fetch_form_questions.py`, `questions` action in `Code.gs`, docs in README setup step 5, `01_intake.md` step 0, CLAUDE.md). `--check` tested on a made-up intake form: caught every planted problem and shows the I11 budget trap (500000 / 1500000 only via the legacy fallback). Google Sheets need no tool: the Drive connector reads them (noted in CLAUDE.md). New Notion page "Shortlisted — Now" under Everything; CLAUDE.md → Status now mirrors the Now box and matching tasks to Notion at session end, and `/catchup` pulls Evan's phone ticks back first. Bunting deadline (27 Oct), payer replies and the done nudge logged.
+- Decisions (and why): Notion is a one-way copy of the files except task ticks; summary on one page, tasks stay in the Tasks database. See `decisions/log.md`.
+- Problems / lessons: form settings like "collect email addresses" are not form items, so the question list never shows the email column; the check must not require it. The auto-mode classifier blocked one Notion task rename ("27 testers" → 29); the other went through. `.env.example` could not be opened, so it lacks the new FORM_ID keys. The sample spreadsheet shows "$" on the MYR total column.
+- Next step: bunting design by 27 Oct. Then Evan's part of I10 (paste Code.gs, New version, Allow, form IDs in .env) and one real `--check`; then I12 and I11.

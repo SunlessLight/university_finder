@@ -1,5 +1,5 @@
 /**
- * Code.gs — pending-response feed for the university-finder Stage 1 intake.
+ * Code.gs — pending-response feed (and form-question reader) for the university-finder Stage 1 intake.
  *
  * This file is the SOURCE OF TRUTH for the script that lives inside the Google
  * Form's responses spreadsheet. Edit it here, commit it, then paste it into the
@@ -12,6 +12,16 @@
  *
  *     ?action=pending&token=...              -> {headers, rows, row_numbers}
  *     ?action=confirm&token=...&rows=12,13   -> {stamped:[12,13]}
+ *
+ *   A third, read-only action serves a form's QUESTIONS (not answers) to
+ *   tools/fetch_form_questions.py, so a session can see the live wording and
+ *   options without Evan describing them (backlog I10):
+ *
+ *     ?action=questions&token=...            -> the form linked to this sheet
+ *     ?action=questions&token=...&form=<id>  -> any form Evan can edit, by ID
+ *
+ *   Reading forms other than the linked one needs the full Forms permission
+ *   (Apps Script has no read-only Forms scope). This script never edits a form.
  *
  *   "Not ingested yet" is recorded IN THE SHEET, in a column called
  *   `Ingested at` (see INGESTED_HEADER). Blank cell = pending. A timestamp =
@@ -75,6 +85,9 @@ function doGet(e) {
     }
     if (action === 'confirm') {
       return jsonOut(confirmRows(params.rows || ''));
+    }
+    if (action === 'questions') {
+      return jsonOut(getQuestions(params.form || ''));
     }
     return jsonOut({ error: 'unknown_action', detail: action });
   } catch (err) {
@@ -185,7 +198,87 @@ function confirmRows(rowsParam) {
 }
 
 
+/**
+ * Every item of a form, in form order: title, type, description, required, and
+ * its answer options. Read-only.
+ *
+ * With no formId, opens the form linked to this responses sheet. Layout items
+ * (section headers, page breaks, images, videos) are kept, because their titles
+ * explain where a question sits, but they carry no `required` or options.
+ *
+ * Choice items report `other: true` when the form offers a free-text "Other"
+ * box: that answer reaches the sheet as whatever the student typed.
+ */
+function getQuestions(formId) {
+  var form;
+  if (formId) {
+    form = FormApp.openById(formId);
+  } else {
+    var url = SpreadsheetApp.getActiveSpreadsheet().getFormUrl();
+    if (!url) throw new Error('No form is linked to this sheet; pass form=<id>.');
+    form = FormApp.openByUrl(url);
+  }
+
+  var items = form.getItems().map(function (item) {
+    var type = String(item.getType());
+    var out = {
+      title: item.getTitle(),
+      type: type,
+      description: item.getHelpText()
+    };
+    var typed = asTyped(item, type);
+    if (typed && typed.isRequired) out.required = typed.isRequired();
+
+    if (type === 'MULTIPLE_CHOICE' || type === 'CHECKBOX' || type === 'LIST') {
+      out.options = typed.getChoices().map(function (c) { return c.getValue(); });
+      if (type !== 'LIST') out.other = typed.hasOtherOption();
+    } else if (type === 'GRID' || type === 'CHECKBOX_GRID') {
+      out.rows = typed.getRows();
+      out.columns = typed.getColumns();
+    } else if (type === 'SCALE') {
+      out.options = [typed.getLowerBound(), typed.getUpperBound()];
+      out.labels = [typed.getLeftLabel(), typed.getRightLabel()];
+    }
+    return out;
+  });
+
+  return {
+    form_id: form.getId(),
+    title: form.getTitle(),
+    description: form.getDescription(),
+    items: items
+  };
+}
+
+
 /* ------------------------------------------------------------------ helpers */
+
+
+/**
+ * The typed view of a form item (e.g. item.asCheckboxItem()), or null for
+ * layout items, which have no required flag or options.
+ */
+function asTyped(item, type) {
+  var casters = {
+    MULTIPLE_CHOICE: 'asMultipleChoiceItem', CHECKBOX: 'asCheckboxItem', LIST: 'asListItem',
+    GRID: 'asGridItem', CHECKBOX_GRID: 'asCheckboxGridItem', SCALE: 'asScaleItem',
+    TEXT: 'asTextItem', PARAGRAPH_TEXT: 'asParagraphTextItem', DATE: 'asDateItem',
+    TIME: 'asTimeItem', DATETIME: 'asDateTimeItem', DURATION: 'asDurationItem',
+    RATING: 'asRatingItem'
+  };
+  var name = casters[type];
+  return name && typeof item[name] === 'function' ? item[name]() : null;
+}
+
+
+/**
+ * Run once from the editor (select it, click Run) if Google never asked for the
+ * Forms permission during deploy. It only lists the linked form's title.
+ */
+function authorizeForms() {
+  Logger.log(getQuestions('').title);
+}
+
 
 
 /**

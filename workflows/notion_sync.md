@@ -29,7 +29,8 @@ is scoped to `Area = University Research Agent`.** Never touch a row from anothe
 | Tasks database | `collection://7d1af2d7-87c3-4eb8-a2d5-085093eaafae` |
 | Projects database | `collection://6f27534c-773d-4659-81f7-d426d9a101c3` |
 | Project "Clients" | `3bf25bdf03ad80df91e0e37d3282a821` |
-| Project "URP Marketing" | `3bf25bdf03ad8082ab61f4bf95f9f9ba` — Evan's own marketing to-dos; read-only for this workflow |
+| Project "URP Marketing" | `3bf25bdf03ad8082ab61f4bf95f9f9ba` — Evan's own marketing to-dos; read-only for this workflow (the end-of-session mirror in `CLAUDE.md` → Status does update the tasks that match `business/launchx/status.md`) |
+| Page "Shortlisted — Now" | `40525bdf03ad8167895cf78073e5a1ac` — copy of the STATUS.md Now box, rewritten at the end of each session (`CLAUDE.md` → Status) |
 | Stage card "Stage 1 Intake" | `3b425bdf03ad8039aca2f4c113b81743` |
 | Stage card "Stage 2 Longlist" | `3b425bdf03ad806baff0f886e6f4ac89` |
 | Stage card "Stage 3 Report" | `3b425bdf03ad800e84e3c092c5664004` |

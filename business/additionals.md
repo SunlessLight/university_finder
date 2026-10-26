@@ -85,7 +85,7 @@ fresh session and type:*
 | **1** | ~~Group 1 step 1, then group 2 step 1 (R1, R3, plus R8 if Evan said yes)~~ **done** | ~~Group 3 step 1 (R4, R6, R7)~~ **done** | Done by 2026-10-17 |
 | **2** | ~~Group 1 step 2 (S8, S10, Task 9)~~ **done 2026-10-16** | ~~Group 2 step 2 (S4)~~ **done 2026-10-17** | Done |
 | **Now** | ~~Group 1 step 6 (R13's second half: the sample pack)~~ **done 2026-10-20** | — | Done |
-| **Next** | ⭐ Group 2 step 11 (I10, I12, I11: form-questions tool, consent, budget options) | — | Now |
+| **Next** | ⭐ Group 2 step 11 (~~I10~~ code done 2026-10-26, waiting on Evan's redeploy; then I12, I11: consent, budget options) | — | Now |
 | **3** | ~~Group 1 step 3 (S6, S7, P1)~~ **done 2026-10-18** | Group 2 step 3 (S9's program half, S3 if decided, R5) | B: after group 2 step 11, before the first paid form is read in (paid lists due 10 Nov) |
 | **4** | Group 1 step 4 (I9, L2) | Group 2 step 4 (D2, one student) | After the pitch. A: Evan's decision on L2. B: round 1 done and Evan's decision on D2. Never the same student in both sessions |
 | **5** | ⭐ Group 1 step 7 (re-score, part 1) | ⭐ Group 2 step 7 (ABET lookup, part 1) | After the pitch |
@@ -93,6 +93,7 @@ fresh session and type:*
 | **7** | ⭐ Group 2 step 9 (the Malaysian register, in Chrome) | Group 2 step 6 (R19, the backfill tool) | After the pitch. Step 6 must finish before round 8, which runs the backfill tool |
 | **8** | ⭐ Group 1 step 9 (the source student's recognition cells, and R17) | Group 2 step 10 (other students, first two or three) | After group 1 step 8 and group 2 steps 7 to 9 |
 | **9** | Group 2 step 10 (the remaining students) | Group 2 step 3 or step 4, whichever is unblocked | After round 8. Never the same student in both sessions |
+| **Later** | R20: Claude as the whole team (a new build; plan it first) | — | After the paid lists go out (10 Nov) |
 | **Any time** | Group 1 step 5 (P2 drafts, I4, R2) | ~~Group 2 step 5 (I2)~~ **done 2026-10-25** | When the step's own "Waits for" is met |
 
 Within a round, sessions A and B never write the same file. A round can start only when its own
@@ -759,6 +760,11 @@ are the two worth reading first, because both affect what a student receives.
 #### - [ ] I10. No session can see the live forms' questions; every form change waits on Evan
 
 - **Added 2026-10-26** at Evan's request.
+- **Built 2026-10-26, not yet proven live:** steps 1, 2, 3 and 5 below are done
+  (`tools/fetch_form_questions.py`, the `questions` action in `Code.gs`; `--check` tested on a
+  made-up form). Left: Evan's part (step 4, written out in `README.md` setup step 5), then one real
+  `--check` run, then tick this. Not built: no form-ID keys added to `.env.example` (the session
+  could not open it).
 - **Severity:** group B. Every form edit so far was found by Evan describing it or by the next
   export. Mismatches with the program only show up after real students have answered: the budget
   options (I5, I11), the "perferences" typo, the consent title (I12), and the lesson-language
@@ -1672,3 +1678,24 @@ R1 is the one to read first, because it has a clock on it.
 - **Suggested fix:** group 2 step 6. The tool moves its applied files to
   `.tmp/<slug>/backfill_applied_<date>/` after a successful write, and the row-filler agent's
   instructions gain the "write early" line.
+
+#### - [ ] R20. Claude only tracks the marketing side; Evan wants it as project manager, business advisor and marketing director
+
+- **Added 2026-10-26** at Evan's request. **Not urgent:** a new build, not a fix (a tool gap, not a
+  stale note).
+- **What exists:** `STATUS.md` and `business/launchx/status.md` cover LaunchX and marketing. The
+  Notion page "Shortlisted — Now" and the end-of-session mirror (`CLAUDE.md` → Status) only touch
+  tasks that match an item in `business/launchx/status.md`. Notion's Area "University Research
+  Agent" has five projects: URP Marketing, Product Developing, Business, Pitch deck and Clients.
+  Product Developing (7 open tasks on 2026-10-26: colour in the report, tier and Reach / Match /
+  Safety explanations, a spreadsheet template, logo and brand, "pick 1 feature", less AI wording,
+  personalised matching) and Business ("Talk to 3 companies") have no copy in the files. Advice
+  already exists in the `mentor` agent and `/mentor`; social posts in `/social`.
+- **What Evan wants:** every project in that Area kept in the files and in sync with Notion, and
+  Claude running it all: plans and deadlines (project manager), the business calls (advisor),
+  campaigns and content (marketing director).
+- **Suggested start:** a plan-mode session (brainstorming first). Decide the file layout first,
+  e.g. one `business/projects/<name>.md` per Notion project with its open tasks. Then widen the
+  end-of-session mirror and `/catchup` to all five projects. Build on `mentor` and `/social`
+  rather than new roles from scratch.
+- **When (default):** after the paid lists go out on 10 Nov.

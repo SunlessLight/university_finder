@@ -14,7 +14,7 @@ This is a read, not research. **Never search the web to catch up.** Don't enter 
 
 ## Steps: whole project (no argument)
 
-1. Read the Now box at the top of `STATUS.md`.
+1. Read the Now box at the top of `STATUS.md`. Then pull Evan's phone ticks: query the Notion Tasks database (`Area = University Research Agent`, addresses in `workflows/notion_sync.md`) for tasks marked Done that are still open in `business/launchx/status.md`, and tick them there. This is the one place Notion feeds the files.
 2. Read the newest entry in `plans/build-log.md`.
 3. Check the note against the real files. For each claim, open the file that proves it:
 
