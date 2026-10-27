@@ -86,7 +86,7 @@ fresh session and type:*
 | **2** | ~~Group 1 step 2 (S8, S10, Task 9)~~ **done 2026-10-16** | ~~Group 2 step 2 (S4)~~ **done 2026-10-17** | Done |
 | **Now** | ~~Group 1 step 6 (R13's second half: the sample pack)~~ **done 2026-10-20** | — | Done |
 | **Next** | ~~Group 2 step 11 (I10, I12, I11: form tool, consent, budget options)~~ **done 2026-10-27** | — | Done |
-| **3** | ~~Group 1 step 3 (S6, S7, P1)~~ **done 2026-10-18** | ~~Group 2 step 3 (S9's program half, R5)~~ **done 2026-10-27**; S3 waits for Evan | B: after group 2 step 11, before the first paid form is read in (paid lists due 10 Nov) |
+| **3** | ~~Group 1 step 3 (S6, S7, P1)~~ **done 2026-10-18** | ~~Group 2 step 3 (S9's program half, R5, S3)~~ **done 2026-10-27** | B: after group 2 step 11, before the first paid form is read in (paid lists due 10 Nov) |
 | **4** | Group 1 step 4 (I9, L2) | Group 2 step 4 (D2, one student) | After the pitch. A: Evan's decision on L2. B: round 1 done and Evan's decision on D2. Never the same student in both sessions |
 | **5** | ⭐ Group 1 step 7 (re-score, part 1) | ⭐ Group 2 step 7 (ABET lookup, part 1) | After the pitch |
 | **6** | Group 1 step 8 (re-score, part 2, and Sheffield) | Group 2 step 8 (ABET lookup, part 2) | After round 5 |
@@ -109,7 +109,7 @@ where it says so.
 | ~~Look MIT up by hand on the Malaysian recognition register~~ **Done 2026-10-17 in Chrome by a session** | S4 | Done |
 | Who looks foreign degrees up on the register from now on: the main session in Chrome (written in as the default), or Evan by hand | S4 | Nothing; a one-line change in `sources.md` and the report workflow if Evan prefers to do it himself |
 | ~~Where to ask for years of schooling taught in English~~ **On the form, as a lesson-language dropdown; Evan added it 2026-10-25** | S9 | The S9 part of group 2 step 3 |
-| Where to ask for family income: on the form, or only when a student shortlists a university that gives need-based aid. Default: only at shortlist (it is sensitive) | S3 | The S3 part of group 2 step 3 |
+| ~~Where to ask for family income~~ **Never; reports show the university's own income-band examples + net price calculator + CSS Profile links. Evan, 2026-10-27** | S3 | Done |
 | ~~Count the budget options on the live form (three or four)~~ **Three, 2026-10-25; workflow fixed** | I5 | Done |
 | ~~New budget options~~ **`500000` / `1000000` / `1500000`, plus `Not sure` recommended, 2026-10-26** | I11 | Group 2 step 11 |
 | ~~Whether to ask students with no spending limit for one~~ **Evan asks the five older-record students, 2026-10-26** | I3 | Nothing; update their files when they answer |
@@ -152,7 +152,7 @@ where it says so.
 |---|---|---|---|---|
 | ✅ **1** | **Done by 2026-10-17.** R3, then R8 if Evan said yes | `workflows/04_university_report.md`, `workflows/05_decide_and_apply.md`, `.claude/commands/decide.md`, `README.md`, `workflows/00_overview.md`. R8: a new `tests/test_calendar_dates.py` | nothing (R8: Evan's yes) | Small. Before the next `/decide` run |
 | ✅ **2** | **Done 2026-10-17.** S4 | `workflows/sources.md`, plus `workflows/04_university_report.md` if the lookup method changes | Evan's hand lookup of MIT, and step 1 done (both write the report workflow) | Small. After the pitch is fine |
-| ✅ **3** | **Done 2026-10-27** except S3 (Evan's income decision still open; it can run as its own small step). S9's years rule and UK half, R5. New entry R21 | `tools/ingest_form_csv.py`, `tools/init_student.py`, the profile template, `workflows/01_intake.md`, `workflows/08_application_prep.md` | S9 and I5: nothing (decided 2026-10-25). S3: Evan's decision on income; skip it if still open | Medium. A program change. **Before the first paid student's form is read in** (paid lists due 10 Nov) |
+| ✅ **3** | **Done 2026-10-27.** S9's years rule and UK half, R5, S3 (no income asked; income-band examples + calculator link instead). New entry R21 | `tools/ingest_form_csv.py`, `tools/init_student.py`, the profile template, `workflows/01_intake.md`, `workflows/08_application_prep.md` | S9 and I5: nothing (decided 2026-10-25). S3: Evan's decision on income; skip it if still open | Medium. A program change. **Before the first paid student's form is read in** (paid lists due 10 Nov) |
 | **4** | D2 for one student | that student's folder | Evan's decision on D2 (group 1 step 1 and group 2 step 1 are done) | Medium. Repeat once per student (five). After the pitch |
 | ✅ **5** | **Done 2026-10-25, no session needed:** Evan added the ticks to the form (I2) | — | — | — |
 | **6** | R19: after a successful write, `apply_backfill.py` moves the fragments it applied into `.tmp/<slug>/backfill_applied_<date>/`. Add one line to `workflows/03_discover_longlist.md` → "Backfilling an existing longlist", and to `.claude/agents/row-filler.md`: write the fragment early and update it as you go | `tools/apply_backfill.py`, `workflows/03_discover_longlist.md`, `.claude/agents/row-filler.md` | nothing | Small. A program change, so after the pitch. Not while another session is running a backfill |
@@ -274,7 +274,7 @@ Notes on the lanes:
 
 | What | Entries | Needs first |
 |---|---|---|
-| Give the student record a place for family income and for years of schooling taught in English | S3, S9 (the rest) | Evan's decision on where to ask. Lanes 2 and 3 finished, because it changes the same files. |
+| ~~Give the student record a place for family income and for years of schooling taught in English~~ **Done 2026-10-27: years added; income never collected (Evan)** | S3, S9 (the rest) | Evan's decision on where to ask. Lanes 2 and 3 finished, because it changes the same files. |
 | Correct the line about the Malaysian recognition register | S4 | The hand lookup (human lane). Lane 3 finished. |
 | Correct the budget options in the intake workflow | I5 | Evan counts the options on the live form. Lane 3 finished. |
 | Add the two ticks to the form, or reword the tiers file | I2 | Evan's choice. If rewording: lane 4 finished. |
@@ -297,7 +297,7 @@ on Evan's own computer. In date order.
 | 4 | ~~Remind the finished student that Cambridge's own form is due 22 October.~~ **Done:** on 2026-10-15 the student was filling it in (college: Queens'). V1 re-read the date: 22 October, 6pm UK time, which is 1am on 23 October in Malaysia. | D5, V1 | Before 22 October |
 | 5 | Say whether the Oxford row stays on that student's list as a finalist or is marked as dropped. | D5 | Any time |
 | 6 | ~~Look at the OneDrive icon on the project folder: are student records being copied to Microsoft's servers?~~ **Done 2026-10-15:** Evan's call, not a concern. | U2 | Done |
-| 7 | Decide where family income ~~and years of schooling in English~~ get asked: on the form, or only when a student shortlists a university that needs them. **English half done 2026-10-25** (on the form). Income still open. | S3, S9 | Before group 2 step 3 |
+| 7 | Decide where family income ~~and years of schooling in English~~ get asked: on the form, or only when a student shortlists a university that needs them. **English half done 2026-10-25** (on the form). **Income decided 2026-10-27: never asked.** | S3, S9 | Before group 2 step 3 |
 | 8 | ~~Add "Halal food" and "Prayer facilities" as ticks on the form, or choose to reword the tiers file.~~ **Done 2026-10-25** | I2 | Done |
 | 9 | ~~Open the live form and count the budget options (three or four).~~ **Three, 2026-10-25** | I5 | Done |
 | 10 | Decide whether to ask the 5 "Not Sure" students and the 2 with a hint (see I3) for a spending limit, and ask one student whether RM 800,000 is their real limit. | I3, I4 | Any time |
@@ -1203,7 +1203,9 @@ S1 is the one to read first, because it has a date on it.
   permanent folder when a report is built; have the calendar read both kinds of file; match a US
   file by university name alone. Fix the note in B1 while there.
 
-#### - [ ] S3. A report's headline cost rests on a family income the student record does not hold
+#### - [x] S3. A report's headline cost rests on a family income the student record does not hold
+
+- **Done 2026-10-27 (group 2 step 3).** Evan decided: never collect family income. A need-based US finalist's report now shows 2–3 of the university's own income-band examples (USD + approximate MYR, dated), its net price calculator link (or "none for international students") and the CSS Profile link, instead of one "your share" figure. Changed: `workflows/04_university_report.md` step 10 and its `net_cost` example, `workflows/08_application_prep.md` Financial aid `covers`, the `application-guide` skill, and the `net_cost` sample in `tools/build_report.py`. Left over: existing reports (the MIT one) keep their old figure until they are rebuilt.
 
 - **Severity:** group B, and it needs a decision from you before any program changes.
 - **What is true:** the source student's record (`profile.json`, the file intake produces) has no

@@ -131,7 +131,10 @@ For each Shortlist/Finalist uni in the region, from official sources:
 - **Financial aid** — capture it into the object's fixed keys: **`model`** (need-blind vs need-aware for
   internationals), **`cost`** (the official **cost of attendance** — not tuition alone — in USD **and
   approximate MYR**, with the line-item split; this is the denominator "100% of need" is measured
-  against), **`covers`** (what the aid pays for *against that number*, for this student's income band),
+  against), **`covers`** (what the aid pays for *against that number*: the record holds no family
+  income, by design (S3), so give 2–3 of the university's own published income-band examples in
+  USD + approximate MYR, dated, plus its **net price calculator** link or "none for international
+  students"),
   **`your_share`** (the residual aid does **not** pay: the **student contribution** / summer-work or
   term-time-work expectation, flights, visa + SEVIS, health insurance, personal spending),
   **`forms`** (CSS Profile / IDOC / school-specific like PFAA / ISAFA / the with-application rule),

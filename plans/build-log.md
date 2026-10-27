@@ -152,3 +152,9 @@ Entry format:
 - Decisions (and why): the system never collects family income (sensitive; students rarely know it). US need-based finalists get the university's own published income-band examples plus a CSS Profile link instead. Claude suggested also linking each university's net price calculator (the CSS Profile applies for aid, it does not estimate it); waiting on Evan's "go". See `decisions/log.md`.
 - Problems / lessons: none.
 - Next step: on Evan's go, edit `04_university_report.md` (Costs / `net_cost`), `08_application_prep.md` (financial aid `covers`), the `build_report.py` sample line, close S3.
+
+## 2026-10-27 (late, 4) · S3 closed: income-band examples instead of a "your share" figure
+- Done: `workflows/04_university_report.md` step 10 (Costs) and its `net_cost` example, `workflows/08_application_prep.md` Financial aid `covers`, the `application-guide` skill's `covers` line, and the `net_cost` sample + docstring in `tools/build_report.py` now ask for 2–3 of the university's own income-band examples (USD + approx MYR, dated), its net price calculator link (or "none for international students") and the CSS Profile link. S3 ticked in `business/additionals.md` (+ the round table, decisions table, step 3 row, items 277/300). Checked: `build_report.py` parses.
+- Decisions (and why): net price calculator link included (Evan's "go" on Claude's default), because the CSS Profile applies for aid and does not estimate it. Workflow examples use placeholders, not real MIT figures, so a helper can't copy an unverified number.
+- Problems / lessons: none. The existing MIT report still carries its old income-based figure; it changes only when rebuilt.
+- Next step: the R21 sweep after the 10 Nov lists (one student per session).

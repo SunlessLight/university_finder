@@ -60,7 +60,8 @@ Both tools are **read-only against `master_list.csv`** — never let a guide fli
 - **Financial aid as a fixed-label object.** Write `financial_aid` as an object with the keys
   `model` (need-blind vs need-aware for internationals + whether asking hurts you), `cost` (the
   official **cost of attendance** in USD **+ approximate MYR**, with the line-item split), `covers`
-  (what the aid pays for, for this student's band, *stated against that cost*), `your_share` (what
+  (what the aid pays for, *stated against that cost*, as the university's own income-band examples
+  plus its net price calculator link; the record holds no family income, by design), `your_share` (what
   aid does **not** pay — the student contribution / work expectation, flights, visa + SEVIS, health
   insurance), `forms` (CSS Profile / IDOC / PFAA / ISAFA / the with-application rule), `documents`
   (parent income/tax, translated), and `dates` (any aid-specific timing not already in `deadlines`).

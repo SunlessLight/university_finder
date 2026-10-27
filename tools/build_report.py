@@ -60,7 +60,7 @@ whole-institution Snapshot:
       "setting": "urban | college town | rural",       # university mode only
       "type": "private research university | public | liberal arts college",  # university mode only
       "size": "~4,500 undergrads",                     # university mode only
-      "net_cost": "~RM XXk/yr after aid (approx)",     # university mode only, est. your-share MYR
+      "net_cost": "By family income: ~RM Xk-Yk/yr (uni's examples, 20XX; approx)",  # university mode only; no single your-share (S3)
       "overall_rank": "...", "subject_rank": "...",    # subject_rank is course mode only
       "application_system": "...", "admission_likelihood": "...",
       "priorities": "1. Funding · 2. Hands-on · 3. ...",  # optional; shown in the Snapshot
@@ -233,7 +233,7 @@ def render_snapshot(data):
 
 def render_university_snapshot(data):
     """Whole-institution snapshot (no course/subject rank; adds setting, type & size,
-    and the est. your-share net cost in MYR). Setting is its own row, not folded into
+    and the net cost in MYR by income band). Setting is its own row, not folded into
     Location in parentheses."""
     location = " / ".join(x for x in [data.get("country"), data.get("city")] if x)
     type_size = " · ".join(x for x in [data.get("type"), data.get("size")] if x)

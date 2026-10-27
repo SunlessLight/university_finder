@@ -284,8 +284,13 @@ a non-US example so you don't skip them for a UK or Singapore finalist.
    sightseeing**, plus the **Malaysian / halal / prayer / religious-community** angle. Surface
    `needs`-flagged items prominently; otherwise treat as reassuring background, not a decision driver.
 10. **Costs (full)** — tuition (per year + full programme), living, application fees, deposit, and
-    the **total cost of attendance in MYR**; for a US finalist, the realistic **your-share in MYR**
-    (not the sticker price — the residual after aid).
+    the **total cost of attendance in MYR**. For a need-based US finalist, **no single "your-share"
+    figure**: the student record holds no family income, by design (S3, Evan 2026-10-27). Give
+    instead (a) **2–3 of the university's own published income-band examples** ("family income
+    ~USD X → pays ~USD Y/yr"), each with approximate MYR and the page's year; (b) its **net price
+    calculator** link (e.g. MIT → MyinTuition), or "none for international students" if it has
+    none or excludes them; (c) the **CSS Profile** link (the aid application, not an estimate).
+    Never back-solve a figure from an income typed into `status.md` or a chat.
 11. **Scholarships & financial aid** — university + government/external + **Malaysian sponsors (JPA,
     MARA, Yayasan, PTPTN)**, each with eligibility; for a US finalist, also **need-blind vs
     need-aware for internationals**, meets-full-need or not, and merit awards.
@@ -391,7 +396,7 @@ whole-institution Snapshot and drops `course`; `"sections"` is unchanged:
   "overall_rank": "QS #1 / US News ~#2",
   "application_system": "MIT's own portal (not Common App)",
   "admission_likelihood": "Reach",
-  "net_cost": "~RM 0-40k/yr after aid (income-band dependent; approx)",
+  "net_cost": "By family income: ~RM <low>k–<high>k/yr (MIT's own income-band examples, <year>; approx). See Costs",
   "priorities": "1. Funding · 2. Hands-on · 3. Safe/nature setting",
   "sections": { "identity_mission": "markdown...", "...": "the same 13 keys as course mode" },
   "sources": [ {"title": "...", "url": "...", "authority": "Official", "as_of": "2026"} ]
