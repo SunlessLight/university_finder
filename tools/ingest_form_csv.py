@@ -207,8 +207,19 @@ SUPPORTED_DESTINATIONS = ["UK", "Australia", "USA", "Singapore", "Malaysia", "Ch
 # "not sure" / "no fixed" / "not a problem" entries stay only to correctly parse pre-2026-09-17
 # exports if one is ever reprocessed — they can no longer be produced by the live form.
 #
+# 2026-10-27 (backlog I11): the live form now asks for a LIMIT, as three plain numbers —
+# "500,000" / "1,000,000" / "1,500,000" (Evan typed them with commas). These are matched
+# EXACTLY first, via BUDGET_LIMIT_EXACT below, because substring matching can't tell them
+# apart: "500,000" is inside "1,500,000". "1,500,000" is a real ceiling, unlike the old
+# ">1000000" floor; Evan accepted the "Over budget" flags that brings (the budget is secondary).
+#
 # Matched by substring on the lowercased label, first match wins — so "under" is checked
-# before the range, and the null bands last.
+# before the range, and the null bands last. Kept for pre-2026-10-27 exports.
+BUDGET_LIMIT_EXACT = {  # label with commas/spaces removed -> ceiling (MYR)
+    "500000": 500000,
+    "1000000": 1000000,
+    "1500000": 1500000,
+}
 BUDGET_BAND_NORMALIZE = [
     ("under", 500000),
     ("<", 500000),         # "< 500,000" / "< 500000" (symbol replaced the word "under")
@@ -242,6 +253,9 @@ def _budget_band(answer):
     if not label:
         return None, None
     low = label.lower()
+    exact = BUDGET_LIMIT_EXACT.get(low.replace(",", "").replace(" ", "").removeprefix("rm"))
+    if exact is not None:
+        return exact, label
     for substr, ceiling in BUDGET_BAND_NORMALIZE:
         if substr in low:
             return ceiling, label

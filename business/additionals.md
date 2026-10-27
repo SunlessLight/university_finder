@@ -85,7 +85,7 @@ fresh session and type:*
 | **1** | ~~Group 1 step 1, then group 2 step 1 (R1, R3, plus R8 if Evan said yes)~~ **done** | ~~Group 3 step 1 (R4, R6, R7)~~ **done** | Done by 2026-10-17 |
 | **2** | ~~Group 1 step 2 (S8, S10, Task 9)~~ **done 2026-10-16** | ~~Group 2 step 2 (S4)~~ **done 2026-10-17** | Done |
 | **Now** | ~~Group 1 step 6 (R13's second half: the sample pack)~~ **done 2026-10-20** | — | Done |
-| **Next** | ⭐ Group 2 step 11 (~~I10~~ code done 2026-10-26, waiting on Evan's redeploy; then I12, I11: consent, budget options) | — | Now |
+| **Next** | ~~Group 2 step 11 (I10, I12, I11: form tool, consent, budget options)~~ **done 2026-10-27** | — | Done |
 | **3** | ~~Group 1 step 3 (S6, S7, P1)~~ **done 2026-10-18** | Group 2 step 3 (S9's program half, S3 if decided, R5) | B: after group 2 step 11, before the first paid form is read in (paid lists due 10 Nov) |
 | **4** | Group 1 step 4 (I9, L2) | Group 2 step 4 (D2, one student) | After the pitch. A: Evan's decision on L2. B: round 1 done and Evan's decision on D2. Never the same student in both sessions |
 | **5** | ⭐ Group 1 step 7 (re-score, part 1) | ⭐ Group 2 step 7 (ABET lookup, part 1) | After the pitch |
@@ -796,7 +796,14 @@ are the two worth reading first, because both affect what a student receives.
   5. Docs: the setup section of `README.md`, a "step 0" in `workflows/01_intake.md` → How to run
      (run the check after any form edit), and the commands list in `CLAUDE.md`.
 
-#### - [ ] I11. The budget question is being reworded to three plain numbers
+#### - [x] I11. The budget question is being reworded to three plain numbers
+
+- **Done 2026-10-27.** The live options are `500,000` / `1,000,000` / `1,500,000` (with commas) and
+  the title keeps "whole degree". `ingest_form_csv.py` now matches them exactly
+  (`BUDGET_LIMIT_EXACT`, commas ignored) before the substring list; old exports read as before.
+  `--check` shows all three without the fallback route. `01_intake.md` (bullet + table) and
+  `intake_report.md` (budget row, example, item 6) updated. **Not done:** the form has no
+  `Not sure` option (recommended below). Evan's call; the program already reads it as "no limit".
 
 - **Decided 2026-10-26 (Evan):** the question asks for a limit, with the options `500000`,
   `1000000`, `1500000`. No `<` or `>` signs, so the matching is simple.
@@ -825,7 +832,12 @@ are the two worth reading first, because both affect what a student receives.
   `workflows/01_intake.md`, and the budget row and "still rough" item 6 in
   [intake_report.md](product_report/intake_report.md). Check the live wording with I10's tool first.
 
-#### - [ ] I12. The consent question is now formal; two files still describe the casual one
+#### - [x] I12. The consent question is now formal; two files still describe the casual one
+
+- **Done 2026-10-27.** Checked on the live form: title has "consent", no other question title does,
+  the option starts with "I agree", and every placeholder is filled (Shortlisted, Evan Yeoh, his
+  contact email, 3 months, which Evan confirmed). `01_intake.md` now quotes the new title and option;
+  `intake_report.md` item 7 reworded to what is left (no lawyer has read it).
 
 - **Added 2026-10-26.** Evan put the formal PDPA consent text (English and Malay notice, one
   required tick box) on the live form on 2026-10-26.

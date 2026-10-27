@@ -25,9 +25,15 @@ fine — but keep the substring in bold intact.
 
 **Section 0 — Consent & identity (required)**
 - **"Collect email addresses" turned ON.** 
-- **I consent** 'Cool for me to store your answers and use them to research unis for you 👍?'. — required checkbox.
+- **Consent** (formal PDPA notice, live 2026-10-26, on its own last page): title *"Consent to use your
+  information / Persetujuan penggunaan maklumat anda (PDPA)"*, one required option *"I agree to
+  Shortlisted collecting and using my answers as described above, including my race and any halal or
+  prayer preferences. / Saya bersetuju …"*. The bilingual notice in the description names Evan, his
+  contact email, and **3-month** retention after the last contact (full text: `forms/intake.json`).
+  Keep "consent" in the title (how the program finds it) and out of every other title; the option must
+  not start with "N" (read as an explicit No). `fetch_form_questions.py --check` tests all three.
   *(**What the gate actually does**, checked against a real export: a Forms checkbox exports its own
-  label text, so a ticked box lands a non-empty cell like `Cool for me to store your answers…` —
+  label text, so a ticked box lands a non-empty cell like `I agree to Shortlisted collecting…` —
   `_yes()` can't read that as yes or no and returns `None`, and the row passes on the cell simply
   being **non-empty**. So a ticked checkbox needs **no** `--assume-consent`. What still skips a row:
   an **empty** consent cell (box not ticked) unless you pass `--assume-consent`, and an answer whose
@@ -96,11 +102,15 @@ fine — but keep the substring in bold intact.
   order silently steals the score question's match and drops the score entirely. Keep this cautionary
   note if either header is reworded again. *Do NOT ask "when will you take it"* — each university sets
   its own bar; that's a research-stage fact, not an intake one.
-- **Total budget** for the whole degree — a **three-option dropdown**, not free text (cut from four on
-  2026-09-17; Evan re-counted the live form 2026-10-25): **`< 500000`** / **`500000-1000000`** /
-  **`>1000000`**. No "Not sure" option. `BUDGET_BAND_NORMALIZE` maps them to a numeric ceiling
-  (500000 / 1000000 / **null** — the top band states a *floor*, so it carries no ceiling; legacy
-  "Not sure" answers in old exports also map to null); the **verbatim label** goes to `financial.notes` and the **number**
+- **Total budget** for the whole degree — a **three-option dropdown of limits**, not free text
+  (reworded 2026-10-27, backlog I11): *"What's your limit (RM) for the whole degree. (include
+  tuition, living cost, etc)"* → **`500,000`** / **`1,000,000`** / **`1,500,000`**. No "Not sure"
+  option. `BUDGET_LIMIT_EXACT` matches them exactly (commas/spaces ignored) **before** the substring
+  list, because `500,000` is inside `1,500,000`. All three are real ceilings, so a student who could
+  pay more than RM 1.5M gets "Over budget" on rows above it (Evan accepted: budget is secondary). The
+  title must keep "whole degree" or "total budget". Older exports' bands (`< 500000` / `500000-1000000`
+  / `>1000000` = null floor / legacy "Not sure" = null) still go through `BUDGET_BAND_NORMALIZE`. The
+  **verbatim label** goes to `financial.notes` and the **number**
   to `financial.total_budget` + `preferences.total_budget_ceiling`. A label string must never reach
   `total_budget_ceiling` — downstream cost checks expect a number or null. **Ask for the total, never
   per-year** — Stage 4 compares whole-programme cost, and a 3-year UK degree against a 4-year US one is
@@ -446,13 +456,16 @@ weights into `tools/shortlist_schema.py` — that shared file is exactly what ma
   so the count never drifts from `COUNTRY_NORMALIZE`.)
 - **Budget bands, and what each one means downstream.** The form's three-option dropdown removed the
   whole class of budget-parsing problems (see the two retired edge cases in the note below). What lands
-  where (live labels, re-counted 2026-10-25):
+  where (live labels from 2026-10-27; older exports below them):
 
   | Form answer | `total_budget` + `total_budget_ceiling` | Meaning |
   |---|---|---|
-  | `< 500000` | `500000` | Real ceiling — cost checks apply |
-  | `500000-1000000` | `1000000` | Real ceiling — top of the band |
-  | `>1000000` | `null` | A **floor**, not a ceiling: no "Over budget" flag |
+  | `500,000` | `500000` | Real ceiling — cost checks apply |
+  | `1,000,000` | `1000000` | Real ceiling |
+  | `1,500,000` | `1500000` | Real ceiling, even for a family that could pay more |
+  | `< 500000` (pre-2026-10-27) | `500000` | Real ceiling |
+  | `500000-1000000` (pre-2026-10-27) | `1000000` | Real ceiling — top of the band |
+  | `>1000000` (pre-2026-10-27) | `null` | A **floor**, not a ceiling: no "Over budget" flag |
   | `Not sure - no fixed budget` (legacy exports only) | `null` | "Research everything, I'll decide" |
   | *(blank)* | `null` | Ask the student for a figure at finalize |
 

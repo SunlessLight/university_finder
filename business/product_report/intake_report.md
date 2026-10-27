@@ -70,7 +70,7 @@ Here is what it asks, and why each question earns its place.
 | **Their desired course** (one pick from a list of 38) | To know what to search for. |
 | **Which countries they would consider**, and which one matters most | To know where to search, and where to start. |
 | **How important each of eight things is**: cost, scholarships, university ranking, course ranking, job prospects, recognition back home, location, hands-on experience. Each gets "Must have", "Important" or "Nice to have". | To score universities according to *this* student's taste and not a generic league table. |
-| **Total budget for the whole degree** (three bands: under RM 500,000 / RM 500,000 to 1,000,000 / above RM 1,000,000) | To warn when a university costs more than the family can pay. |
+| **Total budget limit for the whole degree** (three choices: RM 500,000 / 1,000,000 / 1,500,000) | To warn when a university costs more than the family can pay. |
 | **Is a scholarship a must?** (Yes / No) | If yes, a university with no scholarship route is not a real option. |
 | **Do they want to work abroad afterwards?** | It changes which countries make sense. |
 | **Location and lifestyle preferences** (for example low crime, a Malaysian community nearby, good public transport, halal food, prayer facilities) | To describe daily life accurately in the reports, and to know which students need halal food or a place to pray. |
@@ -180,7 +180,7 @@ what the system stores, and why.
 | Course: "Mechanical Engineering — machines, engines, vehicles, ships" | The course, plus a checklist: **MQA, BEM, Washington Accord** | Engineering is a licensed profession in Malaysia. Explained just below |
 | Countries: UK, Australia, Canada | UK and Australia kept. Canada is **flagged for a person** | We don't cover Canada yet. We tell her so; we don't quietly drop it |
 | Matters most: UK | "Research the UK first" | Her top choice is done first |
-| Budget: "500,000 – 1,000,000" | A ceiling of RM 1,000,000, with her original wording kept in a note | Later stages need a number to compare costs against |
+| Budget limit: "1,000,000" | A ceiling of RM 1,000,000, with her original answer kept in a note | Later stages need a number to compare costs against |
 | Scholarship a must: No | No scholarship requirement | |
 | Other preferences: "Low crime rate", "Good food" | Safety: yes. Food: yes. Everything else: **not known** | Not ticking a box does not mean "I don't need this". We record "not known", never "no" |
 
@@ -321,19 +321,21 @@ An honest list, most important first.
    them. Halal food and prayer facilities were added as ticks on 2026-10-25, which makes the sales
    material's claim true for new students. Students who filled the form before that date were never
    asked, so a blank for them means "not asked", not "no need".
-5. **The teaching-language answer is collected but not yet read.** The new question about lesson
-   language (added 2026-10-25) lands in the spreadsheet, but the program does not copy it into the
-   student's record yet. Until it does, a person has to look it up by hand when an English-test
-   waiver depends on it.
+5. **The teaching-language answer is stored but not yet used.** Since 2026-10-27 the program copies
+   the lesson-language answer (and the IGCSE/SPM answer) into the student's record word for word.
+   Nothing turns it into "years taught in English" yet, so a person still judges an English-test
+   waiver by hand.
 6. **12 of 29 students have no spending limit on record.** Seven picked an answer that carries no
    limit ("not sure", "budget is not a problem" or "above RM 1,000,000"); the first two options
    have since been removed from the form. The other five are older records from before the budget
    bands existed: three typed an answer that gave no usable figure (for example "unsure yet"), and
    two have a note saying no limit was given. For all twelve the "over budget" warning can never
-   appear.
-7. **The consent wording is casual.** That was fine while testing with friends. Before charging
-   money we need a proper consent sentence and a disclaimer, to comply with Malaysia's PDPA
-   (Personal Data Protection Act 2010).
+   appear. New students are the opposite case: since 2026-10-27 every choice is a real limit, so a
+   family that could pay more than RM 1.5M still gets "over budget" warnings above that.
+7. **No lawyer has read the consent text.** Since 2026-10-26 the form carries a formal consent
+   notice in English and Malay, written to Malaysia's PDPA (Personal Data Protection Act 2010): who
+   we are, what we collect and why, who handles it, 3 months' keeping, and the student's rights. It
+   has not been checked by a lawyer.
 8. **Rewording a form question can silently lose its answer.** The program finds each answer by
    looking for a key phrase in the question. The diagnostic catches this, but only if someone
    remembers to run it.

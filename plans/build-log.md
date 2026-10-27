@@ -122,3 +122,9 @@ Entry format:
 - Decisions (and why): ChatGPT is not named on the bunting; the proof line answers it. No "fit you" claims. See `decisions/log.md`.
 - Problems / lessons: "Universities that fit you" over-promised (the list searches by course + countries and ranks). Old sales files still say "fit" and "20-40" (`business/sales/scripts.md:54`, `service-tiers.md:40`, the old poster); not fixed yet.
 - Next step: submit the bunting and the pilot plan today.
+
+## 2026-10-27 (night) · Backlog step 11 done: consent (I12), budget (I11), feedback switch
+- Done: I12: live consent checked (title has "consent", option starts "I agree", placeholders filled, 3 months); `01_intake.md` and `intake_report.md` item 7 describe the formal text. I11: live budget options are `500,000` / `1,000,000` / `1,500,000` with commas; new `BUDGET_LIMIT_EXACT` in `ingest_form_csv.py` matches them exactly before the substring list (`500,000` is inside `1,500,000`); old exports unchanged; `--check` shows no fallback route. Feedback: `fetch_form_answers.py` re-run (12 + 15 answers), `tools/fetch_feedback.py` deleted (Evan said yes), CLAUDE.md pointer updated. `intake_report.md` item 5 now says lesson language is stored. Calendar tests pass.
+- Decisions (and why): delete the public-CSV feedback reader so the sheets can go Restricted; the script route runs as Evan and doesn't need public sharing. See `decisions/log.md`.
+- Problems / lessons: the backlog assumed plain digits; Evan typed commas, so the exact match ignores commas and spaces.
+- Next step: Evan sets both feedback sheets to Restricted, then rerun `fetch_form_answers.py --form report_feedback spreadsheet_feedback`. Optional: add `Not sure` to the budget dropdown. Then group 2 step 3 (S9 years rule, S3, R5).

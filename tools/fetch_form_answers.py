@@ -13,7 +13,8 @@ tools/appsscript/Code.gs). Questions are tracked in forms/; answers are personal
 
 Read-only: unlike fetch_form_responses.py this never stamps `Ingested at`, and it does not
 touch data/form/responses.csv (that file is the pending batch `--confirm` reads back).
-The feedback paths are the ones fetch_feedback.py writes, so either tool fills them.
+The feedback paths are the ones the retired fetch_feedback.py wrote (public-CSV route, deleted
+2026-10-27 so the feedback sheets can be Restricted); this is now the only feedback reader.
 
 Usage:
     python tools/fetch_form_answers.py                       # every configured form

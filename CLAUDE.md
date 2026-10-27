@@ -88,7 +88,7 @@ Log meaningful decisions (direction changes, trade-offs, things worth rememberin
 
 ## Where the detail lives
 
-- Google Sheets: the Google Drive connector (`search_files`, then `read_file_content`) is for a quick look only. It returns a *sample* of rows (5 of ~15 on a test sheet) and cuts long cells, and it can't see Google Forms at all. Full answers: `fetch_form_answers.py` (all four forms, once Google's permission is granted), `fetch_form_responses.py` (intake, the pending batch for Stage 1), `fetch_feedback.py` (feedback, until the sheets go private). Forms' questions: `forms/*.json`.
+- Google Sheets: the Google Drive connector (`search_files`, then `read_file_content`) is for a quick look only. It returns a *sample* of rows (5 of ~15 on a test sheet) and cuts long cells, and it can't see Google Forms at all. Full answers: `fetch_form_answers.py` (all four forms, feedback included), `fetch_form_responses.py` (intake, the pending batch for Stage 1). Forms' questions: `forms/*.json`.
 - `workflows/00_overview.md`: read first for any pipeline run (stages, tool reference, subagent fences, guardrails in full).
 - `business/additionals.md`: known problems not yet fixed. Start at its "Start here" index; leftovers a task won't fix go there.
 - `business/launchx/mentor.md` + `status.md`: the business mentor brief and LaunchX state (`/mentor`).
