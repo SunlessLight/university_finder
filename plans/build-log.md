@@ -116,3 +116,9 @@ Entry format:
 - Decisions (and why): pilot plan due today, not 31 Oct (Evan: the submission is today), so the ChatGPT test feeds the booth demo, not the plan. Referrals stay last in the tester chain (after testers see the better version).
 - Problems / lessons: Evan's own Notion-only tasks left alone ("Send reminder to all that ignored me", "Message 50 parents", the Product Developing fixes). Not made into tasks: "park big-problem ideas" (a habit, not a to-do) and the mentor-session items (Claude's own). A second session was editing STATUS.md at the same time.
 - Next step: submit the bunting and the pilot plan today.
+
+## 2026-10-27 · Bunting wording from the customer chats
+- Done: bunting text written into the Notion task "Make the bunting and booth materials" from `notes/customer_chats/` (Dakshi, Ilsa, Vee Shen): headline "Don't know where to apply? We'll find them for you.", smaller line (Evan's) "20-30 Universities picked for YOUR course, grades and countries", proof line "Facts from each university's official page.", plus spare and dropped lines with reasons. Backlog L5 + group 2 step 12 added (a source per fact, "Not found on official page").
+- Decisions (and why): ChatGPT is not named on the bunting; the proof line answers it. No "fit you" claims. See `decisions/log.md`.
+- Problems / lessons: "Universities that fit you" over-promised (the list searches by course + countries and ranks). Old sales files still say "fit" and "20-40" (`business/sales/scripts.md:54`, `service-tiers.md:40`, the old poster); not fixed yet.
+- Next step: submit the bunting and the pilot plan today.

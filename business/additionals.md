@@ -161,6 +161,7 @@ where it says so.
 | ⭐ **9** | R16 Malaysian register: look up, in Chrome, the 11 universities listed under "Finalist or Shortlist" in `notes/r16_scope.md` (MIT was done on 2026-10-17; the method is in `workflows/sources.md`). Write `notes/r16_esisraf_lookup.csv`: listed or not, which broad-field rows, the date. The other 33 universities keep "check eSISRAF" in their cells; a lookup for them can come later | `notes/r16_esisraf_lookup.csv` | nothing | Medium: 11 browser lookups, one at a time. After the pitch |
 | **10** | R16 apply, the five other students in `notes/r16_scope.md`, two or three per session. For each student: a script builds one-cell `Recognised in Malaysia?` fragments from the three lookup files, then `apply_backfill.py --overwrite` (dry run first), then `check_master_list.py`, then one line in that student's `status.md`. A degree that is not accredited also gets "Recognition risk" in `Warnings` by hand, as Michigan did, and is listed in the hand-back for Evan | those students' `master_list.csv`, `research_notes.md`, `status.md` | steps 7, 8, 9 done, and step 6 (or move the applied files out by hand) | Medium per session. After the pitch. Never the source student. Not on a student that group 2 step 4 or group 1 step 4 has open |
 | ⭐ **11** | I10 (the form-questions tool), then I12 (check the consent question with it, then fix the two files), then I11 (exact budget options) | `tools/appsscript/Code.gs`, a new `tools/fetch_form_questions.py`, a new `forms/` folder, `tools/ingest_form_csv.py`, `workflows/01_intake.md`, `README.md`, `CLAUDE.md`, `business/product_report/intake_report.md` | nothing. Evan must be around mid-session to paste and redeploy the script | Medium. A program change. **Run it before step 3**: the tool gives step 3 the lesson-language question's exact wording. Never alongside step 3 (same files). Before 10 Nov |
+| **12** | L5 (a source per fact, and "Not found on official page" instead of a row-wide "Not verified"). Plan it first; pairs with L2 | `tools/shortlist_schema.py`, `tools/sync_shortlist.py`, `tools/check_master_list.py`, `.claude/agents/row-filler.md`, `workflows/03_discover_longlist.md` | a plan Evan has approved | Medium to large. A shape change. Not alongside group 1 step 4 (L2 writes the same lists) |
 
 **Not a session yet** (a decision or a measurement, no file to change): R9 (whether rows should
 carry the date they were checked), R11 (one line of Evan's sales
@@ -1046,6 +1047,33 @@ L1 is the one to read first, because a customer can see it.
 - **Suggested fix:** add `taiwan.md` and `germany.md` to both lists. Better, replace both lists
   with "the file named after your country in `workflows/countries/`", so the next country added
   does not need the same edit.
+
+#### - [ ] L5. A row is labelled as a whole, so one missing fact shows "Not verified" on everything
+
+- **Added 2026-10-27 (Evan, during the bunting).** Evan finds "Not verified" on the spreadsheet
+  embarrassing, and wants every fact shown with its source, or "Not found" where it was looked
+  for and is not on the official page.
+- **Severity:** not a fault; a change to what the spreadsheet promises. Not urgent for the
+  10 Nov paid lists (new lists are almost all `Official page`), but it is what testers see on the
+  old lists.
+- **What is true today:** `Info source` is one label per row (`Official page` / `Not verified`,
+  [tools/shortlist_schema.py:218-223](../tools/shortlist_schema.py#L218-L223)), plus one
+  `Course URL`. There is no source per fact. A row that misses one fact reads `Not verified`
+  as a whole, and the missing fact is named only in `Notes`
+  ([workflows/03_discover_longlist.md:317](../workflows/03_discover_longlist.md#L317)).
+- **The idea:** each hard fact (fees, entry requirements, deadlines, scholarships, living cost)
+  carries its own official source link, in `research_notes.md` or a column, and a fact that was
+  searched for and not published reads "Not found on official page" instead of a guess or a
+  row-wide label.
+- **Honest limit:** "Not found" is only true after someone looked. Relabelling the 212 old
+  `Not verified` rows (**L2**) without the research would hide the gap, not close it. L2's
+  repair comes first, or runs with this.
+- **Related:** **R9** (rows record that a fact was checked, not when). The bunting's proof line
+  is "Facts from each university's official page"; the A4 sign may add "Not found? We say so, we
+  don't guess" only once this is built.
+- **Suggested fix:** plan it first (a shape change: schema, `sync_shortlist.py`,
+  `check_master_list.py`, the row-filler sheet, the spreadsheet export). Default: after the
+  bunting and the 28 Oct ChatGPT test, before the 2 Nov tester send if the plan is small.
 
 ### Things in longlist_report.md that I did not verify
 
