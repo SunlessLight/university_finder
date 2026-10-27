@@ -148,10 +148,13 @@ fine — but keep the substring in bold intact.
 - **Lesson-language question (added to the live form 2026-10-25, backlog S9):** "What language were
   most of your lessons (maths, science, etc.) taught in? Not your English class." Six options, from
   "English, all through secondary school and pre-university" to "Not sure", plus Other (labels:
-  `forms/intake.json`). → **`english_proficiency.lesson_language`**, verbatim (mapped 2026-10-27).
-  **No rule turns it into years of English-taught schooling yet** (S9, group 2 step 3 of
-  `business/additionals.md`), so when an English-test waiver depends on it, read the answer and apply
-  each university's own rule by hand. Never assume a waiver from "Mixed … (DLP)" or "Not sure" (S9: DLP is a grey area).
+  `forms/intake.json`). → **`english_proficiency.lesson_language`**, verbatim (mapped 2026-10-27), and
+  **`english_proficiency.years_in_english_min`**, the floor of years taught in English
+  (`LESSON_LANGUAGE_YEARS` in `ingest_form_csv.py`, 2026-10-27): all through = 5, pre-university
+  only = 1, Mostly Malay / Chinese = 0, DLP / Not sure = `null` (can't tell; never assume a waiver).
+  An "Other" answer is `null` plus a `_needs_review` line: at finalize, set a whole number only if the
+  answer clearly supports it, else leave `null`. It is a floor, so a waiver needing N years is
+  "likely" only when the floor ≥ N; below N or `null`, state the rule and let the student count.
 - **"What did you take for ur secondary school?"** (IGCSE / SPM / Other) → **`secondary_qualification`**,
   verbatim (mapped 2026-10-27). Nothing reads it automatically yet; it is context for the English-waiver
   call and for entry requirements that name SPM or IGCSE.

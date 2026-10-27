@@ -4,7 +4,7 @@
 > - **Next step (27 Oct):** submit the bunting design and the pilot plan **today** (both due 27 Oct; the line comes from the payers' replies). Then the ChatGPT side-by-side test and the list of tester fixes (both 28 Oct). Files and Notion tasks synced 27 Oct.
 > - **Waiting on:** more payer replies and replies to the 24 Oct nudge (count 27 Oct). Paid lists due 10 Nov, the day the booth pilot (10–13 Nov) opens.
 > - **Students:** `python tools/progress_dashboard.py`; each student's own `data/students/<slug>/status.md`.
-> - **Backlog:** `business/additionals.md` → "Start here". Before 10 Nov: group 2 step 3 (S9 years-in-English rule, S3, R5). Done 27 Oct: every intake question is read, consent and budget checked (step 11), old feedback reader retired, both feedback sheets Restricted (owner-only, checked).
+> - **Backlog:** `business/additionals.md` → "Start here". Done 27 Oct: group 2 steps 11 and 3 (every intake question read, consent and budget checked, years-in-English rule, UK English waivers checked). Waiting on Evan: yes on R21 (four UK cells wrongly say IELTS is waived) and the S3 income decision.
 > - **Phone view:** Notion page "Shortlisted — Now" (under 🗓️ Everything), a copy of this box.
 > - **Last session:** newest entry in `plans/build-log.md`.
 

@@ -128,3 +128,9 @@ Entry format:
 - Decisions (and why): delete the public-CSV feedback reader so the sheets can go Restricted; the script route runs as Evan and doesn't need public sharing. See `decisions/log.md`.
 - Problems / lessons: the backlog assumed plain digits; Evan typed commas, so the exact match ignores commas and spaces.
 - Next step: Evan sets both feedback sheets to Restricted, then rerun `fetch_form_answers.py --form report_feedback spreadsheet_feedback`. Optional: add `Not sure` to the budget dropdown. Then group 2 step 3 (S9 years rule, S3, R5).
+
+## 2026-10-27 (late) · Backlog group 2 step 3: years-in-English rule (S9), slider notes (R5)
+- Done: S9: `LESSON_LANGUAGE_YEARS` in `ingest_form_csv.py` turns the lesson-language answer into `english_proficiency.years_in_english_min` (a floor: 5 / 1 / 0, null for DLP and Not sure; "Other" = null + `_needs_review`). Template, `01_intake.md`, `08_application_prep.md` and the glossary IELTS line updated. UK half checked on official pages (UCL, Imperial, KCL): no waiver for English-taught schooling in Malaysia. R5: three slider comments fixed. Tested all six form answers, an "Other" answer and a blank through `map_row`; `--check --offline` ok; calendar tests pass.
+- Decisions (and why): store a floor, not a guess (pre-university length varies, so "pre-U only" = 1, which clears no waiver read so far); DLP stays null (grey area). See `decisions/log.md`.
+- Problems / lessons: four student cells already claim a UK waiver that does not exist (new backlog R21, needs Evan's yes). S3 still waits on Evan's income decision.
+- Next step: Evan's yes on R21 and his S3 decision; otherwise the 28 Oct ChatGPT test.

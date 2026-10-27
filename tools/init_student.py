@@ -55,7 +55,8 @@ def profile_template(slug, name):
         "subjects": [],              # [{subject, grade_or_predicted}]
         "grade_status": None,        # "actual" | "predicted" | "expected" (self-predicted / "confident of getting" — provisional)
         "english_proficiency": {"test": None, "score": None, "test_date_or_planned": None,
-                                "lesson_language": None},  # verbatim form answer (backlog S9: years rule still open)
+                                "lesson_language": None,  # verbatim form answer
+                                "years_in_english_min": None},  # floor of years taught in English; null = can't tell (ingest LESSON_LANGUAGE_YEARS)
         "financial": {
             "budget_per_year": None,
             "total_budget": None,

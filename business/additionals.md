@@ -86,7 +86,7 @@ fresh session and type:*
 | **2** | ~~Group 1 step 2 (S8, S10, Task 9)~~ **done 2026-10-16** | ~~Group 2 step 2 (S4)~~ **done 2026-10-17** | Done |
 | **Now** | ~~Group 1 step 6 (R13's second half: the sample pack)~~ **done 2026-10-20** | — | Done |
 | **Next** | ~~Group 2 step 11 (I10, I12, I11: form tool, consent, budget options)~~ **done 2026-10-27** | — | Done |
-| **3** | ~~Group 1 step 3 (S6, S7, P1)~~ **done 2026-10-18** | Group 2 step 3 (S9's program half, S3 if decided, R5) | B: after group 2 step 11, before the first paid form is read in (paid lists due 10 Nov) |
+| **3** | ~~Group 1 step 3 (S6, S7, P1)~~ **done 2026-10-18** | ~~Group 2 step 3 (S9's program half, R5)~~ **done 2026-10-27**; S3 waits for Evan | B: after group 2 step 11, before the first paid form is read in (paid lists due 10 Nov) |
 | **4** | Group 1 step 4 (I9, L2) | Group 2 step 4 (D2, one student) | After the pitch. A: Evan's decision on L2. B: round 1 done and Evan's decision on D2. Never the same student in both sessions |
 | **5** | ⭐ Group 1 step 7 (re-score, part 1) | ⭐ Group 2 step 7 (ABET lookup, part 1) | After the pitch |
 | **6** | Group 1 step 8 (re-score, part 2, and Sheffield) | Group 2 step 8 (ABET lookup, part 2) | After round 5 |
@@ -152,7 +152,7 @@ where it says so.
 |---|---|---|---|---|
 | ✅ **1** | **Done by 2026-10-17.** R3, then R8 if Evan said yes | `workflows/04_university_report.md`, `workflows/05_decide_and_apply.md`, `.claude/commands/decide.md`, `README.md`, `workflows/00_overview.md`. R8: a new `tests/test_calendar_dates.py` | nothing (R8: Evan's yes) | Small. Before the next `/decide` run |
 | ✅ **2** | **Done 2026-10-17.** S4 | `workflows/sources.md`, plus `workflows/04_university_report.md` if the lookup method changes | Evan's hand lookup of MIT, and step 1 done (both write the report workflow) | Small. After the pitch is fine |
-| ⭐ **3** | S9's program half (~~read the new question from the form, store it~~ done 2026-10-27; turn it into years; plus the UK half nobody has checked), then S3 if decided, then R5. I5 is done | `tools/ingest_form_csv.py`, `tools/init_student.py`, the profile template, `workflows/01_intake.md`, `workflows/08_application_prep.md` | S9 and I5: nothing (decided 2026-10-25). S3: Evan's decision on income; skip it if still open | Medium. A program change. **Before the first paid student's form is read in** (paid lists due 10 Nov) |
+| ✅ **3** | **Done 2026-10-27** except S3 (Evan's income decision still open; it can run as its own small step). S9's years rule and UK half, R5. New entry R21 | `tools/ingest_form_csv.py`, `tools/init_student.py`, the profile template, `workflows/01_intake.md`, `workflows/08_application_prep.md` | S9 and I5: nothing (decided 2026-10-25). S3: Evan's decision on income; skip it if still open | Medium. A program change. **Before the first paid student's form is read in** (paid lists due 10 Nov) |
 | **4** | D2 for one student | that student's folder | Evan's decision on D2 (group 1 step 1 and group 2 step 1 are done) | Medium. Repeat once per student (five). After the pitch |
 | ✅ **5** | **Done 2026-10-25, no session needed:** Evan added the ticks to the form (I2) | — | — | — |
 | **6** | R19: after a successful write, `apply_backfill.py` moves the fragments it applied into `.tmp/<slug>/backfill_applied_<date>/`. Add one line to `workflows/03_discover_longlist.md` → "Backfilling an existing longlist", and to `.claude/agents/row-filler.md`: write the fragment early and update it as you go | `tools/apply_backfill.py`, `workflows/03_discover_longlist.md`, `.claude/agents/row-filler.md` | nothing | Small. A program change, so after the pitch. Not while another session is running a backfill |
@@ -1322,7 +1322,9 @@ S1 is the one to read first, because it has a date on it.
 - **Suggested fix:** repair the seven cells with the repair process (`apply_backfill.py`), Princeton
   first. For the four English cells, state the rule and tell the student to count their years.
 
-#### - [ ] S9. The system assumes A-Levels waive the English test at every US university
+#### - [x] S9. The system assumes A-Levels waive the English test at every US university
+
+- **Done 2026-10-27 (group 2 step 3).** Years rule: `LESSON_LANGUAGE_YEARS` in `ingest_form_csv.py` turns the answer into `english_proficiency.years_in_english_min`, a floor (all through = 5, pre-university only = 1, Mostly Malay / Chinese = 0, DLP / Not sure = null; "Other" = null + a `_needs_review` line). `init_student.py`, `01_intake.md` and `08_application_prep.md` say how to use it. UK half checked on the official pages: UCL, Imperial and KCL do **not** waive the test for English-taught schooling in Malaysia (Malaysia is not on their country lists); they accept an English-subject grade instead. The apply-guide glossary's IELTS line said the opposite and is fixed. The student cells that still carry the old claim are R21.
 
 - **Update 2026-10-27: the answer is now read and stored.** `ingest_form_csv.py` maps the lesson-language question to `english_proficiency.lesson_language` and the secondary-school question (IGCSE/SPM) to `secondary_qualification`, both verbatim. **Still open:** the rule turning each answer into years, and the UK half.
 
@@ -1497,7 +1499,9 @@ R1 is the one to read first, because it has a clock on it.
   refuses to shrink, and that US dates now reach it. Keep the honest part: the existing calendar
   predates the fix.
 
-#### - [ ] R5. Three more out-of-date slider notes in the intake program
+#### - [x] R5. Three more out-of-date slider notes in the intake program
+
+- **Done 2026-10-27 (group 2 step 3).** All three notes now say "the tick answers (current form) or the sliders (older form)".
 
 - **Severity:** group C. The program behaves correctly.
 - **Where:** [tools/ingest_form_csv.py:258-264](../tools/ingest_form_csv.py#L258-L264), line 866
@@ -1741,3 +1745,22 @@ R1 is the one to read first, because it has a clock on it.
   end-of-session mirror and `/catchup` to all five projects. Build on `mentor` and `/social`
   rather than new roles from scratch.
 - **When (default):** after the paid lists go out on 10 Nov.
+
+#### - [ ] R21. Four UK cells say the English test is waived for English-taught schooling in Malaysia
+
+- **Added 2026-10-27**, from group 2 step 3 (S9's UK half). **Group B, a stale cell, not a tool gap.**
+  Nothing has gone to these students with the claim in an apply guide (only the source student has a
+  guide, and it is US only), but the cells are on their lists.
+- **Where:** one student's three Shortlist rows (UCL, Imperial, KCL: "waived for English-medium
+  A-Levels"), and the source student's Imperial Finalist row ("waived for recent English-medium
+  study"). Student names are in `data/students/`, not here.
+- **What is true (official pages read 2026-10-27, via Firecrawl):** UCL waives only for nationals of,
+  or 12 months' study in, listed countries (Singapore yes, Malaysia no). KCL waives only for nationals
+  of listed countries who studied there. Imperial's page names no school-level waiver; it accepts SPM
+  English 1119 grade A, IGCSE First Language English B/6, or A-Level English Language C.
+- **Not checked:** the source student's Oxford and Cambridge cells say the same as the Imperial one;
+  they may be right (both have their own rules) and need reading.
+- **Suggested fix:** for each row, one-cell `English req` fragments through `apply_backfill.py
+  --overwrite` (dry run first), stating the test bar and the accepted English grades, then
+  `check_master_list.py`. Needs Evan's yes (it rewrites student files). Small. Before either list is
+  re-sent.

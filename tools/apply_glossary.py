@@ -150,8 +150,10 @@ GLOSSARY = {
     },
     "IELTS": {
         "aliases": [],
-        "definition": "International English Language Testing System — an English-proficiency test. Your "
-                      "English-medium A-Levels waive it at many universities, but not all.",
+        "definition": "International English Language Testing System — an English-proficiency test. Some "
+                      "universities waive it if enough of your schooling was taught in English, or "
+                      "accept an English grade (such as SPM 1119 or IGCSE English) instead. Each sets "
+                      "its own rule.",
     },
     "TOEFL": {
         "aliases": [],

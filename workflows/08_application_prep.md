@@ -117,10 +117,15 @@ For each Shortlist/Finalist uni in the region, from official sources:
   schooling taught in English (2 to 4 among the US universities read on 2026-10-13: Yale 2,
   Princeton and Penn 3, Cornell 4), and A-Levels are only a two-year course — so "English-medium
   A-Levels waive it" is wrong as a blanket rule (it went out in one July guide). Read each
-  university's rule off its own page, **state the rule**, and tell the student to count their years:
-  `profile.json` has no field for years of English-medium schooling, so write "waived if you have N
-  years", never "waived for you". Singapore / China / Australia do not waive on A-Levels; the UK
-  universities have not been re-checked, so read those per university too.
+  university's rule off its own page and **state the rule**. Then compare
+  `profile.english_proficiency.years_in_english_min` (a floor from the lesson-language answer; see
+  `01_intake.md`): floor ≥ N → "your answers suggest you qualify; the university decides, usually
+  from a school letter"; below N or `null` → "waived if you have N years; count yours". Never
+  "waived for you". Singapore / China / Australia do not waive on A-Levels. **UK: English-taught
+  schooling in Malaysia does not waive the test** at UCL, Imperial or KCL (checked 2026-10-27: they
+  waive only for nationals of, or study in, listed English-speaking countries, and Malaysia is not on
+  their lists). They accept an English-subject grade instead (e.g. SPM English 1119, IGCSE English,
+  A-Level English Language), at grades and dates set per university, so read each UK rule too.
 - **Essays** — the shared essay (Common App / UCAS personal statement) + this uni's supplements/count.
 - **Fees** — application fee + international **fee-waiver** eligibility.
 - **Financial aid** — capture it into the object's fixed keys: **`model`** (need-blind vs need-aware for

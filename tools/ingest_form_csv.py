@@ -85,8 +85,8 @@ QUESTION_MAP = [
     ("english test taken", "english_test"),  # current form: "English Test Taken" — must stay AFTER
                                               # "what's the score" above, see comment there
     ("will you take it", "english_date"),
-    ("lessons (maths, science", "lesson_language"),  # current form (2026-10-25, backlog S9): raw answer only;
-                                                     # the answer -> years-in-English rule is still open (S9)
+    ("lessons (maths, science", "lesson_language"),  # current form (2026-10-25, backlog S9); also turned
+                                                     # into years_in_english_min via LESSON_LANGUAGE_YEARS
     ("for ur secondary school", "secondary_qualification"),  # current form: "What did you take for ur
                                                              # secondary school?" (IGCSE / SPM / other)
     ("total budget", "total_budget"),
@@ -262,6 +262,36 @@ def _budget_band(answer):
     return _UNMATCHED_BAND, label
 
 
+# Lesson-language answer -> the FLOOR of years taught in English (backlog S9, 2026-10-27). English-test
+# waivers are set per university as N years of English-taught schooling (US: Yale 2, Princeton/Penn 3,
+# Cornell 4); this floor lets a session compare without assuming. Malaysian secondary = 5 years (Form
+# 1-5); pre-university = 1 (foundation) to 2 (A-Levels), so a pre-U-only answer floors at 1, which
+# clears no rule read so far. None = can't tell, never assume a waiver (DLP is a grey area). This is the
+# medium of instruction only: UK universities mostly ignore it for Malaysians (UCL, Imperial, KCL
+# checked 2026-10-27) and want a test or an English-subject grade (SPM 1119, IGCSE English) instead.
+# Matched by substring on the lowercased answer, first match wins; an unmatched "Other" answer is None
+# plus a _needs_review line.
+LESSON_LANGUAGE_YEARS = [
+    ("all through secondary", 5),  # "English, all through secondary school and pre-university"
+    ("only in pre-university", 1),  # "English only in pre-university (e.g. SPM, then A-Levels)"
+    ("dlp", None),                  # "Mixed: maths and science in English, the rest in Malay (DLP)"
+    ("mostly malay", 0),
+    ("mostly chinese", 0),
+    ("not sure", None),
+]
+
+
+def _years_in_english(answer):
+    """Map a lesson-language answer to (floor_years_or_None, matched). Blank -> (None, True)."""
+    low = _clean(answer).lower()
+    if not low:
+        return None, True
+    for substr, years in LESSON_LANGUAGE_YEARS:
+        if substr in low:
+            return years, True
+    return None, False
+
+
 # Priority dropdown labels -> short tokens used in preferences.priorities.
 PRIORITY_NORMALIZE = {
     "cost": "cost",
@@ -274,12 +304,14 @@ PRIORITY_NORMALIZE = {
     "hands-on experience": "hands-on experience",
 }
 
-# Per-category priority SLIDERS (the current form). Instead of three #1/#2/#3 dropdowns, the form asks
-# "Rank Your Priorities (1 = least important, 7 = Most important) ... [<Category>]" as eight linear-scale
-# columns. We detect them by the shared "rank your priorities" marker in the header + the bracketed
-# category, map each category to a priority token, then order tokens by their numeric value (descending)
-# to produce the same ordered `priorities` list the dropdown form produced. CANONICAL_SLIDER_ORDER breaks
-# ties deterministically (form column order) so equal slider values yield a stable ranking.
+# Per-category priority columns: the tick answers (current form) or the sliders (older form). Instead of
+# three #1/#2/#3 dropdowns, both ask one question per category, "... [<Category>]": the current form as
+# "Tick the importance of each topic below" (TICK_MARKER), the older one as "Rank Your Priorities
+# (1 = least important, 7 = Most important)" linear scales (SLIDER_MARKER). We detect them by either
+# marker in the header + the bracketed category, map each category to a priority token, then order
+# tokens by their importance (descending) to produce the same ordered `priorities` list the dropdown
+# form produced. CANONICAL_SLIDER_ORDER breaks ties deterministically (form column order) so equal
+# answers yield a stable ranking.
 SLIDER_MARKER = "rank your priorities"  # legacy fallback: the 1-8 numeric-slider wording
 TICK_MARKER = "tick the importance"  # current form: "Tick the importance of each topic below" — a 3-tier
                                        # categorical scale replacing the numeric slider (see
@@ -779,11 +811,19 @@ def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None,
 
     # --- profile: english -------------------------------------------------- #
     english_test = get(row, col_index, "english_test")
+    lesson_language = get(row, col_index, "lesson_language")
+    years_in_english, lesson_matched = _years_in_english(lesson_language)
+    if not lesson_matched:
+        needs_review.append(
+            f"set english_proficiency.years_in_english_min from the 'Other' lesson-language answer "
+            f"({lesson_language!r}): a whole number of years at least, or leave null if unclear"
+        )
     profile["english_proficiency"] = {
         "test": None if english_test.lower().startswith("none") or not english_test else english_test,
         "score": get(row, col_index, "english_score") or None,
         "test_date_or_planned": get(row, col_index, "english_date") or None,
-        "lesson_language": get(row, col_index, "lesson_language") or None,  # verbatim; S9 turns it into years
+        "lesson_language": lesson_language or None,  # verbatim
+        "years_in_english_min": years_in_english,  # floor from LESSON_LANGUAGE_YEARS; null = can't tell
     }
     profile["achievements"] = get(row, col_index, "achievements_text") or None
 
@@ -890,12 +930,14 @@ def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None,
             f"is already trusted, this only covers the extra free text"
         )
 
-    # Priorities: prefer the per-category sliders (current form); fall back to #1/#2/#3 dropdowns.
+    # Priorities: prefer the per-category tick answers (current form) or sliders (older form);
+    # fall back to #1/#2/#3 dropdowns.
     prefs["priorities"] = _build_priorities_from_sliders(row, slider_cols) or _build_priorities(row, col_index)
 
     ranking_importance = get(row, col_index, "ranking_importance") or None
     if not ranking_importance and "ranking" in slider_cols:
-        # No dedicated 1-5 ranking-importance question — read the [University Ranking] slider value.
+        # No dedicated 1-5 ranking-importance question — read the [University Ranking] answer: the tick
+        # label (current form) or the slider number (older form).
         ranking_importance = _clean(row.get(slider_cols["ranking"])) or None
     prefs["ranking_importance"] = ranking_importance
     prefs["deal_breakers"] = _as_list(get(row, col_index, "deal_breakers"))
