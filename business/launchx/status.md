@@ -1,6 +1,6 @@
 # LaunchX status
 
-*As of 2026-10-26. Rewritten whenever something changes; keep under about 70 lines. See
+*As of 2026-10-27. Rewritten whenever something changes; keep under about 70 lines. See
 [mentor.md](mentor.md) for how.*
 
 ## Dates
@@ -11,7 +11,7 @@
 - **25 Oct (done):** asked the payers why they paid. **26 Oct:** first replies in
   (`notes/customer_chats/`). **27 Oct:** count replies.
 - **26 Oct (done):** nudged the testers who hadn't filled the feedback forms.
-- **27 Oct: bunting design due** (the real submission deadline; the Notion task said 3 Nov).
+- **27 Oct: bunting design and pilot plan due** (both real submission deadlines).
 - **10 Nov:** paid lists delivered (what the pre-sale message promised; one payer was told "by
   13 Nov" in chat, so 10 Nov is early for them). Same day the booth opens.
 - **10 to 13 Nov:** pilot = a four-day booth with a bunting and a QR to book. Plan and checklist
@@ -61,7 +61,7 @@ it into a new deck rather than editing the 24 Oct one.
 | Known | Under 1 hour hands-on per student; tools about RM158 a month. Most listed universities are over budget (the tool ranks, it does not remove). |
 | Known (estimate) | At RM50 the reachable family market is about RM775,000 a year. Free competitors are paid by universities; paid help starts around RM2,000. |
 | Known (replies, 26 Oct) | Why not ChatGPT, one payer: "I don't really know what I should be asking", and its answers are surface level. Wants an admissions checklist, UCAS steps, where to find test / interview dates, cost, college choice. Another wants city lifestyle, scholarships, graduate outcomes, work visa after graduating. |
-| Not known | Why the other willing payer chose this over ChatGPT. Whether parents would pay. The booth pilot's pass line (not written yet; Notion task due 31 Oct). |
+| Not known | Why the other willing payer chose this over ChatGPT. Whether parents would pay. The booth pilot's pass line (not written yet; due 27 Oct with the pilot plan). |
 
 ## Guesses under test
 
@@ -73,28 +73,29 @@ it into a new deck rather than editing the 24 Oct one.
 
 ## Open: Evan
 
-**This week, in order** (each is a Notion task under URP Marketing):
+**This week, in order** (each is a Notion task, under URP Marketing unless noted):
 
 1. [x] 25 Oct: ask the payers "what made you pay instead of just using ChatGPT?" Sent; waiting.
 2. [x] 26 Oct: nudged the testers who hadn't filled the feedback forms.
-3. [ ] Message the testers who did fill them (13 list, 10 report): what info they want more of,
-       how it reads, does it feel weird or too AI. Plus "which part did you actually read?"
-4. [ ] Test the list against ChatGPT on one anonymised profile, side by side. Before the pilot
-       plan (31 Oct): what it finds becomes the booth demo. (Too late for the bunting, which is due
-       27 Oct: its line comes from the payers' own words instead.)
+3. [x] Messaged the testers who did fill them (13 list, 10 report): what info they want more of,
+       how it reads, does it feel weird or too AI, "which part did you actually read?"
+4. [ ] 28 Oct: test the list against ChatGPT on one anonymised profile, side by side (Notion:
+       "Make sure the whole workflow is all verified information", Product Developing). What it
+       finds becomes the booth demo. (Too late for the bunting and pilot plan, both due 27 Oct:
+       their line comes from the payers' own words instead.)
 
 **Then:**
 
 - [ ] 27 Oct: count the 19 as paid / yes-not-paid / no / silent. Only "paid" is demand. Ask one
       "no" why.
-- [ ] 27 Oct: submit the bunting design. By 31 Oct: plan the pilot (pass line first). By 3 Nov:
-      the rest of the booth kit. (Notion tasks)
+- [ ] 27 Oct: submit the bunting design and the pilot plan (pass line first). By 3 Nov: the rest
+      of the booth kit. (Notion tasks)
 - [ ] **Tester chain, one after another** (Notion tasks):
-  1. After tasks 2 and 3: update the list and report from what testers actually read. Aim
-     before 10 Nov, so the paid lists get the better version too.
-  2. Send the 29 testers the improved version.
-  3. Plan how to get more people: referrals from those testers (Notion "Plan how to get more
-     people").
+  1. 28 Oct: list what to improve in the list and report from what testers actually read
+     (Notion, Product Developing). Fixes done before 10 Nov, so the paid lists get them too.
+  2. 2 Nov: send the 29 testers the improved version.
+  3. From 3 Nov: plan how to get more people: referrals from those testers (Notion "Plan how to
+     get more people").
 - [ ] After the count: 15-minute chats with 3 consultancies (PrepWorks, Inquota, one more) on how
       they research universities and which part takes longest. Learn, don't pitch.
 - [ ] Sunway counsellor chat; three to five parent chats; two "too expensive" leads; two or three

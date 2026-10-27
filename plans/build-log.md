@@ -110,3 +110,9 @@ Entry format:
 - Decisions (and why): raw answers now, years rule later (S9), so no paid student's answer is lost meanwhile; 3-month consent retention kept (Evan confirmed). See `decisions/log.md`.
 - Problems / lessons: none.
 - Next step: I12 and I11 (backlog group 2 step 11), then the feedback-sheet switch.
+
+## 2026-10-27 · Files and Notion tasks synced
+- Done: `/catchup` sync of `business/launchx/status.md` with the Notion Tasks (URP Marketing + Product Developing). Phone tick brought back: "Message the testers who did fill them" (Notion "Get feedback from students who tried the list", Done). Evan's Notion replan of this morning found: the ChatGPT test was renamed "Make sure the whole workflow is all verified information" and moved to Product Developing (28 Oct); "List down the stuff to improve…" (28 Oct) is tester-chain step 1. File now carries those names and dates. Notion: referrals task moved to 3 Nov, Not Started, "27" → 29 testers; three new URP Marketing tasks (consultancy chats; counsellor / parent / "too expensive" / has-a-list chats; low-priority tester and The Sun checks). Now box and "Shortlisted — Now" page updated.
+- Decisions (and why): pilot plan due today, not 31 Oct (Evan: the submission is today), so the ChatGPT test feeds the booth demo, not the plan. Referrals stay last in the tester chain (after testers see the better version).
+- Problems / lessons: Evan's own Notion-only tasks left alone ("Send reminder to all that ignored me", "Message 50 parents", the Product Developing fixes). Not made into tasks: "park big-problem ideas" (a habit, not a to-do) and the mentor-session items (Claude's own). A second session was editing STATUS.md at the same time.
+- Next step: submit the bunting and the pilot plan today.
