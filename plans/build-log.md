@@ -140,3 +140,15 @@ Entry format:
 - Decisions (and why): no `status.md` line, because the first student's is already over its 3000-character budget; the record is in `research_notes.md`.
 - Problems / lessons: the same guess is wider: ~40 cells on 11 lists tie a waiver to A-Levels or English-medium schooling (R21 sweep, Shortlist/Finalist first).
 - Next step: Evan's S3 decision; the R21 sweep after the 10 Nov lists.
+
+## 2026-10-27 (evening) · Bunting redesign: designer feedback, demo website as the picture
+- Done: mentor chat only, no code changed. Evan's first bunting draft (`business/launchx/Bunting_design/1.png`) reviewed against the Notion brief; a designer's feedback (no context, name before the pain, bland, A-level students away during the booth) worked into a new layout. Found the intake form's grade grid takes A-level grades only. Found the demo website's code is `prototype/`, fed from `business/sales/sample_pack/sample_master_list.csv` by `prototype/_build/gen.py`.
+- Decisions (and why): the bunting shows the demo website's list, cropped in a device frame, because customers get that website (plus a spreadsheet download), so the picture matches the product. See `decisions/log.md`.
+- Problems / lessons: none in code. The two status.md drafts (designer feedback; website delivery) were not written: Evan has not said yes.
+- Next step: Evan's "go" on the demo edit plan in `plans/carry-overs/2026-10-27-bunting-redesign.md`.
+
+## 2026-10-27 (late, 3) · S3 decided: no family income in the record
+- Done: nothing built. Evan decided S3 in chat.
+- Decisions (and why): the system never collects family income (sensitive; students rarely know it). US need-based finalists get the university's own published income-band examples plus a CSS Profile link instead. Claude suggested also linking each university's net price calculator (the CSS Profile applies for aid, it does not estimate it); waiting on Evan's "go". See `decisions/log.md`.
+- Problems / lessons: none.
+- Next step: on Evan's go, edit `04_university_report.md` (Costs / `net_cost`), `08_application_prep.md` (financial aid `covers`), the `build_report.py` sample line, close S3.
