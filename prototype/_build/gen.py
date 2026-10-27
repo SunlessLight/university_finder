@@ -39,6 +39,7 @@ COLUMNS = [
 IDS = {
     "Massachusetts Institute of Technology": ("mit", "MIT"),
     "University of Oxford": ("oxford", "Oxford"),
+    "University of Cambridge": ("cambridge", "Cambridge"),
     "National University of Singapore": ("nus", "NUS"),
     "Princeton University": ("princeton", "Princeton"),
     "Tsinghua University": ("tsinghua", "Tsinghua"),
