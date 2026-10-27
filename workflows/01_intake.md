@@ -135,13 +135,16 @@ fine — but keep the substring in bold intact.
   change). Responses before that date were never asked, so their `null` means "not asked", not "no
   need". **Still not on the form:** Stay close to family, disability/accessibility,
   mental-health/wellbeing support, LGBT-friendly — their `needs` keys stay `null` = "not asked".
-- **Lesson-language question (added to the live form 2026-10-25, backlog S9):** a dropdown asking what
-  language most lessons (not the English class) were taught in, with options ranging from "English all
-  through secondary and pre-university" to "Not sure" (exact title and labels: read them from the next
-  export). **Not in `QUESTION_MAP` yet**, so
-  `--check-headers` may list it as unmatched and the answer stays only in the CSV. Group 2 step 3 of
-  `business/additionals.md` adds the map entry and a profile field. Until then, read the CSV column by
-  hand when an English-test waiver depends on it.
+- **Lesson-language question (added to the live form 2026-10-25, backlog S9):** "What language were
+  most of your lessons (maths, science, etc.) taught in? Not your English class." Six options, from
+  "English, all through secondary school and pre-university" to "Not sure", plus Other (labels:
+  `forms/intake.json`). → **`english_proficiency.lesson_language`**, verbatim (mapped 2026-10-27).
+  **No rule turns it into years of English-taught schooling yet** (S9, group 2 step 3 of
+  `business/additionals.md`), so when an English-test waiver depends on it, read the answer and apply
+  each university's own rule by hand. Never assume a waiver from "Mixed … (DLP)" or "Not sure" (S9: DLP is a grey area).
+- **"What did you take for ur secondary school?"** (IGCSE / SPM / Other) → **`secondary_qualification`**,
+  verbatim (mapped 2026-10-27). Nothing reads it automatically yet; it is context for the English-waiver
+  call and for entry requirements that name SPM or IGCSE.
 - **"Achievements / activities you'd want to write about in your application?"** (optional, new
   2026-08) → `profile.achievements`, free text. This exists specifically so Stage 4's "Who actually
   gets in" section and the application-prep guide can compare the student's real activities against

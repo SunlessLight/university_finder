@@ -104,3 +104,9 @@ Entry format:
 - Decisions (and why): "Doesn't matter" ranks last instead of being skipped, because `derive_weights.py` refuses a priorities list missing any of the 8.
 - Problems / lessons: the check also caught 3 course names that never matched (all non-regulated, so no student harm). Consent retention is now 3 months, not 12.
 - Next step: Evan answers what the secondary-school and lesson-language questions should feed (F4; lesson language = backlog S9 step 3). Commit. Then I12, I11, feedback-sheet switch.
+
+## 2026-10-27 (evening) · Last two intake questions now read (F4)
+- Done: `ingest_form_csv.py` maps "What did you take for ur secondary school?" → `secondary_qualification` and the lesson-language question → `english_proficiency.lesson_language`, both verbatim; `init_student.py` template has both keys. `--check --offline` now has 0 unmapped headers (exit 0); a fake response from `forms/intake.json` gives "SPM" and the DLP answer word-for-word, no review flags. Calendar tests pass. `01_intake.md` and S9 in `business/additionals.md` updated.
+- Decisions (and why): raw answers now, years rule later (S9), so no paid student's answer is lost meanwhile; 3-month consent retention kept (Evan confirmed). See `decisions/log.md`.
+- Problems / lessons: none.
+- Next step: I12 and I11 (backlog group 2 step 11), then the feedback-sheet switch.

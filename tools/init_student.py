@@ -51,9 +51,11 @@ def profile_template(slug, name):
         "recognition_targets": [],  # e.g. ["MQA","MMC"] — only for regulated professions
         "education_history": [],     # [{institution, qualification, years}]
         "current_program": {"type": "A-Level", "expected_completion": None},  # type is a permanent default (no question asks it), same pattern as home_country
+        "secondary_qualification": None,  # verbatim form answer: "IGCSE" | "SPM" | other text
         "subjects": [],              # [{subject, grade_or_predicted}]
         "grade_status": None,        # "actual" | "predicted" | "expected" (self-predicted / "confident of getting" — provisional)
-        "english_proficiency": {"test": None, "score": None, "test_date_or_planned": None},
+        "english_proficiency": {"test": None, "score": None, "test_date_or_planned": None,
+                                "lesson_language": None},  # verbatim form answer (backlog S9: years rule still open)
         "financial": {
             "budget_per_year": None,
             "total_budget": None,

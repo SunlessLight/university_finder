@@ -85,6 +85,10 @@ QUESTION_MAP = [
     ("english test taken", "english_test"),  # current form: "English Test Taken" — must stay AFTER
                                               # "what's the score" above, see comment there
     ("will you take it", "english_date"),
+    ("lessons (maths, science", "lesson_language"),  # current form (2026-10-25, backlog S9): raw answer only;
+                                                     # the answer -> years-in-English rule is still open (S9)
+    ("for ur secondary school", "secondary_qualification"),  # current form: "What did you take for ur
+                                                             # secondary school?" (IGCSE / SPM / other)
     ("total budget", "total_budget"),
     ("whole degree", "total_budget"),  # this form's wording: "your budget (RM) for the whole degree"
     ("per-year budget", "budget_per_year"),
@@ -717,6 +721,7 @@ def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None,
     profile["current_program"]["expected_completion"] = (
         _normalize_month_year(completion_combined) or completion_combined or None
     )
+    profile["secondary_qualification"] = get(row, col_index, "secondary_qualification") or None  # verbatim
 
     # --- profile: grades ---------------------------------------------------- #
     # Current form: structured dropdown pairs -> build subjects[] deterministically here. The grade
@@ -764,6 +769,7 @@ def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None,
         "test": None if english_test.lower().startswith("none") or not english_test else english_test,
         "score": get(row, col_index, "english_score") or None,
         "test_date_or_planned": get(row, col_index, "english_date") or None,
+        "lesson_language": get(row, col_index, "lesson_language") or None,  # verbatim; S9 turns it into years
     }
     profile["achievements"] = get(row, col_index, "achievements_text") or None
 
