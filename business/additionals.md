@@ -1748,6 +1748,20 @@ R1 is the one to read first, because it has a clock on it.
 
 #### - [ ] R21. Four UK cells say the English test is waived for English-taught schooling in Malaysia
 
+- **The four cells are fixed 2026-10-27** (Evan said yes): `apply_backfill.py --overwrite` from
+  `.tmp/r21/<slug>/`, dry run first, one backup in the session scratchpad. Each cell now gives the
+  course's own level (UCL Level 1, Imperial higher / standard, KCL Band D) and the accepted English
+  grade; the sources are in each student's `research_notes.md`. `check_master_list.py`: no new
+  findings (the 203 blanks and one over-long `status.md` on the first student were there before).
+- **Still open, a wider sweep (not urgent unless a student is about to receive a guide):** a rough
+  search found about 40 more `English req` cells on 11 students' lists that tie a waiver to A-Levels
+  or English-medium schooling. Some state a university's real rule (Columbia, Northeastern); many
+  are the old guess, e.g. "likely waived for English-medium A-Levels — confirm" on 24 rows of the
+  first student (US and Australia; `08_application_prep.md` says Australia does not waive on
+  A-Levels). Shortlist and Finalist rows first: about 15, across four students. Plus the source
+  student's Oxford and Cambridge cells (unchecked). Same method as above, one student per session.
+  Find them with: `English req` contains "waive" and "A-Level" or "English-medium".
+
 - **Added 2026-10-27**, from group 2 step 3 (S9's UK half). **Group B, a stale cell, not a tool gap.**
   Nothing has gone to these students with the claim in an apply guide (only the source student has a
   guide, and it is US only), but the cells are on their lists.

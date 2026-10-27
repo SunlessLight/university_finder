@@ -134,3 +134,9 @@ Entry format:
 - Decisions (and why): store a floor, not a guess (pre-university length varies, so "pre-U only" = 1, which clears no waiver read so far); DLP stays null (grey area). See `decisions/log.md`.
 - Problems / lessons: four student cells already claim a UK waiver that does not exist (new backlog R21, needs Evan's yes). S3 still waits on Evan's income decision.
 - Next step: Evan's yes on R21 and his S3 decision; otherwise the 28 Oct ChatGPT test.
+
+## 2026-10-27 (late, 2) · R21: four wrong UK English cells fixed
+- Done: Evan said yes. Four `English req` cells (one student's UCL, Imperial and KCL Shortlist rows; the source student's Imperial Finalist row) rewritten via `apply_backfill.py --overwrite` from `.tmp/r21/`, dry run first, backup in the session scratchpad. Each now gives the course's level (read on each course page via Firecrawl) and the accepted English grade. `check_master_list.py`: no new findings; exactly 3 + 1 cells changed.
+- Decisions (and why): no `status.md` line, because the first student's is already over its 3000-character budget; the record is in `research_notes.md`.
+- Problems / lessons: the same guess is wider: ~40 cells on 11 lists tie a waiver to A-Levels or English-medium schooling (R21 sweep, Shortlist/Finalist first).
+- Next step: Evan's S3 decision; the R21 sweep after the 10 Nov lists.
