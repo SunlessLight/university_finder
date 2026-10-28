@@ -30,3 +30,6 @@ __pycache__/
 # OS / editor
 .DS_Store
 Thumbs.db
+
+# Windows crash logs from Git Bash tools (e.g. grep.exe.stackdump)
+*.stackdump
