@@ -129,7 +129,7 @@
 
   /* ---- Results: top picks and findings ---- */
 
-  const top5 = ['mit', 'oxford', 'nus', 'ntu', 'unsw'];
+  const top5 = ['mit', 'cambridge', 'nus', 'ntu', 'unsw'];
 
   const total = ROWS.length;
   const clearing = ROWS.filter((u) => /above|meets/i.test(u.gradesVsEntryBar)).length;
