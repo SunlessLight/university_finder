@@ -20,3 +20,7 @@ markdown
 # libs (NOT pip): install MSYS2 then `pacman -S mingw-w64-ucrt-x86_64-gtk3`; the tools add
 # C:\msys64\ucrt64\bin at import (override with WEASYPRINT_DLL_DIRECTORIES). See the tool header.
 weasyprint
+
+# Reading PDFs back: the sample pack's privacy scan (business/sales/sample_pack/build_sample_pack.py,
+# scan_for_leaks) checks the built PDFs for the source student's name, school and income.
+pypdf

@@ -182,3 +182,9 @@ Entry format:
 - Decisions (and why): the demo branch's hand edits were moved into the source list and build script, because a rebuild from source would have undone them. See `decisions/log.md`.
 - Problems / lessons: the demo branch had hand-typed a 212-char Notes cell (budget 200); the backfill tool caught it. `pypdf` is missing, so the leak scan crashes on the PDFs (R24); the PDFs' sources predate their last scanned build, so the committed PDFs were kept. New: R23 (Rose-Hulman, Northeastern grade labels), R25 (uk.md fee year).
 - Next step: backlog step 2b (R24 needs Evan's yes on installing `pypdf`).
+
+## 2026-10-28 (4) · R24 closed, old demo worktree removed
+- Done: `pypdf` 6.21.3 installed into `.venv` (Evan's yes) and listed in `requirements.txt`; full `build_sample_pack.py` run with `.venv`'s Python: "Scan clean" incl. both PDFs (rebuilt PDFs differed only in build bytes, so the committed ones were kept). Worktree `.claude/worktrees/bunting-demo` removed (Evan's yes; its commit is merged, only the throwaway `bunting-shot.html` was in it). The merged branch label `bunting-demo` is left.
+- Decisions (and why): none new.
+- Problems / lessons: the system `py` has no `pypdf`; run the sample pack build with `.venv/Scripts/python.exe`.
+- Next step: backlog step 2b (R23, R25).

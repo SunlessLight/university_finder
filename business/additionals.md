@@ -19,7 +19,7 @@ English, no student named, no grades, income or school. Then add it to a step be
 
 | Step | Entries | Files it writes | Waits for | Size |
 |---|---|---|---|---|
-| **2b** | R24, then R23, then R25 | `.venv` + `requirements.txt` (R24); the source student's `master_list.csv`, `research_notes.md`, `score_log.jsonl`; `business/sales/sample_pack/`; `prototype/data.js`; `workflows/countries/uk.md` (R25) | Evan's yes on installing `pypdf` (R24) | Small |
+| **2b** | R23, then R25 | the source student's `master_list.csv`, `research_notes.md`, `score_log.jsonl`; `business/sales/sample_pack/`; `prototype/data.js`; `workflows/countries/uk.md` (R25) | nothing | Small |
 
 **After 10 Nov** (the old students' lists, then the bigger system changes)
 
@@ -59,16 +59,6 @@ English, no student named, no grades, income or school. Then add it to a step be
 
 ## Before 10 Nov
 
-#### R24. The sample pack's privacy scan crashes: `pypdf` is not installed
-
-- **Added 2026-10-28** (SP1 run). **Tool gap, urgent:** any sample pack rebuild before 10 Nov hits it.
-- **What is true:** `build_sample_pack.py` ends with `scan_for_leaks()`, which reads the two PDFs
-  with `pypdf`; neither `.venv` nor the system Python has it, and `requirements.txt` doesn't list
-  it. SP1 got round it (the PDFs' sources predate their last scanned build, so the committed PDFs
-  were restored and only the two CSVs scanned). Next time the PDFs may really change.
-- **Suggested fix:** with Evan's yes, `pip install pypdf` into `.venv` (the official package,
-  github.com/py-pdf/pypdf) and add it to `requirements.txt`. Then run the full build once.
-
 #### R23. Two US demo rows carry a grade label against a bar that doesn't exist
 
 - **Added 2026-10-28** (SP1 run). **Stale data a customer sees** (sample pack + demo website), so
@@ -81,7 +71,8 @@ English, no student named, no grades, income or school. Then add it to a step be
 - **Suggested fix:** read each one's admit rate on its official page (Common Data Set or
   admissions facts). Set `entry_margin` = `not_published` and an `admission_likelihood` override
   with a short reason, the same way as SP1 (`grade_fit_label` / `classify_admission`, one
-  `score_log.jsonl` line each). Then rebuild the sample pack (after R24) and the prototype
+  `score_log.jsonl` line each). Then rebuild the sample pack (with `.venv`'s Python: it has `pypdf`
+  for the privacy scan) and the prototype
   (`gen.py`), run `check_master_list.py --student <source>` and `node prototype/_build/smoke.js`.
 
 #### R25. `uk.md` calls Cambridge's GBP 46,872 a 2026/27 fee
