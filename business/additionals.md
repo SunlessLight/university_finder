@@ -5,7 +5,7 @@ done, delete it and its line in the steps below, and write one line in `plans/bu
 History: the full file up to 2026-10-28 (every closed entry, the old lane and round plans) is in
 git: `git show 10b847c:business/additionals.md`. Decisions are in `decisions/log.md`.*
 
-*Adding an entry: the next number is **R26**. Say whether it is **urgent**, and whether it is a
+*Adding an entry: the next number is **R38**. Say whether it is **urgent**, and whether it is a
 **tool gap** (the system will keep making the mistake) or **stale data** (old files only). Plain
 English, no student named, no grades, income or school. Then add it to a step below.*
 
@@ -19,7 +19,8 @@ English, no student named, no grades, income or school. Then add it to a step be
 
 | Step | Entries | Files it writes | Waits for | Size |
 |---|---|---|---|---|
-| **2b** | R23, then R25 | the source student's `master_list.csv`, `research_notes.md`, `score_log.jsonl`; `business/sales/sample_pack/`; `prototype/data.js`; `workflows/countries/uk.md` (R25) | nothing | Small |
+| **2b** | R27, R28, R29, R30 part a, R32 (the fact audit's spreadsheet fixes) | `tools/ingest_form_csv.py`, `tools/shortlist_schema.py`, `tools/check_master_list.py`, `tools/apply_glossary.py`, `tools/build_glossary_sheet.py` | nothing | Medium |
+| **2c** | R23, R25, then R31 | the source student's `master_list.csv`, `research_notes.md`, `score_log.jsonl`; `business/sales/sample_pack/`; `prototype/data.js`, `prototype/_build/`; `workflows/countries/uk.md` (R25) | step 2b (so the rebuilt sample carries the new wording and passes the new check) | Small to medium |
 
 **After 10 Nov** (the old students' lists, then the bigger system changes)
 
@@ -29,10 +30,15 @@ English, no student named, no grades, income or school. Then add it to a step be
 | **4** | I9, then L2 (the 22 rows) | other students' `profile.json`, `master_list.csv`, `research_notes.md` | step 3 | Large. One student per session if the 22 rows span many |
 | **5** | R16 lookups (parts a, b, c) | `notes/r16_*`, `.tmp/r16/` | nothing. Can run beside step 4 | Large: about 45 agents plus browser lookups. Split a/b/c across sessions |
 | **6** | Per student: R16 apply, R17, R21 (all three touch the same list, so do them together) | that student's `master_list.csv`, `research_notes.md`, `status.md` | steps 3 and 5 | Medium per student. Never the same student as step 4 |
-| **7** | L5 (plan first, in plan mode) | `tools/shortlist_schema.py`, `tools/sync_shortlist.py`, `tools/check_master_list.py`, the row-filler sheet, `workflows/03_discover_longlist.md` | an approved plan | Medium to large. Not alongside step 4 or 6 |
+| **7** | L5 + R36 (plan first, in plan mode) | `tools/shortlist_schema.py`, `tools/sync_shortlist.py`, `tools/check_master_list.py`, the row-filler sheet, `workflows/03_discover_longlist.md`, `workflows/countries/*.md` | an approved plan | Medium to large. Not alongside step 4 or 6 |
 | **8** | R20 (plan first) | to be planned | nothing | Large, a new build |
+| **9** | R33, R34 (reports; plan R34 first). **Before the first paid report goes out**, even if that is before 10 Nov | `tools/flip_finalists.py`, `tools/build_report.py`, `tools/check_report.py`, `workflows/04_university_report.md`, `.claude/agents/report-writer.md` | nothing | Medium |
+| **10** | R30 part b, R35 (glossary facts, calendar, apply guide) | `tools/apply_glossary.py`, `tools/build_calendar.py`, `tools/build_application_prep.py`, `.claude/skills/application-guide/SKILL.md`, `workflows/05_decide_and_apply.md`, `workflows/08_application_prep.md` | step 2b (same glossary file) | Medium |
 
-**Not a session** (Evan's own, a reply someone owes, or a measurement): I3, I4, R9, R11, N1 / U4 / V2, V3.
+**Not a session** (Evan's own, a reply someone owes, or a measurement): I3, I4, R9, R11, N1 / U4 / V2, V3, **R26 and R37 (before 10 Nov)**.
+
+**The fact audit (2026-10-28)** is behind R26–R37: [fact_audit/00_START_HERE.md](../fact_audit/00_START_HERE.md),
+with nine detailed reports beside it. Each entry names its report and finding numbers (e.g. "03 #16").
 
 ### Rules for every step session
 
@@ -81,6 +87,67 @@ English, no student named, no grades, income or school. Then add it to a step be
   (read 2026-10-28) gives GBP 46,872 for **2027 entry**, Group 4 (incl. Engineering).
 - **Suggested fix:** in the Cambridge College-fee note in `workflows/countries/uk.md`, change
   "(2026/27)" to "(2027 entry)".
+
+#### R27. The form's "Forecast Grades" answer is read as self-guessed grades
+
+- **Added 2026-10-28** (fact audit 01 #5). **Tool gap, urgent** (the 10 Nov students fill this form).
+- **What is true:** `tools/ingest_form_csv.py:789-793` knows only "actual" and "predict…"; the live
+  form's option is "Forecast Grades" (usually school-issued), so the student is stored as
+  `expected` and every row on their list gets the warning "Grades self-predicted", which they never said.
+- **Suggested fix:** map "forecast" to `predicted` in the reader. Then `fetch_form_questions.py --check`.
+  Old profiles: list which ones say `expected` with a "Forecast" raw answer; fix with Evan's yes.
+
+#### R28. No check looks for hedge, advice or chatter words in the spreadsheet
+
+- **Added 2026-10-28** (fact audit 03 #16, 08 #1–24). **Tool gap, urgent:** the one change that
+  stops guesses reaching every list after it.
+- **What is true:** `check_master_list.py` scans prose columns for jargon only (`check_jargon`).
+  Across real lists, 162 of 280 "Official page" rows hold a hedge word ("confirm", "likely",
+  "typically", "~"), and 22 cells give advice. That is how "likely waived… confirm" reached about 40 cells.
+- **Suggested fix:** a new `check_hedges` over the fact columns, word lists from
+  `fact_audit/08_output_sweep.md` (regex table). Fails on rows stamped `Official page`, warns on
+  `Not verified` rows. "~" is allowed only before a converted MYR figure ("~RM"). `apply_backfill.py`
+  runs the same check on what it writes. Expect old lists to fail: that is the point (they are not
+  being re-sent). `research_notes.md` is internal, never sent (Evan, 2026-10-28), so its notes-to-self
+  (08 #38–41) are fine and the check skips it.
+
+#### R29. Three fixed sentences the scripts write into cells are advice or notes about the student
+
+- **Added 2026-10-28** (fact audit 03 #1–3, 02 #1). **Tool gap, urgent.**
+- **What is true:** in `tools/shortlist_schema.py`, the only allowed "no date" deadline is
+  `"Not published — check portal"` (line 109), an instruction. `feasibility_flags` writes
+  `"Recognition risk — check MQA/BEM"` (542), also an instruction, and stamps
+  `"Urban+Rural both ticked"` (550), a note about the student's form, into every row's Warnings.
+- **Suggested fix:** sentinel → `"Not published"` (keep the old value accepted, so old lists still
+  pass); flag → `"Recognition risk: not found on <body> list"`; move "Urban+Rural" to Stage 1
+  `_needs_review`. Search the workflows and row-filler sheet for the old sentinel text and update them.
+
+#### R30. The glossary carries advice and facts written from memory
+
+- **Added 2026-10-28** (fact audit 04 #1–11, 06 #19–20, 07 #9–10). **Tool gap.** Part a is urgent:
+  every student sheet has the Glossary tab, and every report and guide prints it.
+- **What is true** (`tools/apply_glossary.py`): advice inside definitions ("Avoid it if you need to
+  compare aid offers", line 33; "so check what's left for you", 69; "check its register to confirm",
+  492–494; "register and sit it in autumn", 170). Dated or money facts with no source or year
+  ("Opens 1 October", 90; "Roughly AUD 650–800 a year", 982; Graduate Route length, 883), plus
+  about 15 "usually / typically" lines. Two contradict the sample's own rows (ESAT names Oxford; ISAFA).
+- **Suggested fix:** part a (step 2b): rewrite the advice lines as plain definitions. Part b (step 10):
+  take dated and money figures out of definitions (they belong in the cells, with a source), and drop
+  the hedges. Rebuild glossaries only for lists being sent.
+
+#### R31. The public sample still holds hedged, advice and cut-off cells beyond SP1
+
+- **Added 2026-10-28** (fact audit 04 #14–32, 08 #42–47; counted on the post-SP1 files). **Stale
+  data the public sees** (sample pack + demo website; the booth opens 10 Nov).
+- **What is true** (sample CSV / demo `data.js`): 11 / 15 "QS ~" ranks with no edition year; 3 / 3
+  "~Apr 2027" deadlines; 2 / 2 "confirm exact 2027 date"; 3 / 3 "MQA: verify"; 1 "most likely under its
+  BSc row"; 1 "Count yours"; 5 / 5 "student visa form financial documentation" with no amount (the
+  I-20 jargon swap emptied the cell, `apply_glossary.py:1207`); 13 cells cut off mid-sentence;
+  opinions in fact cells ("China's most competitive university"). Demo copy: "make sure the rest of
+  your list carries the weight" (`data.js:1090`).
+- **Suggested fix:** after step 2b, re-read each fact on the official page and fix it in the source
+  list (`apply_backfill.py --overwrite`, dry run first), never in the sample CSV. Rebuild the sample
+  and the demo as SP1 did, then `check_master_list.py` (with R28's check) must be clean.
 
 ---
 
@@ -222,6 +289,67 @@ English, no student named, no grades, income or school. Then add it to a step be
   `business/projects/<name>.md` per Notion project), then widen the end-of-session mirror and
   `/catchup` to all five. Build on `mentor` and `/social`.
 
+#### R32. The score and label columns are explained nowhere a student can see
+
+- **Added 2026-10-28** (fact audit 03 #4–6, 04 #22, 06 #4, #26, 07 #11). **Design gap.** Step 2b,
+  because the 10 Nov lists show them.
+- **What is true:** `Desirability` (0–100), `Tier`, `Admission likelihood` (Reach/Match/Safety) and
+  `Grades vs entry bar` are our rule-made labels, built from AI-picked 0–5 sub-scores. The glossary
+  defines acronyms only. "Safety" reads like a promise of admission.
+- **To decide (Evan). Default:** keep the columns, and add one Glossary-tab row per column, starting
+  "Our label, not the university's:", plus the rule in one line (e.g. Safety = grades above the
+  published bar; not a promise). The same wording goes in reports and apply guides in step 9.
+
+#### R33. A row can become a Finalist without its facts being verified
+
+- **Added 2026-10-28** (fact audit 09 #2). **Tool gap.** The sales copy and product reports say it
+  cannot happen (`longlist_report.md:186`, `university_report.md:128`).
+- **What is true:** `tools/flip_finalists.py:326-333` sets `List status` to Finalist without reading
+  `Info source`; `check_master_list.py` accepts `Not verified` on a Finalist row.
+- **Suggested fix:** `flip_finalists.py` refuses a row that is not `Official page` (names it, exit 1),
+  and `check_master_list.py` fails a Finalist row that is `Not verified`.
+
+#### R34. The university report asks for verdicts and coaching, and nothing checks for them
+
+- **Added 2026-10-28** (fact audit 05 #16–31, 06 #1–2, #6, #10–12). **Tool gap.** Plan first; needs
+  decision 2 in `fact_audit/00_START_HERE.md`.
+- **What is true:** fixed headings in `tools/build_report.py` ask for a fit verdict ("Who it's for —
+  the archetype & your fit", "Why here / why hesitate", lines 124–135). The sample MIT report has
+  verdict tables ("Honest read on your fit", "The verdict"), orders ("Ask your college early") and
+  AI notes ("free search cannot read Reddit"). Reports print no "prepared on" date.
+  `check_report.py` has no hedge, advice or chatter check. Real reports: 1,827 hedge words, 193
+  advice phrases and 43 notes-to-self across 42 reports (08 #25–27).
+- **To decide (Evan). Default:** every section is facts with sources; all opinion goes in one box
+  headed "Our assessment (a judgment, not a fact)".
+- **Suggested fix:** rename the headings, add the box, print the date, add `hedges` / `advice` /
+  `chatter` checks to `check_report.py`, and rewrite `04_university_report.md` + `report-writer.md`
+  to match.
+
+#### R35. The calendar and apply guide show estimates and self-set dates as real ones
+
+- **Added 2026-10-28** (fact audit 07 #1–5, #12–14, #18–19, #23–24). **Tool gap.**
+- **What is true:** `tools/build_calendar.py:72` keeps only the first date in a cell, so
+  "2027-01-15 (estimated)" shows as a plain date. Calendar rows carry no source. The sample US guide
+  shows a self-set "Choose by 25 Oct 2026" in the same bold as real deadlines, a "budget about 5%
+  above" price guess (`build_application_prep.py:510`), and a "strategy" section of coaching
+  ("Recommendation: spend the early card on…").
+- **Suggested fix:** the calendar keeps the cell's qualifier text and a source column; self-set
+  dates are marked "suggested, not a university date"; the strategy section is labelled as our
+  advice (decision 2); the price-rise line is removed. Update the `application-guide` skill.
+
+#### R36. The longlist instructions still let helpers write memory facts and notes into cells
+
+- **Added 2026-10-28** (fact audit 02, 36 Medium findings). **Tool gap.** Do it inside L5's plan
+  (step 7): same files, same question of what a missing fact looks like.
+- **What is true:** the hedge-word ban covers one column (`English req`); helpers may put
+  "couldn't reach…" notes in `Notes`; country files cache undated fees, ranks and visa rules (the
+  Japan file has no dates or sources at all); several examples show "~" in a hard-fact cell; four
+  country files tell helpers to give advice ("tell the student…"); default sub-scores feed the
+  score with no evidence.
+- **Suggested fix:** per-finding fixes are in `fact_audit/02_longlist_instructions.md`. One rule
+  covers most of them: a cell holds a sourced fact or the fixed "not published / not found" wording,
+  nothing else.
+
 ---
 
 ## Not a session
@@ -242,6 +370,18 @@ English, no student named, no grades, income or school. Then add it to a step be
   the cheapest step to deliver" ([decide_report.md](product_report/decide_report.md)). Settle each
   by writing down time and AI usage on the next real run of that stage (the 10 Nov lists give N1
   and U4). Cost per student is what an investor uses to judge RM 50.
+- **R26. The intake form's budget choices start at RM 500,000** (fact audit 01 #4, #18). Urgent,
+  before 10 Nov; Evan's form. A family with RM 150,000 must pick 500,000, so "Over budget" never
+  shows. Default: replace the three choices with a number box (or add lower bands). The opening text
+  ("Hihi! … your data is safe with me 🤩🥰") is chatty and clashes with the consent text. Default:
+  "We use your answers to research universities for your course and countries." After the edit:
+  `fetch_form_questions.py --check`, and Claude updates the budget reader in `ingest_form_csv.py`.
+- **R37. The sales copy promises checks no program makes** (fact audit 09 #2–5, #14). Urgent:
+  Evan says these lines at the booth. `positioning.md:71` "until a human has confirmed the fact"
+  (the AI stamps its own rows); `positioning.md:76-77` "a row can't reach Shortlist on aggregator
+  facts" (nothing gates Shortlist); `longlist_report.md:304` "the student knows it was checked"
+  (Warnings "None" can't check cost when there is no budget). Default wording: "Every row says
+  whether its facts came from the university's own page." Evan's wording, so Evan's edit.
 - **V3. Why nine students picked only one university.**
   [decide_report.md](product_report/decide_report.md) guesses it is the poster's "pick 1 uni to go
   deep on"; no student has said so. Ask two or three of them before that report is shown outside.

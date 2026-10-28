@@ -188,3 +188,9 @@ Entry format:
 - Decisions (and why): none new.
 - Problems / lessons: the system `py` has no `pypdf`; run the sample pack build with `.venv/Scripts/python.exe`.
 - Next step: backlog step 2b (R23, R25).
+
+## 2026-10-28 (5) · Fact audit: guesses, advice and chatter
+- Done: Evan asked whether the system keeps everything "factual, information not advice". Nine read-only helpers audited one part each (intake, longlist instructions, scoring and checks, spreadsheet text, report instructions, report tools, decide and apply, a count-only sweep of every student's generated files, promises vs reality). Reports in `fact_audit/` with `00_START_HERE.md` (top 10, products, decisions). 282 findings, 139 High; counts recounted from the files; no student named (checked against every folder name). Three findings spot-checked in the code. New backlog R26-R37 with steps 2b, 2c (before 10 Nov), 9 and 10; R36 joins L5 in step 7. Plan: `plans/fact_audit_plan.md`.
+- Decisions (and why): none of Evan's yet. Claude's defaults, for Evan to confirm: keep the score/label columns but explain them as "our label" (R32); report opinion goes in one labelled box (R34). Judgments are part of what families pay for, so they get labelled, not deleted.
+- Problems / lessons: no automatic check looks for hedge, advice or chatter words (spreadsheet or report), so the "official pages only" rule is written down but not enforced; 58% of "Official page" rows hold a hedge word. The intake form's lowest budget choice is RM 500,000 (R26).
+- Next step: Evan's form edit (R26) and sales wording (R37); then backlog step 2b, then 2c, all before 10 Nov.
