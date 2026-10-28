@@ -10,6 +10,6 @@ The business side of the university research service. None of it is part of the 
 | [longlist_report.md](product_report/longlist_report.md) | Plain-English explainer of the longlist stage (Stage 3) for a non-technical reader, e.g. an investor. |
 | [apply_guide_report.md](product_report/apply_guide_report.md) | Plain-English explainer of the Apply Guide stage (the per-region "how to apply" document, internally "Stage 8"), written for an investor with no technical background. |
 | [decide_report.md](product_report/decide_report.md) | Plain-English explainer of the decision stage (Stage 5: recommendation + deadline calendar) for a non-technical reader, e.g. an investor. |
-| [additionals.md](additionals.md) | Running list of inconsistencies noticed between files but not yet fixed, grouped by how much they matter. Tick off as fixed. |
+| [additionals.md](additionals.md) | The backlog: open known problems only, each with a suggested fix, sorted into numbered steps. Finished entries are deleted (history in git). |
 | [sales/](sales/) | Everything used to sell: positioning, service tiers, go-to-market plan, WhatsApp scripts, the poster, and the sample pack. |
 | [launchx/](launchx/) | Material for the LaunchX Bootcamp 2 investor pitch on 24 October 2026: survey and chat questions, market size, competitors, cost to serve one student, and the hardest-questions drill. The slides themselves are a claude.ai deck, linked in `launchx/status.md`. |

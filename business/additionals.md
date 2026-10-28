@@ -1,1782 +1,268 @@
-# Additionals — inconsistencies noticed but not fixed
+# Additionals — the backlog of known problems not yet fixed
 
-*Started 2026-10-10, while writing [university_report.md](product_report/university_report.md). Each entry is a
-place where two parts of the project say different things about the University Report stage
-("Stage 4"). Nothing here has been changed yet. Tick an item off when it is fixed.*
+*One entry per problem, each with a suggested fix. **Only open entries live here.** When one is
+done, delete it and its line in the steps below, and write one line in `plans/build-log.md`.
+History: the full file up to 2026-10-28 (every closed entry, the old lane and round plans) is in
+git: `git show 10b847c:business/additionals.md`. Decisions are in `decisions/log.md`.*
 
-The entries are grouped by how much they matter:
-
-- **A. A customer could see it.** Sales material that describes the product wrongly.
-- **B. It could cause a wrong result.** Instructions that an AI session follows, where the stale
-  version could lead it to produce the wrong thing.
-- **C. Stale notes only.** Comments inside the programs that are out of date. The programs
-  themselves behave correctly.
-
-Two of these (A1 and C1) were reported in the session that wrote the explainer. The other five
-turned up on a second, closer pass through the same files.
-
-**Added later the same day:** a separate part at the bottom, [Decision stage (Stage 5)](#decision-stage-stage-5),
-holds what turned up while writing [decide_report.md](product_report/decide_report.md). It has its own numbering
-(D for things found, V for things not verified) so the A/B/C entries above stay as they were.
-
-**Also added the same day:** a third part, [Intake stage (Stage 1)](#intake-stage-stage-1), holds
-what turned up while writing [intake_report.md](product_report/intake_report.md). Its numbering is I for things
-found and U for things not verified.
-
-**Also added the same day:** a fourth part, [Longlist stage (Stage 3)](#longlist-stage-stage-3),
-holds what turned up while writing [longlist_report.md](product_report/longlist_report.md). Its numbering is L for
-things found and N for things not verified.
-
-**Added 2026-10-12:** a fifth part, [Sample pack fix round](#sample-pack-fix-round-2026-10-12),
-holds what was left over from [sample_pack_fix_plan.md](../sample_pack_fix_plan.md). Its numbering
-is S for things found and P for the two tasks of that plan that were parked.
-
-**Closing pass 2026-10-15:** lanes 1, 2, 3, 4 and 6 ran on 2026-10-13 (saved as commit `905ed9a`).
-Each entry they finished is ticked, after checking the files themselves and not only the lanes'
-hand-backs. What the lanes found and did not fix is a sixth part at the bottom,
-[Left over from the lane round](#left-over-from-the-lane-round-2026-10-15), numbered R. Lane 5
-has not run.
-
-**Closing pass 2026-10-17:** group 1 step 2 ran on 2026-10-16. S8, S10 and D4 are ticked, and Task 9 of the sample pack plan is done. Three new entries, R10 to R12, at the bottom.
-
-**Second closing pass 2026-10-17:** round 1 (group 1 step 1, group 2 step 1 with R8, group 3 step 1) and group 2 step 2 are done and checked against the files. R1, R3, R4, R6, R7, R8 and S4 are ticked. One new entry, R13.
-
-**Third closing pass 2026-10-20:** group 1 step 3 ran on 2026-10-18. S6, S7 and P1 are ticked. R13 is half done: the student's report is fixed, the sample pack is not rebuilt yet (new group 1 step 6, before the pitch). Six new entries, R14 to R19, and four new steps (group 1 steps 6 to 9 and group 2 step 6).
-
-**Fourth closing pass 2026-10-20 (later):** group 1 step 6 ran in another session and was checked in the files: the sample MIT report, the sample list, the prototype and the source list no longer carry the old register lines. R12 and R13 are ticked. Evan decided R16 (check every student), R17 (yes) and R18 (the visa office figure). R16 is now group 2 steps 7 to 10, with the per-student detail in the gitignored `notes/r16_scope.md`.
-
-**Fifth closing pass 2026-10-25:** Evan's answers on the live form closed I2 and I5 and decided S9's question (on the form). Group 2 step 3 is unblocked except S3's income question, and now has a deadline: before the first paid form is read in.
-
-**Sixth pass 2026-10-26:** three new intake entries: I10 (a tool so sessions can read the live forms' questions), I11 (the new budget options) and I12 (the consent question is now formal). They make up the new group 2 step 11, which runs before group 2 step 3. I3 decided.
-
-**Re-sorted the same day (2026-10-20):** the open entries are now sorted into three groups (student files out of date, systemic problems, miscellaneous) and cut into numbered steps of at most three tasks, with a table of which two steps can run side by side. See "Where things stand" under Start here. One new entry, R9.
+*Adding an entry: the next number is **R23**. Say whether it is **urgent**, and whether it is a
+**tool gap** (the system will keep making the mistake) or **stale data** (old files only). Plain
+English, no student named, no grades, income or school. Then add it to a step below.*
 
 ---
 
-## Start here — the work plan, split into lanes that can run side by side
+## Start here
 
-### Where things stand — session plan (2026-10-15, updated 2026-10-17)
+### Steps — one session each. Type: "Execute step N of `business/additionals.md`"
 
-*Every open entry sits in one of three groups, sorted by the kind of problem. Each group is cut
-into numbered **steps**. A step is one session's work, at most three tasks. To run one, open a
-fresh session and type:*
+**Before the 10 Nov paid lists and booth** (allowed under the freeze: a customer would see them)
 
-> Execute group 2 step 1 of `business/additionals.md`
-
-*Where the round table below pairs two steps for one session, type both:*
-
-> Execute group 1 step 1, then group 2 step 1, of `business/additionals.md`
-
-*Rules for every step session:*
-
-1. *Read this section, then only the entries your step names. The entry's "Suggested fix" is the
-   plan, so do not re-plan.*
-2. *Stay inside the files your step lists. If a fix needs another file, put it in the hand-back.*
-3. *Do not edit this file. End with a hand-back: the IDs finished, the IDs not finished, and
-   anything new found. A closing session ticks the boxes.*
-4. *Do not stage, commit or push. Evan runs `/commit` afterwards.*
-5. *Copy a student file to `.tmp/` before a program rewrites it. Never run the calendar program
-   with `--allow-shrink`.*
-
-#### Rounds — which steps run side by side (at most two sessions at once)
-
-| Round | Session A | Session B | Can start when |
-|---|---|---|---|
-| **1** | ~~Group 1 step 1, then group 2 step 1 (R1, R3, plus R8 if Evan said yes)~~ **done** | ~~Group 3 step 1 (R4, R6, R7)~~ **done** | Done by 2026-10-17 |
-| **2** | ~~Group 1 step 2 (S8, S10, Task 9)~~ **done 2026-10-16** | ~~Group 2 step 2 (S4)~~ **done 2026-10-17** | Done |
-| **Now** | ~~Group 1 step 6 (R13's second half: the sample pack)~~ **done 2026-10-20** | — | Done |
-| **Next** | ~~Group 2 step 11 (I10, I12, I11: form tool, consent, budget options)~~ **done 2026-10-27** | — | Done |
-| **3** | ~~Group 1 step 3 (S6, S7, P1)~~ **done 2026-10-18** | ~~Group 2 step 3 (S9's program half, R5, S3)~~ **done 2026-10-27** | B: after group 2 step 11, before the first paid form is read in (paid lists due 10 Nov) |
-| **4** | Group 1 step 4 (I9, L2) | Group 2 step 4 (D2, one student) | After the pitch. A: Evan's decision on L2. B: round 1 done and Evan's decision on D2. Never the same student in both sessions |
-| **5** | ⭐ Group 1 step 7 (re-score, part 1) | ⭐ Group 2 step 7 (ABET lookup, part 1) | After the pitch |
-| **6** | Group 1 step 8 (re-score, part 2, and Sheffield) | Group 2 step 8 (ABET lookup, part 2) | After round 5 |
-| **7** | ⭐ Group 2 step 9 (the Malaysian register, in Chrome) | Group 2 step 6 (R19, the backfill tool) | After the pitch. Step 6 must finish before round 8, which runs the backfill tool |
-| **8** | ⭐ Group 1 step 9 (the source student's recognition cells, and R17) | Group 2 step 10 (other students, first two or three) | After group 1 step 8 and group 2 steps 7 to 9 |
-| **9** | Group 2 step 10 (the remaining students) | Group 2 step 3 or step 4, whichever is unblocked | After round 8. Never the same student in both sessions |
-| **Later** | R20: Claude as the whole team (a new build; plan it first) | — | After the paid lists go out (10 Nov) |
-| **Any time** | Group 1 step 5 (P2 drafts, I4, R2) | ~~Group 2 step 5 (I2)~~ **done 2026-10-25** | When the step's own "Waits for" is met |
-
-Within a round, sessions A and B never write the same file. A round can start only when its own
-"Can start when" is met. Round 2 does not have to wait for round 1 to be fully finished, except
-where it says so.
-
-#### Evan's decisions — each one unblocks a step
-
-| Decision | Entry | Unblocks |
-|---|---|---|
-| ~~Whether lane 1's calendar tests get written into the project~~ **Yes; written, 11 tests pass** | R8 | Done |
-| ~~Yes or no on fixing the seven wrong cells (Task 8b)~~ **Yes, 2026-10-16** | S8 | Done |
-| ~~Look MIT up by hand on the Malaysian recognition register~~ **Done 2026-10-17 in Chrome by a session** | S4 | Done |
-| Who looks foreign degrees up on the register from now on: the main session in Chrome (written in as the default), or Evan by hand | S4 | Nothing; a one-line change in `sources.md` and the report workflow if Evan prefers to do it himself |
-| ~~Where to ask for years of schooling taught in English~~ **On the form, as a lesson-language dropdown; Evan added it 2026-10-25** | S9 | The S9 part of group 2 step 3 |
-| ~~Where to ask for family income~~ **Never; reports show the university's own income-band examples + net price calculator + CSS Profile links. Evan, 2026-10-27** | S3 | Done |
-| ~~Count the budget options on the live form (three or four)~~ **Three, 2026-10-25; workflow fixed** | I5 | Done |
-| ~~New budget options~~ **`500000` / `1000000` / `1500000`, plus `Not sure` recommended, 2026-10-26** | I11 | Group 2 step 11 |
-| ~~Whether to ask students with no spending limit for one~~ **Evan asks the five older-record students, 2026-10-26** | I3 | Nothing; update their files when they answer |
-| Repair the 22 Shortlist and Finalist "Not verified" rows first, or all 212 | L2 | Group 1 step 4 |
-| Whether to run Stage 5 for the five ready students, and what the nine single-university students receive | D2 | Group 2 step 4 |
-| Which students get corrected reports. Start with the two whose budget conclusion changed | P2 | The P2 part of group 1 step 5 |
-| ~~Hide predicted grades in the sample pack, or keep them~~ **Keep, 2026-10-21** | R10 | Nothing |
-| ~~Add halal and prayer ticks to the form, or reword the tiers file~~ **Ticks added, 2026-10-25** | I2 | Done |
-| ~~Mark "no published grade bar" on the source student's 9 US Finalist and Shortlist rows too~~ **Yes, 2026-10-20** | R17 | Group 1 step 9 |
-| ~~Which source to use for living costs when a UK university publishes none~~ **The UK visa office's monthly figure, 2026-10-20** | R18 | Group 1 step 8 |
-| ~~How wide R16 goes~~ **Every US row on every student's list, 2026-10-20, split across sessions** | R16 | Group 1 step 9, group 2 steps 7 to 10 |
-
----
-
-### Group 1 — Student files out of date because a workflow changed
-
-| Step | Tasks, in this order | Files it writes | Waits for | Size and timing |
+| Step | Entries | Files it writes | Waits for | Size |
 |---|---|---|---|---|
-| ✅ **1** | **Done by 2026-10-17** (six students now have `dated_items/`). R1: run `python tools/build_calendar.py --student <slug> --rescue-dates` for every student folder | `data/students/*/dated_items/` (adds files only, overwrites nothing) | nothing | Two minutes. **Now**: the dates are lost the next time `.tmp/` is cleaned. Checked 2026-10-15: no student has a `dated_items/` folder yet |
-| ✅ **2** | **Done 2026-10-16.** S8, then S10, then Task 9 of `sample_pack_fix_plan.md` (Task 9 also fixes D4's README line) | the finished student's folder, `business/sales/sample_pack/`, the prototype, `sample_pack_fix_plan.md` | Evan's yes or no on S8. If no, start at S10 | Large. Strictly in order: each task reads what the one before it wrote. **Before the pitch**, because the panel sees the sample pack |
-| ✅ **3** | **Done 2026-10-18** except R13's sample-pack half (now step 6). S6, R13 (student's report), S7, P1 | the finished student's folder, `sample_pack_fix_plan.md` | — | — |
-| ⭐ **4** | I9 (the one student it touches), then L2 (the 22 Shortlist and Finalist rows first) | other students' `profile.json`, `master_list.csv` and `research_notes.md`. Never the finished student's folder | Evan's decision on L2 | Large. If the 22 rows span many students, repeat this step one student per session. After the pitch |
-| **5** | P2 (draft the corrected-report messages), I4, R2 | P2: none, drafts only. I4: one student's `profile.json` and `preferences.json`. R2: the finished student's `dated_items/` | P2: Evan's choice of students. I4: the student confirming RM 800,000. R2: Evan's decision (step 3 is done) | Small. Do whichever part is unblocked and skip the rest |
-| ✅ **6** | **Done 2026-10-20** (another session; checked in the files). R13's second half: the MIT row's recognition cell on the source list, then the sample pack and the prototype rebuilt | the finished student's `master_list.csv` and `research_notes.md`, `business/sales/sample_pack/`, `prototype/data.js`, `sample_pack_fix_plan.md` | — | — |
-| ⭐ **7** | R15 part 1 with R14 first: re-score Michigan, then Notre Dame, Vanderbilt, Rice, Northwestern, Duke. Same method as Task 6 of `sample_pack_fix_plan.md` (read its notes: search the score log by the exact new course key). For each row: set `entry_margin` to `not_published` where the university publishes no grade bar (R17), and have the research agent check the renamed degree on ABET's own search (R16) | the finished student's `master_list.csv`, `research_notes.md`, `score_log.jsonl`, `.tmp/toru/` | nothing (step 6 is done) | Large: six research agents. After the pitch. Longlist rows only |
-| **8** | R15 part 2: re-score WPI, Case Western, Dartmouth, Olin, Johns Hopkins, with the same R17 and R16 rules. Then R18 (decided: the visa office figure): Sheffield's `Est. living/yr` = the UK visa office's monthly maintenance amount for study outside London, read on gov.uk on the day, × 12 (as Bristol's row did with its monthly figure). `Notes` says it is the visa figure, not Sheffield's own. Recompute the total with Task 10 step 6's formula; `Info source` becomes `Official page`. Add one line to `workflows/countries/uk.md`: "No university living-cost figure → the visa office's monthly amount (London or outside London) × 12, said in Notes. Evan, 2026-10-20." | as step 7, plus `workflows/countries/uk.md` | step 7 done | Large: five agents. After the pitch |
-| ⭐ **9** | R16 for the source student: write the 9 US Finalist and Shortlist rows' `Recognised in Malaysia?` cells (MIT, Stanford, Princeton, Cornell, Harvard, Yale, Brown, Columbia, Penn) from the shared lookups that group 2 steps 7 to 9 build. No new research. Then R17 (decided: yes): set the same 9 rows' `Grades vs entry bar` to "Not published" through the scoring program's own label function, never typed, and add a line to `score_log.jsonl` saying why | the finished student's `master_list.csv`, `research_notes.md`, `score_log.jsonl` | step 8 done (same list file), and group 2 steps 7 to 9 done | Medium. After the pitch |
+| **1** | R22, then R18 | `.claude/agents/row-filler.md`, `workflows/03_discover_longlist.md`, `workflows/countries/uk.md` | Evan's yes on R22 | Small |
+| **2** | SP1 | the source student's `master_list.csv`, `research_notes.md`, `score_log.jsonl`; `business/sales/sample_pack/`; `prototype/data.js` | nothing | Small |
 
-- **Why I9 comes before L2:** I9 fixes the list of professional bodies that L2's research looks up
-  for that student. If I9 went second, that student's recognition cells would have to be redone.
-- **S1 was sent before S8 was fixed** (done 2026-10-15). S8 is now done, so a re-sent list matches
-  the guide. Whether to re-send is R12.
-- **Why steps 7 to 9 run one at a time:** all three write the same student's `master_list.csv`.
-- **Steps 7 to 9 change Longlist rows and one recognition column, not the student's ranking.**
-  Re-scoring can move a Longlist row up or down. Nothing becomes a Finalist without Evan.
+**After 10 Nov** (the old students' lists, then the bigger system changes)
 
-### Group 2 — Systemic problems (gaps that affect every student)
-
-| Step | Tasks, in this order | Files it writes | Waits for | Size and timing |
+| Step | Entries | Files it writes | Waits for | Size |
 |---|---|---|---|---|
-| ✅ **1** | **Done by 2026-10-17.** R3, then R8 if Evan said yes | `workflows/04_university_report.md`, `workflows/05_decide_and_apply.md`, `.claude/commands/decide.md`, `README.md`, `workflows/00_overview.md`. R8: a new `tests/test_calendar_dates.py` | nothing (R8: Evan's yes) | Small. Before the next `/decide` run |
-| ✅ **2** | **Done 2026-10-17.** S4 | `workflows/sources.md`, plus `workflows/04_university_report.md` if the lookup method changes | Evan's hand lookup of MIT, and step 1 done (both write the report workflow) | Small. After the pitch is fine |
-| ✅ **3** | **Done 2026-10-27.** S9's years rule and UK half, R5, S3 (no income asked; income-band examples + calculator link instead). New entry R21 | `tools/ingest_form_csv.py`, `tools/init_student.py`, the profile template, `workflows/01_intake.md`, `workflows/08_application_prep.md` | S9 and I5: nothing (decided 2026-10-25). S3: Evan's decision on income; skip it if still open | Medium. A program change. **Before the first paid student's form is read in** (paid lists due 10 Nov) |
-| **4** | D2 for one student | that student's folder | Evan's decision on D2 (group 1 step 1 and group 2 step 1 are done) | Medium. Repeat once per student (five). After the pitch |
-| ✅ **5** | **Done 2026-10-25, no session needed:** Evan added the ticks to the form (I2) | — | — | — |
-| **6** | R19: after a successful write, `apply_backfill.py` moves the fragments it applied into `.tmp/<slug>/backfill_applied_<date>/`. Add one line to `workflows/03_discover_longlist.md` → "Backfilling an existing longlist", and to `.claude/agents/row-filler.md`: write the fragment early and update it as you go | `tools/apply_backfill.py`, `workflows/03_discover_longlist.md`, `.claude/agents/row-filler.md` | nothing | Small. A program change, so after the pitch. Not while another session is running a backfill |
-| ⭐ **7** | R16 ABET lookup, part 1: universities 1 to 23 in `notes/r16_scope.md`. Write `notes/r16_abet_dispatch_part1.md`: the rules, plus one dispatch per university naming every degree from the scope file. Then one `general-purpose` agent per university, in parallel. Each reads each degree on ABET's own search (`https://amspub.abet.org/`, listed in `workflows/countries/usa.md`; Firecrawl if it will not load) and writes `.tmp/r16/abet/<uni-slug>.json`: accredited yes or no, the programme name as ABET lists it, the date, the source address. Merge into `notes/r16_abet_lookup_part1.csv`, with a ready-to-paste `Recognised in Malaysia?` cell per degree (160 characters at most; "Not accredited" says there is no route to BEM registration) | `notes/r16_abet_dispatch_part1.md`, `notes/r16_abet_lookup_part1.csv`, `.tmp/r16/` | nothing | Large: 23 agents. After the pitch. Student names stay in `notes/` and `.tmp/` |
-| **8** | R16 ABET lookup, part 2: universities 24 to 45, the same way, into `notes/r16_abet_dispatch_part2.md` and `notes/r16_abet_lookup_part2.csv` | those two files, `.tmp/r16/` | nothing. It can run beside step 7 | Large: 22 agents. After the pitch |
-| ⭐ **9** | R16 Malaysian register: look up, in Chrome, the 11 universities listed under "Finalist or Shortlist" in `notes/r16_scope.md` (MIT was done on 2026-10-17; the method is in `workflows/sources.md`). Write `notes/r16_esisraf_lookup.csv`: listed or not, which broad-field rows, the date. The other 33 universities keep "check eSISRAF" in their cells; a lookup for them can come later | `notes/r16_esisraf_lookup.csv` | nothing | Medium: 11 browser lookups, one at a time. After the pitch |
-| **10** | R16 apply, the five other students in `notes/r16_scope.md`, two or three per session. For each student: a script builds one-cell `Recognised in Malaysia?` fragments from the three lookup files, then `apply_backfill.py --overwrite` (dry run first), then `check_master_list.py`, then one line in that student's `status.md`. A degree that is not accredited also gets "Recognition risk" in `Warnings` by hand, as Michigan did, and is listed in the hand-back for Evan | those students' `master_list.csv`, `research_notes.md`, `status.md` | steps 7, 8, 9 done, and step 6 (or move the applied files out by hand) | Medium per session. After the pitch. Never the source student. Not on a student that group 2 step 4 or group 1 step 4 has open |
-| ⭐ **11** | I10 (the form-questions tool), then I12 (check the consent question with it, then fix the two files), then I11 (exact budget options) | `tools/appsscript/Code.gs`, a new `tools/fetch_form_questions.py`, a new `forms/` folder, `tools/ingest_form_csv.py`, `workflows/01_intake.md`, `README.md`, `CLAUDE.md`, `business/product_report/intake_report.md` | nothing. Evan must be around mid-session to paste and redeploy the script | Medium. A program change. **Run it before step 3**: the tool gives step 3 the lesson-language question's exact wording. Never alongside step 3 (same files). Before 10 Nov |
-| **12** | L5 (a source per fact, and "Not found on official page" instead of a row-wide "Not verified"). Plan it first; pairs with L2 | `tools/shortlist_schema.py`, `tools/sync_shortlist.py`, `tools/check_master_list.py`, `.claude/agents/row-filler.md`, `workflows/03_discover_longlist.md` | a plan Evan has approved | Medium to large. A shape change. Not alongside group 1 step 4 (L2 writes the same lists) |
+| **3** | R19 | `tools/apply_backfill.py`, `workflows/03_discover_longlist.md`, `.claude/agents/row-filler.md` | nothing. Not while a backfill is running | Small |
+| **4** | I9, then L2 (the 22 rows) | other students' `profile.json`, `master_list.csv`, `research_notes.md` | step 3 | Large. One student per session if the 22 rows span many |
+| **5** | R16 lookups (parts a, b, c) | `notes/r16_*`, `.tmp/r16/` | nothing. Can run beside step 4 | Large: about 45 agents plus browser lookups. Split a/b/c across sessions |
+| **6** | Per student: R16 apply, R17, R21 (all three touch the same list, so do them together) | that student's `master_list.csv`, `research_notes.md`, `status.md` | steps 3 and 5 | Medium per student. Never the same student as step 4 |
+| **7** | L5 (plan first, in plan mode) | `tools/shortlist_schema.py`, `tools/sync_shortlist.py`, `tools/check_master_list.py`, the row-filler sheet, `workflows/03_discover_longlist.md` | an approved plan | Medium to large. Not alongside step 4 or 6 |
+| **8** | R20 (plan first) | to be planned | nothing | Large, a new build |
 
-**Not a session yet** (a decision or a measurement, no file to change): R9 (whether rows should
-carry the date they were checked), R11 (one line of Evan's sales
-wording), I3 (decided 2026-10-26: Evan asks five students; update their files when they answer),
-and N1, U4, V2 (measure the next real longlist, intake and decide runs).
+**Not a session** (Evan's own, a reply someone owes, or a measurement): I3, I4, R9, R11, N1 / U4 / V2, V3.
 
-### Group 3 — Miscellaneous (stale wording only; nothing behaves wrongly)
+### Rules for every step session
 
-| Step | Tasks | Files it writes | Waits for | Size and timing |
-|---|---|---|---|---|
-| ✅ **1** | **Done by 2026-10-17.** R4, R6, R7 | `business/product_report/decide_report.md`, `tools/apply_prep_to_pdf.py`, `CLAUDE.md` | nothing | Small. R4 before `decide_report.md` is shown outside |
+1. Read this section, then only the entries your step names. The "Suggested fix" is the plan.
+2. Stay inside the files the step lists; anything else goes in the hand-back.
+3. Copy a student file to `.tmp/` before a program rewrites it. Run `apply_backfill.py` as a dry
+   run first. Never run the calendar program with `--allow-shrink`.
+4. **The source student is finished** (Evan, 2026-10-28). Their list is touched only for the
+   sample pack (SP1), never for their own sake.
+5. If another session is open on this file, do not edit it: end with a hand-back (done, not done,
+   new findings). Otherwise delete the finished entries here yourself.
 
-**Handled inside other steps:** D4 (group 1 step 2) and R5 (group 2 step 3). **Evan's own, not a
-session's:** ~~U1~~ (settled 2026-10-25: the claim becomes five minutes) and V3 (ask two or three single-university students why
-they picked one).
+### Closed on 2026-10-28 without a fix (Evan's calls, so nobody re-raises them)
 
-### Done since the re-sort
-
-- **S1** (2026-10-15): Evan messaged the student.
-- **U2** (2026-10-15): Evan's call, not a concern.
-- **S8, S10, D4 and sample pack Task 9** (2026-10-16): group 1 step 2. Hand-back in
-  `sample_pack_fix_plan.md` → Status, Tasks 8b and 9.
-- **R1, R3, R8, R4, R6, R7** (by 2026-10-17): round 1, all three steps. Checked in the files on
-  2026-10-17; `python -m unittest tests.test_calendar_dates` runs 11 tests, all pass.
-- **S4** (2026-10-17): group 2 step 2. MIT is on the register; see the entry. New entry R13.
-- **S6, S7, P1, and R13's first half** (2026-10-18): group 1 step 3. Hand-back in
-  `sample_pack_fix_plan.md` → Status, Task 10. Checked in the files on 2026-10-20:
-  `check_master_list.py` 0 findings, 42 of 43 rows `Official page`. New entries R14 to R19.
-- **R13's second half** (2026-10-20): group 1 step 6, in another session. Checked in the files: the
-  sample MIT PDF no longer has the three old lines, and the MIT recognition cell is updated on the
-  source list, the sample list and the prototype.
-- **R12** (2026-10-20): Evan says everything about the source student is sorted out, including the
-  deadline message.
-- **R10** (2026-10-21): Evan decided to keep the grades in the sample pack as an example. No file
-  change; the pack carries no name or school that points to the real student.
-- **I2 and I5, plus S9's decision** (2026-10-25): Evan added the halal and prayer ticks and a
-  lesson-language question to the live form, and counted three budget options.
-  `workflows/01_intake.md` now matches the form. S9 stays open for its program half (group 2 step 3).
-
-*Below is the plan as written on 2026-10-13, kept as the record. Where it disagrees with the
-session plan above, the session plan is current.*
-
-*Rewritten 2026-10-13 as a work plan (it replaces the 2026-10-12 priority list). It is still an
-index: every ID points at an entry further down this file, where the detail is. 43 entries are
-open; D5 was closed on 2026-10-13. 25 of them were checked against the files on 2026-10-12 and
-2026-10-13 (A1, A2, B1, B2, C1, C2, C3, D3, D4, I1, I6, I8, L3, L4 and S1 to S10). The other 18
-are as they were written on 2026-10-10.*
-
-**How to read it.** A *lane* is a group of entries that change the same files. Two sessions can
-work at the same time only if they never write the same file, so each lane owns its files and no
-other lane touches them. Open one fresh session per lane and tell it: "Run lane N of
-`business/additionals.md`".
-
-**Why most of this exists.** 15 of the entries have one cause: a program or a report layout
-changed, and the files that describe it were not changed in the same sitting. Lanes 2, 3 and 4
-clear those. The rest are real gaps in how a program was designed (lane 1, and step 2 below).
-
-### Rules for every lane session
-
-1. Read this section, then only the entries your lane names. Do not re-plan; the entry's
-   "Suggested fix" is the plan.
-2. Stay inside your lane's files. If a fix needs a line changed in another lane's file, do not
-   change it. Put it in your hand-back.
-3. **Do not edit this file.** Every lane would want to tick boxes here, and they would overwrite
-   each other. End your session with a hand-back: the IDs you finished, the IDs you could not, and
-   anything new you found. The closing pass ticks the boxes.
-4. Do not stage, commit or push. All sessions share one working copy. Evan runs `/commit` once the
-   lanes are back.
-5. ~~Do not run `tools/build_calendar.py` or `/decide` for the finished student until lane 1 is
-   done (entry D1).~~ Lane 1 is done: the calendar program now refuses to write a shorter calendar
-   over a longer one. For the finished student, never pass `--allow-shrink`. 61 of their 78 dates
-   exist only inside their `calendar.md` (entry R2).
-6. Student folders are kept out of the project's saved history, so there is no undo. Copy a
-   student file to `.tmp/` before a program rewrites it.
-
-### Old plan, step 0 — before any lane starts (Evan)
-
-*`/commit` done 2026-10-13. Task 8b is still unanswered as of 2026-10-15.*
-
-- Run `/commit` for the changes already waiting in the working copy, so each lane's changes can be
-  told apart afterwards.
-- Give a yes or no on Task 8b of [sample_pack_fix_plan.md](../sample_pack_fix_plan.md) (entry S8).
-  Lane 5 cannot start without it.
-
-### Old plan, step 1 — six lanes, all at once (five done 2026-10-13; lane 7 added 2026-10-15)
-
-| Lane | Entries, in this order | Files this lane owns | Size |
-|---|---|---|---|
-| **1. The calendar program** | D1, then S2, then B1 | `tools/build_calendar.py`, `tools/build_report.py` | Medium. Test on a copy of a calendar, never on the finished student's real one. |
-| **2. Notes inside programs** | C1, C3, C2 (the line in the PDF program), I8, S9 (the example line only) | `tools/check_report.py`, `tools/report_to_pdf.py`, `tools/ingest_form_csv.py`, `tools/init_student.py`, `tools/shortlist_schema.py` | Small. Comments and on-screen messages only; no program may behave differently afterwards. |
-| **3. Instruction files** | L3, L4, I1, B2, D3, I6, I7, C2 (the line in the overview), D4 (the line in the apply-guide workflow), S9 (the workflow sentence), S5, S7 (the two blocked US sites) | everything in `workflows/`, `README.md`, `.claude/agents/`, `.claude/commands/intake.md` | Medium. I1 is the only one that adds a new step; the rest are corrections. |
-| **4. Sales files and business reports** | A1, A2, D4 (the line in the tiers file), N2, V1, U3 | `business/sales/service-tiers.md`, `business/product_report/decide_report.md`, `business/product_report/intake_report.md`, `business/product_report/longlist_report.md` | Small, plus one web check (V1: seven UK dates). |
-| **5. The source student's files and the sample pack** | S8 (Task 8b), then S10, then Task 9 of the sample pack plan (it also carries D4's line in the sample pack's README), then S6, S7 (the unlabelled source and the doubled score line), then P1 | that student's folder, `business/sales/sample_pack/`, the prototype, `sample_pack_fix_plan.md` | Large. Strictly in this order: every step reads the list the step before it wrote. |
-| **6. The other students' files** | P2, then I4, then L2, plus I9 (added 2026-10-15, small) | every other student's folder | P2 is medium and mostly one program. L2 is very large (214 rows of web research) and waits for Evan's decision. |
-| **7. Follow-ups from the lane round** (added 2026-10-15) | R1, then R3, R4, R5, R6, R7 | the `dated_items/` folder in each student's folder (R1 only adds files there), plus the files R3 to R7 name: `workflows/04_university_report.md`, `workflows/05_decide_and_apply.md`, `.claude/commands/decide.md`, `README.md`, `workflows/00_overview.md`, `business/product_report/decide_report.md`, `tools/ingest_form_csv.py`, `tools/apply_prep_to_pdf.py`, `CLAUDE.md` | Small. Lanes 2, 3 and 4 are finished, so it shares no file with a running lane. |
-
-Notes on the lanes:
-
-- **Lane 5 waits on step 0.** If the answer on S8 is no, it starts at S10.
-- **Lane 6 can be split further**, one session per student, because each student's folder is
-  separate. P2 covers 8 students; L2 covers seven lists.
-- **Three entries are split across lanes** because they name files in more than one: D4 (lanes 3,
-  4 and 5), C2 (lanes 2 and 3) and S9 (lanes 2 and 3, then step 2). An entry is ticked only when
-  every part is back.
-- **If time is short before the 24 October pitch:** lanes 4 and 5 change what a prospect or the
-  panel sees, and P2 in lane 6 changes what eight students already hold. Lanes 1, 2 and 3 change
-  nothing a customer sees this month and can wait.
-
-### Old plan, step 2 — after the lanes, because each needs a result or a decision first
-
-| What | Entries | Needs first |
-|---|---|---|
-| ~~Give the student record a place for family income and for years of schooling taught in English~~ **Done 2026-10-27: years added; income never collected (Evan)** | S3, S9 (the rest) | Evan's decision on where to ask. Lanes 2 and 3 finished, because it changes the same files. |
-| Correct the line about the Malaysian recognition register | S4 | The hand lookup (human lane). Lane 3 finished. |
-| Correct the budget options in the intake workflow | I5 | Evan counts the options on the live form. Lane 3 finished. |
-| Add the two ticks to the form, or reword the tiers file | I2 | Evan's choice. If rewording: lane 4 finished. |
-| Run the decision stage for the five students who are ready | D2, V2 | Evan's decision. Lane 1 finished. One session per student. Time one run, which settles V2. |
-| Measure what a stage costs | N1, U4 | The next real longlist run and the next real intake run. Nothing to do until then. |
-| Decide whether the finished student's calendar should become rebuildable again | R2 | Evan's decision. Not urgent: the program already protects it. |
-| Decide whether lane 1's tests get written into the project | R8 | Evan's decision. |
-| **Closing pass** | all | Every lane's hand-back. One session ticks the boxes here, then Evan runs `/commit`. *First done 2026-10-15 for lanes 1-4 and 6; run again after lanes 5 and 7.* |
-
-### The human lane — only Evan can do these
-
-No session can do these, because each is a conversation with a person, a decision, or something
-on Evan's own computer. In date order.
-
-| # | What | Entry | When |
-|---|---|---|---|
-| 1 | ~~Ask the finished student whether the admissions test for Cambridge and Imperial was booked and sat. The sitting window is 12 to 16 October.~~ **Done:** covered by R12, 2026-10-20. | D5 (its last note) | Done |
-| 2 | ~~Yes or no on Task 8b.~~ **Yes, 2026-10-16; done.** | S8 | Before lane 5 |
-| 3 | ~~Send the finished student one message about what was corrected. The English test goes first now: ask how many years of their schooling were taught in English, and whether they need to book a test. A session can draft the message.~~ **Done 2026-10-15.** | S1 | Done |
-| 4 | ~~Remind the finished student that Cambridge's own form is due 22 October.~~ **Done:** on 2026-10-15 the student was filling it in (college: Queens'). V1 re-read the date: 22 October, 6pm UK time, which is 1am on 23 October in Malaysia. | D5, V1 | Before 22 October |
-| 5 | Say whether the Oxford row stays on that student's list as a finalist or is marked as dropped. | D5 | Any time |
-| 6 | ~~Look at the OneDrive icon on the project folder: are student records being copied to Microsoft's servers?~~ **Done 2026-10-15:** Evan's call, not a concern. | U2 | Done |
-| 7 | Decide where family income ~~and years of schooling in English~~ get asked: on the form, or only when a student shortlists a university that needs them. **English half done 2026-10-25** (on the form). **Income decided 2026-10-27: never asked.** | S3, S9 | Before group 2 step 3 |
-| 8 | ~~Add "Halal food" and "Prayer facilities" as ticks on the form, or choose to reword the tiers file.~~ **Done 2026-10-25** | I2 | Done |
-| 9 | ~~Open the live form and count the budget options (three or four).~~ **Three, 2026-10-25** | I5 | Done |
-| 10 | Decide whether to ask the 5 "Not Sure" students and the 2 with a hint (see I3) for a spending limit, and ask one student whether RM 800,000 is their real limit. | I3, I4 | Any time |
-| 11 | Decide whether to run the decision stage for the five ready students, and what the nine single-university students receive. | D2 | Before step 2 |
-| 12 | Decide whether and when to repair the "Not verified" rows: 212 on the other students' lists (lane 6's recount), 22 of them Shortlist or Finalist, plus the source student's 14 (P1). Lane 6 recommends the 22 first. | L2, P1 | Before lane 6 reaches L2 |
-| 13 | ~~Look MIT up by hand on the Malaysian recognition register.~~ **Done 2026-10-17 by a session in Chrome.** Evan may repeat it to double-check: the steps are in `workflows/sources.md`. | S4 | Done |
-| 14 | ~~Time two or three people filling in the form on a phone.~~ **Settled 2026-10-25:** the claim becomes five minutes; update the poster's "2 minutes" (line 772). | U1 | Poster only |
-| 15 | Ask two or three single-university students why they picked one. | V3 | Before the report is shown outside |
-| 16 | P2 is done for 10 students. Decide which of them get corrected reports. Start with the two whose report changed its budget conclusion (see P2). | P2 | Now |
-
-### Not planned for
-
-- **S7, first bullet** (the research agent cannot add an abbreviation to the shared glossary) and
-  **S7, fourth bullet** (MIT's two cost figures) need no action.
-- **U3** is in lane 4 as a spot-check. If the check finds wrong checklists, fixing them is new
-  work for lane 6. *It did: that work is entry I9, now listed in lane 6.*
-- **The `/longlist` launcher** (`.claude/commands/longlist.md`) does not mention I1's new step. It
-  does not need to: it launches the workflow, which has the step. (Lane 3's note, 2026-10-13.)
+- **D2, P2's follow-up:** no decision-stage runs and no corrected reports for the free testers.
+  Fix the system first; send something to a tester only when Evan wants them to try it.
+- **D5, R2, R14, R15, and the source student's share of R16, R17, R18 and R21:** that student is
+  finished. Only what the sample pack shows still counts (SP1).
+- **S4's open question** (who looks foreign degrees up on the Malaysian register): stays the
+  default, a session in Chrome (`workflows/sources.md`).
 
 ---
 
-## A. A customer could see it
+## Before 10 Nov
 
-### - [x] A1. The tiers file says the report covers visas
+#### R22. The row-filler can still write "English test likely waived" on a new list
 
-- **Done 2026-10-13 (lane 4).** "Visa" is gone from the Tier 2 line. Tier 3 now has a line saying the visa is covered once per country, in the apply guide.
+- **Added 2026-10-28** (catch-up). **Tool gap, urgent:** before the 10 Nov paid lists.
+- **What is true:** R21's wrong `English req` cells (about 44 across 11 lists) were written by the
+  Stage 3 row-filler. The 27 Oct fix put "never assume a waiver" only in
+  `workflows/08_application_prep.md` (Stage 8). `.claude/agents/row-filler.md` and
+  `workflows/03_discover_longlist.md` never mention waivers; only the general "never invent a fact".
+- **Suggested fix:** one bullet in each: the `English req` cell gives the test bar, and a waiver
+  only in the university's own words (who qualifies, e.g. "nationals of listed countries"). Never
+  "likely waived" for A-Levels or English-medium schooling. Malaysia is not on UCL, Imperial or
+  KCL's lists; Singapore, China and Australia do not waive on A-Levels (same facts as
+  `08_application_prep.md`). Needs Evan's yes: it changes how every new row is written.
 
-- **Where:** [sales/service-tiers.md:82](sales/service-tiers.md#L82), under Tier 2.
-- **What it says:** "Visa, work rights after graduating, recognition back home."
-- **What is true:** Visa paperwork was moved out of the report on 2026-09-06 and into the separate
-  apply guide. The report still covers whether you may stay and work after graduating, and whether
-  the degree is recognised in Malaysia. Source:
-  [workflows/04_university_report.md:306](../workflows/04_university_report.md#L306).
-- **Suggested fix:** Drop the word "Visa" from that line. If visas should be mentioned, put them
-  under Tier 3 (the Apply Pack), which is where they now live.
+#### R18. The UK rule for a missing living-cost figure was decided but never written down
 
-### - [x] A2. The tiers file says a human confirms each row
+- **Tool gap, small, not urgent.** Decided by Evan 2026-10-20; checked 2026-10-28: not in
+  `workflows/countries/uk.md`. (Sheffield's own row is dropped with the source student.)
+- **Suggested fix:** add to `workflows/countries/uk.md`: "No university living-cost figure → the
+  UK visa office's monthly maintenance amount (London or outside London, read on gov.uk on the
+  day) × 12, said in Notes. Evan, 2026-10-20."
 
-- **Done 2026-10-13 (lane 4).** The line now says `Official page` means the facts were checked against the university's own page, with no claim that a person did it.
+#### SP1. The sample pack and demo website show seven cells known to be wrong
 
-- **Where:** [sales/service-tiers.md:56](sales/service-tiers.md#L56), under Tier 1.
-- **What it says:** A row reads `Not verified` "until a human confirmed it on the official page".
-- **What is true:** Since 2026-07-29 the checking is done by the AI research sessions that build each
-  row from official pages, and they mark the row `Official page` themselves. Source:
-  [workflows/04_university_report.md:17](../workflows/04_university_report.md#L17).
-- **Suggested fix:** Reword to say the facts were "checked against the official page", without
-  claiming a person did it. This sits next to con #1 in the
-  [product review](product_review_2026-09-25.md), which is about the same promise.
-
-*Already tracked elsewhere, so not repeated here:* the same file says "34-column" on line 35 and
-"35 columns" on line 45. That is part of con #3 in the product review.
-
----
-
-## B. It could cause a wrong result
-
-### - [x] B1. Two descriptions of how a deadline should be written down
-
-- **Done 2026-10-13 (lane 1).** The note now gives `{"date", "label", "action"}`. Both programs also still accept the old `item` wording, so a report written from the wrong note keeps its label.
-
-When a report is researched, its deadlines are saved in a small structured list so the Stage 5
-calendar can collect them. Two files describe the shape of that list differently.
-
-- **Where:** [tools/build_report.py:84](../tools/build_report.py#L84) (the notes at the top of the
-  program that assembles the report).
-- **What it says:** each deadline is written as `{"item": ..., "date": ...}`.
-- **What is true:** the calendar program reads `date`, `label` and `action`
-  ([tools/build_calendar.py:91-97](../tools/build_calendar.py#L91-L97)), which matches the workflow
-  ([workflows/04_university_report.md:397](../workflows/04_university_report.md#L397)).
-- **Why it matters:** the workflow tells the AI researcher that `build_report.py`'s notes are "the
-  exact, authoritative shape". A researcher that follows them would write `item`. The calendar would
-  then show the date with the placeholder name "Date" and no action beside it.
-- **Suggested fix:** change the note in `build_report.py` to `{"date": ..., "label": ..., "action": ...}`.
-
-### - [x] B2. The AI researcher's instructions use old section names and numbers
-
-- **Done 2026-10-13 (lane 3).** Sections 11 and 12, and the names `what_youll_study` and `student_life`.
-
-- **Where:** [.claude/agents/report-writer.md](../.claude/agents/report-writer.md) (the instruction
-  sheet the AI researcher reads before writing a report), lines 84 and 169.
-- **What it says:** line 84 refers to "Scholarships (§6), Recognition (§9)". Line 169 refers to the
-  `course_details` and `student_life_culture` sections.
-- **What is true:** those are from the old report layout. In the current 15-section layout,
-  Scholarships is section 11 and recognition is part of section 12. The two sections are now called
-  `what_youll_study` and `student_life`.
-- **Why it matters:** the researcher is told to correct a spreadsheet line when one of those sections
-  contradicts it. Pointing at section names that no longer exist makes that instruction easy to miss.
-- **Suggested fix:** update the two numbers and the two names.
+- **Added 2026-10-28** (checked in the files). **Stale data a customer sees:** the sample pack and
+  `prototype/data.js` (the demo website). Urgent: before the booth opens on 10 Nov.
+- **What is wrong** (both are built from the source student's list):
+  - `Grades vs entry bar` reads "Well above" on MIT, Princeton, Stanford, Harvard and Carnegie
+    Mellon (a Rejected row). US universities publish no A-Level bar, so it should read "Not
+    published" (was R17).
+  - `English req` on Imperial says "waived for recent English-medium study". Wrong (R21); fixed on
+    the source list on 27 Oct, but the sample was not rebuilt.
+  - `English req` on Oxford says the same, never checked against Oxford's own page.
+- **Safe to change:** each US Finalist row has a hand-set "Reach (very selective)", which overrides
+  the grade calculation (`classify_admission` in `tools/shortlist_schema.py`), so only the one cell
+  changes (check Carnegie Mellon's the same way). The US apply guide and `recommendation.md` never
+  quote it.
+- **Suggested fix:** on the source list, set the five US rows to `entry_margin` = `not_published`
+  through the scoring program's label function (never typed), with one line in `score_log.jsonl`
+  saying why. Read Oxford's English page; fix its cell with `apply_backfill.py --overwrite` (dry
+  run first). Rebuild the sample pack and the prototype the way the 2026-10-20 re-run did
+  (`sample_pack_fix_plan.md` → Status). Check: `grep "Well above\|waived for recent"` on
+  `business/sales/sample_pack/sample_master_list.csv` and `prototype/data.js` finds only rows
+  outside the US.
 
 ---
 
-## C. Stale notes only
+## After 10 Nov: the old students' lists
 
-### - [x] C1. The automatic inspector's notes count the sections wrongly
+#### R19. The backfill tool leaves its applied files where the next run will apply them again
 
-- **Done 2026-10-13 (lane 2).** 15 sections, 13 researched.
-
-- **Where:** [tools/check_report.py](../tools/check_report.py), lines 264 and 413.
-- **What it says:** line 264, "All 16 sections ... numbered 1..16". Line 413, a message that reads
-  "too thin for 14 researched sections".
-- **What is true:** a report has 15 sections, of which 13 are researched. The program checks the
-  correct 15. Line 413 is a message printed on screen, so someone running the inspector could see
-  the wrong number.
-- **Suggested fix:** change "16" to "15" and "14" to "13".
-
-### - [x] C2. Two places still call the PDF "optional, on request"
-
-- **Done 2026-10-13 (lanes 2 and 3).** Both lines now say the PDF is made automatically, with a manual re-export available. `workflows/quick_university_report.md` had the same line and was fixed too. The apply-guide PDF program has the same old line: entry **R6**.
-
-- **Where:** [workflows/00_overview.md:165](../workflows/00_overview.md#L165) and
-  [tools/report_to_pdf.py:13](../tools/report_to_pdf.py#L13).
-- **What it says:** the PDF is "optional, on request" and "export on request".
-- **What is true:** the PDF is now made automatically as part of the same job that writes the report.
-  Source: [workflows/04_university_report.md:446](../workflows/04_university_report.md#L446).
-- **Suggested fix:** reword both to say the PDF is automatic, with a manual re-export available.
-
-### - [x] C3. The PDF program points at the wrong workflow file
-
-- **Done 2026-10-13 (lane 2).** Both comments now point at `workflows/04`.
-
-- **Where:** [tools/report_to_pdf.py](../tools/report_to_pdf.py), lines 56 and 85.
-- **What it says:** the rule about red warning boxes is in "workflows/05".
-- **What is true:** that rule is in `workflows/04_university_report.md`, under "Writing rules".
-- **Suggested fix:** change "05" to "04" in both comments.
-
----
-
-## Decision stage (Stage 5)
-
-*Added 2026-10-10, while writing [decide_report.md](product_report/decide_report.md). Nothing here has been changed
-or fixed. No student is named: "the finished student" means the one student the progress report
-(`python tools/progress_dashboard.py`) shows as "Stage 5 done".*
-
-Read D1 first. It is the only entry where doing something ordinary could lose work.
-
-### Things found
-
-#### - [x] D1. Rebuilding the finished student's calendar would shrink it from 78 lines to 17
-
-- **Done 2026-10-13 (lane 1).** Both suggested fixes were made. `build_report.py` now saves each report's dated notes in the student's permanent folder (`data/students/<student>/dated_items/`), and `build_calendar.py` reads them from there first. The calendar program also refuses to write a calendar with fewer lines over an existing one unless it is run with `--allow-shrink`. Two things are left: dates still sitting only in `.tmp/` must be copied across once (**R1**), and the finished student's 61 older dates now exist only inside their `calendar.md` (**R2**).
-
-- **Severity:** higher than group B. This one can destroy a finished deliverable.
-- **Where:** [tools/build_calendar.py:74-76](../tools/build_calendar.py#L74-L76) (where the calendar
-  program looks for the report researchers' dated notes) and
-  [line 141-142](../tools/build_calendar.py#L141-L142) (where it writes the calendar file).
-- **What happens:** the calendar is built from two places. One is the spreadsheet, which is
-  permanent. The other is the dated notes each report researcher saves in `.tmp/<student>/` (the
-  scratch folder the project treats as throwaway). The finished student's calendar has 78 lines:
-  17 from the spreadsheet and 61 from those notes.
-- **What is true today:** that student's scratch folder no longer exists. If the calendar program
-  runs again for them, it finds only the 17 spreadsheet lines and writes a 17-line calendar over
-  the 78-line one, with no warning.
-- **Why it matters:** student folders are gitignored (kept out of the project's saved history), so
-  there is no undo. The `/decide` command (the launcher for this stage) runs the calendar program as
-  its third step, so running `/decide` again for that student would trigger it.
-- **Until it is fixed:** do not run `build_calendar.py` or `/decide` for the finished student. If
-  you need to, copy `calendar.md` somewhere safe first.
-- **Update 2026-10-12:** the scratch folder exists again, because the sample pack work wrote to
-  it. It holds one report researcher's dated notes, for a US university, and the calendar program
-  does not read that kind of file (entry **S2**). So the risk is unchanged: a rebuild would still
-  produce about 17 lines.
-- **Wider effect:** of the 14 students whose reports are all done and who are waiting for this
-  stage, only 3 still have those notes on file. For the other 11, a calendar built today would hold
-  the application deadline from the spreadsheet and nothing else.
-- **Suggested fix:** save the dated notes in the student's permanent folder when a report is built,
-  and have the calendar program read them from there. A cheaper stop-gap: make the calendar program
-  refuse to overwrite an existing calendar with one that has fewer lines.
-
-#### - [ ] D2. Only one student has finished this stage, and five more could have it now
-
-- **Severity:** not a fault. A business observation that needs a decision from you.
-- **The counts (2026-10-10):** 29 students. 1 has finished Stage 5. 14 have all their reports
-  written and are waiting. 14 are at an earlier step.
-- **Inside the 14 who are waiting:** 5 have two or more finalists (between two and six each), so
-  the full stage could be run for them today with no further research. The other 9 picked exactly
-  one university, so there is nothing to rank or balance. For them the stage shrinks to a calendar
-  and a how-to-apply recap.
-- **Why it matters:** this matches con #2 in the [product review](product_review_2026-09-25.md)
-  (very few students reach the end). The number has not moved since that review was written on
-  2026-09-25.
-- **To decide:** whether to run the stage for the five, and what the nine single-finalist students
-  should receive.
-
-#### - [x] D3. The stage's instruction file points at a report section that has moved
-
-- **Done 2026-10-13 (lane 3).** The pointer now goes to the student's apply guide.
-
-- **Severity:** group B (an AI session follows this file).
-- **Where:** [workflows/05_decide_and_apply.md:44](../workflows/05_decide_and_apply.md#L44).
-- **What it says:** for how-to-apply details, point "back to each report's section 12".
-- **What is true:** since 2026-09-06, section 12 of a report is "Outcomes, network and practising in
-  Malaysia". The how-to-apply detail moved to the separate apply guide. Source:
-  [workflows/04_university_report.md:306](../workflows/04_university_report.md#L306).
-- **Why it matters:** a session following the instruction would send the student to a section that
-  no longer answers the question.
-- **Suggested fix:** change the pointer to the apply guide (`workflows/08_application_prep.md`), or
-  drop the bracketed clause.
-
-#### - [x] D4. Three files still use the old names "5a" and "5b" for stages
-
-- **Done 2026-10-16 (group 1 step 2).** The sample pack README paragraph that held "Stage 5a" was
-  deleted, because the script now builds the apply guide too. All three files are clear.
-
-- **Update 2026-10-15:** the tiers file and the apply-guide workflow are fixed (lanes 4 and 3). The sample pack README line (now line 57) belongs to lane 5 and still says "Stage 5a".
-
-- **Severity:** group C (stale labels), except the first, which a customer-facing file uses.
-- **Where:** [sales/service-tiers.md:94](sales/service-tiers.md#L94) ("Stages 5b + 8"),
-  [workflows/08_application_prep.md:209](../workflows/08_application_prep.md#L209) ("Use 5b when..."),
-  and [sales/sample_pack/README.md:52](sales/sample_pack/README.md#L52) ("a Stage 5a report rebuild").
-- **What is true:** the reports are now Stage 4 and the decision is Stage 5. No workflow file
-  defines a "5a" or a "5b" any more.
-- **Suggested fix:** "5a" becomes "Stage 4" and "5b" becomes "Stage 5".
-
-#### - [x] D5. A real deadline in the finished student's plan is five days away
-
-- **Resolved 2026-10-13.** Evan confirmed the student chose Cambridge. Their hand-over note was
-  updated the same day. Three follow-ups came out of it and sit in the human lane of "Start
-  here": whether the admissions test was booked and sat, Cambridge's own form (due 22 October
-  per the calendar, not re-read since 2026-09-02), and what happens to the Oxford row. The text
-  below is kept as the record.
-- **Update 2026-10-15:** the college is Queens'. Evan says the student is filling in Cambridge's
-  own form now. Lane 4 named four colleges that interview in person; Queens' is not one of them
-  (lane 4's finding, not re-checked).
-
-- **Severity:** time-sensitive, and about a real student, not about the project's files.
-- **What the plan says:** the recommendation written on 2026-09-02 says the student must choose
-  between Oxford and Cambridge before **2026-10-15**, because the UK's shared application form
-  (UCAS) does not allow both in one year.
-- **What I do not know:** whether that choice has already been made. The student's hand-over note
-  was last changed on 2026-09-06, and I did not read it.
-- **Suggested action:** check with the student, or read their `status.md` (the hand-over note in
-  their folder).
-- **Checked 2026-10-12, three days before the date:** that hand-over note still lists "Pick Oxford
-  OR Cambridge" as a next action, with the recommendation leaning Oxford. The item above it in the
-  same list is also unconfirmed: the admissions test booking for those universities closed on
-  2026-09-28, and the note asks to confirm it was booked. So neither is recorded as done. The note
-  may simply be behind; only the student can say.
-
-*Already tracked above, so not repeated here:* the calendar's dated notes are described in two
-different shapes. That is entry **B1**. It affects this stage directly, because the calendar is what
-reads them.
-
-*Not listed here:* the smaller calendar limits (the same event appearing twice, dates written in
-words landing in the "to confirm" list, US reports contributing only their main deadline). They are
-written up with their counts in the "Honest limits" section of [decide_report.md](product_report/decide_report.md).
-
-### Things in decide_report.md that I did not verify
-
-Each of these is a statement in the report that rests on something I did not check for myself.
-
-#### - [x] V1. The seven UK dates in the example calendar table
-
-- **Done 2026-10-13 (lane 4).** Six of the seven dates were re-read on the official pages and still stand. The seventh, the earliest day to apply for the UK visa, is now labelled an estimate: Heriot-Watt has not published its 2027 start date. The interview line now says "most colleges hold it online for students abroad", because four Cambridge colleges (Churchill, Emmanuel, King's, Selwyn) interview in person.
-
-- **Where:** [decide_report.md](product_report/decide_report.md), under "What a finished one looks like", the table
-  of seven lines.
-- **Where the dates came from:** copied from the finished student's calendar, which was built on
-  2026-09-02 from what the report researchers found on official pages at that time.
-- **What I did not do:** re-check any of them on the official pages today. Universities do move
-  dates.
-- **To settle it:** look up the seven dates on the UCAS and Cambridge pages before the report is
-  shown to anyone outside.
-
-#### - [ ] V2. "Probably the cheapest step to deliver"
-
-- **Where:** [decide_report.md](product_report/decide_report.md), under "What this means for the business".
-- **What it rests on:** reasoning only. The stage does almost no new web research, and two of its
-  four steps are programs with no AI in them.
-- **What is missing:** nobody has measured how long the stage takes or how much AI usage it costs.
-  The report says so in the same paragraph.
-- **To settle it:** time one real run, and note the AI usage for it.
-
-#### - [ ] V3. The poster explains why nine students picked only one university
-
-- **Where:** [decide_report.md](product_report/decide_report.md), at the end of "Where things stand today".
-- **What it says:** the poster invites a student to "pick 1 uni to go deep on", most students did
-  exactly that, and the decision stage was designed for three to five.
-- **What it rests on:** my reading of the counts. No student has said this, and the report labels
-  it as the author's interpretation.
-- **To settle it:** ask two or three of the single-finalist students why they picked one.
-
----
-
-## Intake stage (Stage 1)
-
-*Added 2026-10-10, while writing [intake_report.md](product_report/intake_report.md). Nothing here has been changed
-or fixed. No student is named; every count is a total across the 29 student folders.*
-
-Each entry says which of the groups at the top of this file it belongs to (A, B or C). I1 and I2
-are the two worth reading first, because both affect what a student receives.
-
-### Things found
-
-#### - [x] I1. "Universities you already have in mind" is saved and then never read
-
-- **Done 2026-10-13 (lane 3).** Step 1 of the longlist workflow now reads `preferred_universities` and puts each named university in that country on the list, including long shots. If one is dropped, the reason is written down and told to the student. The intake workflow now says the same. [intake_report.md](product_report/intake_report.md) caught up on 2026-10-25.
-
-- **Severity:** group B. It does not produce a wrong fact, but it lets a list go out without the
-  names the student asked for.
-- **Where it is saved:** [tools/ingest_form_csv.py:844](../tools/ingest_form_csv.py#L844) (the
-  program that turns form answers into a student record) stores the answer as
-  `preferred_universities` in the student's "what you want" file.
-- **What is true:** nothing reads it afterwards. I searched every workflow file, every AI
-  instruction sheet and every program. The only mentions are the place it is saved, the blank
-  template, and the intake workflow describing the question
-  ([workflows/01_intake.md:219](../workflows/01_intake.md#L219)), which says a student naming
-  universities "is no longer silently ignored". That is true of the saving and not of the research.
-- **How many students it touches:** 8 of 29 filled this question in.
-- **Why it matters:** con #7 in the [product review](product_review_2026-09-25.md) is that students
-  judge a list by whether the famous names they expected are on it. This answer is the student
-  telling us those names in advance.
-- **Suggested fix:** add one step to the long-list workflow
-  (`workflows/03_discover_longlist.md`): read this answer for the country being researched and make
-  sure each named university is on the list, marked Reach (a long shot) if it is one.
-
-#### - [x] I2. Sales material lists halal food and prayer facilities as a strength; the form never asks
-
-- **Done 2026-10-25.** Evan added "Halal food" and "Prayer facilities" as ticks on "Any other perferences?" (title unchanged, typo included, so the program still finds it). Checked in `tools/ingest_form_csv.py`: the "halal" and "prayer" keys file them as `diet_halal` and `worship_facilities`, and the food key is "good food", so "Halal food" does not land as food quality. No program change. `workflows/01_intake.md` and [intake_report.md](product_report/intake_report.md) updated. The tiers file's wording is now true for new responses; older responses were never asked.
-
-- **Severity:** group A. A customer could notice.
-- **Where it is claimed:** [product_review_2026-09-25.md:61](product_review_2026-09-25.md#L61)
-  ("Local detail") and [sales/service-tiers.md:80](sales/service-tiers.md#L80) ("Malaysian / halal /
-  prayer angle where it matters").
-- **What is true:** the form's "Any other perferences?" question offers six ticks: low crime,
-  Malaysian community nearby, four seasons, public transport, affordable living cost and good food.
-  Halal food and prayer facilities are not among them. Neither are disability access, mental health
-  support or LGBT-friendliness. The intake workflow already records this as an open question for
-  you ([workflows/01_intake.md:131-137](../workflows/01_intake.md#L131-L137)). Only 1 of 29 records
-  has either need marked, and it came through an older form.
-- **What still works:** the report itself does cover prayer facilities and halal food for the
-  universities it describes. The gap is narrower than "we don't research it": the system cannot
-  tell *which* students need it, so "where it matters" in the tiers file cannot be acted on.
-- **Suggested fix:** add "Halal food" and "Prayer facilities" as two more ticks on that question.
-  The program already recognises both words
-  ([tools/ingest_form_csv.py:392](../tools/ingest_form_csv.py#L392) and line 398), so no program
-  change is needed. If you would rather not ask, change the wording in the tiers file to say every
-  report covers it.
-
-#### - [ ] I3. 12 of 29 students have no spending limit on record
-
-- **Severity:** not a fault. A business observation that needs a decision from you.
-- **What it means:** the "Over budget" warning compares a university's total cost against the
-  student's limit. With no limit there is nothing to compare, so the warning can never appear for
-  these students.
-- **Why each one is blank:** 5 answered "Not Sure". 1 answered "Budget is not a problem". 1 answered
-  "> 1,000,000", which is a minimum and not a limit. The other 5 are older records from before the
-  budget bands. *Corrected 2026-10-25: this line used to say they had no saved answer. They do.*
-  Three typed an answer the program could not turn into a number ("unsure yet…", "~ 1 million?
-  Idk", and one saying the fees are fine but daily living costs are the worry). Two have a
-  hand-written note saying no limit was given (one adds that scholarships became required).
-- **Why it matters:** all twelve are honest "no fixed limit" answers, not lost data. Two carry a
-  hint worth acting on: "~ 1 million" is close to a real figure, and "living costs are the worry"
-  points at a monthly limit, not a total one.
-- **To decide:** whether to ask the 5 "Not Sure" students, and the two with a hint, for a band.
-- **Decided 2026-10-26:** Evan will ask all five older-record students for a band. Update both of
-  each student's files (`profile.financial.total_budget` and `preferences.total_budget_ceiling`)
-  when they answer, then re-sync their list.
-
-#### - [ ] I4. Three student records hold the budget as text where a number is expected
-
-- **Update 2026-10-15:** the two numbers in quote marks are now plain numbers (lane 6). The range is still stored as text, and waits on the student confirming RM 800,000 (human-lane item 10).
-
-- **Severity:** group C. Untidy, and harmless today.
-- **What is there:** two records hold `"500000"` in quote marks (text), and one holds the range
-  `"400000-800000"`. The same value sits in both of each student's files.
-- **The rule it breaks:** the intake workflow says only a number or a blank may be stored there
-  ([workflows/01_intake.md:103](../workflows/01_intake.md#L103)).
-- **Why it is harmless today:** the cost check was written to cope. It reads text, and for a range
-  it takes the top figure, so the three students are checked against RM 500,000, RM 500,000 and
-  RM 800,000. Source: [tools/shortlist_schema.py:651-676](../tools/shortlist_schema.py#L651-L676).
-- **Correction to what I first reported:** in the chat I said these three "may be skipped or
-  misread". I had not read the cost check at that point. Having read it, that was wrong.
-- **Suggested fix:** replace the three with plain numbers. For the range, confirm with the student
-  whether RM 800,000 is the real limit.
-
-#### - [x] I5. The intake workflow describes four budget options; the program says there are three
-
-- **Done 2026-10-25.** Evan counted the live form: three options, `< 500000`, `500000-1000000`, `>1000000`. The program was right; `workflows/01_intake.md` was wrong in both places (the budget bullet and the bands table) and now matches.
-
-- **Severity:** group B (an AI session follows the workflow).
-- **Where:** [workflows/01_intake.md:98-101](../workflows/01_intake.md#L98-L101) says the budget
-  question is "a four-option dropdown" that includes "Not Sure". The table lower down
-  ([lines 434-440](../workflows/01_intake.md#L434-L440)) lists the options with older wording again.
-- **What the program says:** a dated note in
-  [tools/ingest_form_csv.py:197-203](../tools/ingest_form_csv.py#L197-L203) says the live form was
-  cut to exactly three bands on 2026-09-17, removing "Not sure" and "Budget is not a problem" so
-  that every new student gives a real figure.
-- **What I do not know:** which is true of the live form today. I did not open the form.
-  [intake_report.md](product_report/intake_report.md) follows the program and describes three bands.
-- **Suggested fix:** open the form, count the options, and correct whichever file is wrong.
-
-#### - [x] I6. The intake workflow asks for a check that was settled three weeks ago
-
-- **Done 2026-10-13 (lane 3).** Both warnings are gone. The workflow now says `ranking_importance` is kept for reference only.
-
-- **Severity:** group B. The cost is a wasted step, not a wrong result.
-- **Where:** [workflows/01_intake.md:205-211](../workflows/01_intake.md#L205-L211) and
-  [lines 420-423](../workflows/01_intake.md#L420-L423).
-- **What it says:** a stored answer called `ranking_importance` (how much the student cares about
-  university ranking) steers part of the score, and a session should check that the
-  `scoring-weights` skill (the instruction sheet for building a student's scoring formula) reads it
-  correctly before trusting any formula.
-- **What is true:** since 2026-09-17 the scoring formula is made by a program that does not read
-  that answer at all. It uses the full ordering of the eight importance answers. Source:
-  [tools/derive_weights.py:39-42](../tools/derive_weights.py#L39-L42) and the skill file itself.
-- **Suggested fix:** delete both warnings, and say the answer is kept for reference only.
-
-#### - [x] I7. The `/intake` launcher lists review items that no longer need reviewing
-
-- **Done 2026-10-13 (lane 3).** The launcher now lists only what the workflow still flags.
-
-- **Severity:** group B, minor.
-- **Where:** [.claude/commands/intake.md:30-33](../.claude/commands/intake.md#L30-L33) (the short
-  file that starts the intake stage when you type `/intake`).
-- **What it says:** the human review covers a "grades sanity-check" and "degree level", among others.
-- **What is true:** the workflow it launches says there is "nothing to check" for either
-  ([workflows/01_intake.md:321](../workflows/01_intake.md#L321) and
-  [line 375](../workflows/01_intake.md#L375)). The program now fills both in by itself.
-- **Suggested fix:** trim the launcher's list to what the workflow still flags: an extra field of
-  interest typed in the student's own words, a country we do not cover, and a missing course.
-
-#### - [x] I8. Four notes inside the programs are out of date
-
-- **Done 2026-10-13 (lane 2).** "10" in all three places, and the slider note is deleted. Lane 2 found three more out-of-date slider notes in the same program: entry **R5**.
-
-- **Severity:** group C. The programs behave correctly.
-- **"8 destinations" where there are 10:**
-  [tools/ingest_form_csv.py:148](../tools/ingest_form_csv.py#L148),
-  [line 980](../tools/ingest_form_csv.py#L980) and
-  [tools/init_student.py:99](../tools/init_student.py#L99). The last one says "8" and then lists
-  all ten. Taiwan and Germany were added on 2026-09-23.
-- **A note about the old 1-to-8 sliders:**
-  [tools/ingest_form_csv.py:288-290](../tools/ingest_form_csv.py#L288-L290) says the importance
-  answers are a 1-to-8 scale and repeats the request in I6. The form now uses three levels.
-- **Suggested fix:** change "8" to "10" in the three places, and delete the slider note.
-
-#### - [ ] I9. Three student records carry the wrong checklist of professional bodies
-
-- **Added 2026-10-15**, from lane 4's spot-check of U3. The first case below was confirmed against
-  the files on 2026-10-15; the other three are lane 4's report, not re-checked.
-- **Severity:** group B for the first case, group C for the rest. Data left over from the older
-  keyword method, not a fault in a program: the current rule
-  ([tools/ingest_form_csv.py:544](../tools/ingest_form_csv.py#L544)) matches the course chosen in
-  the form's dropdown and gives each course a fixed checklist.
-- **Where:** `recognition_targets` in each student's `profile.json` (the list of bodies that decide
-  whether a degree is recognised in Malaysia).
-- **What is there:**
-  - A Software Engineering student carries the accounting bodies (MIA and ACCA). Confirmed.
-  - A Computer Science student and a Data Science student each carry MQA alone. The current rule
-    gives those courses an empty checklist. Harmless.
-  - The other way round: a student who chose Data Science and also typed "Mechanical engineering"
-    in the free-text box has an empty checklist. Borderline; it depends which course they mean.
-- **Why it matters:** the "recognised in Malaysia?" column and the reports check whatever this
-  list names. For the Software Engineering student they would look up accounting recognition, which
-  is irrelevant, and could show a recognition warning where none applies.
-- **Is it urgent:** no. Fix it before that student's next list or report.
-- **Suggested fix:** set the Software Engineering student's checklist to what the current rule
-  gives that course. Optionally clear the two MQA-only lists to match. Ask the borderline student
-  whether mechanical engineering is a real option; if it is, it needs the engineering bodies.
-
-#### - [ ] I10. No session can see the live forms' questions; every form change waits on Evan
-
-- **Added 2026-10-26** at Evan's request.
-- **Built 2026-10-26, not yet proven live:** steps 1, 2, 3 and 5 below are done
-  (`tools/fetch_form_questions.py`, the `questions` action in `Code.gs`; `--check` tested on a
-  made-up form). Left: Evan's part (step 4, written out in `README.md` setup step 5), then one real
-  `--check` run, then tick this. Not built: no form-ID keys added to `.env.example` (the session
-  could not open it).
-- **Severity:** group B. Every form edit so far was found by Evan describing it or by the next
-  export. Mismatches with the program only show up after real students have answered: the budget
-  options (I5, I11), the "perferences" typo, the consent title (I12), and the lesson-language
-  question, whose exact title and options nobody in the repo has seen yet (S9).
-- **What exists:** the intake form's response sheet has a small Google script
-  ([tools/appsscript/Code.gs](../tools/appsscript/Code.gs)) that hands over *answers* to
-  `tools/fetch_form_responses.py` (actions `pending` and `confirm`, protected by a token in `.env`).
-  The two feedback forms are read by `tools/fetch_feedback.py` through the sheets' public CSV
-  download, with no script. Nothing reads any form's *questions* or *answer options*.
-- **Suggested fix:**
-  1. Add a `questions` action to `Code.gs`, behind the same token check. It opens a form by ID
-     (`FormApp.openById`; with no ID, the form linked to this sheet via
-     `SpreadsheetApp.getActive().getFormUrl()`) and returns, per item: title, type, description,
-     required or not, and the options (multiple choice, checkbox, dropdown, grid rows and columns).
-  2. New `tools/fetch_form_questions.py --form intake|report_feedback|spreadsheet_feedback|survey`.
-     Form IDs live in `.env` as `FORM_ID_<NAME>` (IDs only, not secrets, but `.env` is where the
-     other form settings already are). It writes one JSON file per form. The questions hold no
-     student data, so save them somewhere tracked (default `forms/<name>.json`) and git shows what
-     changed on the form between two runs.
-  3. A `--check` mode for the intake form: compare the saved questions against `QUESTION_MAP`, and
-     the options against `BUDGET_BAND_NORMALIZE`, `NEEDS_NORMALIZE`, `COUNTRY_NORMALIZE` and
-     `COURSE_ACCREDITATION_MAP` in `tools/ingest_form_csv.py`. Print anything unmatched, and fail on
-     the two consent rules in I12.
-  4. Evan's part, written out for him in plain English by the session: paste the new `Code.gs` into
-     the sheet's script editor, then **Deploy → Manage deployments → edit → Version: New version**
-     (this keeps the same web address; "New deployment" would change it), then click Allow when
-     Google asks to read his forms. He also copies each form's ID from its edit address into `.env`.
-  5. Docs: the setup section of `README.md`, a "step 0" in `workflows/01_intake.md` → How to run
-     (run the check after any form edit), and the commands list in `CLAUDE.md`.
-
-#### - [x] I11. The budget question is being reworded to three plain numbers
-
-- **Done 2026-10-27.** The live options are `500,000` / `1,000,000` / `1,500,000` (with commas) and
-  the title keeps "whole degree". `ingest_form_csv.py` now matches them exactly
-  (`BUDGET_LIMIT_EXACT`, commas ignored) before the substring list; old exports read as before.
-  `--check` shows all three without the fallback route. `01_intake.md` (bullet + table) and
-  `intake_report.md` (budget row, example, item 6) updated. **Not done:** the form has no
-  `Not sure` option (recommended below). Evan's call; the program already reads it as "no limit".
-
-- **Decided 2026-10-26 (Evan):** the question asks for a limit, with the options `500000`,
-  `1000000`, `1500000`. No `<` or `>` signs, so the matching is simple.
-- **Two traps for the form edit:**
-  - The **title must keep "total budget" or "whole degree"**. That is how the program finds the
-    column ([tools/ingest_form_csv.py:87-88](../tools/ingest_form_csv.py#L87-L88)). A title of only
-    "What's the limit?" would blank every new student's budget. Default title: *"What's your total
-    budget limit (RM) for the whole degree?"*
-  - **Type the options as plain digits.** Tested 2026-10-26: `500000` and `1500000` already come out
-    right, but only through the backup route for old typed answers (`budget_ceiling()`), and
-    `1.500000` comes out blank with a review flag.
-- **Recommended extra option:** `Not sure`. The program already reads it as "no limit". Without
-  it, an unsure student either skips the question or picks a number they don't mean.
-- **What changes in meaning:** `1500000` is a real limit, where the old top option (`>1000000`) had
-  none. A student who can pay more will see "Over budget" on rows above RM 1.5M. Evan's view
-  (2026-10-26): the budget is secondary, so that is acceptable.
-- **No change needed for unsure students:** with no limit, the program shows no budget warning and
-  still fills in each row's `Approx total (MYR)`
-  ([tools/shortlist_schema.py:527-530](../tools/shortlist_schema.py#L527-L530)). That is already
-  how it works. The idea of an "Over budget by RM X, scholarship must cover it" warning was dropped
-  the same day for the same reason.
-- **Suggested fix:** in `BUDGET_BAND_NORMALIZE`, match the three numbers **exactly**, before the
-  substring entries. `"500000"` is part of `"1500000"` and of `"500000-1000000"`, so a plain
-  substring entry would catch the wrong option. Keep the old entries for old exports. Update the
-  2026-09-17 note above the list, the budget bullet and the bands table in
-  `workflows/01_intake.md`, and the budget row and "still rough" item 6 in
-  [intake_report.md](product_report/intake_report.md). Check the live wording with I10's tool first.
-
-#### - [x] I12. The consent question is now formal; two files still describe the casual one
-
-- **Done 2026-10-27.** Checked on the live form: title has "consent", no other question title does,
-  the option starts with "I agree", and every placeholder is filled (Shortlisted, Evan Yeoh, his
-  contact email, 3 months, which Evan confirmed). `01_intake.md` now quotes the new title and option;
-  `intake_report.md` item 7 reworded to what is left (no lawyer has read it).
-
-- **Added 2026-10-26.** Evan put the formal PDPA consent text (English and Malay notice, one
-  required tick box) on the live form on 2026-10-26.
-- **Still describing the old one:** [workflows/01_intake.md:28](../workflows/01_intake.md#L28)
-  (quotes the casual *"Cool for me to store your answers…"* label) and "What is still rough" item 7
-  in [intake_report.md](product_report/intake_report.md) ("The consent wording is casual").
-- **Check before editing, with I10's tool:** the question title contains the word "consent" (how
-  the program finds it); no other question title contains it; the tick-box label does not start
-  with "N" (the program reads that as an explicit No and skips the student). Also check that the
-  placeholders were filled in: service name, Evan's name and email, and the keep-for period
-  (default 12 months).
-- **Suggested fix:** quote the new title and label in the workflow and keep its explanation of what
-  the gate does. In the report, drop item 7, or reword it to what is left (no lawyer has read the
-  text). Renumber the items after it, and the sentence under the list that groups them.
-
-*Not listed here:* the limits that are design choices and not contradictions between files (ties
-between importance answers, the form assuming an A-Level student, the spreadsheet that must not be
-sorted by hand, the casual consent wording). They are in the "What is still rough" section of
-[intake_report.md](product_report/intake_report.md).
-
-### Things in intake_report.md that I did not verify
-
-#### - [x] U1. "The poster advertises it as taking two minutes"
-
-- **Decided 2026-10-25.** Evan is changing the claim to five minutes. The report now says "about
-  five minutes"; the poster (line 772) is Evan's to update. The form has about 23 items since the
-  lesson-language question was added.
-
-- **Where:** [intake_report.md](product_report/intake_report.md), under "What the student sees".
-- **Where the figure came from:** the poster
-  ([sales/pitch/university-research-service-poster.html:581](sales/pitch/university-research-service-poster.html#L581)
-  and line 772).
-- **What I did not do:** time anyone filling in the form. It has about 22 items, counting the
-  12-subject grade grid and the 8-topic importance grid as one each. The report only repeats the
-  poster's claim and does not say it is accurate.
-- **To settle it:** time two or three people on a phone.
-
-#### - [x] U2. Whether student records are copied to Microsoft's cloud
-
-- **Closed 2026-10-15.** Evan says it is not a concern. Whether OneDrive copying is on was not
-  recorded.
-
-- **Where:** [intake_report.md](product_report/intake_report.md), under "The safety nets" and "Why this stage
-  matters to the business".
-- **What the report says:** student records are kept out of the project's saved history. That is
-  true and I checked it.
-- **What it does not say, and I did not check:** the whole project folder sits inside a OneDrive
-  folder (`...\OneDrive\Documents\...`). OneDrive is Microsoft's service that copies folders to its
-  servers. If that copying is switched on, the student records are stored there too.
-- **Why it matters:** it changes the honest answer to "where is student data kept?", which a paying
-  parent or an investor may ask.
-- **To settle it:** look at the OneDrive icon on this folder in File Explorer, or OneDrive's
-  settings, to see whether it is being copied. Then decide whether that is acceptable.
-
-#### - [x] U3. "21 of the 29 students are aiming at a course where one of these bodies matters"
-
-- **Done 2026-10-13 (lane 4).** The recount gives 18 of 29, not 21, and [intake_report.md](product_report/intake_report.md) now says 18 ("roughly six in ten"). The spot-check found three wrong checklists: entry **I9**.
-
-- **Where:** [intake_report.md](product_report/intake_report.md), under "The checklist on the course, explained".
-- **What it rests on:** a count of records that have at least one professional body on their
-  checklist.
-- **What I did not do:** compare each checklist against the course that student chose. Some older
-  records had the checklist filled in by the earlier keyword method or by hand, so a few could be
-  wrong in either direction.
-- **To settle it:** spot-check the older records' checklists against their chosen course.
-
-#### - [ ] U4. "It costs almost nothing to run"
-
-- **Where:** [intake_report.md](product_report/intake_report.md), under "Why this stage matters to the business".
-- **What it rests on:** reasoning. Three of the four steps are programs with no AI in them.
-- **What is missing:** nobody has measured the time or the AI usage of the human review step.
-- **To settle it:** time one real intake run from fetch to tick-off.
-
----
-
-## Longlist stage (Stage 3)
-
-*Added 2026-10-10, while writing [longlist_report.md](product_report/longlist_report.md). Nothing here has been
-changed or fixed. No student is named; every count is a total across the 28 student spreadsheets.*
-
-L1 is the one to read first, because a customer can see it.
-
-### Things found
-
-#### - [x] L1. Every ringgit total in the sample spreadsheet uses an old exchange rate
-
-- **Resolved 2026-10-12.** The sample pack was rebuilt from the source student's current list and
-  MIT report ([sample_pack_fix_plan.md](../sample_pack_fix_plan.md), Tasks 1 to 4). MIT's whole
-  degree now reads RM 1,499,002, the MIT report states 4.04 ringgit per US dollar, all 15 rows are
-  labelled "Official page" and no "Warnings" cell is empty. The text below is kept as the record of
-  what was wrong.
-- **Correction to the suggested fix below.** It said a rebuild alone would also fill the empty
-  "Warnings" cells and clear the two "Not verified" rows. It would not have: the rebuild copies the
-  source student's list, and that list had the same gaps. They were fixed at the source first
-  (Task 1 and Task 1b of the plan), then the rebuild carried them through. Rose-Hulman's course
-  also changed, to "BS Mechanical Engineering (Robotics minor)", because the robotics degree the
-  row named does not exist. Its score was not recalculated for the new course.
-
-- **Severity:** group A. This is the file shown to people deciding whether to buy.
-- **Where:** [sales/sample_pack/sample_master_list.csv](sales/sample_pack/sample_master_list.csv),
-  the "Approx total (MYR)" column (the whole-degree cost in ringgit), on all 15 rows.
-- **What it says:** MIT's whole degree costs RM 1,743,888. That is USD 371,040 converted at 4.70
-  ringgit per US dollar.
-- **What is true:** the exchange-rate table was corrected on 2026-09-05 and now uses 4.04. At that
-  rate the same degree comes to about RM 1,499,000. The sample was not rebuilt afterwards. Source:
-  [tools/shortlist_schema.py:573-597](../tools/shortlist_schema.py#L573-L597).
-- **How far off the rows are:** I recalculated all 15 from their own tuition and living-cost cells.
-  Every row is too high, by between RM 28,000 (Tsinghua) and about RM 348,000 (Oxford). The seven
-  US rows are each 16% to 18% too high.
-
-  | Currency | Rate the sample used | Rate today |
-  |---|---|---|
-  | US dollar | 4.70 | 4.04 |
-  | British pound | 5.90 | 5.47 |
-  | Singapore dollar | 3.50 | 3.19 |
-  | Australian dollar | 3.10 | 2.91 |
-  | Chinese yuan | 0.65 | 0.60 |
-
-- **Two rows I could not fully explain:** Oxford and Carnegie Mellon work out to a rate that matches
-  neither the old table nor the new one (6.57 and 4.76). Their totals probably include an extra
-  cost that has no cell of its own. I did not trace it.
-- **Two more things in the same file:**
-  - 14 of the 15 rows have an empty "Warnings" cell. The current rule is that a row with no problems
-    says "None", so the reader knows it was checked
-    ([tools/sync_shortlist.py:108-110](../tools/sync_shortlist.py#L108-L110)).
-  - 2 of the 15 rows (Rose-Hulman and Northeastern) are labelled "Not verified". That sits badly
-    next to the "every fee checked" promise, which is con #1 in the
-    [product review](product_review_2026-09-25.md).
-- **Why it matters:** "total cost in ringgit" is one of the product's selling points, and the sample
-  is the proof of it. This is the same problem as con #8 in the product review (stale demo files),
-  with a number attached.
-- **Effect on longlist_report.md:** the example row in the report is taken from this sample. I left
-  the ringgit total out of it for this reason.
-- **Suggested fix:** rebuild the sample pack from a current student list. That is already next move
-  #5 in the product review. It fixes the totals, the empty warnings and the two unverified rows in
-  one go.
-
-#### - [ ] L2. 228 of 503 rows are still labelled "Not verified", all but 4 of them in eight older lists
-
-- **Update 2026-10-20:** the source student's share (P1) is done: 13 of their 14 rows are now
-  `Official page`. What is left is the other students' 212. Lessons for that work: R15 (renamed
-  rows need re-scoring), R16 (re-read the recognition column too), R19 (move applied files).
-
-- **Update 2026-10-13, from lane 6:** a recount gives 212 unverified rows on the other students' lists. 22 of them are Shortlist or Finalist rows, the ones students are deciding on. Lane 6 recommends repairing those 22 first, about a tenth of the research. Still waits on your decision (human-lane item 12). Run it in a fresh session.
-
-- **Severity:** not a new fault. This is con #1 in the
-  [product review](product_review_2026-09-25.md), with today's counts and one extra finding.
-- **The counts (2026-10-10):** 28 students have a spreadsheet, holding 503 rows in total. 228 rows
-  are labelled "Not verified" (the facts were not confirmed on the university's own page).
-- **Where they sit:** 224 of the 228 are in eight lists. The other 20 lists hold 213 rows, and 4 of
-  those are unverified, one each in four lists.
-- **What I checked:** each list has a score record with the date every row was scored. All eight
-  lists were started between 2026-07-15 and 2026-07-28. All 20 others were started on 2026-08-06 or
-  later. The rule that every row must be built from official pages came in on 2026-07-29. So the
-  split lines up exactly with the rule change.
-- **Correction to what I first reported:** in the chat I said I had inferred "older" from the
-  workflow notes and had not checked the dates. I have now checked them, and the inference holds.
-  I tightened the wording in [longlist_report.md](product_report/longlist_report.md) to match.
-- **What has not moved:** the four worst lists read 52 of 56, 41 of 44, 33 of 36 and 17 of 18
-  unverified. Those are the same four figures the product review recorded on 2026-09-25.
-- **Why it matters:** the report states this gap openly, under "Where things stand today". It is the
-  honest position, and it is also the first thing an investor will ask about. The better half of the
-  story is that the current method gives verified lists (209 of 213 rows).
-- **To decide:** whether to run the repair process (`apply_backfill.py`, the program that
-  re-researches only the unchecked cells of rows already on a list) over the eight older lists
-  before the report is shown to anyone. Two of the eight are partly done already (24 of 44 and
-  16 of 43 unverified), because newer countries were added to them after the rule change.
-
-#### - [x] L3. The master instruction file still describes this stage the old way
-
-- **Done 2026-10-13 (lane 3).** Both tables now say 8-12 officially sourced rows per country, and the Stage 4 row no longer claims the fact-checking.
-
-- **Severity:** group B (an AI session follows this file, and is told to read it first).
-- **Where:** [workflows/00_overview.md:21-22](../workflows/00_overview.md#L21-L22), the table of
-  stages near the top. The same wording is in [README.md:33](../README.md#L33) (the setup guide at
-  the top of the project).
-- **What it says:** this stage is "Broad, cheap, snippet-level discovery — 20-40 candidates". A
-  snippet is the two-line preview a search engine shows under a result. The next line of the table
-  says the following stage is where hard facts get verified from official sources.
-- **What is true:** since 2026-07-29 this stage builds 8 to 12 rows per country, each with all 35
-  cells read from official pages, and it owns the fact-checking. The stage after it writes reports
-  and only spot-checks dates. Source:
-  [workflows/03_discover_longlist.md:282-285](../workflows/03_discover_longlist.md#L282-L285) and
-  [lines 289-292](../workflows/03_discover_longlist.md#L289-L292).
-- **The same file contradicts itself:** further down, the overview's own rule 2 says this stage
-  "owns" verification ([workflows/00_overview.md:286-292](../workflows/00_overview.md#L286-L292)).
-  Only the table at the top was left behind.
-- **About the number:** "20-40" is not wrong as a total for a student with three or four countries.
-  It is wrong as a description of one run, and the stage's own file says so in those words ("not
-  20-40 in one go").
-- **Why it matters:** a session that reads only the table could treat a row built from search
-  previews as acceptable. It is also one more source for the mismatched list sizes in con #3 of the
-  [product review](product_review_2026-09-25.md).
-- **Suggested fix:** reword the table row to "8-12 officially sourced rows per country, one country
-  per session", and move "verify their hard facts" out of the next row. Make the same change in
-  `README.md`.
-
-#### - [x] L4. Two files list eight country notebooks; there are ten
-
-- **Done 2026-10-13 (lane 3).** Both lists were replaced with "the file named after your country in `workflows/countries/`", so the next country added needs no edit.
-
-- **Severity:** group B, minor.
-- **Where:** [.claude/agents/row-filler.md:40-41](../.claude/agents/row-filler.md#L40-L41) (the
-  instruction sheet each AI researcher reads before filling a row) and
-  [workflows/03_discover_longlist.md:123-124](../workflows/03_discover_longlist.md#L123-L124).
-- **What it says:** both name the country notebooks as UK, USA, Australia, Singapore, Malaysia,
-  China, Hong Kong and Japan.
-- **What is true:** `workflows/countries/` also holds `taiwan.md` and `germany.md`. Both countries
-  were added on 2026-09-23.
-- **Why it matters:** the researcher is told that reading its country's notebook "is not optional".
-  A researcher sent to a Taiwanese or German university is given a list that does not include its
-  country. It would probably still find the file, because the sheet also gives the general pattern
-  for the file name, but the list invites it to conclude there is nothing to read.
-- **Related, already tracked:** entry **I8** above is the same miss in the intake programs ("8
-  destinations" where there are 10).
-- **Not counted:** [workflows/00_overview.md:77](../workflows/00_overview.md#L77) also lists eight,
-  but that line is a dated note about what was moved on 2026-07-30, when there were eight. It is
-  history, not an instruction.
-- **Suggested fix:** add `taiwan.md` and `germany.md` to both lists. Better, replace both lists
-  with "the file named after your country in `workflows/countries/`", so the next country added
-  does not need the same edit.
-
-#### - [ ] L5. A row is labelled as a whole, so one missing fact shows "Not verified" on everything
-
-- **Added 2026-10-27 (Evan, during the bunting).** Evan finds "Not verified" on the spreadsheet
-  embarrassing, and wants every fact shown with its source, or "Not found" where it was looked
-  for and is not on the official page.
-- **Severity:** not a fault; a change to what the spreadsheet promises. Not urgent for the
-  10 Nov paid lists (new lists are almost all `Official page`), but it is what testers see on the
-  old lists.
-- **What is true today:** `Info source` is one label per row (`Official page` / `Not verified`,
-  [tools/shortlist_schema.py:218-223](../tools/shortlist_schema.py#L218-L223)), plus one
-  `Course URL`. There is no source per fact. A row that misses one fact reads `Not verified`
-  as a whole, and the missing fact is named only in `Notes`
-  ([workflows/03_discover_longlist.md:317](../workflows/03_discover_longlist.md#L317)).
-- **The idea:** each hard fact (fees, entry requirements, deadlines, scholarships, living cost)
-  carries its own official source link, in `research_notes.md` or a column, and a fact that was
-  searched for and not published reads "Not found on official page" instead of a guess or a
-  row-wide label.
-- **Honest limit:** "Not found" is only true after someone looked. Relabelling the 212 old
-  `Not verified` rows (**L2**) without the research would hide the gap, not close it. L2's
-  repair comes first, or runs with this.
-- **Related:** **R9** (rows record that a fact was checked, not when). The bunting's proof line
-  is "Facts from each university's official page"; the A4 sign may add "Not found? We say so, we
-  don't guess" only once this is built.
-- **Suggested fix:** plan it first (a shape change: schema, `sync_shortlist.py`,
-  `check_master_list.py`, the row-filler sheet, the spreadsheet export). Default: after the
-  bunting and the 28 Oct ChatGPT test, before the 2 Nov tester send if the plan is small.
-
-### Things in longlist_report.md that I did not verify
-
-#### - [ ] N1. "Roughly 70,000 tokens per university" and the cost of a full country
-
-- **Where:** [longlist_report.md](product_report/longlist_report.md), under "What limits this stage".
-- **Where the figure came from:** copied from con #5 in the
-  [product review](product_review_2026-09-25.md#L129). A token is the unit of AI usage you are
-  billed for.
-- **What I did not do:** measure it. I also do not know whether that figure was measured for the
-  longlist stage or for the in-depth report stage, which is a different and heavier job.
-- **What is missing altogether:** the cost of researching one full country for one student. The
-  workflow says nobody has taken that measurement
-  ([workflows/03_discover_longlist.md:239-241](../workflows/03_discover_longlist.md#L239-L241)),
-  and the report repeats that.
-- **Why it matters:** cost per student is the number an investor will use to judge whether the
-  service can make money at RM50.
-- **To settle it:** on the next country run, write down the AI usage and the time taken, as step 7
-  of the workflow already asks.
-
-#### - [x] N2. The facts in the example row
-
-- **Done 2026-10-13 (lane 4), checked 2026-10-15.** The deadline cell now reads 4 January 2027. The other two facts (up to 3 years of work, and MIT covering full need) match the rebuilt sample row. MIT's page says "January 4" without a year; lane 4 took it as 2027, the cycle now open.
-
-- **Where:** [longlist_report.md](product_report/longlist_report.md), under "One row, as the student sees it".
-- **Where they came from:** the MIT row of the sample spreadsheet in L1. That includes the deadline
-  (1 January 2027), "up to 3 years of work after the degree", and the statement that MIT covers
-  international students' full financial need.
-- **What I did not do:** re-check any of them on MIT's own pages. The sample pack is already known
-  to carry outdated facts elsewhere (con #8 in the product review).
-- **To settle it:** rebuilding the sample pack (L1) settles this too. Until then, check the deadline
-  and the work-rights line on the official pages before the report goes to anyone outside.
-- **Update 2026-10-12 — one of the three is now known to be wrong.** The sample was rebuilt and
-  MIT's row was re-read on MIT's pages: the Regular Action deadline is **4 January 2027**, not
-  1 January. [longlist_report.md:96](product_report/longlist_report.md#L96) still shows "1 January 2027". Change
-  that cell. The other two facts were not compared against the rebuilt row; do that at the same
-  time.
-
----
-
-## Sample pack fix round (2026-10-12)
-
-*Added 2026-10-12, at the end of Task 7 of [sample_pack_fix_plan.md](../sample_pack_fix_plan.md)
-(the plan that brought the sample pack up to date). This part holds what that work turned up and
-did not fix, plus the two tasks of the plan that were parked. Anything Tasks 8 and 9 need was
-written into the plan itself and is not repeated here. No student is named: "the source student"
-is the one whose list and MIT report the sample pack is made from. That is the same person as
-"the finished student" in the Stage 5 part above.*
-
-S1 is the one to read first, because it has a date on it.
-
-### Things found
-
-#### - [x] S1. The source student has not been told what this round corrected
-
-- **Done 2026-10-15.** Evan messaged the student. What the message covered, and whether the
-  list, the MIT report and the apply guide were re-sent, was not recorded.
-
-- **Update 2026-10-13: the dated item is done.** Evan confirmed the student has registered for
-  the SAT. Which sitting was not recorded. The entry stays open for everything else below, and
-  the English test is now the item to raise first.
-
-- **Severity:** time-sensitive, and about a real student, like D5.
-- **The dated item:** the student's MIT report now says the SAT (the US admissions test MIT
-  requires) has two sittings left before MIT's deadline: 7 November 2026, with registration closing
-  **23 October 2026**, and 5 December 2026, with registration closing 20 November. The research
-  agent read these on official pages today. I did not re-check them myself.
-- **What else changed on their list and reports today:**
-  - MIT: the test is required (the list used to say "optional-ish"). The main deadline is
-    4 January 2027, not 1 January. The financial aid dates were corrected.
-  - MIT report: rewritten in full. The Regular Action admit rate is 2.4%, not 3.5%. There is a new
-    cost line for the health plan (about RM 20,800 a year unless a grant covers it). The two
-    teacher letters are "recommended" as one maths/science and one humanities, not required, so
-    who writes the second letter is a decision for the student.
-  - Rose-Hulman: the degree the list named does not exist. The row is now "BS Mechanical
-    Engineering (Robotics minor)", and its score moved from 81 (tier A) to 71 (tier B), with a new
-    "English short" warning.
-  - Northeastern: the course was renamed and seven descriptive cells were re-read.
-  - 13 other reports: every ringgit figure is lower, because they were converted again at the
-    current exchange rate.
-- **Added 2026-10-13 — the US apply guide was rebuilt too (Task 8), and it corrects the July one:**
-  - **English test.** The July guide said A-Levels waive it everywhere. They do not (see S9). The
-    student needs to count their years of schooling taught in English and sit IELTS if short. This
-    has a date behind it: a test result has to exist before the first deadline they apply by.
-  - **CSS Profile** (the paid financial-aid form). Princeton and Yale do not ask for it, so the
-    student should not pay to send it to them. The other seven do.
-  - **Application fees.** Harvard charges USD 95, MIT USD 75 and Stanford USD 100. The July guide
-    had these wrong.
-  - **Brown's deadline** is 5 January 2027, not 1 January. Cornell's aid deadline is the same day
-    as its application.
-  - The guide now covers nine universities, up from six, and has a visa section.
-- **Suggested action:** one message to the student covering the SAT date first, then the English
-  test, then the rest. Decide whether to re-send the list, the MIT report and the apply guide.
-
-#### - [x] S2. The calendar never picks up dates from a US whole-university report
-
-- **Done 2026-10-13 (lane 1).** The calendar now reads US whole-university files too, and matches them by university name alone. Correction to the count below: of the 15 US files in scratch, only 2 were report files with dates. The other 13 were lists of notes.
-
-- **Severity:** group B. A real gap in a program, and it belongs with D1 and B1.
-- **Where:** [tools/build_calendar.py:81](../tools/build_calendar.py#L81) and
-  [lines 86-88](../tools/build_calendar.py#L86-L88).
-- **What happens:** a report researcher saves its dated notes in one of two kinds of file. Reports
-  on a named course go in files called `report_...`. US reports, which cover the whole university,
-  go in files called `uni_...`. The calendar program only opens the first kind. It also matches
-  each file to the list by university **and** course, and a US file has no course to match on.
-- **How much it misses:** the scratch folder holds 15 US files and 8 course files today. The MIT
-  report rebuilt today saved 11 dated lines (test sittings, aid deadlines, decision dates). None
-  can reach a calendar.
-- **Why it has not hurt yet:** a US university still gets its one main deadline from the
-  spreadsheet. [decide_report.md](product_report/decide_report.md) already lists that as a limit. What was not
-  written down is the cause, and that it applies to every US finalist of every student.
-- **Is it urgent:** no. No calendar is being built this week, and D1 says not to rebuild the one
-  that exists.
-- **Suggested fix:** do it in the same sitting as D1. Save the dated notes in the student's
-  permanent folder when a report is built; have the calendar read both kinds of file; match a US
-  file by university name alone. Fix the note in B1 while there.
-
-#### - [x] S3. A report's headline cost rests on a family income the student record does not hold
-
-- **Done 2026-10-27 (group 2 step 3).** Evan decided: never collect family income. A need-based US finalist's report now shows 2–3 of the university's own income-band examples (USD + approximate MYR, dated), its net price calculator link (or "none for international students") and the CSS Profile link, instead of one "your share" figure. Changed: `workflows/04_university_report.md` step 10 and its `net_cost` example, `workflows/08_application_prep.md` Financial aid `covers`, the `application-guide` skill, and the `net_cost` sample in `tools/build_report.py`. Left over: existing reports (the MIT one) keep their old figure until they are rebuilt.
-
-- **Severity:** group B, and it needs a decision from you before any program changes.
-- **What is true:** the source student's record (`profile.json`, the file intake produces) has no
-  field for family income. Its two budget fields are empty, and so are the two in the "what you
-  want" file. The income the MIT report uses was taken from the hand-over note (`status.md`),
-  where a past session typed it in.
-- **Why it matters:** "what you would pay after aid" is the first cost figure in the report, and
-  for a need-based university such as MIT it depends almost entirely on income. A figure that
-  lives only in a hand-over note has no record of where it came from, and a session that trims the
-  note could remove it. The rebuilt report words its answer as conditional for this reason.
-- **What I do not know:** whether the intake form asks for income. I did not open the form.
-- **To decide:** whether income belongs in the form (it is sensitive, so only with consent) or
-  should be asked for only when a student shortlists a need-based university. Either way, give it
-  one field in the student record.
-
-#### - [x] S4. The research agent could not look up the Malaysian recognition register
-
-- **Done 2026-10-17 (group 2 step 2).** The agent was half right. A plain fetch does get only the empty form. But a session driving Chrome found MIT on the register with 4 rows: Naval Architecture, Agriculture (BSc), Science (BSc), and Arts and Social Science (BA). `workflows/sources.md` now flags the register `browser` and gives the steps and how to read a result: it is the public-service register, listed by broad field, so an MIT engineering SB is "most likely" the Science row, and BEM/EAC is still a separate gate. `workflows/04_university_report.md` now says `report-writer` (which has no browser) writes "Not checked (eSISRAF needs a browser)", and the main session does the lookup afterwards in Chrome, or passes it to Evan. Left over: R13.
-
-- **Severity:** group B. I have not re-tested it; this is the research agent's report.
-- **Where:** [workflows/sources.md:101](../workflows/sources.md#L101) lists the register of foreign
-  qualifications recognised in Malaysia (run by MQA, the Malaysian Qualifications Agency) as a
-  page a plain fetch can read.
-- **What the agent found:** the register is a search form. A fetch can load the page and cannot
-  type a university's name into it. The MIT report therefore says "Not found" for MIT's entry.
-- **Why it matters:** "recognition back home" is one of the project's fixed rules for regulated
-  professions. If the register can never be read this way, every report has the same gap, and the
-  file that says where to look promises more than it delivers.
-- **To settle it:** look MIT up by hand on the register once. If the agent was right, correct the
-  line in `sources.md`, and decide how the lookup gets done: by you, or by a session that drives a
-  real browser.
-
-#### - [x] S5. The research agent cannot read Reddit, which the report workflow sends it to
-
-- **Done 2026-10-13 (lane 3).** The report workflow now says Reddit is often unreachable and names the fallbacks.
-
-- **Severity:** group B, minor. It costs depth, not accuracy. Not re-tested by me.
-- **Where:** [workflows/04_university_report.md:189-194](../workflows/04_university_report.md#L189-L194)
-  says the "who gets in" and student-life texture must come from free search only, and names Reddit
-  first among its best sources.
-- **What the agent found:** free search could not open reddit.com at all. The MIT report has a
-  "Not found" where the admitted-student threads would be quoted.
-- **Suggested fix:** note in the workflow that Reddit is often unreachable and name the fallback
-  (The Student Room, the university's own admissions blog, YouTube). Do not spend time on this
-  before the pitch.
-
-#### - [x] S6. One line in the source student's NUS report quotes an old subject rank
-
-- **Done 2026-10-18 (group 1 step 3).** The sentence now says the list records #3. PDF re-exported,
-  `check_report.py` 0 findings.
-
-- **Severity:** group A, small. The student has this report.
-- **What it says:** the report's verdict table says the list records the subject rank as
-  "top 10–15".
-- **What is true:** the list now says #3. Found during Task 11 and left open.
-- **Suggested fix:** correct the one sentence and re-export the PDF.
-
-#### - [x] S7. Five small notes
-
-- **Done 2026-10-18 (group 1 step 3).** Second note: the Common Data Set source in the MIT report
-  now says "read via search summary", in the report and in its research file. Third note: no
-  change. The score record is append-only by design (`tools/sync_shortlist.py`, `append_score_log`),
-  so the July line under the old course name is history, not an error.
-
-- **Update 2026-10-15:** the fifth note is done. Lane 3 marked both sites in `workflows/countries/usa.md`; Princeton's page loaded on later tries, so it is marked "retry once" rather than blocked. The first and fourth notes need no action. The second and third belong to lane 5 and are still open.
-
-- **Severity:** group C.
-- The research agent has no way to add a new abbreviation to the shared glossary program
-  (`tools/apply_glossary.py`), so it avoids abbreviations the glossary does not know. Harmless, but
-  it means the glossary never grows from report work.
-- One entry in the rebuilt MIT report's source list (the Common Data Set) was read only through a
-  search summary and is not labelled that way. Four others like it are labelled.
-- The source student's score record holds two Rose-Hulman lines: one from July under the old course
-  name, one from today. Only the new one matches the list.
-- MIT's catalogue prints a yearly cost of USD 93,730 with no breakdown; the report uses the
-  itemised USD 92,760 from MIT's financial services page and says so. Not an error; noted in case a
-  reader compares the two.
-- Added 2026-10-13: Task 8 found two US sites that refuse a plain fetch and are not marked that
-  way in the US country notebook (`workflows/countries/usa.md`): Columbia's admissions site and
-  Princeton's financial aid page. Marking them "blocked" saves the next session its failed tries.
-  (The State Department visa page was refused too, and is already marked.)
-
-#### - [x] S8. Seven cells on the source student's list are contradicted by their new US apply guide
-
-- **Done 2026-10-16 (group 1 step 2).** 12 cells across 9 rows, not 7: every US `English req`
-  cell said the student qualified, so all nine now state the university's rule and say "count your
-  years". Two of them also named the student. Brown's deadline is now 5 January, and Princeton's
-  aid cell names the PFAA only. `check_master_list.py` reports 0 findings. **One conflict, settled
-  and flagged:** Yale's admissions page says every aid applicant files the CSS Profile; Yale's aid
-  office says international applicants file it only if asked. The cell follows the aid office,
-  and the apply guide carries a ⚠️ naming the conflict.
-
-- **Added 2026-10-13, from Task 8** (the rebuild of the US "how to apply" guide). Task 8 was not
-  allowed to edit the list, so it reported these and left them.
-- **Severity:** group A for one row, group B for the rest. All five rows are on the student's
-  shortlist or among their finalists, and the three I looked at are labelled "Official page".
-- **Three cells disagree with the university's own page** (Task 8 read the pages; I confirmed what
-  the cells say, not the pages):
-  - Brown, "Key deadline": the list says 1 January 2027. Brown's checklist says 5 January.
-  - Princeton, "How to get the scholarship": the list says to file the CSS Profile (a paid
-    financial-aid form run by College Board). Princeton uses its own form and does not ask for it.
-  - Yale, same cell: the list names the CSS Profile. Yale does not ask international applicants for
-    it up front.
-- **Four cells state a conclusion the record cannot support:** the "English req" cells for
-  Princeton, Yale, Penn and Cornell each say the English test is waived and that this student
-  qualifies. The universities' rules ask for 2 years of schooling taught in English (Yale), 3
-  (Princeton, Penn) or 4 (Cornell). The student's earlier schooling is not on file, so nobody
-  knows whether they qualify. See S9 for the cause.
-- **Why the sample pack is involved:** Princeton is one of the 15 sample rows. Once Task 9 adds the
-  apply guide to the pack, the sample list and the sample guide will say different things about
-  Princeton's aid form and its English rule. This part is written into the plan (Task 8b, proposed)
-  because it affects Task 9.
-- **Why it matters beyond this student:** "Official page" records that a fact was read on the
-  university's page on the day the row was built. It does not record the day, and it does not get
-  re-checked.
-- **Suggested fix:** repair the seven cells with the repair process (`apply_backfill.py`), Princeton
-  first. For the four English cells, state the rule and tell the student to count their years.
-
-#### - [x] S9. The system assumes A-Levels waive the English test at every US university
-
-- **Done 2026-10-27 (group 2 step 3).** Years rule: `LESSON_LANGUAGE_YEARS` in `ingest_form_csv.py` turns the answer into `english_proficiency.years_in_english_min`, a floor (all through = 5, pre-university only = 1, Mostly Malay / Chinese = 0, DLP / Not sure = null; "Other" = null + a `_needs_review` line). `init_student.py`, `01_intake.md` and `08_application_prep.md` say how to use it. UK half checked on the official pages: UCL, Imperial and KCL do **not** waive the test for English-taught schooling in Malaysia (Malaysia is not on their country lists); they accept an English-subject grade instead. The apply-guide glossary's IELTS line said the opposite and is fixed. The student cells that still carry the old claim are R21.
-
-- **Update 2026-10-27: the answer is now read and stored.** `ingest_form_csv.py` maps the lesson-language question to `english_proficiency.lesson_language` and the secondary-school question (IGCSE/SPM) to `secondary_qualification`, both verbatim. **Still open:** the rule turning each answer into years, and the UK half.
-
-- **Decided 2026-10-25: ask on the form, as a lesson-language dropdown, not as a count of years.** Students rarely know what "taught in English" means (an English class does not count; SPM at a government school is mostly Malay; DLP is a grey area; IGCSE at an international school and A-Levels usually count). So the form asks what language most lessons were taught in, at secondary and pre-university, with a "Not sure" option, and the system works the years out. Evan added the question to the live form the same day. **Still open (group 2 step 3):** a `QUESTION_MAP` entry and a profile field for it (read the exact title and labels from a fresh export with `--check-headers`), a rule turning each answer into years, and the unchecked UK half.
-
-- **Update 2026-10-16:** the source student's nine US `English req` cells now state each rule
-  (S8). Other students' US cells are still unchecked.
-
-- **Update 2026-10-15:** the workflow sentence and the example are fixed (lanes 3 and 2). The apply-guide workflow now says never to assume a waiver, and to state each university's rule. Still open: where to ask for the years (human-lane item 7, then step 2), and the UK half, which nobody has checked. A small aside: the comment beside the example says the sentence "runs ~106" characters, and the new sentence is shorter. Left as it is; the figure was measured on real cells.
-
-- **Added 2026-10-13, from Task 8.**
-- **Severity:** group B, and a real gap, not a stale note. It is the same kind of gap as S3: the
-  answer depends on a fact about the student that the record has no place for.
-- **Where the assumption is written down:**
-  [workflows/08_application_prep.md:116](../workflows/08_application_prep.md#L116) tells the
-  session writing an apply guide that "English-medium A-Levels waive it for the US + 3 UK unis".
-  An example inside [tools/shortlist_schema.py:201](../tools/shortlist_schema.py#L201) shows a row
-  researcher the same wording to copy.
-- **What is true:** each university sets a number of years of schooling taught in English, and it
-  varies from 2 to 4 among the ones Task 8 read. A-Levels are a two-year course. A student who did
-  A-Levels in English after a national-school education taught in Malay would meet Yale's rule and
-  miss Cornell's.
-- **What the record lacks:** how many years of the student's schooling were taught in English. The
-  "English short" warning compares test scores only, so it cannot catch this.
-- **How far it has spread:** one guide. No other student has an apply guide on file yet (checked
-  2026-10-13), so the wrong sentence has gone to one student, in the July guide, and the rebuilt
-  guide corrects it. The "English req" cells on other students' US rows were not checked.
-- **What I did not check:** the "3 UK unis" half of that workflow sentence.
-- **Suggested fix:** correct the workflow sentence and the example now, since both are one line.
-  Then decide where the years get asked: on the intake form, or at the point a student shortlists a
-  US university.
-
-#### - [x] S10. Nine lines in the rebuilt US apply guide are not fully confirmed
-
-- **Done 2026-10-16 (group 1 step 2).** The Stanford and Yale essay sections were re-read and now
-  give the counts and word limits. Brown's and Columbia's English rules were re-read and replace
-  the two "confirm" lines. The guide lists the English rule for all nine. Re-rendered: 28 pages.
-  The five ⚠️ figures were left as they were, as the suggested fix says.
-
-- **Added 2026-10-13, from Task 8.**
-- **Severity:** group A, small. The student will receive this guide, and Task 9 puts a redacted
-  copy in the sample pack.
-- **Five figures the guide flags with a warning sign, because the pages did not settle them:**
-  - Princeton's application fee (USD 75 is last cycle's figure).
-  - Whether Princeton still expects a student to work on campus (its own pages disagree).
-  - A USD 250 "visa integrity fee" that is in US law and was not on the State Department's fee page.
-  - Cornell's cost table, which is labelled 2025-26 and carries 2026-27 rates.
-  - The 20-hours-a-week limit on campus work, which was not on the page that was read.
-- **Four lines carried over from the July guide without being re-read:** the English-test waivers
-  for Brown and Columbia (the guide marks both "confirm"), and the essay descriptions for Stanford
-  and Yale (**not flagged in the guide**, so a reader would take them as checked).
-- **To settle it:** re-read the two essay pages first, since those are the unflagged ones. The five
-  flagged figures are honest as they stand and can wait for the pages to be updated.
-
-*Checked and not a fault:* the automatic inspector (`check_report.py`) printed `mode report` for
-the rebuilt MIT report where the plan expected `mode university`. The inspector is right. Since
-the report layouts were merged there is one current layout, and the inspector calls it `report`.
-The plan's wording was out of date and has been corrected. The stale notes inside the inspector
-are entry **C1**.
-
-### The two parked tasks
-
-Parked by Evan on 2026-10-12. Both have full step-by-step instructions in the plan, which stay
-valid. Read the "Status" notes of the task named below before starting either.
-
-#### - [x] P1. Task 10 — 14 rows on the source student's list are still "Not verified"
-
-- **Done 2026-10-18 (group 1 step 3).** 13 of the 14 are now `Official page`; 208 cells changed.
-  Sheffield stays `Not verified` (R18). 11 courses were renamed, because the robotics track in the
-  name did not exist or was a lab or a master's. Every total moved, the largest Dartmouth's
-  (RM 1.44m to RM 1.99m: the route is five years). What it left behind is R14 to R19. Detail:
-  `sample_pack_fix_plan.md` → Status, Task 10.
-
-- **What it is:** 3 UK rows and 11 US rows, all at the long-list stage. None is in the sample pack,
-  so no prospect sees them.
-- **Related:** this is the source student's share of entry **L2**. One of the eight older lists in
-  L2 is this one.
-- **Before starting:** read Task 6's notes in the plan. Two matter: the score record cannot be
-  searched for a university by its hyphenated name, and a course that gets renamed needs its score
-  recalculated afterwards, one university at a time.
-
-#### - [x] P2. Task 12 — other students' reports still state ringgit at an old exchange rate
-
-- **Done 2026-10-13 (lane 6), spot-checked 2026-10-15.** The reports of 10 students were converted again at current rates. Copies of the old versions are in `.tmp/lane6_backup_2026-10-13/` until `.tmp/` is next cleaned. Two reports changed their conclusion, not only their figures. A Singapore report used to say the course went over budget without the grant; it now says it stays inside the budget. A UCL report's "deliberate over-budget choice" passage was rewritten. Whether to send corrected copies is human-lane item 16.
-
-- **Severity:** group A. These reports have been delivered.
-- **The counts (measured 2026-10-12):** the other students have 27 reports. 14 of them, across 8
-  students, state an old rate. 6 more, across 4 students, state no rate, so the rate has to be
-  worked out. 7 are current or within 1%.
-- **How far off:** the same sizes as L1. A US report written at 4.70 shows costs about 16% too high.
-- **A limit of the repair program, found in Task 11:** `tools/apply_report_fx.py` only sees a
-  figure with "RM" or "MYR" in front of it. A table column of bare numbers under a ringgit heading
-  is invisible to it. Six of the source student's 13 reports had one. The fix is written in Task
-  11's notes in the plan: copy the "Clarifications" section of that task's shared file into this
-  one's.
-- **Why it can wait:** every figure errs in the same direction (too expensive), and the list each
-  student has is already at current rates. It should not wait past the next time any of these 8
-  students is sent something.
-
----
-
-## Left over from the lane round (2026-10-15)
-
-*Added 2026-10-15 in the closing pass, from the hand-backs of lanes 1, 2, 3, 4 and 6. Each entry was
-checked against the files on 2026-10-15 unless it says otherwise. No student is named. R1 and R3 to
-R7 are lane 7; R2 and R8 are decisions in step 2.*
-
-R1 is the one to read first, because it has a clock on it.
-
-#### - [x] R1. Six reports' dates still sit only in the scratch folder
-
-- **Done by 2026-10-17 (group 1 step 1).** Six students now have a `dated_items/` folder, which matches the six reports counted.
-
-- **Severity:** group B, with a clock. A data task, not a program gap.
-- **Where:** `.tmp/<student>/`, one file each for six students (counted 2026-10-15): four course
-  reports and two US whole-university reports.
-- **What is true:** these reports were built before lane 1, so their dated notes were never copied
-  into the student's permanent folder. Nothing else holds those dates. When `.tmp/` is next
-  cleaned they are gone, and a calendar for those students could only show the deadlines in the
-  spreadsheet.
-- **Suggested fix:** run `python tools/build_calendar.py --student <slug> --rescue-dates`. It only
-  copies, writes no calendar and overwrites nothing. The simplest way is to run it for every
-  student folder; where nothing is waiting, it does nothing.
-- **Is it urgent:** only in that it must happen before the next cleanup of `.tmp/`. A two-minute job.
-
-#### - [ ] R2. The finished student's calendar can no longer be rebuilt
-
-- **Severity:** not a fault today. A limit to know about.
-- **What is true:** 61 of its 78 lines came from report notes that were lost when `.tmp/` was
-  cleaned, before lane 1. They now exist only inside `calendar.md`. A rebuild would give 17 lines,
-  so the calendar program refuses to do it. The file is safe as long as nobody runs it with
-  `--allow-shrink`.
-- **Why it matters:** if that student's finalists change (for example the Oxford row, human-lane
-  item 5), rebuilding cannot show it. The calendar would have to be edited by hand.
-- **To decide:** whether to turn those 61 lines back into saved date files, so the calendar can be
-  rebuilt again. That is new work. Not urgent.
-
-#### - [x] R3. Three instruction files still describe the calendar the old way
-
-- **Done by 2026-10-17 (group 2 step 1).** The report workflow sentence is corrected; the decide workflow and `/decide` launcher run `--rescue-dates` first and treat a refusal as a stop; both folder layouts list `dated_items/`.
-
-- **Severity:** group B, minor. Lane 1 changed the program after lane 3 had finished these files.
-- **Where:**
-  - [workflows/04_university_report.md:314](../workflows/04_university_report.md#L314) says the
-    calendar reads `.tmp/<slug>/report_*.json` directly.
-  - [workflows/05_decide_and_apply.md](../workflows/05_decide_and_apply.md) and
-    `.claude/commands/decide.md` (the `/decide` launcher) say nothing about the refusal,
-    `--allow-shrink` or `--rescue-dates`.
-  - The folder layouts in `README.md` and `workflows/00_overview.md` do not list the new
-    `dated_items/` folder.
-- **What is true:** since 2026-10-13 each report's dates are saved in
-  `data/students/<student>/dated_items/`, and the calendar reads that folder first.
-- **Why it matters:** a `/decide` session that meets the refusal has no instruction on what to do,
-  and the obvious way out (`--allow-shrink`) is the one that loses dates.
-- **Suggested fix:** correct the sentence in the report workflow. In the decide workflow and its
-  launcher, add a short note: run `--rescue-dates` first, and treat a refusal as a stop. Copy
-  `calendar.md` somewhere safe before ever using `--allow-shrink`. Add `dated_items/` to both
-  folder layouts.
-
-#### - [x] R4. Two "Honest limits" in the decision report are no longer true
-
-- **Done by 2026-10-17 (group 3 step 1).** Both bullets rewritten; the existing calendar is still described as predating the fix.
-
-- **Severity:** group A if the report is shown outside.
-- **Where:** [decide_report.md](product_report/decide_report.md), "Honest limits". The bullet ending "has not been
-  made yet" (line 434), and the one starting "American universities bring fewer dates into the
-  calendar" (line 436).
-- **What is true:** the repair was made on 2026-10-13 (D1), and US reports now bring all their
-  dates into the calendar (S2). The one calendar that exists still shows the old picture, because
-  it cannot be rebuilt (R2).
-- **Suggested fix:** rewrite both bullets to say the calendar now keeps each report's dates and
-  refuses to shrink, and that US dates now reach it. Keep the honest part: the existing calendar
-  predates the fix.
-
-#### - [x] R5. Three more out-of-date slider notes in the intake program
-
-- **Done 2026-10-27 (group 2 step 3).** All three notes now say "the tick answers (current form) or the sliders (older form)".
-
-- **Severity:** group C. The program behaves correctly.
-- **Where:** [tools/ingest_form_csv.py:258-264](../tools/ingest_form_csv.py#L258-L264), line 866
-  and line 871. They call the 1-to-8 sliders "the current form" and speak of a "slider value".
-- **What is true:** the current form uses three-level ticks. The sliders are the older form, which
-  the program still reads.
-- **Suggested fix:** say "the tick answers (current form) or the sliders (older form)". Same kind
-  of fix as I8.
-
-#### - [x] R6. The apply-guide PDF program says "export on request"
-
-- **Done by 2026-10-17 (group 3 step 1).** The note now says the export is automatic, with a manual re-export available.
-
-- **Severity:** group C. The same stale line as C2, in the sister program.
-- **Where:** [tools/apply_prep_to_pdf.py:12](../tools/apply_prep_to_pdf.py#L12).
-- **What is true:** making the PDF is step 4 of building an apply guide
-  ([workflows/08_application_prep.md:27](../workflows/08_application_prep.md#L27)), and the
-  `/apply-prep` launcher runs it. It is part of the normal job, not a request.
-- **Suggested fix:** the same wording C2 used: automatic, with a manual re-export available.
-
-#### - [x] R7. The project instruction file still says Stage 4 verifies
-
-- **Done by 2026-10-17 (group 3 step 1).** `CLAUDE.md` now reads "discover/longlist (officially sourced) → university report".
-
-- **Severity:** group C. A stale label only. Every session reads this file, but the workflows it
-  points to are correct.
-- **Where:** `CLAUDE.md` line 134: "intake → discover/longlist → verify + university report →
-  decide".
-- **What is true:** Stage 3 owns the fact-checking since 2026-07-29 (see L3). Stage 4 only checks
-  the facts are still current.
-- **Suggested fix:** "intake → discover/longlist (officially sourced) → university report →
-  decide".
-
-#### - [x] R8. Lane 1's tests were not kept
-
-- **Done by 2026-10-17 (group 2 step 1).** `tests/test_calendar_dates.py` exists and needs no extra install: `python -m unittest tests.test_calendar_dates -v` runs 11 tests, all pass (checked 2026-10-17). The folder is not saved in the project's history yet; Evan's next `/commit` picks it up.
-
-- **Severity:** group C. Nothing is broken; a safety net is missing.
-- **What is true:** lane 1 tested the new calendar behaviour (the refusal, the rescue, the US
-  files) with tests it wrote in its own session's temporary folder. The project has no `tests/`
-  folder. Those tests are almost certainly gone. Not checked.
-- **Why it matters:** the refusal is what protects the finished student's calendar (R2). Without
-  a test, a later change could quietly remove it.
-- **To decide:** whether a session should write `tests/test_calendar_dates.py`, so the behaviour
-  can be re-checked after any change to the calendar program. Not urgent.
-
-#### - [ ] R9. "Official page" records that a fact was checked, not when
-
-- **Added 2026-10-15** while re-sorting this file. Not a new check: it lifts the last point of
-  S8 into an entry of its own.
-- **Severity:** group B, and a design gap rather than a stale note.
-- **What is true:** a row labelled `Official page` was read on the university's own page on the
-  day the row was built. The label carries no date, and nothing re-reads the row afterwards. S8
-  found three labelled cells that had gone wrong this way (a deadline and two aid forms).
-- **Why it matters:** the label is what the "every fee checked" promise rests on. As months pass,
-  a labelled row can go out of date with nothing on the list to show it.
-- **To decide:** whether rows should carry the date they were checked, and how often a Shortlist
-  or Finalist row gets re-read. Not urgent; after the pitch.
-
-#### - [x] R10. The sample pack shows the source student's predicted grades
-
-- **Decided 2026-10-21: keep them.** Evan: the grades are an example only, and nothing ties them to
-  a real person (stand-in name, no school; the real name is absent from the pack and prototype,
-  checked 2026-10-21). No file change.
-- **Added 2026-10-17**, from group 1 step 2. Checked in the rebuilt files.
-- **Severity:** a decision, not a fault. Not urgent, but decide before the sample pack is sent.
-- **What is true:** the sample list has a `Student grades` column on all 15 rows, and the MIT report
-  quotes the grades once. The README's privacy rules hide the name, the school and the family's
-  finances, not grades. With a stand-in name and no school, grades alone do not point to a person.
-- **To decide:** keep them (the "do your grades clear the bar" column is part of what the list
-  shows), or hide them. If hidden: one redaction pair in `build_sample_pack.py`, plus a rule for
-  the column, then rebuild.
-
-#### - [ ] R11. One line of the positioning notes quotes old sizes
-
-- **Added 2026-10-17**, from the Task 9 sweep.
-- **Severity:** group C. Internal notes, not something a customer sees.
-- **Where:** [sales/positioning.md:164](sales/positioning.md#L164): "41 columns" and "16 sections,
-  6 pages", as examples of how to phrase a claim.
-- **What is true:** the list has 35 columns; the sample MIT report has 15 sections and 25 pages.
-- **Suggested fix:** Evan's wording, so Evan's edit. Swap in the current numbers.
-
-#### - [x] R12. The source student has not been told what S8 and S10 changed
-
-- **Done 2026-10-20:** Evan says everything about this student is sorted out.
-
-- **Added 2026-10-17.**
-- **Severity:** time-sensitive, about a real student, like S1. The first early deadline is
-  1 November 2026.
-- **What changed for them:** the English-test rule differs by university. Columbia needs all of
-  secondary school taught in English (or SAT Reading and Writing 700+), Cornell 4 years, Princeton
-  and Penn 3, Yale 2. Harvard and Stanford ask for none. The student needs to count their years and
-  book IELTS if short. Also: Yale's aid office says not to file the CSS Profile unless asked; follow
-  the checklist in the Yale applicant portal.
-- **Suggested action:** one message from Evan. Decide whether to re-send the list and the US guide
-  (both are current as of 2026-10-16). A session can draft the message.
-- **Update 2026-10-20:** P1 changed 14 Longlist rows, so a re-sent list now differs more. Worth one
-  line each: Michigan's robotics degree is not accredited for engineer registration in Malaysia
-  (R14); Olin has a single deadline, 15 December 2026, and no early round; several rows no longer
-  claim full aid for international students (Vanderbilt, Johns Hopkins and Duke are need-aware,
-  and Olin gives internationals merit aid only). Every Longlist total went up except Bath's.
-
-#### - [x] R13. The MIT report still says "Not found" for the Malaysian recognition register
-
-- **Done 2026-10-20.** Second half by group 1 step 6 (another session), checked in the files.
-
-- **Added 2026-10-17**, from group 2 step 2 (S4).
-- **Severity:** group A, small. The student holds this report, and the sample pack's MIT report is
-  built from it.
-- **What it says:** the recognition section says MIT's entry on the register (eSISRAF) was "Not found".
-- **What is true:** MIT is listed (checked in Chrome 2026-10-17). The student's degree is most likely
-  covered by the "Science / Bachelor of Science" row, because MIT awards almost every undergraduate
-  degree as a Bachelor of Science. Engineering practice in Malaysia is still a separate BEM/EAC check.
-- **Suggested fix:** correct the line in that student's MIT report, keeping the "most likely", and
-  re-export the PDF. Then check whether the sample pack's MIT report needs a rebuild. Paired with S6
-  in group 1 step 3, because both are one-line corrections in that student's folder.
-- **Half done 2026-10-18 (group 1 step 3).** The student's report is fixed in three places: the
-  register row, the sentence after it, and the verdict table. The research file it is built from
-  was fixed the same way, and the PDF re-exported. **Still open:** checked 2026-10-18, the sample
-  pack's MIT PDF still has all three old lines. So does the MIT row on the source list
-  (`Recognised in Malaysia?`: "confirm the exact MQA equivalence entry"), which the sample list and
-  the prototype both copy. Both are group 1 step 6, before the pitch.
-
-#### - [ ] R14. ⭐ Michigan's robotics degree is not accredited for engineer registration in Malaysia
-
-- **Added 2026-10-20**, from group 1 step 3 (P1). An agent's finding. I read the evidence it saved
-  (the catalogue quote and its address) but did not open the page myself.
-- **Severity:** group B. Recognition back home is a hard gate for this student, and the row scored
-  83, Tier A.
-- **What is true:** the University of Michigan's engineering catalogue lists its programmes with an
-  ABET column, and the Robotics BSE reads "No". ABET is the US body that accredits engineering
-  degrees, and ABET accreditation is the route to the Board of Engineers Malaysia (BEM) through
-  the Washington Accord. (A different campus, UM-Dearborn, has an accredited robotics degree.)
-- **Already done (2026-10-18):** the row's `Recognised in Malaysia?` cell says so, and its
-  `Warnings` cell was set to "Recognition risk" by hand.
-- **Still open:** the score was given when the row assumed accreditation. Re-scoring it is the
-  first task of group 1 step 7. It is a Longlist row, so nothing the student was sent depends on it.
-
-#### - [ ] R15. ⭐ 11 renamed rows still carry scores given under their old course names
-
-- **Added 2026-10-20**, from P1. Checked in the files.
-- **Severity:** group A for whoever reads the list's order. Tool behaviour is correct: it is the
-  rule Task 10 set ("not re-scored").
-- **Where:** the source student's list. Notre Dame, Vanderbilt, Rice, Northwestern, Duke, WPI,
-  Case Western, Michigan, Dartmouth, Olin, Johns Hopkins. All Longlist.
-- **What is true:** each was renamed to the degree that really exists (for example "robotics
-  concentration" to "robotics via technical electives"). Several also lost claims that fed their
-  scholarship sub-score: "need-blind", "full need met" and "no loans" for international students.
-  So the `Desirability` and `Tier` cells most likely rank these rows too high.
-- **Suggested fix:** re-score each the way Task 6 did Rose-Hulman, one university at a time.
-  Group 1 steps 7 and 8. Not urgent: none of the 11 is a Shortlist or Finalist row.
-
-#### - [ ] R16. ⭐ The recognition cells on the US rows rest on accreditation nobody re-checked
-
-- **Added 2026-10-20**, from P1 (the Michigan finding). Counted in the files.
-- **Severity:** group B. This column is the gate for a regulated profession.
-- **What is true:** 22 of the source student's 23 US rows say the degree is "ABET-accredited". Most
-  of those cells were written at longlist time in July, and P1 did not re-read this column. At
-  least three were confirmed in an official page's own words since (Northeastern, Rose-Hulman, and
-  MIT's Course 2 in its report). Michigan shows a cell like this can simply be wrong. Most of the
-  cells also still say "confirm MQA equivalence", though the register can now be checked in
-  Chrome (S4).
-- **Decided 2026-10-20 (Evan): check every student.** 79 US rows across 6 students, 45 distinct
-  universities; per-student detail in the gitignored `notes/r16_scope.md`. Plan: one shared lookup
-  (group 2 steps 7 to 9: ABET for all 79 degrees, the Malaysian register for the 12 universities
-  behind a Finalist or Shortlist row), then apply it student by student (group 1 step 9 for the
-  source student, group 2 step 10 for the other five). Not yet in scope: 174 non-US rows that claim
-  accreditation (UK, Singapore, Australia and others); a later decision.
-- **Suggested fix (as first written):** group 1 step 9. Re-read the column for the 9 Finalist and Shortlist rows
-  first, the ABET fact on ABET's own search. Other students' engineering rows probably have the
-  same gap; whether to go wider is a decision in the table above.
-
-#### - [ ] R17. US rows say the student's grades are "Well above" a bar the university does not publish
-
-- **Added 2026-10-20**, from P1. Two agents flagged it (Michigan, Duke); the count is mine.
-- **Severity:** group B, and stale data rather than a tool fault.
-- **Where:** `Grades vs entry bar` on 19 of the source student's 23 US rows, 8 of them Finalists.
-- **What is true:** US universities publish no A-Level grade bar. The scoring program has had a
-  "no bar published" value since 2026-07-28 (`entry_margin` = `not_published`, which prints "Not
-  published"), and the agent's instructions tell it to use that value. This student's US rows were
-  scored on 2026-07-17, before the value existed, so they compared the grades to a guessed bar.
-- **Why it matters:** the column tells the student they clear a bar that does not exist. The
-  separate `Admission likelihood` column already says "Reach", so the ranking itself is not hiding
-  how hard these universities are to get into.
-- **Decided 2026-10-20 (Evan): yes**, the 9 Finalist and Shortlist rows too (group 1 step 9).
-- **Suggested fix:** the 11 Longlist rows get `not_published` while steps 7 and 8 re-score them.
-  The 9 Finalist and Shortlist rows wait for Evan's yes (decision table). Checked 2026-10-20: each
-  has a hand-set "Reach (very selective)", which overrides the grade calculation
-  (`classify_admission` in `tools/shortlist_schema.py`). So only `Grades vs entry bar` changes,
-  and `recommendation.md` and the US guide never quote it. If yes, group 1 step 9 sets it for the
-  9 through the program's own label function, not by typing it, and adds a line to
-  `score_log.jsonl` saying why. Other students' US lists built before 2026-07-28 probably have the
-  same cells. Not yet counted.
-
-#### - [ ] R18. Sheffield's living-cost figure has no source
-
-- **Added 2026-10-20**, from P1. An agent's finding.
-- **Severity:** group C. One Longlist row. It is the only row on the source list still
-  `Not verified`.
-- **What is true:** Sheffield publishes no yearly living-cost figure for international students.
-  The cell's GBP 11,000 came from the July longlist and has no source, so the row's total is partly
-  a guess.
-- **Decided 2026-10-20 (Evan): the visa office's monthly figure** (option a), × 12. Group 1 step 8.
-- **Was to decide:** what to use when a UK university publishes no figure. The UK visa office's monthly
-  amount and UKCISA's guidance are both official, but not the university's own page. Whatever is
-  chosen goes in `workflows/countries/uk.md` so the next UK list uses the same rule. Group 1 step 8.
-
-#### - [ ] R19. The backfill tool leaves its applied files where the next run will apply them again
-
-- **Added 2026-10-20**, from group 1 step 3. Seen in the files.
-- **Severity:** group B, a tool gap. Not urgent while each session remembers to move the files.
+- **Tool gap.** Not urgent while each session remembers to move the files by hand, but it must be
+  fixed before steps 4 and 6, which run many backfills.
 - **What is true:** `tools/apply_backfill.py` applies every file in `.tmp/<slug>/backfill/` and
-  leaves them there. Group 1 step 3 found S8's nine files still in the folder two days after they
-  were applied. A second run would have written them over the list again and copied their research
-  notes into `research_notes.md` a second time. Every plan so far has had to say "move the old
-  files first" by hand.
-- **Also seen:** 7 of 18 research agents in that step stalled (no progress for 10 minutes) and
-  wrote nothing. Bristol and Northwestern stalled twice. The ones told to "write the file early and
-  update it as you go" all finished, and the two that stalled after writing left a usable file.
-- **Suggested fix:** group 2 step 6. The tool moves its applied files to
-  `.tmp/<slug>/backfill_applied_<date>/` after a successful write, and the row-filler agent's
-  instructions gain the "write early" line.
+  leaves them there. A second run writes them over the list again and copies their notes into
+  `research_notes.md` twice. Also seen: 7 of 18 research agents stalled and wrote nothing; the
+  ones told to "write the file early and update it as you go" all finished.
+- **Suggested fix:** after a successful write, the tool moves the files it applied to
+  `.tmp/<slug>/backfill_applied_<date>/`. Add one line to `workflows/03_discover_longlist.md` →
+  "Backfilling an existing longlist", and to `.claude/agents/row-filler.md`: write the fragment
+  early and update it as you go.
 
-#### - [ ] R20. Claude only tracks the marketing side; Evan wants it as project manager, business advisor and marketing director
+#### I9. Three student records carry the wrong checklist of professional bodies
 
-- **Added 2026-10-26** at Evan's request. **Not urgent:** a new build, not a fix (a tool gap, not a
-  stale note).
-- **What exists:** `STATUS.md` and `business/launchx/status.md` cover LaunchX and marketing. The
-  Notion page "Shortlisted — Now" and the end-of-session mirror (`CLAUDE.md` → Status) only touch
-  tasks that match an item in `business/launchx/status.md`. Notion's Area "University Research
-  Agent" has five projects: URP Marketing, Product Developing, Business, Pitch deck and Clients.
-  Product Developing (7 open tasks on 2026-10-26: colour in the report, tier and Reach / Match /
-  Safety explanations, a spreadsheet template, logo and brand, "pick 1 feature", less AI wording,
-  personalised matching) and Business ("Talk to 3 companies") have no copy in the files. Advice
-  already exists in the `mentor` agent and `/mentor`; social posts in `/social`.
-- **What Evan wants:** every project in that Area kept in the files and in sync with Notion, and
-  Claude running it all: plans and deadlines (project manager), the business calls (advisor),
-  campaigns and content (marketing director).
-- **Suggested start:** a plan-mode session (brainstorming first). Decide the file layout first,
-  e.g. one `business/projects/<name>.md` per Notion project with its open tasks. Then widen the
-  end-of-session mirror and `/catchup` to all five projects. Build on `mentor` and `/social`
-  rather than new roles from scratch.
-- **When (default):** after the paid lists go out on 10 Nov.
+- **Stale data** (left over from the old keyword method; today's rule matches the course chosen
+  in the form, [tools/ingest_form_csv.py](../tools/ingest_form_csv.py) `COURSE_ACCREDITATION_MAP`).
+  Do it before L2, because L2 looks up recognition against this list.
+- **Where:** `recognition_targets` in `profile.json` (the bodies that decide whether a degree is
+  recognised in Malaysia).
+  - A Software Engineering student carries the accounting bodies (MIA, ACCA). Confirmed. Their
+    recognition cells would check the wrong body.
+  - A Computer Science and a Data Science student carry MQA alone; today's rule gives those
+    courses an empty list. Harmless.
+  - A Data Science student who also typed "Mechanical engineering" has an empty list. Borderline.
+- **Suggested fix:** set the Software Engineering student's list to what today's rule gives that
+  course. Optionally clear the two MQA-only lists. Ask the borderline student whether mechanical
+  engineering is a real option (then it needs the engineering bodies).
 
-#### - [ ] R21. Four UK cells say the English test is waived for English-taught schooling in Malaysia
+#### L2. 212 rows on the other students' lists are still "Not verified"
 
-- **The four cells are fixed 2026-10-27** (Evan said yes): `apply_backfill.py --overwrite` from
-  `.tmp/r21/<slug>/`, dry run first, one backup in the session scratchpad. Each cell now gives the
-  course's own level (UCL Level 1, Imperial higher / standard, KCL Band D) and the accepted English
-  grade; the sources are in each student's `research_notes.md`. `check_master_list.py`: no new
-  findings (the 203 blanks and one over-long `status.md` on the first student were there before).
-- **Still open, a wider sweep (not urgent unless a student is about to receive a guide):** a rough
-  search found about 40 more `English req` cells on 11 students' lists that tie a waiver to A-Levels
-  or English-medium schooling. Some state a university's real rule (Columbia, Northeastern); many
-  are the old guess, e.g. "likely waived for English-medium A-Levels — confirm" on 24 rows of the
-  first student (US and Australia; `08_application_prep.md` says Australia does not waive on
-  A-Levels). Shortlist and Finalist rows first: about 15, across four students. Plus the source
-  student's Oxford and Cambridge cells (unchecked). Same method as above, one student per session.
-  Find them with: `English req` contains "waive" and "A-Level" or "English-medium".
+- **Decided 2026-10-28 (Evan): the 22 Shortlist and Finalist rows first**, the ones students are
+  deciding on. The other 190 wait.
+- **Stale data.** Eight lists started before the 2026-07-29 rule (every row from official pages)
+  hold almost all of them; lists built since are verified (209 of 213 rows).
+- **Suggested fix:** `apply_backfill.py` (re-researches only a row's unchecked cells) over the 22
+  rows, one student per session if they spread. Lessons from the source student's repair (P1):
+  a renamed course must be re-scored, one university at a time (search the score log by the exact
+  new course key); re-read the `Recognised in Malaysia?` cell too (R16); move applied files (R19).
+- **Pairs with L5:** "Not found on official page" is only honest after this research has looked.
 
-- **Added 2026-10-27**, from group 2 step 3 (S9's UK half). **Group B, a stale cell, not a tool gap.**
-  Nothing has gone to these students with the claim in an apply guide (only the source student has a
-  guide, and it is US only), but the cells are on their lists.
-- **Where:** one student's three Shortlist rows (UCL, Imperial, KCL: "waived for English-medium
-  A-Levels"), and the source student's Imperial Finalist row ("waived for recent English-medium
-  study"). Student names are in `data/students/`, not here.
-- **What is true (official pages read 2026-10-27, via Firecrawl):** UCL waives only for nationals of,
-  or 12 months' study in, listed countries (Singapore yes, Malaysia no). KCL waives only for nationals
-  of listed countries who studied there. Imperial's page names no school-level waiver; it accepts SPM
-  English 1119 grade A, IGCSE First Language English B/6, or A-Level English Language C.
-- **Not checked:** the source student's Oxford and Cambridge cells say the same as the Imperial one;
-  they may be right (both have their own rules) and need reading.
-- **Suggested fix:** for each row, one-cell `English req` fragments through `apply_backfill.py
+#### R16. The recognition cells on US rows rest on accreditation nobody re-checked
+
+- **Stale data on a hard gate** (recognition back home decides a regulated profession). Decided
+  2026-10-20: check every student. Now five students (the source student is dropped). Scope per
+  student is in the gitignored `notes/r16_scope.md`; skip universities that appear only on the
+  source student's list.
+- **What is true:** the US rows say "ABET-accredited" from longlist time in July. Michigan's
+  robotics degree turned out not to be (ABET is the US engineering accreditor; it is the route to
+  the Board of Engineers Malaysia through the Washington Accord). Most cells also still say
+  "confirm MQA equivalence", though the register can now be read in Chrome.
+- **Suggested fix:**
+  - **a, b (ABET lookup):** write `notes/r16_abet_dispatch.md` (rules + one dispatch per
+    university, naming every degree from the scope file). One `general-purpose` agent per
+    university, in parallel, split into two sessions. Each reads each degree on ABET's own search
+    (`https://amspub.abet.org/`; Firecrawl if it will not load) and writes
+    `.tmp/r16/abet/<uni-slug>.json`: accredited yes or no, the name as ABET lists it, date, source.
+    Merge into `notes/r16_abet_lookup.csv` with a ready `Recognised in Malaysia?` cell per degree
+    (160 characters at most; "Not accredited" says there is no route to BEM registration).
+  - **c (Malaysian register):** in Chrome, the universities behind a Finalist or Shortlist row
+    (method in `workflows/sources.md`) into `notes/r16_esisraf_lookup.csv`: listed or not, which
+    broad-field rows, date.
+  - **Apply (step 6):** per student, a script builds one-cell fragments from the lookups, then
+    `apply_backfill.py --overwrite` (dry run first), `check_master_list.py`, one line in
+    `status.md`. A degree that is not accredited also gets "Recognition risk" in `Warnings` by
+    hand, listed in the hand-back for Evan.
+- **Not in scope yet:** 174 non-US rows that claim accreditation (a later decision).
+
+#### R17. Older US rows say the grades are "Well above" a bar the university does not publish
+
+- **Stale data.** US universities publish no A-Level bar. The scoring program has had a "Not
+  published" value (`entry_margin` = `not_published`) since 2026-07-28; rows scored before that
+  compared grades to a guessed bar. `Admission likelihood` already says "Reach", so the ranking
+  does not hide how hard these are.
+- **Where:** other students' US rows scored before 2026-07-28. Not counted yet. (The sample
+  pack's five rows are SP1.)
+- **Suggested fix:** in step 6, per student: count them, then set `not_published` through the
+  scoring program's label function (never typed), with a line in `score_log.jsonl`.
+
+#### R21. About 40 English-test cells claim a waiver for A-Levels or English-medium schooling
+
+- **Stale data. Not urgent unless one of these lists is about to be re-sent.** The tool gap that
+  made them is R22. Four cells were fixed on 2026-10-27 (UCL, Imperial, KCL; Evan said yes).
+- **Where:** about 40 `English req` cells on 11 students' lists. Some state a university's real
+  rule (Columbia, Northeastern); many are the old guess ("likely waived for English-medium
+  A-Levels — confirm", 24 rows on one student, US and Australia). Shortlist and Finalist rows
+  first: about 15, across four students.
+- **What is true** (official pages, 2026-10-27): UCL and KCL waive only for nationals of, or study
+  in, listed countries; Malaysia is not listed. Imperial names no school-level waiver; it accepts
+  SPM English 1119 grade A, IGCSE First Language English B/6, or A-Level English Language C.
+  Australia does not waive on A-Levels.
+- **Find them:** `English req` contains "waive" and ("A-Level" or "English-medium").
+- **Suggested fix:** in step 6, one-cell `English req` fragments through `apply_backfill.py
   --overwrite` (dry run first), stating the test bar and the accepted English grades, then
-  `check_master_list.py`. Needs Evan's yes (it rewrites student files). Small. Before either list is
-  re-sent.
+  `check_master_list.py`. Needs Evan's yes per student (it rewrites student files).
+
+---
+
+## After 10 Nov: system changes
+
+#### L5. A row is labelled as a whole, so one missing fact shows "Not verified" on everything
+
+- **Added 2026-10-27 (Evan).** Not a fault; a change to what the spreadsheet promises. Evan wants
+  every fact shown with its source, or "Not found on official page" where it was looked for.
+- **What is true:** `Info source` is one label per row
+  ([tools/shortlist_schema.py](../tools/shortlist_schema.py), `Official page` / `Not verified`)
+  plus one `Course URL`. A row missing one fact reads `Not verified` as a whole; the missing fact
+  is named only in `Notes`.
+- **Honest limit:** relabelling L2's old rows as "Not found" without the research would hide the
+  gap, not close it. L2 first, or alongside.
+- **Related:** R9. The bunting may add "Not found? We say so, we don't guess" only once this is
+  built.
+- **Suggested fix:** plan it first (schema, `sync_shortlist.py`, `check_master_list.py`, the
+  row-filler sheet, the spreadsheet export).
+
+#### R9. "Official page" records that a fact was checked, not when
+
+- **Design gap, not urgent.** A row labelled `Official page` was read on the day it was built and
+  never again. S8 found three such cells that had gone wrong (a deadline, two aid forms).
+- **To decide (Evan):** whether rows carry the date they were checked, and how often a Shortlist
+  or Finalist row is re-read. Best decided inside L5's plan.
+
+#### R20. Claude only tracks the marketing side; Evan wants a project manager, advisor and marketing director
+
+- **Added 2026-10-26 (Evan). A new build, not a fix. After 10 Nov.**
+- **What exists:** `STATUS.md` and `business/launchx/status.md` cover LaunchX and marketing, and
+  the Notion mirror only touches tasks matching `business/launchx/status.md`. Notion's Area
+  "University Research Agent" has five projects (URP Marketing, Product Developing, Business,
+  Pitch deck, Clients); Product Developing and Business have no copy in the files. Advice exists
+  in `mentor` / `/mentor`, social posts in `/social`.
+- **What Evan wants:** every project in that Area kept in the files and synced with Notion, with
+  Claude running plans and deadlines, business calls, and campaigns.
+- **Suggested start:** plan mode, brainstorming first. Decide the file layout (e.g. one
+  `business/projects/<name>.md` per Notion project), then widen the end-of-session mirror and
+  `/catchup` to all five. Build on `mentor` and `/social`.
+
+---
+
+## Not a session
+
+- **I3. Five older-record students have no spending limit.** Evan is asking them (decided
+  2026-10-26). When one answers, update `profile.financial.total_budget` and
+  `preferences.total_budget_ceiling`, then re-sync their list. (Without a limit the "Over budget"
+  warning can never show.)
+- **I4. One student's budget is stored as the text range "400000-800000".** Harmless: the cost
+  check uses the top figure. Replace it with a plain number once the student confirms RM 800,000.
+- **R11. One line of the positioning notes quotes old sizes.**
+  [sales/positioning.md:164](sales/positioning.md#L164) says "41 columns" and "16 sections, 6
+  pages"; today it is 35 columns and the sample MIT report is 15 sections, 25 pages. Evan's
+  wording, so Evan's edit.
+- **N1, U4, V2. Three cost claims nobody has measured.** "Roughly 70,000 tokens per university"
+  and the cost of a full country ([longlist_report.md](product_report/longlist_report.md)); "it
+  costs almost nothing to run" ([intake_report.md](product_report/intake_report.md)); "probably
+  the cheapest step to deliver" ([decide_report.md](product_report/decide_report.md)). Settle each
+  by writing down time and AI usage on the next real run of that stage (the 10 Nov lists give N1
+  and U4). Cost per student is what an investor uses to judge RM 50.
+- **V3. Why nine students picked only one university.**
+  [decide_report.md](product_report/decide_report.md) guesses it is the poster's "pick 1 uni to go
+  deep on"; no student has said so. Ask two or three of them before that report is shown outside.

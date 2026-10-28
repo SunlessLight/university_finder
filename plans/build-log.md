@@ -158,3 +158,9 @@ Entry format:
 - Decisions (and why): net price calculator link included (Evan's "go" on Claude's default), because the CSS Profile applies for aid and does not estimate it. Workflow examples use placeholders, not real MIT figures, so a helper can't copy an unverified number.
 - Problems / lessons: none. The existing MIT report still carries its old income-based figure; it changes only when rebuilt.
 - Next step: the R21 sweep after the 10 Nov lists (one student per session).
+
+## 2026-10-28 · Backlog decisions and trim
+- Done: `/catchup` on the backlog: I10 ticked (proven live 27 Oct, `9822ac6`). Evan decided L2 (22 rows first), D2 and P2 (no; free testers), D5 (source student finished). `business/additionals.md` rewritten from 1,782 to ~270 lines: open entries only, one numbered step list (before / after 10 Nov), a "closed without a fix" list. Four lines in `decisions/log.md`; `business/README.md` and the backlog memory updated.
+- Decisions (and why): the source student's list stays fixable only where the sample pack and demo website show it (new SP1: seven wrong cells), because customers see those. R16 apply, R17 and R21 merged into one per-student step, because they rewrite the same list.
+- Problems / lessons: R22 (new): the 27 Oct "never assume an English waiver" rule went only into Stage 8, not into the row-filler that wrote the wrong cells. Also R18's UK living-cost rule was decided on 20 Oct but never written into `uk.md`.
+- Next step: Evan's yes on R22, then backlog step 1 (R22 + R18), then step 2 (SP1), both before 10 Nov.
