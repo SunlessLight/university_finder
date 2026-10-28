@@ -164,3 +164,9 @@ Entry format:
 - Decisions (and why): the source student's list stays fixable only where the sample pack and demo website show it (new SP1: seven wrong cells), because customers see those. R16 apply, R17 and R21 merged into one per-student step, because they rewrite the same list.
 - Problems / lessons: R22 (new): the 27 Oct "never assume an English waiver" rule went only into Stage 8, not into the row-filler that wrote the wrong cells. Also R18's UK living-cost rule was decided on 20 Oct but never written into `uk.md`.
 - Next step: Evan's yes on R22, then backlog step 1 (R22 + R18), then step 2 (SP1), both before 10 Nov.
+
+## 2026-10-28 (evening) · Bunting submitted
+- Done: `/catchup` found the demo edit already committed on branch `bunting-demo` (`d123f53`, the carry-over said "not started"); Now box fixed. Wrote Evan a step-by-step Canva build sheet and tightened his problem/solution lines. Built a throwaway `prototype/bunting-shot.html` in the worktree (resize and hide columns, cells and badges wrap, drag stops at the longest word); tested in Chrome via a local server, not committed. Evan submitted `business/launchx/Bunting_design/SHORTLISTED_v3.png`. `business/launchx/status.md`, the Now box, SP1, the carry-over banner and Notion updated.
+- Decisions (and why): see `decisions/log.md` (all pre-U badges, QR to a Linktree of samples, problem/answer pairs, no PDF or ChatGPT claims).
+- Problems / lessons: the bunting prints MIT's "Well above" (a known-wrong SP1 cell), fine once SP1 lands. Table columns can't be narrowed by width alone (the table stretches them); pin every column on the first change and shrink-wrap the table.
+- Next step: the pilot plan (overdue), then the intake-form question for non-A-level students before 10 Nov.

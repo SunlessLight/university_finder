@@ -91,6 +91,10 @@ English, no student named, no grades, income or school. Then add it to a step be
   - `English req` on Imperial says "waived for recent English-medium study". Wrong (R21); fixed on
     the source list on 27 Oct, but the sample was not rebuilt.
   - `English req` on Oxford says the same, never checked against Oxford's own page.
+- **Do it after merging branch `bunting-demo`** (`d123f53`: same files; Oxford is replaced by
+  Cambridge there, so the Oxford bullet may not apply). The printed bunting (28 Oct,
+  `business/launchx/Bunting_design/SHORTLISTED_v3.png`) shows MIT's "Well above" in its demo
+  screenshot. It can't be changed now; after SP1 the demo reads "Not published" there, which is fine.
 - **Safe to change:** each US Finalist row has a hand-set "Reach (very selective)", which overrides
   the grade calculation (`classify_admission` in `tools/shortlist_schema.py`), so only the one cell
   changes (check Carnegie Mellon's the same way). The US apply guide and `recommendation.md` never

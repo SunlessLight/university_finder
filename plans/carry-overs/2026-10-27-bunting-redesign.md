@@ -1,5 +1,7 @@
 # Carry-over: bunting redesign + demo top-5 edit (2026-10-27)
 
+> **Finished 2026-10-28.** Demo edit committed on branch `bunting-demo` (`d123f53`); bunting submitted as [SHORTLISTED_v3.png](../../business/launchx/Bunting_design/SHORTLISTED_v3.png). What's left lives in `STATUS.md`. History only below.
+
 **Goal:** a bunting for the 10–13 Nov booth that a passer-by gets in 3 seconds ("it's for me, it does this"), using a screenshot of the demo website's list.
 **Where it stands:** layout agreed in chat; the demo edit is planned but not started. Waiting on Evan's "go" (last question asked). Bunting and pilot plan were both due 27 Oct.
 

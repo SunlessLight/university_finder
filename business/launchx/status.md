@@ -11,10 +11,13 @@
 - **25 Oct (done):** asked the payers why they paid. **26 Oct:** first replies in
   (`notes/customer_chats/`). **27 Oct:** count replies.
 - **26 Oct (done):** nudged the testers who hadn't filled the feedback forms.
-- **27 Oct: bunting design and pilot plan due** (both real submission deadlines).
+- **28 Oct (done):** bunting submitted, a day late:
+  [Bunting_design/SHORTLISTED_v3.png](Bunting_design/SHORTLISTED_v3.png). **Pilot plan still
+  due** (was 27 Oct).
 - **10 Nov:** paid lists delivered (what the pre-sale message promised; one payer was told "by
   13 Nov" in chat, so 10 Nov is early for them). Same day the booth opens.
-- **10 to 13 Nov:** pilot = a four-day booth with a bunting and a QR to book. Plan and checklist
+- **10 to 13 Nov:** pilot = a four-day booth with a bunting and a QR to a Linktree ("Scan to see
+  samples"). Plan and checklist
   in Notion (URP Marketing: "Plan the pilot", "Make the bunting and booth materials").
 - **2 Dec:** demo day. Check: 20 paid family lists?
 - **10 Dec:** if short of the bar, the pause ends: continue, pivot or stop.
@@ -88,8 +91,12 @@ it into a new deck rather than editing the 24 Oct one.
 
 - [ ] 27 Oct: count the 19 as paid / yes-not-paid / no / silent. Only "paid" is demand. Ask one
       "no" why.
-- [ ] 27 Oct: submit the bunting design and the pilot plan (pass line first). By 3 Nov: the rest
-      of the booth kit. (Notion tasks)
+- [x] 28 Oct: bunting submitted (`Bunting_design/SHORTLISTED_v3.png`).
+- [ ] Pilot plan (pass line first), overdue since 27 Oct. By 3 Nov: the rest of the booth kit
+      (A4 price sign, printed sample, booth kit). (Notion tasks)
+- [ ] Before 10 Nov: add one intake-form question, "Not doing A-levels? Type your programme and
+      result", because the bunting names STPM, UEC, IB, Foundation and Matriculation and the grade
+      grid takes A-level grades only. Then tell Claude to run `fetch_form_questions.py --check`.
 - [ ] **Tester chain, one after another** (Notion tasks):
   1. 28 Oct: list what to improve in the list and report from what testers actually read
      (Notion, Product Developing). Fixes done before 10 Nov, so the paid lists get them too.
