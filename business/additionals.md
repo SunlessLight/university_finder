@@ -19,7 +19,6 @@ English, no student named, no grades, income or school. Then add it to a step be
 
 | Step | Entries | Files it writes | Waits for | Size |
 |---|---|---|---|---|
-| **1** | R22, then R18 | `.claude/agents/row-filler.md`, `workflows/03_discover_longlist.md`, `workflows/countries/uk.md` | Evan's yes on R22 | Small |
 | **2** | SP1 | the source student's `master_list.csv`, `research_notes.md`, `score_log.jsonl`; `business/sales/sample_pack/`; `prototype/data.js` | nothing | Small |
 
 **After 10 Nov** (the old students' lists, then the bigger system changes)
@@ -58,27 +57,6 @@ English, no student named, no grades, income or school. Then add it to a step be
 ---
 
 ## Before 10 Nov
-
-#### R22. The row-filler can still write "English test likely waived" on a new list
-
-- **Added 2026-10-28** (catch-up). **Tool gap, urgent:** before the 10 Nov paid lists.
-- **What is true:** R21's wrong `English req` cells (about 44 across 11 lists) were written by the
-  Stage 3 row-filler. The 27 Oct fix put "never assume a waiver" only in
-  `workflows/08_application_prep.md` (Stage 8). `.claude/agents/row-filler.md` and
-  `workflows/03_discover_longlist.md` never mention waivers; only the general "never invent a fact".
-- **Suggested fix:** one bullet in each: the `English req` cell gives the test bar, and a waiver
-  only in the university's own words (who qualifies, e.g. "nationals of listed countries"). Never
-  "likely waived" for A-Levels or English-medium schooling. Malaysia is not on UCL, Imperial or
-  KCL's lists; Singapore, China and Australia do not waive on A-Levels (same facts as
-  `08_application_prep.md`). Needs Evan's yes: it changes how every new row is written.
-
-#### R18. The UK rule for a missing living-cost figure was decided but never written down
-
-- **Tool gap, small, not urgent.** Decided by Evan 2026-10-20; checked 2026-10-28: not in
-  `workflows/countries/uk.md`. (Sheffield's own row is dropped with the source student.)
-- **Suggested fix:** add to `workflows/countries/uk.md`: "No university living-cost figure → the
-  UK visa office's monthly maintenance amount (London or outside London, read on gov.uk on the
-  day) × 12, said in Notes. Evan, 2026-10-20."
 
 #### SP1. The sample pack and demo website show seven cells known to be wrong
 
@@ -193,7 +171,7 @@ English, no student named, no grades, income or school. Then add it to a step be
 #### R21. About 40 English-test cells claim a waiver for A-Levels or English-medium schooling
 
 - **Stale data. Not urgent unless one of these lists is about to be re-sent.** The tool gap that
-  made them is R22. Four cells were fixed on 2026-10-27 (UCL, Imperial, KCL; Evan said yes).
+  made them was R22 (fixed 2026-10-28). Four cells were fixed on 2026-10-27 (UCL, Imperial, KCL; Evan said yes).
 - **Where:** about 40 `English req` cells on 11 students' lists. Some state a university's real
   rule (Columbia, Northeastern); many are the old guess ("likely waived for English-medium
   A-Levels — confirm", 24 rows on one student, US and Australia). Shortlist and Finalist rows

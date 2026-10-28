@@ -170,3 +170,9 @@ Entry format:
 - Decisions (and why): see `decisions/log.md` (all pre-U badges, QR to a Linktree of samples, problem/answer pairs, no PDF or ChatGPT claims).
 - Problems / lessons: the bunting prints MIT's "Well above" (a known-wrong SP1 cell), fine once SP1 lands. Table columns can't be narrowed by width alone (the table stretches them); pin every column on the first change and shrink-wrap the table.
 - Next step: the pilot plan (overdue), then the intake-form question for non-A-level students before 10 Nov.
+
+## 2026-10-28 (2) · Backlog step 1: R22 + R18
+- Done: `.claude/agents/row-filler.md` and `workflows/03_discover_longlist.md` (Edge cases) now say the `English req` cell gives the test bar, and a waiver only in the university's own words; never "likely waived" for A-Levels or English-medium schooling. `workflows/countries/uk.md` got the living-cost rule (no university figure → UKVI monthly maintenance figure × 12, read on the day, said in notes). R22, R18 and the step 1 row deleted from `business/additionals.md`.
+- Decisions (and why): Evan said yes to R22. The rule went into both the helper's sheet and the Stage 3 workflow, because the helper writes the cell and the main session checks it.
+- Problems / lessons: another session (bunting) was editing the backlog and STATUS.md at the same time; bookkeeping waited until it finished (backlog rule 5).
+- Next step: backlog step 2 (SP1), after merging `bunting-demo`. Not tested on a live row yet: check the first 10 Nov list's `English req` cells for "likely waived".

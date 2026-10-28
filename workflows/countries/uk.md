@@ -30,6 +30,11 @@ UK Graduate Route post study work
 | Fee status, term-time working rules, living-cost guidance for internationals | `https://www.ukcisa.org.uk/` | free |
 | Course-level outcomes and satisfaction — **official (gov-run), not an aggregator** | `https://discoveruni.gov.uk/` | free |
 
+**No university living-cost figure → use the visa office's monthly maintenance amount × 12** (Evan,
+2026-10-20). Read the London or outside-London figure off `https://www.gov.uk/student-visa/money` on
+the day (never a remembered number), multiply by 12 for the year, and say so in `notes` ("living cost:
+UKVI maintenance figure × 12, no university figure published").
+
 The whole `ucas.com` domain 403s scripted and plain fetches alike, so treat it as a Firecrawl target
 from the first attempt. The university's own course page carries the same entry requirements and is
 free to fetch — prefer it, and use UCAS for what only UCAS has (the cross-university course search

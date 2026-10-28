@@ -315,6 +315,12 @@ computed column (`Desirability`, `Tier`, `Admission likelihood`, `Grades vs entr
   here on 2026-07-29); Stage 4 writes reports and does not re-check the row. So a number in a cell has
   to have come off the university's own page — `source_authority = "Official page"`. A row left
   `Not verified` is an admission of a gap, and it must name the unverified fact in `notes`.
+- **`English req`: the test bar, and a waiver only in the university's own words (2026-10-28).**
+  The row-filler used to write "likely waived for English-medium A-Levels — confirm"; about 44 cells
+  across 11 lists were wrong. State the test and score (plus any accepted English-subject grade);
+  name a waiver only where the official page says who qualifies. Never "likely waived" for A-Levels
+  or English-medium schooling: Malaysia is not on UCL, Imperial or KCL's lists, and Singapore, China
+  and Australia do not waive on A-Levels. Same rule as `08_application_prep.md` (Tests).
 - **CSV append needs a trailing newline** — `sync_shortlist.py` appends rows. If the existing
   `master_list.csv` doesn't end in a newline (e.g. it was hand-edited, or renamed from another file), the
   first appended row used to fuse onto the last existing row, corrupting it into one physical line. The tool

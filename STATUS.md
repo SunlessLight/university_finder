@@ -5,7 +5,7 @@
 > - **Demo website:** top 5 = MIT / NUS / Monash / Cambridge / Tsinghua on local branch `bunting-demo` (`d123f53`, worktree `.claude/worktrees/bunting-demo`); not merged, not on the live site. Merge it before SP1 (same files). The worktree also holds an uncommitted throwaway, `prototype/bunting-shot.html` (screenshot tool): delete it, don't commit.
 > - **Waiting on:** more payer replies and replies to the 24 Oct nudge (count 27 Oct). Paid lists due 10 Nov, the day the booth pilot (10–13 Nov) opens.
 > - **Students:** `python tools/progress_dashboard.py`; each student's own `data/students/<slug>/status.md`.
-> - **Backlog:** `business/additionals.md` → "Start here" (trimmed 28 Oct to open entries only, 8 numbered steps). Before 10 Nov: step 1 (R22: stop the row-filler guessing English waivers; needs Evan's yes) and step 2 (SP1: seven wrong cells in the sample pack / demo website). Everything else waits until after 10 Nov. Decided 28 Oct: L2 does the 22 Shortlist/Finalist rows first; no Stage 5 runs or corrected reports for free testers; the source student is finished.
+> - **Backlog:** `business/additionals.md` → "Start here" (trimmed 28 Oct to open entries only, 8 numbered steps). Step 1 done 28 Oct (row-filler no longer guesses English waivers; UK living-cost rule written). Before 10 Nov: step 2 only (SP1: seven wrong cells in the sample pack / demo website; merge `bunting-demo` first). Everything else waits until after 10 Nov. Decided 28 Oct: L2 does the 22 Shortlist/Finalist rows first; no Stage 5 runs or corrected reports for free testers; the source student is finished.
 > - **Phone view:** Notion page "Shortlisted — Now" (under 🗓️ Everything), a copy of this box.
 > - **Last session:** newest entry in `plans/build-log.md`.
 

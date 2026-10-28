@@ -126,6 +126,13 @@ the write fence (`.tmp/<slug>/` only; never `master_list.csv`, never any of the 
   App / the visa authority / MQA). Aggregators are for *finding* the official page, never
   for quoting a number. Stamp `source_authority: "Official page"` only when you actually
   read the official page; leave `"Not verified"` if you could not.
+- **`English req` states the test bar; a waiver only in the university's own words.** Write the
+  test and score (and any accepted English-subject grade, e.g. SPM English 1119, IGCSE English).
+  Mention a waiver only if the official page names who qualifies (e.g. "nationals of listed
+  countries", "4 yrs English-taught schooling"). **Never "likely waived" for A-Levels or
+  English-medium schooling** — about 44 cells across 11 lists were wrong this way (2026-10-27).
+  Malaysia is not on UCL, Imperial or KCL's waiver lists; Singapore, China and Australia do not
+  waive on A-Levels. Same rule as `workflows/08_application_prep.md`.
 - **Never invent a fact to fill a cell.** This is the one failure mode that would make the
   whole deliverable worthless. Where a fact genuinely does not exist, use the sentinel for
   that column from `SENTINEL_VALUES` (`python tools/shortlist_schema.py --contract`) —
