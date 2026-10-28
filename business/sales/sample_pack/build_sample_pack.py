@@ -37,17 +37,21 @@ STAND_IN_NAME = "Arif"
 # a Longlist safety/match tail, and one Rejected row (shows the tool demotes bad fits, not
 # just adds universities). Keeping the same set means each regeneration refreshes facts
 # without re-litigating which universities to show.
+# 2026-10-28 (SP1): Cambridge replaces Oxford and the first five are the bunting's demo
+# picture (MIT, NUS, Monash, Cambridge, Tsinghua). Branch bunting-demo hand-edited the CSV
+# to this; listing it here is what stops a rebuild from undoing it. Edit facts in the
+# source student's master_list.csv, never in sample_master_list.csv.
 SAMPLE_UNIVERSITIES = [
     "Massachusetts Institute of Technology",
-    "University of Oxford",
     "National University of Singapore",
-    "Princeton University",
+    "Monash University",
+    "University of Cambridge",
     "Tsinghua University",
+    "Princeton University",
     "Stanford University",
     "UNSW Sydney",
     "Harvard University",
     "Imperial College London",
-    "Monash University",
     "Nanyang Technological University",
     "Rose-Hulman Institute of Technology",
     "Northeastern University",

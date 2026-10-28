@@ -5,7 +5,7 @@ done, delete it and its line in the steps below, and write one line in `plans/bu
 History: the full file up to 2026-10-28 (every closed entry, the old lane and round plans) is in
 git: `git show 10b847c:business/additionals.md`. Decisions are in `decisions/log.md`.*
 
-*Adding an entry: the next number is **R23**. Say whether it is **urgent**, and whether it is a
+*Adding an entry: the next number is **R26**. Say whether it is **urgent**, and whether it is a
 **tool gap** (the system will keep making the mistake) or **stale data** (old files only). Plain
 English, no student named, no grades, income or school. Then add it to a step below.*
 
@@ -19,7 +19,7 @@ English, no student named, no grades, income or school. Then add it to a step be
 
 | Step | Entries | Files it writes | Waits for | Size |
 |---|---|---|---|---|
-| **2** | SP1 | the source student's `master_list.csv`, `research_notes.md`, `score_log.jsonl`; `business/sales/sample_pack/`; `prototype/data.js` | nothing | Small |
+| **2b** | R24, then R23, then R25 | `.venv` + `requirements.txt` (R24); the source student's `master_list.csv`, `research_notes.md`, `score_log.jsonl`; `business/sales/sample_pack/`; `prototype/data.js`; `workflows/countries/uk.md` (R25) | Evan's yes on installing `pypdf` (R24) | Small |
 
 **After 10 Nov** (the old students' lists, then the bigger system changes)
 
@@ -41,7 +41,8 @@ English, no student named, no grades, income or school. Then add it to a step be
 3. Copy a student file to `.tmp/` before a program rewrites it. Run `apply_backfill.py` as a dry
    run first. Never run the calendar program with `--allow-shrink`.
 4. **The source student is finished** (Evan, 2026-10-28). Their list is touched only for the
-   sample pack (SP1), never for their own sake.
+   sample pack (SP1, R23), never for their own sake. Sample pack facts are fixed in that list and
+   rebuilt with `build_sample_pack.py`, never typed into `sample_master_list.csv`.
 5. If another session is open on this file, do not edit it: end with a hand-back (done, not done,
    new findings). Otherwise delete the finished entries here yourself.
 
@@ -58,32 +59,37 @@ English, no student named, no grades, income or school. Then add it to a step be
 
 ## Before 10 Nov
 
-#### SP1. The sample pack and demo website show seven cells known to be wrong
+#### R24. The sample pack's privacy scan crashes: `pypdf` is not installed
 
-- **Added 2026-10-28** (checked in the files). **Stale data a customer sees:** the sample pack and
-  `prototype/data.js` (the demo website). Urgent: before the booth opens on 10 Nov.
-- **What is wrong** (both are built from the source student's list):
-  - `Grades vs entry bar` reads "Well above" on MIT, Princeton, Stanford, Harvard and Carnegie
-    Mellon (a Rejected row). US universities publish no A-Level bar, so it should read "Not
-    published" (was R17).
-  - `English req` on Imperial says "waived for recent English-medium study". Wrong (R21); fixed on
-    the source list on 27 Oct, but the sample was not rebuilt.
-  - `English req` on Oxford says the same, never checked against Oxford's own page.
-- **Do it after merging branch `bunting-demo`** (`d123f53`: same files; Oxford is replaced by
-  Cambridge there, so the Oxford bullet may not apply). The printed bunting (28 Oct,
-  `business/launchx/Bunting_design/SHORTLISTED_v3.png`) shows MIT's "Well above" in its demo
-  screenshot. It can't be changed now; after SP1 the demo reads "Not published" there, which is fine.
-- **Safe to change:** each US Finalist row has a hand-set "Reach (very selective)", which overrides
-  the grade calculation (`classify_admission` in `tools/shortlist_schema.py`), so only the one cell
-  changes (check Carnegie Mellon's the same way). The US apply guide and `recommendation.md` never
-  quote it.
-- **Suggested fix:** on the source list, set the five US rows to `entry_margin` = `not_published`
-  through the scoring program's label function (never typed), with one line in `score_log.jsonl`
-  saying why. Read Oxford's English page; fix its cell with `apply_backfill.py --overwrite` (dry
-  run first). Rebuild the sample pack and the prototype the way the 2026-10-20 re-run did
-  (`sample_pack_fix_plan.md` → Status). Check: `grep "Well above\|waived for recent"` on
-  `business/sales/sample_pack/sample_master_list.csv` and `prototype/data.js` finds only rows
-  outside the US.
+- **Added 2026-10-28** (SP1 run). **Tool gap, urgent:** any sample pack rebuild before 10 Nov hits it.
+- **What is true:** `build_sample_pack.py` ends with `scan_for_leaks()`, which reads the two PDFs
+  with `pypdf`; neither `.venv` nor the system Python has it, and `requirements.txt` doesn't list
+  it. SP1 got round it (the PDFs' sources predate their last scanned build, so the committed PDFs
+  were restored and only the two CSVs scanned). Next time the PDFs may really change.
+- **Suggested fix:** with Evan's yes, `pip install pypdf` into `.venv` (the official package,
+  github.com/py-pdf/pypdf) and add it to `requirements.txt`. Then run the full build once.
+
+#### R23. Two US demo rows carry a grade label against a bar that doesn't exist
+
+- **Added 2026-10-28** (SP1 run). **Stale data a customer sees** (sample pack + demo website), so
+  before 10 Nov.
+- **What is true:** Rose-Hulman ("Above", Safety) and Northeastern ("Meets", Match) both say "no
+  minimum grades published" in `Entry requirements`, so `Grades vs entry bar` should read "Not
+  published" like the other US rows. They have no hand-set admission label, so `not_published`
+  alone blanks `Admission likelihood` (the check fails). Northeastern as "Match" also looks wrong:
+  it is a very selective school (admit rate not yet read on its own page).
+- **Suggested fix:** read each one's admit rate on its official page (Common Data Set or
+  admissions facts). Set `entry_margin` = `not_published` and an `admission_likelihood` override
+  with a short reason, the same way as SP1 (`grade_fit_label` / `classify_admission`, one
+  `score_log.jsonl` line each). Then rebuild the sample pack (after R24) and the prototype
+  (`gen.py`), run `check_master_list.py --student <source>` and `node prototype/_build/smoke.js`.
+
+#### R25. `uk.md` calls Cambridge's GBP 46,872 a 2026/27 fee
+
+- **Added 2026-10-28** (SP1 run). **Stale note, not urgent.** Cambridge's international fees page
+  (read 2026-10-28) gives GBP 46,872 for **2027 entry**, Group 4 (incl. Engineering).
+- **Suggested fix:** in the Cambridge College-fee note in `workflows/countries/uk.md`, change
+  "(2026/27)" to "(2027 entry)".
 
 ---
 
@@ -164,7 +170,7 @@ English, no student named, no grades, income or school. Then add it to a step be
   compared grades to a guessed bar. `Admission likelihood` already says "Reach", so the ranking
   does not hide how hard these are.
 - **Where:** other students' US rows scored before 2026-07-28. Not counted yet. (The sample
-  pack's five rows are SP1.)
+  pack's five were fixed on 2026-10-28 as SP1; its last two are R23.)
 - **Suggested fix:** in step 6, per student: count them, then set `not_published` through the
   scoring program's label function (never typed), with a line in `score_log.jsonl`.
 

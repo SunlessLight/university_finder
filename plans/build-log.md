@@ -176,3 +176,9 @@ Entry format:
 - Decisions (and why): Evan said yes to R22. The rule went into both the helper's sheet and the Stage 3 workflow, because the helper writes the cell and the main session checks it.
 - Problems / lessons: another session (bunting) was editing the backlog and STATUS.md at the same time; bookkeeping waited until it finished (backlog rule 5).
 - Next step: backlog step 2 (SP1), after merging `bunting-demo`. Not tested on a live row yet: check the first 10 Nov list's `English req` cells for "likely waived".
+
+## 2026-10-28 (3) · Backlog step 2: SP1 (sample pack + demo website)
+- Done: merged `bunting-demo` (`d123f53`, no overlap with main). Source list: five US rows' `Grades vs entry bar` → "Not published" via `grade_fit_label` (admission overrides unchanged, asserted), Cambridge `English req` corrected from its official page (test waived only for majority English-speaking countries), Cambridge 2027/28 fee ported from the demo branch (`apply_backfill.py --overwrite`, MYR total via `candidate_total_myr`), 6 `score_log.jsonl` lines. `build_sample_pack.py` lists Cambridge, not Oxford, in the bunting order. Sample CSV + glossary rebuilt and leak-scanned; `data.js` regenerated; the demo's "clear the bar" sentence now counts only universities that publish a bar. Checks: `check_master_list.py` 0 findings, `smoke.js` 147/147.
+- Decisions (and why): the demo branch's hand edits were moved into the source list and build script, because a rebuild from source would have undone them. See `decisions/log.md`.
+- Problems / lessons: the demo branch had hand-typed a 212-char Notes cell (budget 200); the backfill tool caught it. `pypdf` is missing, so the leak scan crashes on the PDFs (R24); the PDFs' sources predate their last scanned build, so the committed PDFs were kept. New: R23 (Rose-Hulman, Northeastern grade labels), R25 (uk.md fee year).
+- Next step: backlog step 2b (R24 needs Evan's yes on installing `pypdf`).

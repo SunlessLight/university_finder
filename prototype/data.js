@@ -212,7 +212,7 @@
       "overallRank": "QS #1",
       "entryRequirements": "Holistic; no fixed grade cutoff or course list. SAT or ACT required (no cutoff or recommended scores); take by Nov 30 (Early Action) or Dec 31 (Regular Action).",
       "studentGrades": "A*A*A*A* predicted",
-      "gradesVsEntryBar": "Well above",
+      "gradesVsEntryBar": "Not published",
       "englishReq": "Not required; strongly recommended if you've used English under 5 years or not at school. IELTS min 7. Count yours.",
       "annualTuition": "USD 66720",
       "totalTuition": "USD 266880",
@@ -330,7 +330,7 @@
       "entryRequirements": "A*A*A at A-level incl Maths + Physics (Further Maths recommended); ESAT (Maths 1, Maths 2, Physics) + interview. Holistic selection.",
       "studentGrades": "A*A*A*A* predicted",
       "gradesVsEntryBar": "Well above",
-      "englishReq": "IELTS 7.5 overall (7.0 per element); waived for recent English-medium study.",
+      "englishReq": "IELTS 7.5 overall (7.0 per element). Waived only for majority English-speaking countries; Malaysia is not one.",
       "annualTuition": "GBP 46872 (2027/28 overseas, OFFICIAL; fixed for course)",
       "totalTuition": "GBP 241088 (187,488 university tuition 4yr + ~53,600 College fee 4yr at 2026/27 rates, avg ~GBP13,400/yr)",
       "estLivingPerYear": "GBP 14000",
@@ -346,7 +346,7 @@
       "howToApply": "UCAS (+ college choice, ESAT admissions test + interview)",
       "keyDeadline": "2026-10-15 (UCAS; ESAT registration closes 2026-09-28)",
       "intake": "2027 Oct",
-      "notes": "Progression to Yr3/4 needs min 2.ii; no standalone robotics degree - mechatronics via Info & Computer Eng / Mech Eng in Yr3-4. Total tuition incl. ~GBP 53.6k/4yr College fee (2026/27 rate; 2027/28 not yet found).",
+      "notes": "Progression to Yr3/4 needs min 2.ii; no standalone robotics degree - mechatronics via Info & Computer Eng / Mech Eng in Yr3-4. Total incl. ~GBP 53.6k/4yr College fee (2026/27 rate).",
       "courseUrl": "https://www.undergraduate.study.cam.ac.uk/courses/engineering",
       "infoSource": "Official page"
     },
@@ -407,7 +407,7 @@
       "overallRank": "QS ~#22",
       "entryRequirements": "Holistic; top academics (~A*A*A*A*) + essays; no fixed cutoff",
       "studentGrades": "A*A*A*A* predicted",
-      "gradesVsEntryBar": "Well above",
+      "gradesVsEntryBar": "Not published",
       "englishReq": "TOEFL/IELTS/Duolingo/PTE required unless English is native or 3+ yrs at an English-taught secondary school; count yours.",
       "annualTuition": "USD 68140 (2026-27 official)",
       "totalTuition": "USD 272560",
@@ -446,7 +446,7 @@
       "overallRank": "QS ~#6",
       "entryRequirements": "Holistic; top academics expected",
       "studentGrades": "A*A*A*A* predicted",
-      "gradesVsEntryBar": "Well above",
+      "gradesVsEntryBar": "Not published",
       "englishReq": "No English test required (optional to self-report); fluency in English is a prerequisite for admission.",
       "annualTuition": "USD 67731",
       "totalTuition": "USD 270924",
@@ -524,7 +524,7 @@
       "overallRank": "QS ~#4; US News ~#3",
       "entryRequirements": "Holistic; top academics (~A*A*A*A*) + essays; no fixed cutoff",
       "studentGrades": "A*A*A*A* predicted",
-      "gradesVsEntryBar": "Well above",
+      "gradesVsEntryBar": "Not published",
       "englishReq": "No English test required for first-year applicants (optional to submit).",
       "annualTuition": "USD 59320 (approx 2026/27)",
       "totalTuition": "USD 237280",
@@ -564,7 +564,7 @@
       "entryRequirements": "A*A*A incl A* in Maths + Physics (A*AAA for 4 A-levels); ESAT (Maths 1, Maths 2, Physics) required + interview for those meeting the threshold.",
       "studentGrades": "A*A*A*A* predicted",
       "gradesVsEntryBar": "Well above",
-      "englishReq": "IELTS 6.5-7.0 overall (6.0-6.5 per element), College-approved test; waived for recent English-medium study.",
+      "englishReq": "IELTS 6.5, min 6.0 each (Imperial standard level); or SPM English 1119 grade A. No waiver for schooling in English",
       "annualTuition": "GBP 43700 (2026/27 est; 2025/26 ~GBP 40,940)",
       "totalTuition": "GBP 174800",
       "estLivingPerYear": "GBP 18000",
@@ -758,7 +758,7 @@
       "overallRank": "QS ~#52",
       "entryRequirements": "Holistic; top STEM academics (~A*A*A*A*) + essays; highly selective",
       "studentGrades": "A*A*A*A* predicted",
-      "gradesVsEntryBar": "Well above",
+      "gradesVsEntryBar": "Not published",
       "englishReq": "TOEFL 100+ / IELTS 7.5+",
       "annualTuition": "USD 67020 (2025/26 tuition; +USD 1,076 fees — official). 2026/27 ~+4%.",
       "totalTuition": "USD 268080 (4 yrs, 2025/26 base)",
@@ -951,6 +951,9 @@
 
   const total = ROWS.length;
   const clearing = ROWS.filter((u) => /above|meets/i.test(u.gradesVsEntryBar)).length;
+  // "Not published" = no grade bar to clear (the US rows), so it counts as neither pass nor fail.
+  const noBar = ROWS.filter((u) => u.gradesVsEntryBar === 'Not published').length;
+  const withBar = total - noBar;
   const reachCount = ROWS.filter((u) => u.band === 'reach').length;
   const byCost = ROWS.slice().sort((a, b) => a.approxTotalMyr - b.approxTotalMyr);
   const cheapest = byCost[0];
@@ -961,7 +964,8 @@
   const unverified = ROWS.filter((u) => !u.verified);
 
   const findings = [
-    `Your grades clear the published entry bar at ${clearing === total ? 'all ' + total : clearing + ' of ' + total} universities. ` +
+    `Your grades clear the entry bar at ${clearing === withBar ? 'all ' + withBar : clearing + ' of ' + withBar} universities that publish one` +
+      `${noBar ? `; the other ${noBar} set no grade bar at all` : ''}. ` +
       `The ${reachCount} marked Reach are a stretch because they are very selective, not because your grades fall short.`,
     `The whole degree costs from ${rm(cheapest.approxTotalMyr)} (${cheapest.shortName}) to ${rm(dearest.approxTotalMyr)} (${dearest.shortName}) ` +
       `before any scholarship. That is more than ${Math.floor(dearest.approxTotalMyr / cheapest.approxTotalMyr)} times the price for the same course area.`,

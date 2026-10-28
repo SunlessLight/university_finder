@@ -133,6 +133,9 @@
 
   const total = ROWS.length;
   const clearing = ROWS.filter((u) => /above|meets/i.test(u.gradesVsEntryBar)).length;
+  // "Not published" = no grade bar to clear (the US rows), so it counts as neither pass nor fail.
+  const noBar = ROWS.filter((u) => u.gradesVsEntryBar === 'Not published').length;
+  const withBar = total - noBar;
   const reachCount = ROWS.filter((u) => u.band === 'reach').length;
   const byCost = ROWS.slice().sort((a, b) => a.approxTotalMyr - b.approxTotalMyr);
   const cheapest = byCost[0];
@@ -143,7 +146,8 @@
   const unverified = ROWS.filter((u) => !u.verified);
 
   const findings = [
-    `Your grades clear the published entry bar at ${clearing === total ? 'all ' + total : clearing + ' of ' + total} universities. ` +
+    `Your grades clear the entry bar at ${clearing === withBar ? 'all ' + withBar : clearing + ' of ' + withBar} universities that publish one` +
+      `${noBar ? `; the other ${noBar} set no grade bar at all` : ''}. ` +
       `The ${reachCount} marked Reach are a stretch because they are very selective, not because your grades fall short.`,
     `The whole degree costs from ${rm(cheapest.approxTotalMyr)} (${cheapest.shortName}) to ${rm(dearest.approxTotalMyr)} (${dearest.shortName}) ` +
       `before any scholarship. That is more than ${Math.floor(dearest.approxTotalMyr / cheapest.approxTotalMyr)} times the price for the same course area.`,
