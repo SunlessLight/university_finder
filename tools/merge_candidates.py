@@ -17,9 +17,15 @@ Checks, in the order they fire:
   2. no two fragments claim the same course_key            (duplicate dispatch)
   3. every REQUIRED_CANDIDATE_FIELD present and non-empty  (the completeness gate)
   4. all eight `scores` sub-scores present, numeric, 0-5
+  5. money, rank, requirements and checked_on fields in their fixed format
 
 Exit 1 lists every (university, problem) pair — the whole point is that one run tells you
 exactly which agents to re-dispatch and what each of them missed.
+
+2026-10-29 (plans/list_pdf_plan.md T3): `application_requirements` and `checked_on` are
+now required fields (via REQUIRED_CANDIDATE_FIELDS), and check 5 applies
+shortlist_schema.cell_format_problem() here, before the CSV, because sync never rewrites
+a row once it is in. Fragments written to the pre-T3 row-filler sheet fail both checks.
 
 Usage:
     python tools/merge_candidates.py --student <slug> --country "Hong Kong"
@@ -36,6 +42,7 @@ from shortlist_schema import (  # noqa: E402
     OPTIONAL_VALUE_FIELDS,
     REQUIRED_CANDIDATE_FIELDS,
     WEIGHT_KEYS,
+    cell_format_problem,
     course_key,
 )
 
@@ -43,6 +50,17 @@ if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+
+# Candidate field -> the CSV column whose format it must meet (FORMATTED_COLUMNS).
+FORMATTED_FIELDS = {
+    "annual_tuition": "Annual tuition",
+    "total_tuition": "Total tuition",
+    "est_living_per_year": "Est. living/yr",
+    "subject_rank": "Subject rank",
+    "overall_rank": "Overall rank",
+    "application_requirements": "Application requirements",
+    "checked_on": "Checked on",
+}
 
 
 def is_empty(value):
@@ -132,6 +150,16 @@ def check_fields(candidate):
     return problems
 
 
+def check_formats(candidate):
+    """[problem] for a filled field that breaks its column's fixed format."""
+    problems = []
+    for field, column in FORMATTED_FIELDS.items():
+        why = cell_format_problem(column, candidate.get(field))
+        if why:
+            problems.append(f"{field}: {why}")
+    return problems
+
+
 def check_scores(candidate):
     """[problem] for the eight 0-5 sub-scores compute_score() consumes."""
     problems = []
@@ -184,7 +212,7 @@ def main():
     failures = check_country(fragments, args.country) + check_duplicates(fragments)
 
     for path, c in fragments:
-        problems = check_fields(c) + check_scores(c)
+        problems = check_fields(c) + check_scores(c) + check_formats(c)
         label = f"{c.get('university') or path.stem} — {c.get('course') or '?'}"
         if problems:
             failures.append(f"{label}: {'; '.join(problems)}")

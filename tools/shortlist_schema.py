@@ -16,6 +16,14 @@ validate_weights() enforces that rule mechanically via FORBIDDEN_WEIGHT_KEYS.
 Scoring weights are PER-STUDENT and live in data/students/<slug>/weights.json — never
 in this file. This module is shared, so a weight hardcoded here is a weight two
 concurrent sessions fight over. Derive them with the 'scoring-weights' skill.
+
+2026-10-29 (plans/list_pdf_plan.md T3, backlog R29): two columns appended at the END
+("Application requirements", "Checked on") so position-based readers keep working;
+old 35-column files are padded by upgrade_header(). Number formats (money, rank),
+RANKING_EDITION, the requirements vocabulary and one validator, cell_format_problem(),
+for the list checks and the PDF. Deadline sentinel is now "Not published" (the old
+"... — check portal" stays accepted, see LEGACY_SENTINELS); the recognition flag no
+longer reads as an instruction; "Urban+Rural both ticked" left Warnings (Stage 1 owns it).
 """
 
 import argparse
@@ -74,7 +82,15 @@ SHORTLIST_HEADERS = [
     # Provenance
     "Course URL",
     "Info source",          # Not verified / Official page — hard facts must become "Official page" by Stage 4
+    # Added 2026-10-29. Appended, never inserted: see ADDED_COLUMNS below.
+    "Application requirements",  # fixed vocabulary joined with " · " (APPLICATION_REQUIREMENTS_VOCAB)
+    "Checked on",           # YYYY-MM-DD the row's facts were read on the official page
 ]
+
+# Columns appended after a list may already exist. An older file that lacks ONLY these
+# is upgraded (blank cells) by upgrade_header(); any other difference still needs a
+# deliberate migration. Append new columns here, never in the middle of the header.
+ADDED_COLUMNS = ("Application requirements", "Checked on")
 
 # Allowed values for the "List status" column (first is the default for new rows).
 LIST_STATUSES = ["Longlist", "Shortlist", "Finalist", "Rejected"]
@@ -106,7 +122,9 @@ WARNINGS_NONE = "None"
 SENTINEL_VALUES = {
     # A university with no fixed date genuinely has none; a guessed date is worse
     # than saying so (the old "don't invent a key_deadline" rule, now expressible).
-    "Key deadline": ["Rolling", "Not published — check portal"],
+    # "Not published" since 2026-10-29: a cell states a fact, never an instruction
+    # (backlog R29). The old wording stays accepted — see LEGACY_SENTINELS.
+    "Key deadline": ["Rolling", "Not published", "Not published — check portal"],
     # US liberal-arts colleges genuinely carry no QS/THE rank — see the
     # liberal-arts-trap note in 03_discover_longlist.md's USA playbook.
     "Subject rank": ["Not ranked"],
@@ -116,6 +134,12 @@ SENTINEL_VALUES = {
     # the completeness check knows it is an allowed non-answer, not a gap.
     "Grades vs entry bar": ["Not published"],
     "Warnings": [WARNINGS_NONE],
+    "Application requirements": ["Not published"],
+}
+
+# Sentinels still ACCEPTED (so old lists pass) but never to be WRITTEN on a new row.
+LEGACY_SENTINELS = {
+    "Key deadline": ["Not published — check portal"],
 }
 
 # Candidate-JSON keys a row needs before it can be synced. Includes the three inputs
@@ -160,6 +184,9 @@ REQUIRED_CANDIDATE_FIELDS = [
     "course_url",
     "source_authority",
     "scores",
+    # Added 2026-10-29 (feed the two appended columns).
+    "application_requirements",
+    "checked_on",
 ]
 
 # Fields that may legitimately be present-but-empty (see the note above).
@@ -539,16 +566,14 @@ def feasibility_flags(candidate, profile=None, preferences=None, today=None):
         except (TypeError, ValueError):
             rec_score = None
         if rec_score is not None and rec_score <= RECOGNITION_RISK_MAX:
-            flags.append(f"Recognition risk — check {'/'.join(targets)}")
+            # A fact, not an instruction (was "Recognition risk — check MQA/BEM" until
+            # 2026-10-29, backlog R29): a student-facing cell states, it doesn't advise.
+            flags.append(f"Recognition risk: not found on {'/'.join(targets)} list")
 
-    # A student who ticked both Urban and Rural hasn't told us anything about setting —
-    # flag it once per row so it surfaces in the spreadsheet rather than silently steering
-    # location_pref_fit one way or the other.
-    loc_prefs = (preferences.get("location_prefs") if isinstance(preferences, dict) else None) or []
-    loc_low = [str(p).lower() for p in loc_prefs]
-    if any("urban" in p for p in loc_low) and any("rural" in p for p in loc_low):
-        flags.append("Urban+Rural both ticked")
-
+    # "Urban+Rural both ticked" used to be stamped here into every row's Warnings. It is a
+    # note about the student's form, not about the university, so since 2026-10-29 it is a
+    # Stage 1 _needs_review item (ingest_form_csv.py). `preferences` is kept as a parameter
+    # so callers don't change.
     return flags
 
 
@@ -687,6 +712,122 @@ def to_myr(amount, currency):
     return round(amt * rate)
 
 
+# --------------------------------------------------------------------------- #
+# Cell formats (2026-10-29, plans/list_pdf_plan.md Decisions 3-4). A fact cell holds a
+# code and a number, or a fixed wording, and nothing else: the reasoning behind a figure
+# goes to research_notes.md. One validator, cell_format_problem(), shared by
+# check_master_list.py (the gate), merge_candidates.py (before the CSV) and the PDF.
+# --------------------------------------------------------------------------- #
+# Real ISO 4217 codes only: "RMB" is a conversion alias, not a code to print.
+ISO_CURRENCIES = tuple(sorted(code for code in FX_TO_MYR if code != "RMB"))
+
+MONEY_FORMAT = "<ISO currency> <whole number with commas>, e.g. GBP 46,872"
+RANK_FORMAT = "a bare number (8), a tie (=12), a band (601-650), or Not ranked"
+CHECKED_ON_FORMAT = "YYYY-MM-DD, not in the future"
+
+MONEY_COLUMNS = ("Annual tuition", "Total tuition", "Est. living/yr")
+RANK_COLUMNS = ("Subject rank", "Overall rank")
+
+_MONEY_RE = re.compile(r"^([A-Z]{3}) (\d{1,3}(?:,\d{3})*)$")
+_RANK_RE = re.compile(r"^(?:=?\d+|\d+-\d+)$")
+
+# The ranking edition each rank column cites, printed once in the PDF column header so
+# the cells can stay bare numbers. Source: workflows/countries/hong-kong.md (QS 2027
+# overall released June 2026; the 2027 by-subject tables were not out, so subject ranks
+# stay on the 2026 edition). Move both together when a new edition is adopted.
+RANKING_EDITION = {
+    "Overall rank": "QS World University Rankings 2027",
+    "Subject rank": "QS World University Rankings by Subject 2026",
+}
+
+# "Application requirements": items from this list joined with " · ", or "Not published".
+# N is a whole number; "1 supplemental essay" / "1 recommendation letter" read singular.
+APPLICATION_REQUIREMENTS_SEPARATOR = " · "
+APPLICATION_REQUIREMENTS_VOCAB = (
+    "Personal statement",
+    "Essay",
+    "N supplemental essays",
+    "N recommendation letters",
+    "Interview",
+    "Test: <name>",
+    "Portfolio",
+    "Audition",
+)
+_REQUIREMENT_RES = (
+    re.compile(r"^(?:Personal statement|Essay|Interview|Portfolio|Audition)$"),
+    re.compile(r"^\d+ supplemental essays?$"),
+    re.compile(r"^\d+ recommendation letters?$"),
+    re.compile(r"^Test: \S.*$"),
+)
+
+FORMATTED_COLUMNS = MONEY_COLUMNS + RANK_COLUMNS + ("Application requirements", "Checked on")
+
+
+def cell_format_problem(column, value, today=None):
+    """Why `value` breaks `column`'s fixed format, or None when it is fine.
+
+    Only FORMATTED_COLUMNS are judged; any other column returns None. A blank cell
+    returns None too: blanks are the completeness check's job, not this one's.
+    """
+    text = str(value or "").strip()
+    if column not in FORMATTED_COLUMNS or not text:
+        return None
+
+    if column in MONEY_COLUMNS:
+        m = _MONEY_RE.match(text)
+        if not m:
+            return f"{text!r} is not {MONEY_FORMAT}"
+        if m.group(1) not in ISO_CURRENCIES:
+            return f"{m.group(1)!r} is not a currency in FX_TO_MYR ({', '.join(ISO_CURRENCIES)})"
+        return None
+
+    if column in RANK_COLUMNS:
+        if text in SENTINEL_VALUES[column] or _RANK_RE.match(text):
+            return None
+        return f"{text!r} is not {RANK_FORMAT}"
+
+    if column == "Checked on":
+        try:
+            stamped = date.fromisoformat(text)
+        except ValueError:
+            return f"{text!r} is not {CHECKED_ON_FORMAT}"
+        if stamped > (today or date.today()):
+            return f"{text!r} is in the future"
+        return None
+
+    # Application requirements
+    if text in SENTINEL_VALUES[column]:
+        return None
+    bad = [item for item in text.split(APPLICATION_REQUIREMENTS_SEPARATOR)
+           if not any(r.match(item) for r in _REQUIREMENT_RES)]
+    if bad:
+        return (f"{', '.join(repr(b) for b in bad)} not in the vocabulary "
+                f"({', '.join(APPLICATION_REQUIREMENTS_VOCAB)}, joined with ' · ') or 'Not published'")
+    return None
+
+
+def upgrade_header(header, rows):
+    """Pad an older master_list.csv that lacks only ADDED_COLUMNS: (header, rows).
+
+    The missing columns are appended at the end of the file's own header with blank
+    cells, so every existing value keeps its position. Returns the inputs unchanged
+    when nothing is missing. Raises ValueError for any other column difference (that
+    needs a deliberate migration) or a row longer than its header (padding it would
+    shift cells under the wrong column).
+    """
+    missing = [h for h in SHORTLIST_HEADERS if h not in header]
+    extra = [h for h in header if h not in SHORTLIST_HEADERS]
+    if not missing and not extra:
+        return header, rows
+    if extra or any(h not in ADDED_COLUMNS for h in missing):
+        raise ValueError(f"columns differ beyond ADDED_COLUMNS (missing {missing}, unexpected {extra})")
+    long_rows = [i for i, r in enumerate(rows, start=2) if len(r) > len(header)]
+    if long_rows:
+        raise ValueError(f"row(s) {long_rows} have more cells than the header")
+    new_header = list(header) + missing
+    return new_header, [list(r) + [""] * (len(new_header) - len(r)) for r in rows]
+
+
 def candidate_total_myr(candidate):
     """Best-effort total programme cost in MYR for a candidate dict.
 
@@ -777,7 +918,7 @@ def main():
     parser.add_argument(
         "--contract",
         action="store_true",
-        help="Print SENTINEL_VALUES, REQUIRED_CANDIDATE_FIELDS, CELL_BUDGETS and SHORTLIST_HEADERS as JSON.",
+        help="Print the sentinels, required fields, cell budgets, cell formats and headers as JSON.",
     )
     args = parser.parse_args()
 
@@ -785,8 +926,21 @@ def main():
         print(json.dumps(
             {
                 "SENTINEL_VALUES": SENTINEL_VALUES,
+                "LEGACY_SENTINELS (accepted, never write)": LEGACY_SENTINELS,
                 "REQUIRED_CANDIDATE_FIELDS": REQUIRED_CANDIDATE_FIELDS,
                 "CELL_BUDGETS": CELL_BUDGETS,
+                "CELL_FORMATS": {
+                    **{c: MONEY_FORMAT for c in MONEY_COLUMNS},
+                    **{c: RANK_FORMAT for c in RANK_COLUMNS},
+                    "Checked on": CHECKED_ON_FORMAT,
+                    "Application requirements": (
+                        f"items joined with ' · ' from {list(APPLICATION_REQUIREMENTS_VOCAB)}, "
+                        "or 'Not published'"
+                    ),
+                },
+                "ISO_CURRENCIES": ISO_CURRENCIES,
+                "RANKING_EDITION": RANKING_EDITION,
+                "WARNING_WORDINGS": {"recognition": "Recognition risk: not found on <body> list"},
                 "SHORTLIST_HEADERS": SHORTLIST_HEADERS,
             },
             indent=2,

@@ -35,6 +35,11 @@ Usage:
 
 candidate JSON: a list of objects — see workflows/03_discover_longlist.md for the
 full schema. Each carries a "scores" dict (0-5 sub-scores) and an "entry_margin".
+
+2026-10-29 (plans/list_pdf_plan.md T3): writes the two appended columns from
+`application_requirements` and `checked_on`. An older file missing only those columns
+is upgraded in place first (blank cells for its existing rows, every other cell kept)
+instead of being refused; see shortlist_schema.upgrade_header().
 """
 
 import argparse
@@ -61,6 +66,7 @@ from shortlist_schema import (  # noqa: E402
     grade_fit_label,
     load_weights,
     tier_for,
+    upgrade_header,
 )
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -147,6 +153,8 @@ def candidate_to_row(c, score, tier, admission, flags):
         "Notes": c.get("notes", ""),
         "Course URL": c.get("course_url", ""),
         "Info source": c.get("source_authority", INFO_SOURCE_UNVERIFIED),
+        "Application requirements": c.get("application_requirements", ""),
+        "Checked on": c.get("checked_on", ""),
     }
     return [values.get(h, "") for h in SHORTLIST_HEADERS]
 
@@ -288,14 +296,36 @@ def reorder_to_header(rows, file_header):
     )
 
 
+def upgrade_file(csv_path):
+    """Rewrite an older master_list.csv with ADDED_COLUMNS appended (blank), if needed.
+
+    Returns the file's header after the upgrade. Every existing cell keeps its value and
+    position; only blank cells are added at the end of each row. Anything beyond the
+    added columns is refused here, as reorder_to_header would refuse it anyway.
+    """
+    with csv_path.open(newline="", encoding="utf-8") as f:
+        all_rows = list(csv.reader(f))
+    if not all_rows:
+        return None
+    try:
+        header, body = upgrade_header(all_rows[0], all_rows[1:])
+    except ValueError as exc:
+        sys.exit(f"ERROR: {csv_path}: {exc}. Migrate the file to the schema columns before syncing.")
+    if header != all_rows[0]:
+        added = header[len(all_rows[0]):]
+        with csv_path.open("w", newline="", encoding="utf-8") as f:
+            csv.writer(f).writerows([header] + body)
+        print(f"  Upgraded {csv_path.name}: added blank column(s) {added} to {len(body)} existing row(s)")
+    return header
+
+
 def write_rows(csv_path, rows):
     """Append rows, creating the file with a header row if it doesn't exist yet.
     When appending to an existing file, rows are written in that file's header order,
     not blindly in SHORTLIST_HEADERS order (see reorder_to_header)."""
     is_new = not csv_path.exists()
     if not is_new:
-        with csv_path.open(newline="", encoding="utf-8") as f:
-            file_header = next(csv.reader(f), None)
+        file_header = upgrade_file(csv_path)
         if file_header:
             rows = reorder_to_header(rows, file_header)
     add_newline = needs_leading_newline(csv_path)
