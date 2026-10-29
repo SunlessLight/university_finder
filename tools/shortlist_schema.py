@@ -24,6 +24,12 @@ RANKING_EDITION, the requirements vocabulary and one validator, cell_format_prob
 for the list checks and the PDF. Deadline sentinel is now "Not published" (the old
 "... — check portal" stays accepted, see LEGACY_SENTINELS); the recognition flag no
 longer reads as an instruction; "Urban+Rural both ticked" left Warnings (Stage 1 owns it).
+
+2026-10-29 (plans/list_pdf_plan.md T3b, backlog R40): third appended column "Admit rate"
+(candidate field `admit_rate`), the university's own published figure in a fixed shape
+(ADMIT_RATE_FORMAT) or "Not published". It replaces Admission likelihood in what the
+student sees; Admission likelihood stays in the file and in classify_admission(),
+because the balanced Reach/Match/Safety shortlist still runs on it.
 """
 
 import argparse
@@ -85,12 +91,13 @@ SHORTLIST_HEADERS = [
     # Added 2026-10-29. Appended, never inserted: see ADDED_COLUMNS below.
     "Application requirements",  # fixed vocabulary joined with " · " (APPLICATION_REQUIREMENTS_VOCAB)
     "Checked on",           # YYYY-MM-DD the row's facts were read on the official page
+    "Admit rate",           # the university's published figure (ADMIT_RATE_FORMAT) or "Not published"
 ]
 
 # Columns appended after a list may already exist. An older file that lacks ONLY these
 # is upgraded (blank cells) by upgrade_header(); any other difference still needs a
 # deliberate migration. Append new columns here, never in the middle of the header.
-ADDED_COLUMNS = ("Application requirements", "Checked on")
+ADDED_COLUMNS = ("Application requirements", "Checked on", "Admit rate")
 
 # Allowed values for the "List status" column (first is the default for new rows).
 LIST_STATUSES = ["Longlist", "Shortlist", "Finalist", "Rejected"]
@@ -135,6 +142,8 @@ SENTINEL_VALUES = {
     "Grades vs entry bar": ["Not published"],
     "Warnings": [WARNINGS_NONE],
     "Application requirements": ["Not published"],
+    # Most non-US universities publish no admit rate (T11 names each country's source).
+    "Admit rate": ["Not published"],
 }
 
 # Sentinels still ACCEPTED (so old lists pass) but never to be WRITTEN on a new row.
@@ -184,9 +193,10 @@ REQUIRED_CANDIDATE_FIELDS = [
     "course_url",
     "source_authority",
     "scores",
-    # Added 2026-10-29 (feed the two appended columns).
+    # Added 2026-10-29 (feed the three appended columns).
     "application_requirements",
     "checked_on",
+    "admit_rate",
 ]
 
 # Fields that may legitimately be present-but-empty (see the note above).
@@ -760,7 +770,18 @@ _REQUIREMENT_RES = (
     re.compile(r"^Test: \S.*$"),
 )
 
-FORMATTED_COLUMNS = MONEY_COLUMNS + RANK_COLUMNS + ("Application requirements", "Checked on")
+# "Admit rate" (Decisions item 9): the university's own figure, one decimal, whose
+# applicants it counts, what "admitted" means there, and the admissions cycle. US source:
+# Common Data Set section C1 (all applicants) unless an international rate is published.
+ADMIT_RATE_FORMAT = ("<N.N>% of <all|international> applicants <admitted|offered a place>, "
+                     "<YYYY-YY>, e.g. 4.5% of all applicants admitted, 2024-25; or Not published")
+_ADMIT_RATE_RE = re.compile(
+    r"^(\d{1,3}\.\d)% of (?:all|international) applicants (?:admitted|offered a place), "
+    r"(\d{4})-(\d{2})$"
+)
+
+FORMATTED_COLUMNS = MONEY_COLUMNS + RANK_COLUMNS + ("Application requirements", "Checked on",
+                                                    "Admit rate")
 
 
 def cell_format_problem(column, value, today=None):
@@ -793,6 +814,18 @@ def cell_format_problem(column, value, today=None):
             return f"{text!r} is not {CHECKED_ON_FORMAT}"
         if stamped > (today or date.today()):
             return f"{text!r} is in the future"
+        return None
+
+    if column == "Admit rate":
+        if text in SENTINEL_VALUES[column]:
+            return None
+        m = _ADMIT_RATE_RE.match(text)
+        if not m:
+            return f"{text!r} is not {ADMIT_RATE_FORMAT}"
+        if float(m.group(1)) > 100:
+            return f"{text!r} is over 100%"
+        if (int(m.group(2)) + 1) % 100 != int(m.group(3)):
+            return f"{text!r}: the cycle must be two consecutive years, e.g. 2024-25"
         return None
 
     # Application requirements
@@ -937,6 +970,7 @@ def main():
                         f"items joined with ' · ' from {list(APPLICATION_REQUIREMENTS_VOCAB)}, "
                         "or 'Not published'"
                     ),
+                    "Admit rate": ADMIT_RATE_FORMAT,
                 },
                 "ISO_CURRENCIES": ISO_CURRENCIES,
                 "RANKING_EDITION": RANKING_EDITION,

@@ -40,6 +40,10 @@ full schema. Each carries a "scores" dict (0-5 sub-scores) and an "entry_margin"
 `application_requirements` and `checked_on`. An older file missing only those columns
 is upgraded in place first (blank cells for its existing rows, every other cell kept)
 instead of being refused; see shortlist_schema.upgrade_header().
+
+2026-10-29 (plans/list_pdf_plan.md T3b, R40): writes the third appended column,
+"Admit rate", from `admit_rate`; older files get it blank by the same upgrade. The
+"Admission likelihood" cell is still computed and written (the balanced shortlist uses it).
 """
 
 import argparse
@@ -155,6 +159,7 @@ def candidate_to_row(c, score, tier, admission, flags):
         "Info source": c.get("source_authority", INFO_SOURCE_UNVERIFIED),
         "Application requirements": c.get("application_requirements", ""),
         "Checked on": c.get("checked_on", ""),
+        "Admit rate": c.get("admit_rate", ""),
     }
     return [values.get(h, "") for h in SHORTLIST_HEADERS]
 

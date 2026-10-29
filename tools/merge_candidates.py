@@ -17,7 +17,7 @@ Checks, in the order they fire:
   2. no two fragments claim the same course_key            (duplicate dispatch)
   3. every REQUIRED_CANDIDATE_FIELD present and non-empty  (the completeness gate)
   4. all eight `scores` sub-scores present, numeric, 0-5
-  5. money, rank, requirements and checked_on fields in their fixed format
+  5. money, rank, requirements, checked_on and admit_rate fields in their fixed format
 
 Exit 1 lists every (university, problem) pair — the whole point is that one run tells you
 exactly which agents to re-dispatch and what each of them missed.
@@ -26,6 +26,10 @@ exactly which agents to re-dispatch and what each of them missed.
 now required fields (via REQUIRED_CANDIDATE_FIELDS), and check 5 applies
 shortlist_schema.cell_format_problem() here, before the CSV, because sync never rewrites
 a row once it is in. Fragments written to the pre-T3 row-filler sheet fail both checks.
+
+2026-10-29 (plans/list_pdf_plan.md T3b, R40): `admit_rate` joins both checks (required,
+and in ADMIT_RATE_FORMAT or "Not published"). Fragments written before T5 updates the
+row-filler sheet lack it and fail.
 
 Usage:
     python tools/merge_candidates.py --student <slug> --country "Hong Kong"
@@ -60,6 +64,7 @@ FORMATTED_FIELDS = {
     "overall_rank": "Overall rank",
     "application_requirements": "Application requirements",
     "checked_on": "Checked on",
+    "admit_rate": "Admit rate",
 }
 
 
