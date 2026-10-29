@@ -212,10 +212,13 @@ SUPPORTED_DESTINATIONS = ["UK", "Australia", "USA", "Singapore", "Malaysia", "Ch
 # EXACTLY first, via BUDGET_LIMIT_EXACT below, because substring matching can't tell them
 # apart: "500,000" is inside "1,500,000". "1,500,000" is a real ceiling, unlike the old
 # ">1000000" floor; Evan accepted the "Over budget" flags that brings (the budget is secondary).
+# 2026-10-29 (backlog R26): Evan added "200,000" as the lowest choice, so a RM 150k family is
+# no longer forced up to 500k (fact audit 01 #4).
 #
 # Matched by substring on the lowercased label, first match wins — so "under" is checked
 # before the range, and the null bands last. Kept for pre-2026-10-27 exports.
 BUDGET_LIMIT_EXACT = {  # label with commas/spaces removed -> ceiling (MYR)
+    "200000": 200000,
     "500000": 500000,
     "1000000": 1000000,
     "1500000": 1500000,
