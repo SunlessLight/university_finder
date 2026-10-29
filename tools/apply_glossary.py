@@ -30,7 +30,8 @@ GLOSSARY = {
     "ED": {
         "aliases": ["Early Decision"],
         "definition": "**Early Decision** — apply early and, if admitted, you are *bound* to enrol "
-                      "and withdraw your other applications. Avoid it if you need to compare aid offers.",
+                      "and withdraw your other applications. Binding, so you cannot weigh aid offers "
+                      "from other universities first.",
     },
     "EA": {
         "aliases": ["Early Action"],
@@ -66,7 +67,7 @@ GLOSSARY = {
         "aliases": ["financial need"],
         "definition": "Your cost of attendance minus what the university calculates your family can "
                       "pay. \"Meets 100% of need\" means it covers that gap — it does not automatically "
-                      "mean you pay nothing, so check what's left for you.",
+                      "mean you pay nothing.",
     },
     "student contribution": {
         "aliases": ["summer work expectation"],
@@ -167,8 +168,8 @@ GLOSSARY = {
     },
     "ESAT": {
         "aliases": [],
-        "definition": "Engineering and Science Admissions Test — required by Oxford and Imperial "
-                      "engineering; register and sit it in autumn.",
+        "definition": "Engineering and Science Admissions Test — an admissions test some UK "
+                      "engineering and science courses require.",
     },
     "CSCA": {
         "aliases": [],
@@ -490,14 +491,12 @@ GLOSSARY = {
     "MQA": {
         "aliases": ["Malaysian Qualifications Agency"],
         "definition": "**Malaysian Qualifications Agency** — the Malaysian body that recognises "
-                      "foreign qualifications; check its register to confirm your degree counts back "
-                      "home.",
+                      "foreign qualifications; its register lists which foreign degrees it recognises.",
     },
     "Common Data Set": {
         "aliases": ["CDS"],
         "definition": "A standardised set of admissions and enrolment statistics each US university "
-                      "publishes — the reliable place to check real admit rates and what admitted "
-                      "students look like.",
+                      "publishes, including its admit rate and the profile of the students it admitted.",
     },
     "land-grant": {
         "aliases": [],
@@ -915,8 +914,8 @@ GLOSSARY = {
     "MQR": {
         "aliases": ["Malaysian Qualifications Register"],
         "definition": "**Malaysian Qualifications Register** — the public list of MQA-recognised "
-                      "programmes, showing the professional body and the accreditation dates. Check the "
-                      "end date: an entry can be expired on its face.",
+                      "programmes, showing the professional body and the accreditation dates. An entry "
+                      "past its end date has expired.",
     },
     "PLO": {
         "aliases": ["Programme Learning Outcomes"],
@@ -1019,7 +1018,7 @@ GLOSSARY = {
         "aliases": ["Indicative Grade Profile"],
         "definition": "**Indicative Grade Profile** — the grade range Singapore universities publish for "
                       "students they admitted last year. It is based on Singapore-Cambridge A-Levels and "
-                      "international places are capped, so treat it as indicative, not a cutoff.",
+                      "international places are capped, so it is a guide, not a cutoff.",
     },
     "COMPASS": {
         "aliases": [],
@@ -1050,8 +1049,8 @@ GLOSSARY = {
     "JUPAS": {
         "aliases": ["Joint University Programmes Admissions System"],
         "definition": "Hong Kong's central admissions system — for local students sitting the HKDSE only. "
-                      "A Malaysian A-Level applicant never uses it, so JUPAS entry scores do not apply to "
-                      "you; apply through each university's own international route instead.",
+                      "A Malaysian A-Level applicant does not use it: JUPAS entry scores do not apply, "
+                      "and international applicants go through each university's own international route.",
     },
     "non-JUPAS": {
         "aliases": ["non-local admission", "non-local student"],
@@ -1082,7 +1081,7 @@ GLOSSARY = {
     "JABEE": {
         "aliases": [],
         "definition": "Japan's engineering accreditor. Japan signs the Washington Accord through JABEE, "
-                      "but not every Japanese programme is accredited — check the specific degree.",
+                      "but not every Japanese programme is accredited; accreditation is per degree.",
     },
     "EJU": {
         "aliases": [],
@@ -1177,6 +1176,39 @@ GLOSSARY = {
         "definition": "**University Admission Score** — the number NUS and NTU compute from "
                       "Singapore-Cambridge A-Level grades to rank local applicants. International "
                       "A-Level applicants are assessed separately, against a capped quota.",
+    },
+}
+
+
+# --------------------------------------------------------------------------- #
+# Our own judgment labels — the master-list columns we compute, not jargon a
+# university uses. Kept OUT of GLOSSARY on purpose: "Safety", "Match" and "Reach"
+# are ordinary words, so present_terms()/link_terms() would fire on "campus safety"
+# or "a good match". Callers (build_list_pdf.py's key under the summary table) list
+# all three whenever the columns are shown. Same shape as GLOSSARY.
+# Each rule is the plain reading of tools/shortlist_schema.py: compute_score()
+# (Desirability), classify_admission() (Admission likelihood), grade_fit_label()
+# (Grades vs entry bar). Change the wording here if those rules change.
+# --------------------------------------------------------------------------- #
+JUDGMENT_LABELS = {
+    "Desirability": {
+        "definition": "Our label, not the university's: a 0–100 score made from eight 0–5 ratings "
+                      "we give (course, subject reputation, total cost, post-study work, "
+                      "scholarships, hands-on experience, location, recognition back home), weighted "
+                      "by the priorities you told us. It leaves out your chance of getting in.",
+    },
+    "Admission likelihood": {
+        "definition": "Our label, not the university's: Safety means your grades are clearly above "
+                      "the published entry bar, Match means near it, Reach means clearly below it. "
+                      "When grades are not the whole story (a very selective course, capped "
+                      "international places), we set the level ourselves and give the reason in "
+                      "brackets. It is our estimate: Safety is not a promise of admission.",
+    },
+    "Grades vs entry bar": {
+        "definition": "Our label, not the university's: your grades against the entry grades the "
+                      "university publishes for this course — Well above, Above, Meets, Below or "
+                      "Well below. Grades only: tests, essays and selectivity are not counted. "
+                      "Not published means the university sets no grade bar.",
     },
 }
 

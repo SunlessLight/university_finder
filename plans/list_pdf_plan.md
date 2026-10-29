@@ -94,7 +94,7 @@ commit as its work.
 | Task | Done | Commit | Note for the next stage |
 |---|---|---|---|
 | T1 | ✅ 2026-10-29 | (this commit) | Ingest now flags Urban+Rural as `_needs_review`; T3 can drop the `feasibility_flags` stamp. Old profiles not changed (await Evan): 5 of 20 `expected` answered "Forecast" (should be `predicted`), 2 answered "Actual", 13 have no grade-type answer on file (older form, genuinely self-predicted); 10 of 27 have Urban+Rural both ticked. |
-| T2 | | | |
+| T2 | ✅ 2026-10-29 | (this commit) | T6: import `JUDGMENT_LABELS` from `tools/apply_glossary.py` (same shape as `GLOSSARY`: term → `{"definition"}`; keys are the column names Desirability, Admission likelihood, Grades vs entry bar). Show all three under the table; it is NOT in `GLOSSARY` (so not in the Glossary tab yet), because "Safety"/"Match" would auto-link ordinary words. Nine advice lines rewritten (04 #1–4, #9). Not done, no task owns them: 04 #5 recognition promises, #6 ISAFA vs the Stanford row, #10 opinion clauses; UAC "usually … instead" is a hedge, so R30 part b. |
 | T3 | | | |
 | T4 | | | |
 | T5 | | | |
