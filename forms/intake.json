@@ -1,7 +1,7 @@
 {
   "form_id": "1pQF8yWQG1WtkQcNVyF4eCTkdMXcOs-b-2G_O4qfZiZE",
   "title": "University Research Intake Form",
-  "description": "Hihi! Thanks for taking your time to fill up this form, your data is safe with me, i will be using them to research universities suitable to your preference.🤩🥰",
+  "description": "",
   "items": [
     {
       "title": "Fill up these quick questions and ur done!",
@@ -263,6 +263,7 @@
       "description": "",
       "required": true,
       "options": [
+        "200,000",
         "500,000",
         "1,000,000",
         "1,500,000"

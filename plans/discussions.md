@@ -13,10 +13,6 @@
 
 | # | Question | Claude's default | Raised |
 |---|---|---|---|
-| O1 | Remove "List status" from the whole system before 10 Nov, or just hide it from students? | Hide it now (the PDF leaves it out); remove it inside the system after 10 Nov | 2026-10-29 |
-| O2 | Cost breakdown table on each university's page in the PDF? | Yes: tuition + living x years, exchange rate and its date, then the RM total. Script-made, no AI text | 2026-10-29 |
-| O3 | "Money to show (visa)": keep it? | Drop it from the list. It's the bank balance a visa needs, not a cost, and today's cells say nothing useful. It belongs in the how-to-apply guide | 2026-10-29 |
-| O4 | New "Application requirements" field (essay, recommendation letters, interview, test) | Yes, as a fixed list of words a script can check, e.g. "Essay · 2 recommendation letters · Interview" | 2026-10-29 |
 | O5 | Is RM 50 for 20-30 universities too cheap? | Don't change the price before the pilot. Measure the real cost and hours on the first paid lists, then decide | 2026-10-29 |
 | O6 | Turn it into an app at USD 5 for 8-12 universities? | Not now. See 2026-10-29 below | 2026-10-29 |
 | O7 | Store researched universities and reuse them for the next student | Good idea, after the pilot. See 2026-10-29 below | 2026-10-29 |
@@ -46,6 +42,14 @@
 - **The website stays a demo.** The PDF is the product. Building the website into the real product is
   a decision for after the pilot.
 - **Budget question:** Evan added RM 200,000 as the lowest choice; the form reader now reads it.
+- **Settled later the same day** (were open questions O1-O4):
+  - List status: hidden from students now (the PDF leaves it out); removed inside the system after 10 Nov.
+  - Each university's page in the PDF gets a cost breakdown table: tuition + living x years, the
+    exchange rate and its date, then the RM total. Script-made, no AI text.
+  - "Money to show (visa)" leaves the list and moves to the how-to-apply guide. It's the bank balance
+    a visa needs, not a cost.
+  - New "Application requirements" field, as a fixed list of words a script can check, e.g.
+    "Essay · 2 recommendation letters · Interview · Test: ESAT".
 
 **Before 10 Nov, if the new list goes out then** (Claude's view, not yet a plan)
 1. Step 2b fixes already in the backlog (R27, R28, R29 with the new wording, R30a, R32).
