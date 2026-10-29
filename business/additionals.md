@@ -21,14 +21,14 @@ English, no student named, no grades, income or school. Then add it to a step be
 |---|---|---|---|---|
 | **2b** | R28, R29, R30 part a, R32 (the fact audit's spreadsheet fixes) | `tools/shortlist_schema.py`, `tools/check_master_list.py`, `tools/apply_glossary.py`, `tools/build_glossary_sheet.py` | nothing | Medium |
 | **2c** | R23, R25, then R31 | the source student's `master_list.csv`, `research_notes.md`, `score_log.jsonl`; `business/sales/sample_pack/`; `prototype/data.js`, `prototype/_build/`; `workflows/countries/uk.md` (R25) | step 2b (so the rebuilt sample carries the new wording and passes the new check) | Small to medium |
-| **2d** | R39, R40, R38: **now tasks T10, T2b + T3b + T11, T12 in [plans/list_pdf_plan.md](../plans/list_pdf_plan.md)** (Evan, 2026-10-29: no waiting). Run them from the plan, not from here | see the plan | see the plan | Small to medium |
+| **2d** | R39, R40: **now tasks T10, T2b + T3b + T11 in [plans/list_pdf_plan.md](../plans/list_pdf_plan.md)** (Evan, 2026-10-29: no waiting). Run them from the plan, not from here | see the plan | see the plan | Small to medium |
 
 **After 10 Nov** (the old students' lists, then the bigger system changes)
 
 | Step | Entries | Files it writes | Waits for | Size |
 |---|---|---|---|---|
 | **3** | R19 | `tools/apply_backfill.py`, `workflows/03_discover_longlist.md`, `.claude/agents/row-filler.md` | nothing. Not while a backfill is running | Small |
-| **4** | I9, then L2 (the 22 rows). (R38 is now T12 in the list PDF plan) | other students' `profile.json`, `master_list.csv`, `research_notes.md` | step 3 | Large. One student per session if the 22 rows span many |
+| **4** | I9, then L2 (the 22 rows) | other students' `profile.json`, `master_list.csv`, `research_notes.md` | step 3 | Large. One student per session if the 22 rows span many |
 | **5** | R16 lookups (parts a, b, c) | `notes/r16_*`, `.tmp/r16/` | nothing. Can run beside step 4 | Large: about 45 agents plus browser lookups. Split a/b/c across sessions |
 | **6** | Per student: R16 apply, R17, R21 (all three touch the same list, so do them together) | that student's `master_list.csv`, `research_notes.md`, `status.md` | steps 3 and 5 | Medium per student. Never the same student as step 4 |
 | **7** | L5 + R36 (plan first, in plan mode) | `tools/shortlist_schema.py`, `tools/sync_shortlist.py`, `tools/check_master_list.py`, the row-filler sheet, `workflows/03_discover_longlist.md`, `workflows/countries/*.md` | an approved plan | Medium to large. Not alongside step 4 or 6 |
@@ -198,23 +198,6 @@ with nine detailed reports beside it. Each entry names its report and finding nu
 - **Suggested fix:** set the Software Engineering student's list to what today's rule gives that
   course. Optionally clear the two MQA-only lists. Ask the borderline student whether mechanical
   engineering is a real option (then it needs the engineering bodies).
-
-#### R38. Seven student records say "self-guessed grades" when the student said otherwise
-
-- **Added 2026-10-29** (left over from R27, whose reader fix is `1db2d35`). **Stale data, not
-  urgent:** these lists are not being re-sent. Needs Evan's yes (it rewrites student files). Now
-  task T12 in [plans/list_pdf_plan.md](../plans/list_pdf_plan.md) (Evan, 2026-10-29: do it now).
-- **What is true** (counted 2026-10-29, 27 profiles): 20 have `grade_status` = `expected`. Matched
-  by email to the form export's "What are you applying with?" answer: 5 said "Forecast Grades"
-  (should be `predicted`), 2 said "Actual Grades" (should be `actual`; probably read in before the
-  reader knew that question, 2026-10-27). The other 13 have no such answer on file (older form,
-  so genuinely self-guessed: leave them). Each of the 7 lists warns "Grades self-predicted" on every row.
-- **Also:** 10 profiles have both Urban and Rural in `location_prefs`. Leave them: since T3 the
-  list no longer stamps it into Warnings, and the form is now a one-choice dropdown (Evan,
-  2026-10-29), so no new student can tick both.
-- **Suggested fix:** list the 7 for Evan by slug (in the session only, never in this file), and on
-  his yes set `grade_status` by hand in each `profile.json` (no `--force` re-ingest: it wipes the
-  Stage 1 edits). Re-sync a list only if it is going to be re-sent, so the warning drops.
 
 #### L2. 212 rows on the other students' lists are still "Not verified"
 
