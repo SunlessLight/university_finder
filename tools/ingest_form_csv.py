@@ -23,6 +23,12 @@ self-predicted". And "Urban+Rural both ticked" is now a Stage 1 _needs_review it
 per-row Warnings stamp in shortlist_schema.feasibility_flags (T3 removes that stamp): it is a
 note about the student's form, which belongs at finalize, not in a cell the student reads.
 
+Changed 2026-10-29 (plans/list_pdf_plan.md T10; additionals R39). The tick levels are now kept as
+preferences.priority_levels (token -> 3/2/1/0) beside the `priorities` order. The order alone
+turned equal ticks into a ladder by form column order (Cost first), so derive_weights.py now
+weights from the points instead. Only the current tick form fills it; older numeric-slider and
+dropdown answers leave it None, and those profiles keep the rank formula.
+
 Columns are matched by a distinctive SUBSTRING of each question title (case-insensitive).
 QUESTION_MAP below is the single source of truth for the column<->field wiring; keep it in step
 with the form spec in workflows/01_intake.md. A reworded question can still drop the match
@@ -945,6 +951,8 @@ def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None,
     # Priorities: prefer the per-category tick answers (current form) or sliders (older form);
     # fall back to #1/#2/#3 dropdowns.
     prefs["priorities"] = _build_priorities_from_sliders(row, slider_cols) or _build_priorities(row, col_index)
+    # The tick points themselves (derive_weights.py weights from these when present).
+    prefs["priority_levels"] = _build_priority_levels(row, slider_cols)
 
     ranking_importance = get(row, col_index, "ranking_importance") or None
     if not ranking_importance and "ranking" in slider_cols:
@@ -1130,6 +1138,30 @@ def _build_priorities_from_sliders(row, slider_cols):
         scored.append((-value, tie, token))
     scored.sort()
     return [token for _, _, token in scored]
+
+
+def _build_priority_levels(row, slider_cols):
+    """Return {token: points} from the current form's tick answers, or None.
+
+    Points per TICK_IMPORTANCE_NORMALIZE (Must have 3 ... Doesn't matter 0). Tick labels only: a
+    numeric slider answer (older form) is a different scale, so any number -> None and that profile
+    keeps the rank formula. Blank/unrecognised cells are skipped, like the order builder; an
+    incomplete set is left for derive_weights.py to refuse.
+    """
+    levels = {}
+    for token, header in slider_cols.items():
+        raw = _clean(row.get(header))
+        if not raw:
+            continue
+        try:
+            float(raw)
+            return None
+        except ValueError:
+            pass
+        points = TICK_IMPORTANCE_NORMALIZE.get(raw.lower())
+        if points is not None:
+            levels[token] = points
+    return levels or None
 
 
 def _subject_columns(fieldnames):

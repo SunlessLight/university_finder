@@ -206,3 +206,9 @@ Entry format:
 - Decisions (and why): fix old profiles by hand on Evan's yes, never by `--force` re-ingest (it wipes Stage 1 edits); the 10 Urban+Rural profiles are left alone (T3 drops the stamp, the dropdown stops new ones).
 - Problems / lessons: profiles don't keep the raw grade-type answer; counting needs the form export, matched by email.
 - Next step: Stage 2 of `plans/list_pdf_plan.md` (T4, T5, T6) once T2 and T3 are committed.
+
+## 2026-10-29 (3) · List PDF plan T10: weights from tick points
+- Done: `ingest_form_csv.py` now keeps the tick levels as `preferences.priority_levels` (Must have 3 … Doesn't matter 0). `derive_weights.py` weights from them when present (points ÷ total); older profiles with only `priorities` keep the rank formula, proved identical to the committed code on a made-up profile. `scoring-weights` skill and the tool's docstring updated (stale Urban+Rural mention fixed). Checks on `.tmp/t10/` fakes: all Must have → 0.125 each; 2 Must have + 6 Important → 0.1667 / 0.1111. No student file touched.
+- Decisions (and why): a key over the 0.5 cap is cut and the excess shared equally, then the `course_match` floor is funded by scaling the others down in proportion (taking it from the biggest key, as the rank formula does, could drop a Must have below an Important). A blank tick is refused, not guessed.
+- Problems / lessons: first version floored before capping, which handed course match extra weight over other "Doesn't matter" topics; caught by the one-Must-have fake and swapped.
+- Next step: rest of Stage 1b (T3b, T11, T12); `workflows/01_intake.md` and the `init_student.py` template still describe `priorities` only (T9).

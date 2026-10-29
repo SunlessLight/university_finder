@@ -9,6 +9,11 @@ Use when a student needs data/students/<slug>/weights.json created or re-derived
 
 # Deriving per-student scoring weights
 
+> Changed 2026-10-29 (plans/list_pdf_plan.md T10; additionals R39): weights now come from the
+> tick **points** (`preferences.priority_levels`), not the 1–8 order, so equal ticks get equal
+> weight. Profiles with only `priorities` (older forms) keep the rank formula. The
+> Urban+Rural flag moved to Stage 1 `_needs_review` (T1).
+
 The desirability score is a weighted sum of eight 0-5 sub-scores. The weights are
 **per-student data** — never shared source — and, as of 2026-09-17, a **pure function
 of `preferences.json`**, computed by `tools/derive_weights.py`. No agent judgment is
@@ -24,13 +29,12 @@ almost nobody downstream actually looks at — students and parents read the res
 not the weight vector. Evan's call: make it mechanical, and move everything that used
 to *adjust a weight* into a **Warnings-column flag** instead (surfaced next to the
 score, the same place "Over budget" and "Deadline passed" already live) — see
-`feasibility_flags()` in `tools/shortlist_schema.py`. Two flags exist for this:
+`feasibility_flags()` in `tools/shortlist_schema.py`:
 - `Recognition risk — check <targets>` — fires when the student
   has `recognition_targets` set and the row's `recognition_fit` sub-score is low
   (≤2/5), regardless of that row's weight.
-- `Urban+Rural both ticked` — fires whenever
-  both are ticked, so it's visible on the spreadsheet instead of silently steering
-  (or failing to steer) `location_pref_fit`.
+- Urban+Rural both ticked is no longer a Warnings flag: since 2026-10-29 it is a
+  Stage 1 `_needs_review` item (`ingest_form_csv.py`), settled at finalize.
 
 ## Run it
 
@@ -39,19 +43,32 @@ python tools/derive_weights.py --student <slug>
 python tools/derive_weights.py --student <slug> --dry-run   # preview only
 ```
 
-That's the whole procedure. It reads `preferences.priorities` (the full 8-way
-ranking), applies the ONE remaining override (below), floors `course_match`, and
-writes `weights.json` with an auto-generated `rationale` and an auto-bumped
-`weights_id`. Full formula and reasoning live in the tool's own docstring — read that,
-not this file, if you need the mechanics.
+That's the whole procedure. It picks one of two formulas, applies the ONE remaining
+override (below), floors `course_match`, and writes `weights.json` with an
+auto-generated `rationale` and an auto-bumped `weights_id`. Full formula and reasoning
+live in the tool's own docstring — read that, not this file, if you need the mechanics.
+
+- **`preferences.priority_levels` present** (the current tick form): Must have 3 points,
+  Important 2, Nice to have 1, Doesn't matter 0; weight = points ÷ total points. Equal
+  ticks, equal weight; all equal (or all 0) → 0.125 each. A "Doesn't matter" topic gets
+  0 (except `course_match`, floored). No key above 0.5: an over-cap key is cut and the
+  excess shared out.
+- **Only `preferences.priorities`** (older slider/dropdown forms): the 8-way ranking,
+  linear 0.20 (rank 1) → 0.05 (rank 8). Unchanged since 2026-09-17.
+
+Old students' `preferences.json` has no `priority_levels` (it was only kept from
+2026-10-29), so their weights still come from the order. To move one onto points, re-read
+the tick answers from the form export into `priority_levels` (no `--force` re-ingest),
+then re-run the tool and re-sync — only for a list being re-sent (R39).
 
 ## The one override that survived
 
-`scholarship_required: true` moves `scholarship_opportunity` to rank 1, full stop,
-regardless of where the student ranked it. This is not "judgment" — it's a hard
-financial gate: a student can rank scholarship low on "what I care about" while still
-being unable to attend anything without one. Everything else the old modifiers did is
-gone (see "Why this changed" above).
+`scholarship_required: true` makes scholarship a Must have (3 points) in the points
+formula, or moves `scholarship_opportunity` to rank 1 in the rank formula, regardless of
+what the student ticked. This is not "judgment" — it's a hard financial gate: a student
+can rate scholarship low on "what I care about" while still being unable to attend
+anything without one. Everything else the old modifiers did is gone (see "Why this
+changed" above).
 
 ## Where weights live (and why it matters)
 
@@ -72,7 +89,7 @@ ones.
   "student": "<slug>",
   "derived_from": "preferences.json (mechanical derivation, tools/derive_weights.py, 2026-09-17)",
   "derived_on": "2026-09-17",
-  "rationale": "Mechanically derived by tools/derive_weights.py from preferences.priorities (...). Formula: linear 0.2 (rank 1) -> 0.05 (rank 8) ...",
+  "rationale": "Mechanically derived by tools/derive_weights.py from preferences.priority_levels (...). Formula: Must have 3 points, Important 2, ...",
   "weights": { "subject_reputation": 0.20, "scholarship_opportunity": 0.1914, "course_match": 0.08,
                "post_study_work_fit": 0.1571, "total_cost_fit": 0.1786, "recognition_fit": 0.1143,
                "location_pref_fit": 0.05, "experiential_fit": 0.0929 }
@@ -92,14 +109,14 @@ cost -> total_cost_fit               location -> location_pref_fit
 hands-on experience -> experiential_fit  course_quality -> course_match
 ```
 
-This requires the **complete 8-way ranking** the current form produces
-(`preferences.priorities`, one entry per key). A partial/legacy priority list (an old
-3-priority form response) can't be derived mechanically — `derive_weights.py` refuses
-with a clear error in that case; derive `weights.json` by hand for that one student
-instead, following the shape above.
+The same tokens key `priority_levels`. Either input must be **complete** (all 8
+tokens). `priority_levels` missing a token (a blank tick) → the tool refuses; ask the
+student and add the level. A partial/legacy `priorities` list (an old 3-priority form
+response) → the tool refuses; derive `weights.json` by hand for that one student,
+following the shape above.
 
-`ranking_importance` is **no longer read** by weight derivation — the full 8-way
-`priorities` ranking supersedes it. It's kept in `preferences.json` for context only
+`ranking_importance` is **no longer read** by weight derivation — `priority_levels` /
+`priorities` supersede it. It's kept in `preferences.json` for context only
 (e.g. Stage 4 write-ups quoting how strongly a student felt about it).
 
 ### Never weight admissibility
