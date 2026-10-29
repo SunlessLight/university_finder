@@ -14,6 +14,14 @@ The only judgment-heavy bit left is flagged in a top-level "_needs_review" list 
   - recognition_targets matched from the optional free-text "specific field of studies"
     supplement (open text, not the closed dropdown -> best-effort keyword-guess, verify)
   - a respondent who gave no course and no field of study at all (nothing to search on)
+  - a respondent who ticked both Urban and Rural (says nothing about setting; ask or drop both)
+
+Changed 2026-10-29 (plans/list_pdf_plan.md T1; additionals R27, R29). The current form's
+grade-type answer "Forecast Grades" (school-issued) now maps to grade_status "predicted"; it
+used to fall through to "expected", so every row on the list wrongly warned "Grades
+self-predicted". And "Urban+Rural both ticked" is now a Stage 1 _needs_review item here, not a
+per-row Warnings stamp in shortlist_schema.feasibility_flags (T3 removes that stamp): it is a
+note about the student's form, which belongs at finalize, not in a cell the student reads.
 
 Columns are matched by a distinctive SUBSTRING of each question title (case-insensitive).
 QUESTION_MAP below is the single source of truth for the column<->field wiring; keep it in step
@@ -792,7 +800,8 @@ def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None,
     grade_status = get(row, col_index, "grade_status").lower()
     if grade_status.startswith("actual"):
         profile["grade_status"] = "actual"
-    elif grade_status.startswith("predict"):
+    elif grade_status.startswith(("predict", "forecast")):
+        # "Forecast Grades" (current form) is school-issued, i.e. predicted — not a self-guess.
         profile["grade_status"] = "predicted"
     # NOTE: no needs_review flag for grade_status="expected" (self-predicted) — that's the
     # NORMAL case for this form, not something to check per-student. sync_shortlist.py already
@@ -945,6 +954,14 @@ def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None,
     prefs["ranking_importance"] = ranking_importance
     prefs["deal_breakers"] = _as_list(get(row, col_index, "deal_breakers"))
     prefs["location_prefs"] = _split_multi(get(row, col_index, "location_prefs"))
+    # Both ticked tells us nothing about setting. Settle it at finalize rather than letting it
+    # reach every row's Warnings ("Urban / City" + "Rural / Campus-based" on the current form).
+    loc_low = [p.lower() for p in prefs["location_prefs"]]
+    if any("urban" in p for p in loc_low) and any("rural" in p for p in loc_low):
+        needs_review.append(
+            "location_prefs has both Urban and Rural ticked — ask the student which they prefer, "
+            "or drop both so neither steers the location score"
+        )
 
     work_abroad = get(row, col_index, "work_abroad")
     prefs["intent_to_migrate"] = _yes(work_abroad)

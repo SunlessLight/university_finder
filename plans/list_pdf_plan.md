@@ -93,7 +93,7 @@ commit as its work.
 
 | Task | Done | Commit | Note for the next stage |
 |---|---|---|---|
-| T1 | | | |
+| T1 | ✅ 2026-10-29 | (this commit) | Ingest now flags Urban+Rural as `_needs_review`; T3 can drop the `feasibility_flags` stamp. Old profiles not changed (await Evan): 5 of 20 `expected` answered "Forecast" (should be `predicted`), 2 answered "Actual", 13 have no grade-type answer on file (older form, genuinely self-predicted); 10 of 27 have Urban+Rural both ticked. |
 | T2 | | | |
 | T3 | | | |
 | T4 | | | |
