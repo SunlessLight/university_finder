@@ -1,7 +1,8 @@
 # Plan: the student list becomes a PDF, with checked facts (before 10 Nov 2026)
 
-*Written 2026-10-29 for Evan and for the Claude sessions that run it. Replaces backlog steps 2b and
-2c in `business/additionals.md` (R27, R28, R29, R30 part a, R32, then R23, R25, R31).*
+*Written 2026-10-29 for Evan and for the Claude sessions that run it. Replaces backlog steps 2b, 2c
+and 2d in `business/additionals.md` (R27, R28, R29, R30 part a, R32, R39, R40, R38, then R23, R25,
+R31). Amended 2026-10-29 (Evan: "all new changes now, no waiting"): T2b, T3b, T10, T11, T12 added.*
 
 **Goal:** a paying student on 10 Nov gets a tidy portrait PDF of their universities. Every fact is
 a plain number or a fixed wording from the official page, dated. Every judgment label is explained
@@ -43,9 +44,20 @@ From `decisions/log.md` (2026-10-28 and 2026-10-29) and `plans/discussions.md`:
    - Then the exchange rate and its date.
    - Then the RM total, which must equal `Approx total (MYR)`.
 7. **Judgment labels** get one definition each, starting "Our label, not the university's:" plus
-   the rule in one line: Desirability, Admission likelihood (Reach/Match/Safety, "not a promise of
-   admission"), Grades vs entry bar. Tier is not shown, so it needs no entry.
+   the rule in one line: Desirability, Grades vs entry bar. The key also explains Admit rate (item
+   9). Admission likelihood and Tier are not shown, so they need no entry.
 8. **Rows with List status `Rejected` are left out of the PDF.**
+9. **Admit rate replaces Admission likelihood in everything the student sees** (Evan, 2026-10-29,
+   R40). We can't judge whether a student gets in; a university's published admit rate is a fact.
+   - A third new column, `Admit rate`, after `Checked on`. Fixed shape:
+     `<N.N>% of <all|international> applicants <admitted|offered a place>, <YYYY-YY>`, e.g.
+     `4.5% of all applicants admitted, 2024-25`. Or `Not published`.
+   - Source: the university's own figures. US: Common Data Set section C1. Other countries: the
+     source T11 names in each country file, else `Not published`.
+   - `Admission likelihood` stays in `master_list.csv` (item 2) and still drives the balanced
+     Reach/Match/Safety shortlist, internally only. The PDF and its key don't show it.
+10. **Score weights come from the tick levels** (R39): Must have 3 points, Important 2, Nice to
+    have 1, Doesn't matter 0; a topic's weight = its points ÷ total points. Equal ticks, equal weight.
 
 ## Tasks
 
@@ -54,11 +66,16 @@ From `decisions/log.md` (2026-10-28 and 2026-10-29) and `plans/discussions.md`:
 | T1 | Form reader: "Forecast Grades" read correctly (R27); Urban+Rural → `_needs_review` | Claude | none | `tools/ingest_form_csv.py` | S |
 | T2 | Glossary: advice lines rewritten (R30a); judgment-label definitions added (R32) | Claude | none | `tools/apply_glossary.py` | M |
 | T3 | Column contract: new columns, number formats, fixed wordings (R29) | Claude | none | `tools/shortlist_schema.py`, `tools/merge_candidates.py`, `tools/sync_shortlist.py` | M |
-| T4 | Checks: hedge/advice/chatter check (R28), numbers-only check, requirements vocabulary | Claude | T3 | `tools/check_master_list.py`, `tools/apply_backfill.py`, new `tests/test_list_checks.py` | M |
-| T5 | Research instructions: helpers write the new fields and formats | Claude | T3 | `.claude/agents/row-filler.md`, `workflows/03_discover_longlist.md`, `workflows/03b_candidate_schema.md` | M |
-| T6 | The PDF builder, tested on the public sample | Claude | T2, T3 | new `tools/build_list_pdf.py`, new `tools/templates/list_pdf.html` (+ `.css`), new `business/sales/sample_pack/sample_profile.json` | L |
+| T2b | Glossary key: Admission likelihood out, Admit rate in (R40) | Claude | T2 | `tools/apply_glossary.py` | S |
+| T3b | Column `Admit rate` and its fixed shape (R40) | Claude | T3 committed | `tools/shortlist_schema.py`, `tools/merge_candidates.py`, `tools/sync_shortlist.py` | S |
+| T10 | Score weights from tick points (R39) | Claude | none | `tools/ingest_form_csv.py`, `tools/derive_weights.py`, `.claude/skills/scoring-weights/SKILL.md` | S |
+| T11 | Where each country publishes admit rates (R40 research) | Claude | none | `workflows/countries/*.md` (one "Admit rate source" line each) | M |
+| T12 | Seven old profiles' grade type (R38), on Evan's yes | Claude + **Evan** | none | 7 students' `profile.json` (gitignored) | S |
+| T4 | Checks: hedge/advice/chatter check (R28), numbers-only check, requirements vocabulary | Claude | T3, T3b | `tools/check_master_list.py`, `tools/apply_backfill.py`, new `tests/test_list_checks.py` | M |
+| T5 | Research instructions: helpers write the new fields and formats | Claude | T3, T3b | `.claude/agents/row-filler.md`, `workflows/03_discover_longlist.md`, `workflows/03b_candidate_schema.md` | M |
+| T6 | The PDF builder, tested on the public sample | Claude | T2, T2b, T3, T3b | new `tools/build_list_pdf.py`, new `tools/templates/list_pdf.html` (+ `.css`), new `business/sales/sample_pack/sample_profile.json` | L |
 | E1 | Evan reads the sample PDF and says what to change | **Evan** | T6 | none | — |
-| T7 | Re-check the sample's facts on official pages (R23, R25, R31) in the source list | Claude | T4, T5, E1 | the source student's `data/students/<slug>/` files, `workflows/countries/uk.md` | M |
+| T7 | Re-check the sample's facts on official pages (R23, R25, R31) in the source list | Claude | T4, T5, T11, E1 | the source student's `data/students/<slug>/` files, `workflows/countries/uk.md` | M |
 | T8 | Rebuild the sample pack (now a PDF list) and the demo website's download | Claude | T7 | `business/sales/sample_pack/`, `prototype/data.js`, `prototype/_build/` | M |
 | T9 | Docs and backlog brought in line | Claude | T8 | `README.md`, `workflows/00_overview.md`, `business/sales/sample_pack/README.md`, `business/additionals.md`, `CLAUDE.md` | S |
 
@@ -67,12 +84,16 @@ Size key: S under 20k tokens, M 20–60k, L 60–100k.
 ## Run order
 
 ```
-STAGE 1 (parallel) → T1, T2, T3            three sessions Evan opens side by side
-STAGE 2 (parallel) → T4, T5, T6            three sessions          (needs T3; T6 also T2)
-STAGE 3            → E1                     Evan, 10 minutes        (needs T6)
-STAGE 4            → T7, then T8            one session each        (needs T4, T5, E1)
-STAGE 5            → T9                     one short session       (needs T8)
+STAGE 1  (parallel) → T1, T2, T3           done 2026-10-29 (T3 still to commit)
+STAGE 1b (parallel) → T3b, T10, T11, T12    T3b needs T3 committed; the others need nothing
+STAGE 2  (parallel) → T4, T5, T6            three sessions          (needs T3b; T6 also T2b)
+STAGE 3             → E1                    Evan, 10 minutes        (needs T6)
+STAGE 4             → T7, then T8           one session each        (needs T4, T5, T11, E1)
+STAGE 5             → T9                    one short session       (needs T8)
 ```
+
+T10, T11 and T12 touch nothing Stage 2 touches, so they can keep running while Stage 2 starts.
+T2b was done in the T2 session.
 
 **Target dates:** Stage 1 by 31 Oct, Stage 2 by 3 Nov, E1 by 4 Nov, Stage 4 by 7 Nov, T9 by 8 Nov.
 That leaves 9 Nov spare.
@@ -96,6 +117,11 @@ commit as its work.
 | T1 | ✅ 2026-10-29 | (this commit) | Ingest now flags Urban+Rural as `_needs_review`; T3 can drop the `feasibility_flags` stamp. Old profiles not changed (await Evan): 5 of 20 `expected` answered "Forecast" (should be `predicted`), 2 answered "Actual", 13 have no grade-type answer on file (older form, genuinely self-predicted); 10 of 27 have Urban+Rural both ticked. |
 | T2 | ✅ 2026-10-29 | (this commit) | T6: import `JUDGMENT_LABELS` from `tools/apply_glossary.py` (same shape as `GLOSSARY`: term → `{"definition"}`; keys are the column names Desirability, Admission likelihood, Grades vs entry bar). Show all three under the table; it is NOT in `GLOSSARY` (so not in the Glossary tab yet), because "Safety"/"Match" would auto-link ordinary words. Nine advice lines rewritten (04 #1–4, #9). Not done, no task owns them: 04 #5 recognition promises, #6 ISAFA vs the Stanford row, #10 opinion clauses; UAC "usually … instead" is a hedge, so R30 part b. |
 | T3 | | | |
+| T2b | ✅ 2026-10-29 | (with the plan amendment) | `JUDGMENT_LABELS` keys are now Desirability, Grades vs entry bar, Admit rate (T6 shows all of them in the key). Admission likelihood's definition is gone (not shown, Decisions item 9). |
+| T3b | | | |
+| T10 | | | |
+| T11 | | | |
+| T12 | | | |
 | T4 | | | |
 | T5 | | | |
 | T6 | | | |
@@ -125,6 +151,20 @@ commit as its work.
     - the number formats.
   - `sync_shortlist.py` on a copy of the sample list in `.tmp/` still works on an old-format file
     (the new columns come out blank).
+- **T2b:** `JUDGMENT_LABELS` has Desirability, Grades vs entry bar and Admit rate; the Admit rate
+  line says it is not your own chance of getting in.
+- **T3b:**
+  - `--contract` shows `Admit rate` as the last column, with its shape.
+  - `cell_format_problem("Admit rate", "4.5% of all applicants admitted, 2024-25")` is None;
+    `"~5%"` and `"very selective"` are problems; `"Not published"` is fine.
+  - An old list on a `.tmp/` copy still syncs, `Admit rate` blank.
+- **T10:**
+  - All eight "Must have" → every weight 0.125.
+  - 2 Must have + 6 Important → 0.1667 each and 0.1111 each.
+  - An older profile with a ranking only gives the same weights as before (`--dry-run`).
+- **T11:** every file in `workflows/countries/` has an "Admit rate source" line naming an official
+  page or publication opened in this session, or "None published (checked <date>)".
+- **T12:** Evan said yes in the session first; the 7 profiles' `grade_status` match the form answer.
 - **T4:**
   - `python -m unittest tests.test_list_checks -v` passes. Its cases cover:
     - a hedge word on an "Official page" row (fail);
@@ -140,7 +180,7 @@ commit as its work.
   - The command below makes a portrait PDF with the five parts in order:
     `.venv/Scripts/python.exe tools/build_list_pdf.py --file business/sales/sample_pack/sample_master_list.csv --profile business/sales/sample_pack/sample_profile.json --out .tmp/sample_list.pdf`
   - Its text, read with `pypdf`, contains none of: "List status", "Tier", "Notes", "Student life",
-    "Money to show".
+    "Money to show", "Admission likelihood".
   - Every card's RM total equals its row's `Approx total (MYR)`.
 - **E1:** Evan's changes are written in this plan's Progress table, row E1.
 - **T7:**
@@ -208,9 +248,62 @@ item 2). Verify with the T3 "Done when" checks; tick T3 in the plan with a one-l
 the new constants for T4/T5/T6; offer the commit. Explain to Evan in plain English.
 ```
 
+### T3b
+```
+Read plans/list_pdf_plan.md ("Decisions" items 2 and 9, the T3b rows, the T3 note in the Progress
+table) and business/additionals.md entry R40. Do task T3b only. Write only tools/shortlist_schema.py,
+tools/merge_candidates.py and tools/sync_shortlist.py. Run `git log -1 -- tools/shortlist_schema.py`
+first: T3 must be committed; if not, stop and tell Evan. Add column "Admit rate" at the END of
+SHORTLIST_HEADERS (after "Checked on"), candidate field `admit_rate`, in ADDED_COLUMNS so
+upgrade_header() pads old lists blank. Add its shape to FORMATTED_COLUMNS so cell_format_problem()
+judges it: "<N.N>% of <all|international> applicants <admitted|offered a place>, <YYYY-YY>" or
+"Not published". Don't change classify_admission() or remove Admission likelihood (item 2; it still
+drives the balanced shortlist). Add a dated note at the top of each file. Verify with the T3b
+"Done when" checks; tick T3b with a one-line note for T4/T5/T6; offer the commit. Explain to Evan
+in plain English.
+```
+
+### T10
+```
+Read plans/list_pdf_plan.md ("Decisions" item 10, the T10 rows) and business/additionals.md entry
+R39, then .claude/skills/scoring-weights/SKILL.md and the docstring of tools/derive_weights.py.
+Do task T10 only. Write only tools/ingest_form_csv.py, tools/derive_weights.py and that skill.
+Ingest keeps the tick levels as preferences.priority_levels (token -> 3/2/1/0) beside the existing
+`priorities` order. derive_weights.py: when priority_levels exists, weight = points / total
+(all equal or all 0 -> equal weights); keep the course_match floor; scholarship_required sets
+scholarship to 3; profiles with only `priorities` keep today's rank formula. Update the rationale
+text, the skill, and the docstring's stale Urban+Rural flag mention. Don't re-ingest or touch any
+student file. Add a dated note at the top of each file. Verify with the T10 "Done when" checks (use
+.tmp/ copies of made-up preferences, never a real student's); tick T10; offer the commit. Explain
+to Evan in plain English.
+```
+
+### T11
+```
+Read plans/list_pdf_plan.md ("Decisions" item 9, the T11 rows) and business/additionals.md entry
+R40. Do task T11 only. Write only workflows/countries/*.md. For each country file, find where that
+country's universities officially publish an admit or offer rate (e.g. US: Common Data Set C1;
+UK: Oxford and Cambridge admissions statistics, UCAS data if per university), using free search
+first, then tools/firecrawl_search.py. Open each source. Add one line under a heading "Admit rate
+source": the publication, what it counts (all or international applicants; admitted or offered),
+and the checked date; or "None published (checked <date>)". Source pointers only: no admit-rate
+figures in these files. Keep the files terse (agents read them). Verify with the T11 "Done when"
+check; tick T11; offer the commit. Report to Evan in plain English: which countries publish one.
+```
+
+### T12
+```
+Read plans/list_pdf_plan.md (T12 rows) and business/additionals.md entry R38 and its "Rules for
+every step session". Do task T12 only. List the 7 profiles for Evan by slug (in the chat only),
+with each one's form answer and the grade_status it would get. Wait for his yes. Then copy each
+profile.json to .tmp/ and set grade_status by hand (no --force re-ingest). Don't re-sync any list.
+Delete R38 from business/additionals.md and its step line; tick T12; offer the commit
+(additionals.md and the plan only; data/ is gitignored). Explain to Evan in plain English.
+```
+
 ### T4
 ```
-Read plans/list_pdf_plan.md (T4 rows and the T3 note in the Progress table), business/additionals.md
+Read plans/list_pdf_plan.md (T4 rows and the T3 and T3b notes in the Progress table), business/additionals.md
 entry R28, and the regex table in fact_audit/08_output_sweep.md. Do task T4 only. Write only
 tools/check_master_list.py, tools/apply_backfill.py and a new tests/test_list_checks.py.
 Add check_hedges over the fact columns: fail on rows stamped "Official page", warn on "Not
@@ -223,11 +316,13 @@ checks; tick T4; offer the commit. Explain to Evan in plain English.
 
 ### T5
 ```
-Read plans/list_pdf_plan.md ("Decisions" items 3-5, T5 rows, the T3 note in the Progress table)
-and run `python tools/shortlist_schema.py --contract`. Do task T5 only. Write only
+Read plans/list_pdf_plan.md ("Decisions" items 3-5 and 9, T5 rows, the T3 and T3b notes in the
+Progress table) and run `python tools/shortlist_schema.py --contract`. Do task T5 only. Write only
 .claude/agents/row-filler.md, workflows/03_discover_longlist.md and workflows/03b_candidate_schema.md.
 Tell the research helper: fill `application_requirements` from the official admissions page with
-the fixed vocabulary only; fill `checked_on` with today's date; money and rank cells are numbers
+the fixed vocabulary only; fill `checked_on` with today's date; fill `admit_rate` in its fixed shape
+from the source the country file's "Admit rate source" line names (T11), else "Not published";
+the admission_likelihood override stays for balancing only, with its reason; money and rank cells are numbers
 only (calculations go to research_notes.md); a missing deadline is "Not published"; no hedge words
 ("likely", "usually", "confirm", "~") in any cell. Replace every instruction that uses
 "Not published — check portal". Keep these files terse and technical (they are read by agents).
@@ -236,7 +331,7 @@ Verify with the T5 "Done when" check; tick T5; offer the commit. Explain to Evan
 
 ### T6
 ```
-Read plans/list_pdf_plan.md (all "Decisions", T6 rows, the T2 and T3 notes in the Progress table).
+Read plans/list_pdf_plan.md (all "Decisions", T6 rows, the T2, T2b, T3 and T3b notes in the Progress table).
 Do task T6 only. Write only tools/build_list_pdf.py, tools/templates/list_pdf.html (+ .css) and
 business/sales/sample_pack/sample_profile.json. Read prototype/screens/list.js and
 prototype/data.js (columnGroups, student) for the layout and grouping to copy, and tools/html_to_pdf.py
@@ -245,9 +340,9 @@ briefly for the visual design, but the five parts and their order are fixed (Dec
 - Profile: from the student's profile.json (--student <slug>) or --profile <file>; for the sample,
   build sample_profile.json from the anonymised "Arif" in prototype/data.js. Never read real
   students' data for testing.
-- Summary table, about 8 columns: University, Course, City + Country, Desirability, Admission
-  likelihood, Grades vs entry bar, Approx total (RM), Key deadline; Warnings marked.
-- Key under the table: the judgment definitions T2 added.
+- Summary table, about 8 columns: University, Course, City + Country, Desirability, Admit rate,
+  Grades vs entry bar, Approx total (RM), Key deadline; Warnings marked. Never Admission likelihood.
+- Key under the table: every entry of JUDGMENT_LABELS (T2, T2b).
 - One card per university, grouped like the website; cost breakdown table (Decisions item 6);
   "Official page, checked on <date>" or "Not verified"; Course URL as a link.
 - Glossary at the back: apply_glossary.present_terms() over the list's text.
@@ -266,7 +361,7 @@ the source student's list (named in business/sales/sample_pack/build_sample_pack
 fixed there, never in sample_master_list.csv. For each row, re-read the facts on the official page
 (free search first, then tools/firecrawl_search.py), using row-filler helpers in BACKFILL mode for
 volume (results to files, reply with path + count only), and fill the new fields
-(Application requirements, Checked on) and number-only formats. Apply with
+(Application requirements, Checked on, Admit rate from the source T11 named) and number-only formats. Apply with
 `apply_backfill.py --overwrite`, dry run first, and show Evan the dry run before writing (it
 rewrites student files). Fix the uk.md note (R25). Then check_master_list.py must be clean on
 those rows. Tick T7; offer the commit (workflow files only; data/ is gitignored).

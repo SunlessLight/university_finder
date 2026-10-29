@@ -1181,14 +1181,16 @@ GLOSSARY = {
 
 
 # --------------------------------------------------------------------------- #
-# Our own judgment labels — the master-list columns we compute, not jargon a
-# university uses. Kept OUT of GLOSSARY on purpose: "Safety", "Match" and "Reach"
-# are ordinary words, so present_terms()/link_terms() would fire on "campus safety"
-# or "a good match". Callers (build_list_pdf.py's key under the summary table) list
-# all three whenever the columns are shown. Same shape as GLOSSARY.
-# Each rule is the plain reading of tools/shortlist_schema.py: compute_score()
-# (Desirability), classify_admission() (Admission likelihood), grade_fit_label()
-# (Grades vs entry bar). Change the wording here if those rules change.
+# The key under the list PDF's summary table: the shown columns a student can't read
+# off a university page as-is. Kept OUT of GLOSSARY on purpose: they are ordinary
+# words, so present_terms()/link_terms() would fire on "admit rate" in prose. Callers
+# (build_list_pdf.py) list every entry. Same shape as GLOSSARY.
+# Rules are the plain reading of tools/shortlist_schema.py: compute_score()
+# (Desirability), grade_fit_label() (Grades vs entry bar), the Admit rate shape.
+# Change the wording here if those rules change.
+# 2026-10-29 (T2b, R40): Admission likelihood removed. It is no longer shown to the
+# student (internal, for the balanced shortlist only); Admit rate, a published fact,
+# replaces it.
 # --------------------------------------------------------------------------- #
 JUDGMENT_LABELS = {
     "Desirability": {
@@ -1197,18 +1199,17 @@ JUDGMENT_LABELS = {
                       "scholarships, hands-on experience, location, recognition back home), weighted "
                       "by the priorities you told us. It leaves out your chance of getting in.",
     },
-    "Admission likelihood": {
-        "definition": "Our label, not the university's: Safety means your grades are clearly above "
-                      "the published entry bar, Match means near it, Reach means clearly below it. "
-                      "When grades are not the whole story (a very selective course, capped "
-                      "international places), we set the level ourselves and give the reason in "
-                      "brackets. It is our estimate: Safety is not a promise of admission.",
-    },
     "Grades vs entry bar": {
         "definition": "Our label, not the university's: your grades against the entry grades the "
                       "university publishes for this course — Well above, Above, Meets, Below or "
                       "Well below. Grades only: tests, essays and selectivity are not counted. "
                       "Not published means the university sets no grade bar.",
+    },
+    "Admit rate": {
+        "definition": "The university's own figure, not ours: the share of applicants it admitted "
+                      "(or offered a place) in the year shown. \"All applicants\" includes home "
+                      "students. It is not your own chance of getting in. Not published means the "
+                      "university gives no figure.",
     },
 }
 

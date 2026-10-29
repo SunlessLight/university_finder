@@ -5,7 +5,7 @@ done, delete it and its line in the steps below, and write one line in `plans/bu
 History: the full file up to 2026-10-28 (every closed entry, the old lane and round plans) is in
 git: `git show 10b847c:business/additionals.md`. Decisions are in `decisions/log.md`.*
 
-*Adding an entry: the next number is **R39**. Say whether it is **urgent**, and whether it is a
+*Adding an entry: the next number is **R41**. Say whether it is **urgent**, and whether it is a
 **tool gap** (the system will keep making the mistake) or **stale data** (old files only). Plain
 English, no student named, no grades, income or school. Then add it to a step below.*
 
@@ -21,13 +21,14 @@ English, no student named, no grades, income or school. Then add it to a step be
 |---|---|---|---|---|
 | **2b** | R28, R29, R30 part a, R32 (the fact audit's spreadsheet fixes) | `tools/shortlist_schema.py`, `tools/check_master_list.py`, `tools/apply_glossary.py`, `tools/build_glossary_sheet.py` | nothing | Medium |
 | **2c** | R23, R25, then R31 | the source student's `master_list.csv`, `research_notes.md`, `score_log.jsonl`; `business/sales/sample_pack/`; `prototype/data.js`, `prototype/_build/`; `workflows/countries/uk.md` (R25) | step 2b (so the rebuilt sample carries the new wording and passes the new check) | Small to medium |
+| **2d** | R39, R40, R38: **now tasks T10, T2b + T3b + T11, T12 in [plans/list_pdf_plan.md](../plans/list_pdf_plan.md)** (Evan, 2026-10-29: no waiting). Run them from the plan, not from here | see the plan | see the plan | Small to medium |
 
 **After 10 Nov** (the old students' lists, then the bigger system changes)
 
 | Step | Entries | Files it writes | Waits for | Size |
 |---|---|---|---|---|
 | **3** | R19 | `tools/apply_backfill.py`, `workflows/03_discover_longlist.md`, `.claude/agents/row-filler.md` | nothing. Not while a backfill is running | Small |
-| **4** | I9 and R38, then L2 (the 22 rows) | other students' `profile.json`, `master_list.csv`, `research_notes.md` | step 3 (R38 needs no wait) | Large. One student per session if the 22 rows span many |
+| **4** | I9, then L2 (the 22 rows). (R38 is now T12 in the list PDF plan) | other students' `profile.json`, `master_list.csv`, `research_notes.md` | step 3 | Large. One student per session if the 22 rows span many |
 | **5** | R16 lookups (parts a, b, c) | `notes/r16_*`, `.tmp/r16/` | nothing. Can run beside step 4 | Large: about 45 agents plus browser lookups. Split a/b/c across sessions |
 | **6** | Per student: R16 apply, R17, R21 (all three touch the same list, so do them together) | that student's `master_list.csv`, `research_notes.md`, `status.md` | steps 3 and 5 | Medium per student. Never the same student as step 4 |
 | **7** | L5 + R36 (plan first, in plan mode) | `tools/shortlist_schema.py`, `tools/sync_shortlist.py`, `tools/check_master_list.py`, the row-filler sheet, `workflows/03_discover_longlist.md`, `workflows/countries/*.md` | an approved plan | Medium to large. Not alongside step 4 or 6 |
@@ -140,6 +141,31 @@ with nine detailed reports beside it. Each entry names its report and finding nu
   list (`apply_backfill.py --overwrite`, dry run first), never in the sample CSV. Rebuild the sample
   and the demo as SP1 did, then `check_master_list.py` (with R28's check) must be clean.
 
+#### R39. Topics a student ticks the same are ranked by the form's question order
+
+- **Added 2026-10-29 (Evan).** **Tool gap, urgent:** every list scored from the tick form is
+  affected. Fix before the 10 Nov lists are scored: task T10 in
+  [plans/list_pdf_plan.md](../plans/list_pdf_plan.md).
+- **What is true:** the form's "Tick the importance of each topic" grid (Must have / Important /
+  Nice to have / Doesn't matter) is turned into a strict 1–8 ranking
+  (`_build_priorities_from_sliders` in `tools/ingest_form_csv.py`). Equal ticks are ordered by
+  the form's question order (`CANONICAL_SLIDER_ORDER`: Cost first, Hands-On Experience last), and
+  `tools/derive_weights.py` then gives rank 1 a 20% weight and rank 8 5%. In the 10 answers on file
+  (counted 2026-10-29): all 10 have ties (most put 3–6 topics on Important), and 1 ticked all eight
+  "Must have", so that student's weights are pure form order (Cost counts 4× Hands-On). Only the
+  order is kept in `preferences.json`, not the tick levels.
+- **Why not change the form:** a Google Forms grid can only limit each column to one tick in the
+  whole grid, which allows one Must have and one Important across 8 topics.
+- **Suggested fix:** keep the levels as `preferences.priority_levels` (token → 3/2/1/0). In
+  `derive_weights.py`, each topic's weight = its points ÷ total points (Must have 3, Important 2,
+  Nice to have 1, Doesn't matter 0): equal ticks get equal weight; all equal, or all 0, gives equal
+  weights. Keep the `course_match` floor; `scholarship_required` sets scholarship to Must have.
+  Profiles with only a ranking (older forms) keep today's rank formula. Update the `scoring-weights`
+  skill and the generated `rationale`. Prove: all Must have → 12.5% each; 2 Must have + 6
+  Important → 16.7% and 11.1%.
+- **Old lists:** stale data, not urgent. Re-derive weights and re-sync only a list that is being
+  re-sent (re-read the tick answers from the form export; no `--force` re-ingest).
+
 ---
 
 ## After 10 Nov: the old students' lists
@@ -176,7 +202,8 @@ with nine detailed reports beside it. Each entry names its report and finding nu
 #### R38. Seven student records say "self-guessed grades" when the student said otherwise
 
 - **Added 2026-10-29** (left over from R27, whose reader fix is `1db2d35`). **Stale data, not
-  urgent:** these lists are not being re-sent. Needs Evan's yes (it rewrites student files).
+  urgent:** these lists are not being re-sent. Needs Evan's yes (it rewrites student files). Now
+  task T12 in [plans/list_pdf_plan.md](../plans/list_pdf_plan.md) (Evan, 2026-10-29: do it now).
 - **What is true** (counted 2026-10-29, 27 profiles): 20 have `grade_status` = `expected`. Matched
   by email to the form export's "What are you applying with?" answer: 5 said "Forecast Grades"
   (should be `predicted`), 2 said "Actual Grades" (should be `actual`; probably read in before the
@@ -356,6 +383,36 @@ with nine detailed reports beside it. Each entry names its report and finding nu
 - **Suggested fix:** per-finding fixes are in `fact_audit/02_longlist_instructions.md`. One rule
   covers most of them: a cell holds a sourced fact or the fixed "not published / not found" wording,
   nothing else.
+
+#### R40. Replace "Admission likelihood" with the university's published admit rate
+
+- **Added 2026-10-29 (Evan).** **Design change, now in progress:** Evan chose to do it all before
+  10 Nov. The plan is [plans/list_pdf_plan.md](../plans/list_pdf_plan.md) Decisions item 9 and tasks
+  T2b (done), T3b, T11; it overrides the parts a/b split below. Kept for the reasoning.
+- **Why:** the column reads as our verdict on whether the student gets in. We can't give one:
+  holistic admission weighs activities, essays and interviews, and the form collects none of them
+  (and shouldn't: nobody predicts holistic admission from a list of clubs). Today the column is
+  grades (a coarser repeat of `Grades vs entry bar`) plus a hand-set "very selective" override,
+  which is a fact about the university presented as our judgment.
+- **What is true:** `classify_admission()` in `tools/shortlist_schema.py` makes it. Two rules lean
+  on it: shortlists are a balanced Reach/Match/Safety spread, and "an unreachable uni must not rank
+  high" (`CLAUDE.md`, `workflows/00_overview.md`). The 10 Nov PDF (T6 in
+  `plans/list_pdf_plan.md`) shows the column with its T2 definition (`JUDGMENT_LABELS`).
+- **Part a (before 10 Nov):** reword the `Admission likelihood` definition in
+  `tools/apply_glossary.py` to say what it uses: "Uses only your grades and how selective the
+  university is. We don't know your activities, essays or interviews, so it is not a prediction
+  about you. Safety is not a promise of admission."
+- **Part b (after 10 Nov, plan first):** a sourced `Admit rate` column in place of the label, e.g.
+  "4.5% of all applicants (Common Data Set 2024–25)".
+  - US: Common Data Set section C1 (applied, admitted). It counts all applicants, not
+    international ones; where a university publishes an international rate, use that and say so.
+  - UK and the other countries: not known yet. The plan's first job: per country, which official
+    sources give an admit or offer rate (Oxford and Cambridge publish per-course figures; most UK
+    universities may not), and what the cell says when none exists ("Not published"). Where entry
+    is set by grades alone, `Grades vs entry bar` already answers the question.
+  - Decide in the plan what replaces Reach/Match/Safety in the balanced-shortlist rule (e.g. kept
+    for balancing only and not shown, or balance on grades + admit rate). Then update the
+    `CLAUDE.md` guardrail, the T2 definition, the PDF and the sample, and log it in `decisions/log.md`.
 
 ---
 
