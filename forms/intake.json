@@ -281,17 +281,15 @@
     },
     {
       "title": "Location preferences",
-      "type": "CHECKBOX",
+      "type": "LIST",
       "description": "",
       "required": true,
       "options": [
         "Urban / City",
         "Rural / Campus-based",
         "Near family",
-        "Close to public transport",
-        "Other"
-      ],
-      "other": false
+        "Close to public transport"
+      ]
     },
     {
       "title": "Any other perferences? ",

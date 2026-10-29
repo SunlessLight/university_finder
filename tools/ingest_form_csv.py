@@ -955,7 +955,8 @@ def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None,
     prefs["deal_breakers"] = _as_list(get(row, col_index, "deal_breakers"))
     prefs["location_prefs"] = _split_multi(get(row, col_index, "location_prefs"))
     # Both ticked tells us nothing about setting. Settle it at finalize rather than letting it
-    # reach every row's Warnings ("Urban / City" + "Rural / Campus-based" on the current form).
+    # reach every row's Warnings. Legacy exports only: since 2026-10-29 the question is a
+    # single-choice dropdown, so a current answer can't hold both.
     loc_low = [p.lower() for p in prefs["location_prefs"]]
     if any("urban" in p for p in loc_low) and any("rural" in p for p in loc_low):
         needs_review.append(
