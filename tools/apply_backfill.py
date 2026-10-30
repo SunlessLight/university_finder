@@ -20,11 +20,19 @@ What it does, in order:
   2. matches each to an EXISTING row by course_key — refuses to create rows (that is sync's job)
   3. refuses any COMPUTED_COLUMNS write, any unknown column, any cell over CELL_BUDGETS,
      and any overwrite of an already-filled cell unless --overwrite
-  4. writes master_list.csv once, and appends each fragment's research_notes under that
+  4. refuses what check_master_list.py would fail: a cell off its fixed shape (money, rank,
+     date, admit rate, requirements vocabulary), a legacy sentinel, or a hedge/advice/chatter
+     word on a row that isn't "Not verified" (on a "Not verified" row it is a warning)
+  5. writes master_list.csv once, and appends each fragment's research_notes under that
      university's existing "## University - Course" heading in research_notes.md
 
 Nothing is written unless every fragment passes — a half-applied batch is worse than none,
 because the second run can't tell which rows it already touched.
+
+2026-10-30 (plans/list_pdf_plan.md T4, backlog R28): step 4 added, using the checker's own
+functions so the writer and the gate can't disagree. An old list missing only ADDED_COLUMNS
+is padded on load (upgrade_header) and written back with them. research_notes text is not
+word-checked: it is internal and never sent (Evan, 2026-10-28).
 
 Fragment shape (row-filler backfill mode; see .claude/agents/row-filler.md):
     {
@@ -50,9 +58,13 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from check_master_list import cell_hedges, upgraded  # noqa: E402
 from shortlist_schema import (  # noqa: E402
     CELL_BUDGETS,
+    INFO_SOURCE_UNVERIFIED,
+    LEGACY_SENTINELS,
     SHORTLIST_HEADERS,
+    cell_format_problem,
     course_key,
 )
 
@@ -121,18 +133,21 @@ def load_fragments(frag_dir):
 
 
 def load_csv(csv_path):
-    """(header, rows) from the master list. Exits if the column SET differs from the schema."""
+    """(header, rows) from the master list, padded if it lacks only ADDED_COLUMNS.
+
+    Exits if the column SET differs from the schema in any other way.
+    """
     with csv_path.open(newline="", encoding="utf-8") as f:
         rows = list(csv.reader(f))
     if not rows:
         sys.exit(f"ERROR: {csv_path} is empty.")
-    header = rows[0]
-    if set(header) != set(SHORTLIST_HEADERS):
+    padded = upgraded(rows[0], rows[1:])
+    if padded is None:
         sys.exit(
             f"ERROR: {csv_path} columns differ from the current schema (SHORTLIST_HEADERS). "
             f"Migrate the file before backfilling it."
         )
-    return header, rows[1:]
+    return padded
 
 
 def index_rows(header, rows):
@@ -152,14 +167,16 @@ def _norm(text):
 
 
 def validate(fragments, header, rows, index, country, overwrite, notes_text=""):
-    """Return (problems, plan, noop). `plan` is [(row_index, label, {column: value}, notes)].
+    """Return (problems, plan, noop, warnings). `plan` is [(row_index, label, {column: value}, notes)].
 
     Every rule that could corrupt the deliverable fires here, before a single byte is
     written. A partially-applied batch is unrecoverable in practice: the second run has
-    no way to tell an already-patched cell from one a human filled in.
+    no way to tell an already-patched cell from one a human filled in. `warnings` never
+    block: hedge words on a row that stays "Not verified".
     """
-    problems, plan, noop = [], [], []
+    problems, plan, noop, warnings = [], [], [], []
     country_col = header.index("Country")
+    source_col = header.index("Info source")
     have_notes = _norm(notes_text)
 
     for path, frag in fragments:
@@ -191,6 +208,8 @@ def validate(fragments, header, rows, index, country, overwrite, notes_text=""):
             problems.append(f"{label}: 'cells' must be a non-empty object of column -> value")
             continue
 
+        # The stamp the row will carry after this patch: a fragment may set Info source too.
+        source = str(cells.get("Info source") or row[source_col] or "").strip()
         clean = {}
         for column, value in cells.items():
             if column not in SHORTLIST_HEADERS:
@@ -227,6 +246,28 @@ def validate(fragments, header, rows, index, country, overwrite, notes_text=""):
                 continue
             if existing == value:
                 continue  # already applied; a re-run is a no-op, not an error
+
+            # The same rules check_master_list.py gates the list on, so nothing written here
+            # fails there afterwards.
+            problem = cell_format_problem(column, value)
+            if problem:
+                problems.append(f"{label}: {column!r} — {problem}")
+                continue
+            if value in LEGACY_SENTINELS.get(column, []):
+                problems.append(f"{label}: {column!r} — {value!r} is a legacy wording that is "
+                                f"accepted on old rows but never written now (see --contract)")
+                continue
+            hits = cell_hedges(column, value)
+            if hits:
+                words = ", ".join(repr(h) for h in hits)
+                if source == INFO_SOURCE_UNVERIFIED:
+                    warnings.append(f"{label}: {column!r} has {words} (row stays Not verified)")
+                else:
+                    problems.append(
+                        f"{label}: {column!r} has {words} on a row stamped {source!r} — write "
+                        f"only what the official page says; open questions go to research_notes"
+                    )
+                    continue
             clean[column] = value
 
         # Already-present prose is dropped, not appended again: this tool is re-run after a
@@ -241,7 +282,7 @@ def validate(fragments, header, rows, index, country, overwrite, notes_text=""):
         else:
             noop.append(label)
 
-    return problems, plan, noop
+    return problems, plan, noop, warnings
 
 
 def _heading_parts(line):
@@ -334,9 +375,14 @@ def main():
     print(f"student: {slug} | {len(fragments)} fragment(s) in {frag_dir} | {len(rows)} row(s) in the list")
 
     notes_text = notes_path.read_text(encoding="utf-8") if notes_path.exists() else ""
-    problems, plan, noop = validate(
+    problems, plan, noop, warnings = validate(
         fragments, header, rows, index, args.country, args.overwrite, notes_text
     )
+
+    if warnings:
+        print(f"\nWARN — {len(warnings)} hedge word(s) on Not verified rows (not blocking):")
+        for line in warnings:
+            print(f"  ~ {line}")
 
     if problems:
         print(f"\nFAIL — {len(problems)} problem(s); NOTHING written:")

@@ -16,7 +16,18 @@ Checks (use --check to run a subset while working through a fix):
   jargon       bare acronyms that apply_glossary can explain, outside the allow-list
   values       List status / Info source / Grades vs entry bar outside their allowed sets
   contradiction  "Grades vs entry bar" vs "Admission likelihood" telling different stories
+  hedges       guess/advice/chatter words in researched cells: FAIL on "Official page" rows,
+               warning on "Not verified" rows (warnings never change the exit code)
+  numbers      money/rank/date/admit-rate cells off their fixed shape (cell_format_problem)
+  requirements "Application requirements" outside the fixed vocabulary
   status       status.md over STATUS_BUDGET chars (--student mode only)
+
+2026-10-30 (plans/list_pdf_plan.md T4, backlog R28): hedges, numbers and requirements added.
+Word lists are the regex table in fact_audit/08_output_sweep.md, with "~" allowed only as
+"~RM" (the house style for a converted MYR figure). An old list missing only ADDED_COLUMNS
+still FAILS schema, but the cell checks now run on an upgrade_header() copy instead of
+stopping there, so old lists show their hedges too. research_notes.md is never scanned: it
+is internal and never sent (Evan, 2026-10-28).
 
 The contradiction check is the original bug turned into a rule. Duke read "Fits grades? =
 No" for a student with A*A*A*A because the column was derived from admission likelihood;
@@ -50,6 +61,7 @@ Usage:
 
 import argparse
 import csv
+import re
 import sys
 from pathlib import Path
 
@@ -58,6 +70,7 @@ from apply_glossary import _COMPILED, PLAIN_ALTERNATIVES  # noqa: E402
 from shortlist_schema import (  # noqa: E402
     ADMISSION_REASON_MAX,
     CELL_BUDGETS,
+    FORMATTED_COLUMNS,
     GRADE_FIT_LABELS,
     INFO_SOURCE_OFFICIAL,
     INFO_SOURCE_UNVERIFIED,
@@ -69,6 +82,8 @@ from shortlist_schema import (  # noqa: E402
     SHORTLIST_HEADERS,
     STATUS_BUDGET,
     admission_base,
+    cell_format_problem,
+    upgrade_header,
 )
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -101,8 +116,65 @@ PROSE_COLUMNS = [
 # page (UCAS, MQA, BEM, Washington Accord, CSS Profile) are deliberately NOT flagged — the
 # glossary sheet explains those instead. See the rule in apply_glossary.py.
 
+# Columns the hedge check does NOT scan: computed by sync_shortlist.py (a hedge there is a
+# tool bug, not a research one), identity/provenance cells, and "Student grades", which is
+# the student's own form answer ("expected" is its true label). Every other column is
+# written from an official page, so a new column is scanned unless it is added here.
+_NOT_HEDGE_SCANNED = {
+    "List status", "Desirability", "Tier", "Admission likelihood", "Warnings",
+    "Grades vs entry bar", "Approx total (MYR)",
+    "University", "Course", "Country", "City", "Course URL", "Info source", "Checked on",
+    "Student grades",
+}
+HEDGE_COLUMNS = [h for h in SHORTLIST_HEADERS if h not in _NOT_HEDGE_SCANNED]
+
+# fact_audit/08_output_sweep.md "Final regexes": G guess, A advice, Y chatter, plus the
+# "Not verified" half of NV ("not found" is left out: "not found on the BEM list" is a fact).
+# Two departures from the table, both stricter or a documented false positive:
+#   - "~" anywhere except "~RM" (the table only caught "~" before a number; "~top 40" is the
+#     same guess);
+#   - "great" skips "GREAT Scholarship(s)", the scheme's real name (sweep caveats).
+_AMOUNT = r"(?:[A-Z]{2,3}\s*|[$£€¥]\s*)?\d"
+HEDGE_PATTERNS = [re.compile(p, re.IGNORECASE) for p in (
+    # G
+    r"\blikely\b",
+    r"\bprobabl[ye]\b",
+    r"\busually\b",
+    r"\btypical(?:ly)?\b",
+    r"\b(?:generally|often)\b",
+    r"~(?!\s?RM)\s?[^\s,;]*",
+    rf"\b(?:approx(?:imately)?\.?|around|roughly|about)\s*{_AMOUNT}",
+    r"\bshould be\b",
+    r"\b(?:may|might|could) be\b",
+    r"\b(?:confirm|confirms|confirming|unconfirmed)\b",
+    r"\b(?:re-?)?(?:verify|check)\b",
+    r"\b(?:to be confirmed|TBC|TBA|to be announced)\b",
+    r"\bestimat\w*",
+    r"\bexpect(?:ed|s)?\b",
+    r"\bnot verified\b|\bunverified\b",
+    # A
+    r"\b(?:you|students?|applicants?) should\b",
+    r"\b(?:we |i )?recommend(?:s|ing|ation|ations)?\b",
+    r"\bsuggest\w*",
+    r"\bconsider(?:ing)?\b",
+    r"\bbest to\b|\bmake sure\b|\bdon[’']?t forget\b|\baim to\b|\btry to\b|\bavoid\b|\bgood idea\b",
+    r"\b(?:apply|start|submit|book|begin) (?:early|now|as soon as)\b",
+    r"\bworth (?:applying|it|a look|considering)\b",
+    # Y
+    r"\bI (?:couldn[’']?t|could not|found|was unable|have|think|believe|checked|searched)\b"
+    r"|\bI[’'](?:ve|m)\b",
+    r"\blet me\b|\bnote:|\bworth not(?:ing|e)\b",
+    r"\bgreat\b(?!\s+(?:britain|scholarships?))|\bunfortunately\b|\binterestingly\b|\bkeep in mind\b",
+    r"\bit seems\b|\bappears? to\b|\bseems to\b",
+)]
+
+# The fixed-shape cells, split the way the plan names the two checks. Both judged by
+# shortlist_schema.cell_format_problem(), never re-implemented here.
+NUMBER_COLUMNS = [c for c in FORMATTED_COLUMNS if c != "Application requirements"]
+REQUIREMENT_COLUMNS = ["Application requirements"]
+
 CHECKS = ["schema", "completeness", "budget", "plausibility", "jargon", "values",
-          "contradiction", "status"]
+          "contradiction", "hedges", "numbers", "requirements", "status"]
 
 # Every sentinel string, whatever column it belongs to — used to catch one being used
 # in a column that doesn't allow it (see check_completeness).
@@ -138,7 +210,7 @@ def check_completeness(rows_as_dicts):
 
     The master list is the client's deliverable — a spreadsheet handed over as the
     product — so a blank cell reads as breakage, not as "we're still working on it".
-    Stage 3 fills all 35 columns from official sources (it used to leave "Course at a
+    Stage 3 fills every column from official sources (it used to leave "Course at a
     glance", the scholarship block and "Key deadline" to Stage 4, and sessions honoured
     that unevenly: 1/44 rows filled for one student, 24/24 for another).
 
@@ -336,6 +408,75 @@ def check_contradiction(rows_as_dicts):
     return out
 
 
+def hedge_hits(text):
+    """The guess/advice/chatter phrases in `text`, as matched, each listed once."""
+    hits = []
+    for pattern in HEDGE_PATTERNS:
+        for m in pattern.finditer(text or ""):
+            phrase = m.group(0).strip()
+            if phrase.lower() not in (h.lower() for h in hits):
+                hits.append(phrase)
+    return hits
+
+
+def cell_hedges(column, value):
+    """hedge_hits() for one cell; [] for an unscanned column or a cell that IS a sentinel.
+
+    A whole-cell sentinel is a fixed wording, not research prose: the legacy
+    "Not published — check portal" stays accepted (Decisions item 5) despite its "check".
+    """
+    text = str(value or "").strip()
+    if column not in HEDGE_COLUMNS or not text or text in SENTINEL_VALUES.get(column, []):
+        return []
+    return hedge_hits(text)
+
+
+def check_hedges(rows_as_dicts):
+    """(failures, warnings): hedge words in researched cells, by the row's Info source.
+
+    A row stamped "Official page" says its facts were read there, so a "likely" or a
+    "confirm" in it is a guess wearing the stamp: 162 of 280 such rows had one (backlog
+    R28). That fails. A "Not verified" row admits it is unchecked, so the same words are
+    a warning to clear before it can be stamped. Any other Info source fails here too;
+    the values check names the bad stamp.
+    """
+    failures, warnings = [], []
+    for n, row in rows_as_dicts:
+        uni = row.get("University", "?")[:32]
+        unverified = (row.get("Info source") or "").strip() == INFO_SOURCE_UNVERIFIED
+        for column in HEDGE_COLUMNS:
+            hits = cell_hedges(column, row.get(column))
+            if hits:
+                (warnings if unverified else failures).append(
+                    f"row {n} {uni} — {column}: {', '.join(repr(h) for h in hits)}")
+    return failures, warnings
+
+
+def _format_findings(rows_as_dicts, columns, today=None):
+    out = []
+    for n, row in rows_as_dicts:
+        uni = row.get("University", "?")[:32]
+        for column in columns:
+            problem = cell_format_problem(column, row.get(column), today=today)
+            if problem:
+                out.append(f"row {n} {uni} — {column}: {problem}")
+    return out
+
+
+def check_numbers(rows_as_dicts, today=None):
+    """Money, rank, Checked on and Admit rate cells: the fixed shape and nothing else.
+
+    "GBP 46,872", never "GBP 46,872 (2027 entry, confirm)": the year and the sums go to
+    research_notes.md (Decisions item 4). Blank cells are the completeness check's job.
+    """
+    return _format_findings(rows_as_dicts, NUMBER_COLUMNS, today=today)
+
+
+def check_requirements(rows_as_dicts):
+    """"Application requirements" from APPLICATION_REQUIREMENTS_VOCAB only, or Not published."""
+    return _format_findings(rows_as_dicts, REQUIREMENT_COLUMNS)
+
+
 def check_status(status_path):
     """status.md over STATUS_BUDGET chars — it's a snapshot read at the start of every
     /catchup, /longlist, /report, /decide and /apply-prep session, not a growing log.
@@ -350,17 +491,30 @@ def check_status(status_path):
     return []
 
 
-def run(header, rows, wanted, status_path=None):
-    rows_as_dicts = [(i, dict(zip(header, r))) for i, r in enumerate(rows, start=2)]
-    results = {}
+def upgraded(header, rows):
+    """(header, rows) padded by upgrade_header(), or None when the columns differ beyond it."""
+    try:
+        return upgrade_header(header, rows)
+    except ValueError:
+        return None
+
+
+def run(header, rows, wanted, status_path=None, today=None):
+    """(results, warnings): check name -> findings. Only `results` decides the exit code."""
+    results, warnings = {}, {}
     if "schema" in wanted:
         results["schema"] = check_schema(header)
     if "status" in wanted:
         results["status"] = check_status(status_path)
     # The other checks read by column name, so a file with the wrong column SET can't be
-    # meaningfully linted past the schema check.
+    # meaningfully linted past the schema check. A file missing only ADDED_COLUMNS has
+    # already failed schema above; its cells are still checked, on a padded copy.
     if set(header) != set(SHORTLIST_HEADERS):
-        return results
+        padded = upgraded(header, rows)
+        if padded is None:
+            return results, warnings
+        header, rows = padded
+    rows_as_dicts = [(i, dict(zip(header, r))) for i, r in enumerate(rows, start=2)]
     if "completeness" in wanted:
         results["completeness"] = check_completeness(rows_as_dicts)
     if "budget" in wanted:
@@ -373,7 +527,13 @@ def run(header, rows, wanted, status_path=None):
         results["values"] = check_values(rows_as_dicts)
     if "contradiction" in wanted:
         results["contradiction"] = check_contradiction(rows_as_dicts)
-    return results
+    if "hedges" in wanted:
+        results["hedges"], warnings["hedges"] = check_hedges(rows_as_dicts)
+    if "numbers" in wanted:
+        results["numbers"] = check_numbers(rows_as_dicts, today=today)
+    if "requirements" in wanted:
+        results["requirements"] = check_requirements(rows_as_dicts)
+    return results, warnings
 
 
 def main():
@@ -416,28 +576,38 @@ def main():
     header, rows = load(csv_path)
 
     if args.blanks:
-        if set(header) != set(SHORTLIST_HEADERS):
+        padded = upgraded(header, rows)
+        if padded is None:
             sys.exit(f"ERROR: {csv_path} columns differ from the schema — run the schema check first.")
+        header, rows = padded
         print_blanks(csv_path, [(i, dict(zip(header, r))) for i, r in enumerate(rows, start=2)])
         return
 
-    results = run(header, rows, wanted, status_path=status_path)
+    results, warnings = run(header, rows, wanted, status_path=status_path)
+
+    def show(findings):
+        for line in findings[:args.limit]:
+            print(f"       {line}")
+        if len(findings) > args.limit:
+            print(f"       ... and {len(findings) - args.limit} more")
 
     total = sum(len(v) for v in results.values())
+    warned = sum(len(v) for v in warnings.values())
     print(f"{csv_path.relative_to(REPO_ROOT) if csv_path.is_relative_to(REPO_ROOT) else csv_path} "
-          f"— {len(rows)} rows, {total} finding(s)")
+          f"— {len(rows)} rows, {total} finding(s), {warned} warning(s)")
     for name in CHECKS:
         findings = results.get(name)
         if findings is None:
             continue
         if not findings:
             print(f"  ok   {name}")
-            continue
-        print(f"  FAIL {name} ({len(findings)})")
-        for line in findings[:args.limit]:
-            print(f"       {line}")
-        if len(findings) > args.limit:
-            print(f"       ... and {len(findings) - args.limit} more")
+        else:
+            print(f"  FAIL {name} ({len(findings)})")
+            show(findings)
+        if warnings.get(name):
+            print(f"  warn {name} ({len(warnings[name])}) — on \"{INFO_SOURCE_UNVERIFIED}\" rows; "
+                  f"clear them before stamping the row \"{INFO_SOURCE_OFFICIAL}\"")
+            show(warnings[name])
 
     sys.exit(1 if total else 0)
 
