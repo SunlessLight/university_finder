@@ -1,5 +1,7 @@
 # Carry-over: T7 sample re-check (2026-10-30)
 
+**Finished 2026-10-30: T7 is written and ticked. See the T7 row of the plan's Progress table. History below.**
+
 **Goal:** finish task T7 of [plans/list_pdf_plan.md](../list_pdf_plan.md): the public sample's 15 rows (source student `toru`) re-checked on official pages, so `check_master_list.py` is clean on them and the T6 PDF command builds without `--draft`.
 **Where it stands:** all research is done and reviewed. A full rehearsal on a copy passes. **toru's real files are not written yet.** Evan was asked "write it?" and chose a new session instead. Ask him once more, then write.
 

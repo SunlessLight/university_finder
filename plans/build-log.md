@@ -243,6 +243,12 @@ Entry format:
 - Problems / lessons: the hedge regex flagged the vocabulary item "N recommendation letters", so four helpers dropped true letter counts to pass; the write tool refuses the whole batch on one hedge. QS tables are JS-rendered (403 to plain fetch); the page's own `/rankings/endpoint?nid=` JSON in Chrome reads them. Melbourne's undergrad scholarship excludes Malaysia.
 - Next step: Evan's yes, then write (carry-over `plans/carry-overs/2026-10-30-t7-sample-recheck.md`).
 
+## 2026-10-30 (6) · T7 sample re-check, part 2 (list PDF plan): written, T7 ticked
+- Done: on Evan's yes, backed up toru's three files to `.tmp/t7/backup/`, then wrote 264 cells + 15 research-notes sections with `apply_backfill.py --overwrite` and recomputed (15 changes, 2 score_log lines). Result is byte-identical to the rehearsal copy. The 15 rows pass `check_master_list.py` with 0 findings; the PDF builds without `--draft` on a redacted copy; 18 tests pass. T7 ticked.
+- Decisions (and why): Melbourne's fee stays `AUD 333,760`. Read in Chrome after the write: 2027 BSc total AUD 181,310–211,405 and Master's AUD 66,752/yr (220,950 for 3 years), so 3 + 2 years comes to AUD 328,610–358,705 and the figure sits inside that range.
+- Problems / lessons: Melbourne's fee pages only show the international fee after the "International students" option is clicked, which is why helpers kept reading the domestic view. Chrome blocks northeastern.edu, so that row's requirements stay unread. The MQA register opens in Chrome but wasn't run. toru's other 28 rows still fail the checks (old format, not in the sample).
+- Next step: T8 (rebuild the sample pack); read the T7 row's "T8" note first.
+
 ## 2026-10-30 (7) · Mentor session: time on bugs, the database idea, survey recount
 - Done: downloaded the survey's live questions and all answers, recounted `business/launchx/survey.md` at 103 rows (22 real leads, 7 deposits RM110, 1 stranger paid, why people said no) and brought `business/launchx/status.md` and the Now box up to date.
 - Decisions (and why): no university database before 2 Dec, because tools are a flat RM158 a month, so it saves little and adds a system to maintain. No freeze: Evan keeps building in set time alongside marketing (the mentor advised stopping new columns and checks; Evan's call). Pilot pass line: 5 paid sign-ups across the 4 booth days, a guess. All in `decisions/log.md`.
