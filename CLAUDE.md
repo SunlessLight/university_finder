@@ -81,7 +81,7 @@ Privacy and wording:
 - Current status: the **Now** box at the top of `STATUS.md`. Start a session with `/catchup` (or `/catchup <slug>` for one student).
 - Ideas and open questions under discussion with Evan: `plans/discussions.md` (one running file, dated sections). Add to it whenever a session raises an idea or question that isn't settled.
 - At the end of a session that changed files or decided something, add an entry to `plans/build-log.md` (done / decisions / problems / next step) and update the Now box.
-- Then mirror it to Notion, without asking, so Evan can follow on his phone: rewrite the "Shortlisted — Now" page (`40525bdf03ad8167895cf78073e5a1ac`, under 🗓️ Everything) from the Now box, and bring the Tasks database in line with the open items in `business/launchx/status.md` (new item → new task, ticked → Done, new date → Due). Files are the source; Notion is the copy. Only touch tasks that match an item in the files (the rest are Evan's own) and only `Area = University Research Agent`. End the reply with "Notion updated" or why not. Addresses: `workflows/notion_sync.md`.
+- Then mirror it to Notion, without asking, so Evan can follow on his phone: rewrite the "Shortlisted — Now" page (`40525bdf03ad8167895cf78073e5a1ac`, under 🗓️ Everything) from the Now box, and bring the Tasks database in line with the open items in `business/launchx/status.md` (new item → new task, ticked → Done, new date → Due). Files are the source; Notion is the copy. Only touch tasks that match an item in the files (the rest are Evan's own) and only `Project Area = University Research Agent` (a new task gets its Area from its `Project`). End the reply with "Notion updated" or why not. Addresses: `workflows/notion_sync.md`.
 
 ## Decision log
 

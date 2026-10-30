@@ -22,7 +22,12 @@ This is a **utility** workflow, not a pipeline stage. It never changes `master_l
 
 Everything sits in two shared databases under the "🗓️ Everything" page. Other areas of Evan's life
 (A-Levels, Personal, University Application) share these databases — **every query and every write
-is scoped to `Area = University Research Agent`.** Never touch a row from another Area.
+is scoped to `Project Area = University Research Agent`.** Never touch a row from another Area.
+
+`Project Area` (renamed from `Area`, 2026-10-30) is a read-only **rollup** of the linked Project's
+`Area`. Consequences: SQL mode can't see it (filter in `rows` mode, step 2), and a task's Area is
+set by its `Project`, never directly. Projects in this Area: Clients, URP Marketing, Business,
+Pitch deck, Product Developing.
 
 | What | Address |
 |---|---|
@@ -36,7 +41,7 @@ is scoped to `Area = University Research Agent`.** Never touch a row from anothe
 | Stage card "Stage 3 Report" | `3b425bdf03ad800e84e3c092c5664004` |
 | Stage card "Stage 4 Application Guide" | `3b425bdf03ad8066851ae749d21b9013` |
 
-Tasks columns used here: `Task name` (title), `Area`, `Project`, `Parent-task`, `Sub-tasks`,
+Tasks columns used here: `Task name` (title), `Project Area` (rollup, read-only), `Project`, `Parent-task`, `Sub-tasks`,
 `Status` (`Not Started` / `Today` / `This Week` / `This Month` / `Daily` / `Done`), `Due`.
 
 **How the board works.** Each client is one card (a row in Tasks) named after the student, linked
@@ -81,15 +86,17 @@ field. University names in a "Delivered" line are fine; the student's scores aga
 1. **Load the Notion tools.** They are deferred — one `ToolSearch` call:
    `select:mcp__notion__notion-fetch,mcp__notion__notion-query-data-sources,mcp__notion__notion-update-page,mcp__notion__notion-create-pages`.
    Follow the parameter shapes those schemas return; don't guess them.
-2. **Read the board in one query** (never search Notion blind):
-   `SELECT url, "Task name", "Status", "Parent-task" FROM "collection://7d1af2d7-87c3-4eb8-a2d5-085093eaafae" WHERE "Area" = 'University Research Agent'`.
+2. **Read the board in one query** (never search Notion blind): `query-data-sources` in `rows`
+   mode on the Tasks database, filter `Project Area` (`propertyType: rollup`, `operator: any`,
+   `resultFilter`: select `enum_is` `University Research Agent`); add a `Status` filter if needed.
+   SQL `WHERE "Project Area"` fails: rollups aren't SQL columns.
    Client cards are the rows whose `Parent-task` is one of the four stage cards.
 3. **Read local state** for the student(s) in scope: `status.md`, then confirm against the files
    using the mapping table above (status notes drift — the files win, as in `resume.md`).
 4. **Match card ↔ folder by name.** Cards use short names ("Demi", "Zheng Yi"); folders use slugs
    (`foo-de-mi`, `lai-zheng-yi`). If a match isn't obvious, ask — never create a second card for
    someone who may already have one. No card and Evan confirms they're a real client → create one:
-   `Task name` = the name Evan uses, `Area` = University Research Agent, `Project` = Clients,
+   `Task name` = the name Evan uses, `Project` = Clients (this sets `Project Area`),
    `Parent-task` = the right stage card.
 5. **Work out the diff, then show it before writing anything.** Per student: stage move (from →
    to), new "Delivered" lines, new "Feedback" lines. Take delivered dates from `status.md` "Recent
