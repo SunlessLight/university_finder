@@ -5,7 +5,7 @@ done, delete it and its line in the steps below, and write one line in `plans/bu
 History: the full file up to 2026-10-28 (every closed entry, the old lane and round plans) is in
 git: `git show 10b847c:business/additionals.md`. Decisions are in `decisions/log.md`.*
 
-*Adding an entry: the next number is **R42**. Say whether it is **urgent**, and whether it is a
+*Adding an entry: the next number is **R43**. Say whether it is **urgent**, and whether it is a
 **tool gap** (the system will keep making the mistake) or **stale data** (old files only). Plain
 English, no student named, no grades, income or school. Then add it to a step below.*
 
@@ -22,6 +22,7 @@ English, no student named, no grades, income or school. Then add it to a step be
 | **2b** | R28, R29, R30 part a, R32 (the fact audit's spreadsheet fixes) | `tools/shortlist_schema.py`, `tools/check_master_list.py`, `tools/apply_glossary.py`, `tools/build_glossary_sheet.py` | nothing | Medium |
 | **2c** | R23, R25, then R31 | the source student's `master_list.csv`, `research_notes.md`, `score_log.jsonl`; `business/sales/sample_pack/`; `prototype/data.js`, `prototype/_build/`; `workflows/countries/uk.md` (R25) | step 2b (so the rebuilt sample carries the new wording and passes the new check) | Small to medium |
 | **2d** | R39, R40: **now tasks T10, T2b + T3b + T11 in [plans/list_pdf_plan.md](../plans/list_pdf_plan.md)** (Evan, 2026-10-29: no waiting). Run them from the plan, not from here | see the plan | see the plan | Small to medium |
+| **2e** | R42 (accreditation check on every regulated row; plan first) | `workflows/sources.md`, `workflows/03b_candidate_schema.md`, `.claude/agents/row-filler.md`, `tools/check_master_list.py` | an approved plan | Medium |
 
 **After 10 Nov** (the old students' lists, then the bigger system changes)
 
@@ -140,6 +141,35 @@ with nine detailed reports beside it. Each entry names its report and finding nu
 - **Suggested fix:** after step 2b, re-read each fact on the official page and fix it in the source
   list (`apply_backfill.py --overwrite`, dry run first), never in the sample CSV. Rebuild the sample
   and the demo as SP1 did, then `check_master_list.py` (with R28's check) must be clean.
+
+#### R42. Nothing proves a degree is accredited before it reaches a list
+
+- **Added 2026-10-30 (Evan).** **Tool gap, urgent:** every list for a regulated course (engineering,
+  medicine, law, accounting, architecture, pharmacy, nursing and allied health). Evan wants it in the
+  workflow, not only as a repair of old rows (that is R16).
+- **What is true:**
+  - **Which body matters is solved:** `COURSE_ACCREDITATION_MAP` in `tools/ingest_form_csv.py` maps
+    the form's 38 courses to their bodies and fills `profile.recognition_targets`.
+  - **Where to check is not:** `workflows/sources.md` lists Malaysian bodies only. Nothing names the
+    accreditor per field and country, and the routes differ (engineering goes through the degree's
+    home-country accreditor and the Washington Accord; medicine through Malaysia's own list).
+  - **Nothing forces the check:** helpers fill `Recognised in Malaysia?` and a 0–5 `recognition_fit`,
+    usually from the university's own page. `check_master_list.py` doesn't look at that cell. Michigan's
+    robotics degree said ABET-accredited and wasn't (R16).
+  - **Blocked sites:** BEM, EAC and MIA refused a plain script on 2026-10-30, and EAC's programme PDFs
+    return 403. Front pages only were tested, so what works shows up on the first real buyer.
+- **Suggested fix (plan first):**
+  1. A table in `workflows/sources.md`: field + country → the accreditor's own list, its address and
+     how to read it. Add a field's rows when a real buyer needs them (Evan, 2026-10-30: no testing
+     in advance).
+  2. A required step for helpers: when `recognition_targets` is not empty, read the exact degree on
+     that list and start the cell with one fixed result: `Accredited`, `Not accredited`,
+     `Not on list` or `Not checked`, plus the body, the checked date and a source link.
+  3. `check_master_list.py` fails a row with targets whose cell has no fixed result.
+  4. Prove it on the first real buyer's regulated course.
+- **Related:** R16 repairs old US rows (the 174 non-US rows stay out of scope). O13 in
+  `plans/discussions.md` is the MQA government-job lookup, a separate and smaller check.
+
 
 #### R39. Topics a student ticks the same are ranked by the form's question order
 
