@@ -16,13 +16,38 @@
 | O5 | Is RM 50 for 20-30 universities too cheap? | Don't change the price before the pilot. Measure the real cost and hours on the first paid lists, then decide | 2026-10-29 |
 | O6 | Turn it into an app at USD 5 for 8-12 universities? | Not now. See 2026-10-29 below | 2026-10-29 |
 | O7 | Store researched universities and reuse them for the next student | Good idea, after the pilot. See 2026-10-29 below | 2026-10-29 |
-| O8 | The demo says "15 of 15 rows are checked", but four facts aren't confirmed yet | Check the MQA register in Chrome before the 3 Nov printed sample, and fix the other three before the sample goes public. See 2026-10-30 below | 2026-10-30 |
-| O9 | The sample's dates go out of date during the pilot | Keep Cambridge in the top 5 for now; before 10 Nov, reword the Decide screen's "early round on 1 Nov". See 2026-10-30 below | 2026-10-30 |
+| O8 | The demo says "15 of 15 rows are checked", but three facts aren't confirmed yet (the MQA register was read 30 Oct; rows not updated yet) | Update the rows, reword the sentence so hard facts are checked and living costs are estimates, and Evan reads Northeastern's requirements page. See 2026-10-30 below | 2026-10-30 |
+| O9 | The sample's dates go out of date during the pilot | Keep Cambridge in the top 5 but show its "Deadline passed" warning on Results; move MIT to the regular round (three lines in `prototype/data.js`, not one). See 2026-10-30 below | 2026-10-30 |
 | O10 | Both forms now ask "Full Name (As in IC)", but the consent notice says "nickname" and folder names come from this answer | Change both titles back to "Nickname": fewer real names held, and the notice is already correct. If Evan needs real names to match payments, change the notice (English and Malay) instead | 2026-10-30 |
 | O11 | The list form asks the result month but no longer the year | Add "What year does your actual result come out?" back, 2026 / 2027 / 2028. The script already reads it; without it, every student raises a "no year" review line | 2026-10-30 |
 | O12 | The list form no longer asks for achievements | Fine to leave off: the list doesn't use them. Stage 4 and the apply guide do, so ask at that point if a list buyer goes on to a report | 2026-10-30 |
+| O13 | How does each buyer's list get its MQA check? | A small script that looks each university up live, plus a short file of matched register names. No full database. Build after 10 Nov: professional accreditation is what matters most for regulated courses. See 2026-10-30 below | 2026-10-30 |
 
 ## 2026-10-30
+
+**MQA register without a browser (O8, O13)**
+- **Found:** eSISRAF (MQA's foreign-degree register) can be read by a script. The page gets its data from
+  `get_negara.cfm`, `get_institusi_json.cfm` and `get_result.cfm`. The old note saying it needs a browser
+  was wrong. Read this way, MIT gave the same 4 rows as the 17 Oct browser check.
+- **Size:** 27 lists hold 493 rows but only 207 different universities, 101 of them used more than once.
+  One lookup is about 3 requests, so a full client takes minutes. Nothing needs storing in advance.
+- **The catch:** matching names. Loose search words hit the wrong place: "MASSACHUSETTS" returns Amherst
+  first, "MELBOURNE" also returns RMIT, Monash has 5 entries, and NTU only finds an old "Nanyang Univ."
+  entry with no rows. So the one thing worth keeping is a short file of matched register names.
+- **Results for the 14 sample universities (read 30 Oct):**
+  - Named mechanical or mechatronics rows: Monash Clayton (Mechanical, Mechatronics), UNSW (Mechanical,
+    Mechatronics), Melbourne (Mechanical and Manufacturing only).
+  - Broad Bachelor of Science row only: MIT, Princeton, Stanford, Harvard, Rose-Hulman, Northeastern.
+  - University listed, but no engineering row: NUS, Cambridge, Imperial.
+  - Chinese-language studies rows only: Tsinghua.
+  - Not listed: NTU.
+- **How to read that:** it's the public-service register, listed by broad field. "No row" doesn't mean a
+  degree isn't recognised, and a listing doesn't prove the engineering route. Accreditation and the
+  professional body stay the real gate, so the wording on the list matters more than the lookup.
+- **Can the professional bodies' sites be reached? (plain script, front pages only, 30 Oct)** Refused:
+  BEM and EAC (406), MIA (403). Loaded: MMC, LAM, MBOT, Engineers Australia, Engineering Council, ABET
+  (a tiny page) and Pharmacy Board (a tiny page). Malaysian engineering programmes can't be confirmed from
+  EAC's own PDFs, so helpers use the university's page and MQR. The ABET lookup in R16 hasn't been run.
 
 **Two forms, and how many grades Evan still checks**
 - Split the intake into a list form and a report form (`plans/intake_forms_plan.md`). The report

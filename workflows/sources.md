@@ -103,7 +103,7 @@ this is only where each body's register is.
 | Answers | URL | Fetch |
 |---|---|---|
 | Is a **Malaysian** programme MQA-registered? (the searchable register) | `https://www2.mqa.gov.my/mqr/` | free |
-| Is a **foreign** qualification recognised in Malaysia? (eSISRAF; the search is at `kelayakan.cfm`) | `https://www2.mqa.gov.my/esisraf/kelayakan.cfm` | **browser** |
+| Is a **foreign** qualification recognised in Malaysia? (eSISRAF; the search is at `kelayakan.cfm`) | `https://www2.mqa.gov.my/esisraf/kelayakan.cfm` | **script** |
 | MQA generally | `https://www.mqa.gov.my/` | free |
 | **Engineering** — Board of Engineers Malaysia (registration) | `https://www.bem.org.my/` | **blocked** |
 | **Engineering** — Engineering Accreditation Council (accredited programmes, Washington Accord) | `http://www.eac.org.my/` | **quirk** |
@@ -120,10 +120,15 @@ down" rather than "wrong address": **EAC serves `http://` only** — `https://ww
 TLS handshake outright. **LPQB works on the bare host only** — `https://www.lpqb.org.my/` fails TLS,
 `https://lpqb.org.my/` is fine.
 
-**eSISRAF can only be read in a real browser (checked 2026-10-17, MIT).** A plain `WebFetch` of
-`kelayakan.cfm` returns only the four column headings. The lists are filled in by the page's own
-scripts after you choose a country, and the results only appear after you choose an institution.
-To look a university up:
+**eSISRAF needs no browser (corrected 2026-10-30, the 2026-10-17 note said it did).** `WebFetch` of
+`kelayakan.cfm` returns only the column headings, because the page fills itself in. Call its three
+data addresses directly with a plain GET, one request a second:
+`get_negara.cfm?term=<country>` → `get_institusi_json.cfm?term=<word>&kod_negara=<id>` →
+`get_result.cfm?negara=<id>&institusi=<id>&bidang=&program=` (HTML table; last two columns are field
+and qualification). Both lists return JSON `[{id, label}]`, cut at about 20 entries, so search a
+specific word. Match the full institution name: loose words land on the wrong entry (`MASSACHUSETTS`
+→ Amherst, `MELBOURNE` → RMIT, Monash has 5 entries, `NANYANG` → an old entry that is not NTU). China
+is `REPUBLIK RAKYAT CHINA`; searching `CHINA` finds it. To read it by hand instead:
 1. Open `kelayakan.cfm` in Chrome.
 2. In **Negara** (country), type the English country name, e.g. `UNITED`, then pick `UNITED STATES`.
    The Malay name (`AMERIKA`) finds nothing.
