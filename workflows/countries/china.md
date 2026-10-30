@@ -117,7 +117,7 @@ international tracks generally, and they bit every row of a 6-university enginee
    date.** Chinese universities publish one cycle at a time. Copying the most recent closed date
    (e.g. `2026-06-30`) makes `feasibility_flags()` stamp **"Deadline passed"**, which tells a
    student they *missed* something when the truth is it *hasn't opened*. Use
-   `Not published — check portal` and put the historical date in `research_notes`.
+   `Not published` and put the historical date in `research_notes`.
 
 6. **HSK is usually not required for admission to an English-taught track, but may be required to
    graduate** — confirmed not-required for admission at BIT and WHUT; the graduation requirement

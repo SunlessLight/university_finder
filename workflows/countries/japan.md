@@ -55,7 +55,7 @@ redirects to a not-found page); start at the `/en/` root and navigate.
 > **Intake ≠ September.** The Japanese academic year starts in **April**; many EMI/G30 programs *also*
 > run an **autumn (Sept/Oct)** intake, but not all. Reconcile against `preferences.intake` (Sept 2027)
 > per program rather than assuming — and **never fabricate a `key_deadline`**; where none is published,
-> use the sentinel (`Rolling` / `Not published — check portal`).
+> use the sentinel (`Rolling` / `Not published`).
 >
 > **MEXT is the scholarship story** — the government scholarship (embassy-recommended or
 > university-recommended) can cover tuition + a monthly stipend + airfare, but it is **highly

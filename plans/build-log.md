@@ -218,3 +218,9 @@ Entry format:
 - Decisions (and why): only USA (Common Data Set C1), UK Oxford/Cambridge and Japan (each university's 入試結果, international track) publish one; everything else is "None published", so the PDF cell will say `Not published` rather than an aggregator's guess. UCAS data counts acceptances, not offers, so no rate is derived from it.
 - Problems / lessons: Chrome can't read some government PDFs as text, and Evan stopped the web-fetch helpers and an extra Chrome tab mid-run. For a page or PDF that's stuck, asking Evan to download or check it by eye was faster.
 - Next step: Stage 2 of the list PDF plan (T4, T5, T6), target 3 Nov.
+
+## 2026-10-30 (2) · T5 research instructions (list PDF plan)
+- Done: `row-filler.md` has a "Fixed-format cells" rule (money, ranks, Application requirements vocabulary, Checked on = today, Admit rate only from the country file's source, deadline `Not published`) and a no-hedge-words rule; `03b_candidate_schema.md` example fragment rewritten to the new formats (every value passes `cell_format_problem()`); `03_discover_longlist.md` sentinels, column count (38) and country-constants example updated. T5 ticked.
+- Decisions (and why): the formats live once, in `row-filler.md`, because backfill helpers read that file and skip 03b; the other two files point there. The Admission likelihood override stays, for balancing the Reach/Match/Safety spread only.
+- Problems / lessons: three country files (Australia, China, Japan) still tell helpers to write `Not published — check portal`; outside T5's write list, so left for Evan's yes.
+- Next step: the rest of Stage 2 (T4 checks, T6 PDF builder).

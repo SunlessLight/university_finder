@@ -2,7 +2,7 @@
 
 ## Objective
 
-Produce, for **ONE country per session**, 8-12 university+course rows in `master_list.csv` with **all 35
+Produce, for **ONE country per session**, 8-12 university+course rows in `master_list.csv` with **all 38
 columns filled from official sources**. Every row is a **Longlist** row the student can cut on at a
 glance; Stage 4 no longer re-verifies it, it only writes reports on the survivors.
 
@@ -14,9 +14,10 @@ glance; Stage 4 no longer re-verifies it, it only writes reports on the survivor
 >
 > **Completeness must never become invention.** The counterweight is `SENTINEL_VALUES` in
 > `tools/shortlist_schema.py`: the honest ways to say there is no answer — `Rolling` /
-> `Not published — check portal` for a deadline, `Not ranked` for a rank a university genuinely
+> `Not published` for a deadline, `Not ranked` for a rank a university genuinely
 > doesn't hold, `No statistics published` for scholarship odds, `Not published` for a grade bar,
-> `None` for clean warnings. A sentinel is for *"there is no answer"*, never for *"I didn't find it"* —
+> application requirements or admit rate, `None` for clean warnings. (`Not published — check portal`
+> is a `LEGACY_SENTINELS` value: old lists still pass with it, nothing writes it since 2026-10-30.) A sentinel is for *"there is no answer"*, never for *"I didn't find it"* —
 > if the fact exists and you couldn't reach it, say so in `notes`.
 
 > **The longlist is a SCANNING surface, not a report.** A row carries only what the student needs in
@@ -29,7 +30,7 @@ glance; Stage 4 no longer re-verifies it, it only writes reports on the survivor
 ## Tools used (in order)
 
 **One country per session.** Do not run two in one pass — that is what keeps this session's context
-small enough to research 35 columns a row, and it's now a hard gate (`--country` on both tools).
+small enough to research 38 columns a row, and it's now a hard gate (`--country` on both tools).
 
 ```
 0. Pick the country      — from the files, never ask. See "Pick the next country".
@@ -180,15 +181,18 @@ Research **once** what every row in this country would otherwise re-research 10 
   "post_study_work": "485 graduate visa, 2-3 yrs; +1 yr in designated regional areas",
   "application_system": "Direct to each university (or an agent portal)",
   "intakes": "Semester 1 late Feb; Semester 2 late July. NO September intake.",
-  "living_benchmark_per_year": "AUD 29,710 (official); Sydney/Melbourne ~20-40% above",
+  "living_benchmark_per_year": "AUD 29,710",
   "recognition_route": "Washington Accord via Engineers Australia; check MQA recognition per programme",
-  "ranking_source": "QS 2026 subject + overall",
   "notes": "Domestic (Commonwealth Supported) fees appear beside international fees on the same page."
 }
 ```
 
 Fill only the keys that are genuinely country-wide. A row-filler is told to prefer a real per-university
-exception over these when one exists — and to say so in `research_notes` when it does.
+exception over these when one exists — and to say so in `research_notes` when it does. Values are pasted
+into cells verbatim, so they follow the cell rules too: money as `<ISO> <number>`, no hedge words
+(`~`, `likely`, `usually`), city-by-city spreads go in `notes`. No ranking key: the edition is fixed
+(`RANKING_EDITION` in `--contract`). Admit rates are per university, never a constant: the country
+file's `## Admit rate source` says where (or that none is published).
 
 ## Step 3 — Row fill (parallel `row-filler` subagents)
 
@@ -230,7 +234,9 @@ The full candidate schema — every required field, the field notes on `currency
 `meets_english`, the `entry_margin` vs `admission_likelihood` distinction, the cell-budget readability
 rules, the 0-5 scoring guide, and the `recognition_fit`/branch-campus/home-country scoring notes — now
 lives in **`workflows/03b_candidate_schema.md`**. Row-fillers read it in full before writing their
-fragment; the main session doesn't need it and shouldn't load it.
+fragment; the main session doesn't need it and shouldn't load it. The fixed cell formats (money, ranks,
+`Application requirements` vocabulary, `Checked on`, `Admit rate`, no hedge words) live in
+`.claude/agents/row-filler.md` → "Fixed-format cells", since backfill dispatches read that and not 03b.
 
 ## Steps 4-6 — Merge, sync, check
 
@@ -276,7 +282,8 @@ by `course_key`, so it silently *skips* a university already on the list rather 
 1. python tools/check_master_list.py --student <slug> --blanks
                            the brief: each row's blank columns, grouped by university.
 2. Write the shared context ONCE            -> data/students/<slug>/plans/<n>_<country>_backfill.md
-                           student profile, cell budgets, sentinels, any paste-don't-research
+                           student profile, cell budgets, sentinels, cell formats
+                           (row-filler.md "Fixed-format cells"), any paste-don't-research
                            constants (e.g. the visa figure), and the per-university column lists.
 3. Dispatch row-filler in BACKFILL mode     -> .tmp/<slug>/backfill/<uni-slug>.json
                            parallel, one per university. Each prompt = the plan file's path,
@@ -395,7 +402,7 @@ computed column (`Desirability`, `Tier`, `Admission likelihood`, `Grades vs entr
 
 ## Done when
 
-For **this country**: 8-12 rows in `master_list.csv`, every one of the 35 columns populated,
+For **this country**: 8-12 rows in `master_list.csv`, every one of the 38 columns populated,
 `merge_candidates.py` and `check_master_list.py` both clean, and `status.md` naming the next country.
 
 **Token log (until 2 Dec 2026, Evan's capacity check):** before closing, add one entry to

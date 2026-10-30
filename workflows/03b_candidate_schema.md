@@ -28,15 +28,15 @@ from tuition + living × duration"*, which is the normal case.
   "course": "BSc Computer Science",
   "country": "UK",
   "city": "Manchester",
-  "subject_rank": "QS CS #51-100",
-  "overall_rank": "QS #34",
+  "subject_rank": "51-100",
+  "overall_rank": "34",
   "entry_requirements": "AAA incl. Maths",
   "student_grades": "AAA (predicted)",
   "english_req": "IELTS 6.5 (6.0)",
   "meets_english": true,
-  "annual_tuition": "GBP 30000",
-  "total_tuition": "GBP 90000",
-  "est_living_per_year": "GBP 12000",
+  "annual_tuition": "GBP 30,000",
+  "total_tuition": "GBP 90,000",
+  "est_living_per_year": "GBP 12,000",
   "duration_years": 3,
   "currency": "GBP",
   "total_cost_programme": "",
@@ -44,7 +44,7 @@ from tuition + living × duration"*, which is the normal case.
   "scholarship_coverage": "GBP 5,000/yr off tuition, renewable for all 3 years",
   "scholarship_competitiveness": "No statistics published",
   "scholarship_how_to": "Automatic on the UCAS application; no separate form. Decisions with the offer.",
-  "funds_proof": "~GBP 12,000 living costs shown for the visa, plus first-year tuition",
+  "funds_proof": "GBP 12,000 living costs shown for the visa, plus first-year tuition",
   "post_study_work": "2 yrs work rights after graduating (Graduate Route)",
   "recognised_back_home": "MQA recognised; no professional body needed for pure CS",
   "application_system": "UCAS",
@@ -58,8 +58,11 @@ from tuition + living × duration"*, which is the normal case.
   "pathway_option": "INTO Manchester Foundation if below AAA",
   "course_at_a_glance": "3-yr BSc, broad first year then pick a specialism",
   "student_life": "Large city campus, strong industry-placement culture",
-  "notes": "Fees confirmed on the course page for 2026/27 entry; 2027 rate not yet published.",
+  "notes": "Fee is the 2026/27 rate from the course page; 2027 rate not yet published.",
   "research_notes": "Fee page read 2026-07-29 ... (free length — the depth the cells can't hold)",
+  "application_requirements": "Personal statement · 1 recommendation letter",
+  "checked_on": "2026-07-29",
+  "admit_rate": "Not published",
   "scores": {
     "course_match": 5,
     "subject_reputation": 4,
@@ -87,8 +90,12 @@ from tuition + living × duration"*, which is the normal case.
     so decide it: compare the student's test/score in `profile.english_proficiency` against the
     university's stated bar. It is a strict identity check, so the string `"No"` does **not** trigger
     the flag. The requirement itself goes in `english_req`, which *is* a column.
-- Put a date in `key_deadline` as `YYYY-MM-DD` so it parses (extra text after the date is fine). Where
-  the university publishes none, write the sentinel — `Rolling` or `Not published — check portal`.
+- **Fixed-format fields** — money, ranks, `application_requirements`, `checked_on`, `admit_rate`,
+  `key_deadline` — follow `.claude/agents/row-filler.md` → "Fixed-format cells" (shapes, vocabulary,
+  sources); `merge_candidates.py` rejects a miss. No hedge words (`likely`, `usually`, `confirm`, `~`)
+  in any field that becomes a cell; doubt and calculations go in `research_notes`.
+- Put a date in `key_deadline` as `YYYY-MM-DD` so it parses. Where the university publishes none,
+  write the sentinel — `Rolling` or `Not published`.
 - **`source_authority` is `"Official page"` at Stage 3 now**, because Stage 3 is where hard facts get
   verified (the pre-flight moved here on 2026-07-29 — Stage 4 is report-only). Leave `"Not verified"`
   **only** on a row whose facts you genuinely could not confirm on an official page, and say which fact
@@ -96,7 +103,7 @@ from tuition + living × duration"*, which is the normal case.
   `Info source` column takes.
 - **Sentinels, not blanks, not guesses.** Every field is required, so a fact that genuinely doesn't
   exist takes its column's sentinel from `SENTINEL_VALUES` (`Not ranked`, `Rolling`,
-  `Not published — check portal`, `No statistics published`, `not_published` as an `entry_margin`).
+  `Not published`, `No statistics published`, `not_published` as an `entry_margin`).
   A fact that *does* exist but you couldn't reach is not a sentinel case — name the gap in `notes`.
 
 > **`entry_margin` means ONE thing: grades vs the published academic bar.** **+2** well above …
@@ -114,8 +121,10 @@ from tuition + living × duration"*, which is the normal case.
 > ```json
 > "entry_margin": 2, "admission_likelihood": "Reach", "admission_reason": "very selective"
 > ```
-> which renders **`Reach (very selective)`** and answers the student's real question: *why is a
-> university I qualify for still a long shot?* Keep `admission_reason` under 24 characters.
+> which renders **`Reach (very selective)`** in the internal `Admission likelihood` column. Keep
+> `admission_reason` under 24 characters and always set it with the override. **The override is for
+> balancing only** (the Reach/Match/Safety spread of the shortlist); the student never sees it — what
+> they see is `admit_rate`, the university's own published figure (decided 2026-10-29, R40).
 > Where a university publishes **no** academic bar at all (holistic US admission, or a profile
 > you genuinely could not retrieve), set `Grades vs entry bar` to **`Not published`** — saying so
 > beats inventing a comparison. There is no `fits_grades` field any more; the column is derived.

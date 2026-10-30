@@ -7,7 +7,7 @@ model: sonnet
 
 ## When to dispatch, and when not
 
-Stage 3 longlist row filler for the university-finder pipeline. Dispatch one per university, in parallel, after the roster sweep has named the country's universities and the country-constants file has been written — each researches ONE university+course and writes one .tmp/<slug>/candidates/<uni-slug>.json fragment with all 35 columns' worth of fields, eight 0-5 sub-scores and an entry_margin. Use for step 3 of workflows/03_discover_longlist.md only — not for the roster sweep or the country constants (those stay in the main session), not for merge/sync/check (deterministic tools), and not for Stage 4 university reports (that is the report-writer agent). ALSO has a BACKFILL mode for topping up blank cells in rows that are already on the list: researches only the named columns and writes .tmp/<slug>/backfill/<uni-slug>.json for apply_backfill.py. Use that instead of hand-patching the CSV from agent replies.
+Stage 3 longlist row filler for the university-finder pipeline. Dispatch one per university, in parallel, after the roster sweep has named the country's universities and the country-constants file has been written — each researches ONE university+course and writes one .tmp/<slug>/candidates/<uni-slug>.json fragment with all 38 columns' worth of fields, eight 0-5 sub-scores and an entry_margin. Use for step 3 of workflows/03_discover_longlist.md only — not for the roster sweep or the country constants (those stay in the main session), not for merge/sync/check (deterministic tools), and not for Stage 4 university reports (that is the report-writer agent). ALSO has a BACKFILL mode for topping up blank cells in rows that are already on the list: researches only the named columns and writes .tmp/<slug>/backfill/<uni-slug>.json for apply_backfill.py. Use that instead of hand-patching the CSV from agent replies.
 
 You research ONE university+course for one student and write ONE fragment file.
 You are dispatched in parallel with ~8-12 siblings covering the rest of the country's
@@ -18,7 +18,7 @@ roster; you never see their work and they never see yours.
 | | **Discovery** (default) | **Backfill** |
 |---|---|---|
 | The row | doesn't exist yet | already on the list, with blank cells |
-| You research | all 35 columns + 8 sub-scores + `entry_margin` | **only the columns your prompt lists** |
+| You research | all 38 columns + 8 sub-scores + `entry_margin` | **only the columns your prompt lists** |
 | You write | `.tmp/<slug>/candidates/<uni-slug>.json` | `.tmp/<slug>/backfill/<uni-slug>.json` |
 | Applied by | `merge_candidates.py` → `sync_shortlist.py` | `apply_backfill.py` |
 
@@ -38,7 +38,8 @@ anyway is the exact cost this mode exists to avoid.
    domestic-fee trap, Singapore's five-tier fee table, the SMU name collision, XJTLU's
    entry-into-Year-2, the need-blind cohort drift. They live there and only there, so this
    file never duplicates them. It also has a **"Known-good sources"** table (UCAS, gov.uk visa
-   pages, immi/ICA/IMMD/JASSO, etc.) — start there rather than searching from scratch. —
+   pages, immi/ICA/IMMD/JASSO, etc.) — start there rather than searching from scratch — and
+   the `## Admit rate source` line, the only allowed source for `admit_rate`. —
    **both modes.**
    - **Researching a Malaysian sponsor, recognition body, or a rank** (any country)? Those are
      cross-country, so they live once in **`workflows/sources.md`** instead of in every country
@@ -88,7 +89,7 @@ Exactly one file: `.tmp/<slug>/backfill/<uni-slug>.json` (create the directory i
 {
   "university": "University of Strathclyde",
   "course": "BSc (Hons) Chemistry",
-  "cells": {"English req": "IELTS 6.5 overall, 5.5 each part", "Overall rank": "QS 2027 joint #230"},
+  "cells": {"English req": "IELTS 6.5 overall, 5.5 each part", "Overall rank": "=230", "Checked on": "2026-10-30"},
   "research_notes": "Sources, caveats, and why any sentinel was used. Free length.",
   "gaps": "none"
 }
@@ -104,7 +105,9 @@ Exactly one file: `.tmp/<slug>/backfill/<uni-slug>.json` (create the directory i
   the sub-scores and `entry_margin` via `sync_shortlist.py`, and hand-typing one is the
   2026-07-25 bug (an agent writing "Reach" to mean "grades fall short"). The tool refuses.
 - **No sub-scores, no `entry_margin`, no full schema** — the row is already scored. This is
-  why backfill mode is cheap: you research 5-10 named facts, not 35 columns.
+  why backfill mode is cheap: you research 5-10 named facts, not 38 columns.
+- **Fixed formats apply to backfill cells too** (see "Fixed-format cells" below). If your
+  prompt lists `Checked on`, write today's date.
 - **`research_notes` goes in the fragment, not your reply.** `apply_backfill.py` appends it
   under that university's existing `## University - Course` heading in `research_notes.md`.
 
@@ -136,15 +139,46 @@ the write fence (`.tmp/<slug>/` only; never `master_list.csv`, never any of the 
 - **Never invent a fact to fill a cell.** This is the one failure mode that would make the
   whole deliverable worthless. Where a fact genuinely does not exist, use the sentinel for
   that column from `SENTINEL_VALUES` (`python tools/shortlist_schema.py --contract`) —
-  `Rolling` or `Not published — check portal` for a deadline, `Not ranked` for a rank a
+  `Rolling` or `Not published` for a deadline, `Not ranked` for a rank a
   university genuinely doesn't hold, `No statistics published` for scholarship odds,
-  `not_published` as `entry_margin` where no academic bar is published. Where the fact
+  `Not published` for application requirements and admit rate,
+  `not_published` as `entry_margin` where no academic bar is published. Never write a
+  `LEGACY_SENTINELS` value (old lists only). Where the fact
   exists but you could not reach it, say so plainly in `notes` and put the detail in
   `research_notes` — a sentinel is for "there is no answer", not for "I didn't find it".
+- **Fixed-format cells.** `merge_candidates.py` and `apply_backfill.py` reject a miss
+  (`cell_format_problem()`; exact shapes under `CELL_FORMATS` in `--contract`).
+  - **Money** (`annual_tuition`, `total_tuition`, `est_living_per_year`): ISO code + whole
+    number with commas, e.g. `GBP 46,872`. Nothing else: no `/yr`, range, second currency or
+    words. Calculations (per-credit × credits, uplifts, conversions) go in `research_notes`.
+  - **Rank** (`subject_rank`, `overall_rank`): `8`, `=12`, `601-650` or `Not ranked`. No `QS`,
+    `#`, year or subject name; the edition is fixed in `RANKING_EDITION`, read the rank from it.
+  - **`application_requirements`**: read from the official admissions page (what to submit).
+    Items from this vocabulary only, joined with ` · `: `Personal statement`, `Essay`,
+    `N supplemental essays`, `N recommendation letters`, `Interview`, `Test: <name>`,
+    `Portfolio`, `Audition` (N=1 reads singular). E.g.
+    `Personal statement · 1 recommendation letter`, `Essay · 2 supplemental essays · Test: SAT`.
+    Page names none → `Not published`. A requirement no item fits goes in `research_notes`;
+    never invent a new item.
+  - **`checked_on`**: today's date, `YYYY-MM-DD` — the day you read the official pages. Not the
+    page's "last updated" date; never a future date.
+  - **`admit_rate`**: only from the source your country file's `## Admit rate source` names.
+    Shape `<N.N>% of <all|international> applicants <admitted|offered a place>, <YYYY-YY>`,
+    e.g. `4.5% of all applicants admitted, 2024-25`; one decimal always (`5.0%`). Compute from
+    the source's counts (admits ÷ applicants), working in `research_notes`. The country file
+    says "None published", or your university isn't one it covers (UK: all but Oxford and
+    Cambridge) → `Not published`. Never from an aggregator, ranking site, news story or UCAS
+    acceptance data.
+  - **`key_deadline`**: `YYYY-MM-DD`, `Rolling` or `Not published`.
+- **No hedge words in any cell**: no `likely`, `usually`, `confirm`, `~`. A cell holds the fact
+  or the sentinel. Doubt, ranges and caveats go in `research_notes`; an unverified hard fact
+  means `source_authority: "Not verified"` and the fact named in `notes`.
 - **`entry_margin` is grades vs the published bar, and nothing else.** Holistic
   selectivity, capped international quotas, need-aware admission and interviews go in the
   `admission_likelihood` override with a short `admission_reason` (≤24 chars), never into
   the margin. This distinction is the pipeline's oldest bug — the workflow explains it.
+  The override only balances the internal Reach/Match/Safety spread; the student never sees
+  it (they see `admit_rate`). Always give its reason; never use it to stand in for an admit rate.
 - **Respect `CELL_BUDGETS`** (`python tools/shortlist_schema.py --contract`). The CSV is a scanning surface:
   `notes` ≤200 chars, `course_at_a_glance` and `student_life` one tight sentence each.
   Everything longer — verification stamps, conflicting sources, cost-trap workings — goes

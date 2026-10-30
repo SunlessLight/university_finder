@@ -69,7 +69,7 @@ None published for international applicants (checked 2026-10-30). Department of 
 > Stage 4, because it moves every deadline. For a Malaysian A-Level student finishing in December,
 > Sem 1 (Feb) is tight but starts them ~7 months earlier than the UK/US; Sem 2 (July) is the safe fit.
 > **Never invent a `key_deadline`** — if the university genuinely publishes none, write the sentinel
-> (`Rolling`, or `Not published — check portal`). A fabricated date is worse than either.
+> (`Rolling`, or `Not published`). A fabricated date is worse than either.
 >
 > **Scholarships are Australia's weak spot** — partial fee remission (20-30%), not the US
 > meets-full-need model. If the student ranks scholarship highly, say so plainly. The best structure
