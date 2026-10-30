@@ -5,7 +5,7 @@ done, delete it and its line in the steps below, and write one line in `plans/bu
 History: the full file up to 2026-10-28 (every closed entry, the old lane and round plans) is in
 git: `git show 10b847c:business/additionals.md`. Decisions are in `decisions/log.md`.*
 
-*Adding an entry: the next number is **R41**. Say whether it is **urgent**, and whether it is a
+*Adding an entry: the next number is **R42**. Say whether it is **urgent**, and whether it is a
 **tool gap** (the system will keep making the mistake) or **stale data** (old files only). Plain
 English, no student named, no grades, income or school. Then add it to a step below.*
 
@@ -36,7 +36,7 @@ English, no student named, no grades, income or school. Then add it to a step be
 | **9** | R33, R34 (reports; plan R34 first). **Before the first paid report goes out**, even if that is before 10 Nov | `tools/flip_finalists.py`, `tools/build_report.py`, `tools/check_report.py`, `workflows/04_university_report.md`, `.claude/agents/report-writer.md` | nothing | Medium |
 | **10** | R30 part b, R35 (glossary facts, calendar, apply guide) | `tools/apply_glossary.py`, `tools/build_calendar.py`, `tools/build_application_prep.py`, `.claude/skills/application-guide/SKILL.md`, `workflows/05_decide_and_apply.md`, `workflows/08_application_prep.md` | step 2b (same glossary file) | Medium |
 
-**Not a session** (Evan's own, a reply someone owes, or a measurement): I3, I4, R9, R11, N1 / U4 / V2, V3, **R26 and R37 (before 10 Nov)**.
+**Not a session** (Evan's own, a reply someone owes, or a measurement): I3, I4, R9, R11, N1 / U4 / V2, V3, R41, **R26 and R37 (before 10 Nov)**.
 
 **The fact audit (2026-10-28)** is behind R26–R37: [fact_audit/00_START_HERE.md](../fact_audit/00_START_HERE.md),
 with nine detailed reports beside it. Each entry names its report and finding numbers (e.g. "03 #16").
@@ -396,6 +396,12 @@ with nine detailed reports beside it. Each entry names its report and finding nu
   - Decide in the plan what replaces Reach/Match/Safety in the balanced-shortlist rule (e.g. kept
     for balancing only and not shown, or balance on grades + admit rate). Then update the
     `CLAUDE.md` guardrail, the T2 definition, the PDF and the sample, and log it in `decisions/log.md`.
+
+#### R41. Evan still looks at every student's tidied grades by hand
+Not urgent, and on purpose. A measurement, not a bug. Since 30 Oct AI tidies free-text grades and
+`check_grades.py` checks them, and Evan looks at raw vs tidied for 30 seconds. **Suggested fix:**
+once 20 forms in a row need no correction (tally: `plans/discussions.md`), drop the look from
+`workflows/01_intake.md` finalize step 1. Keep the script.
 
 ---
 

@@ -294,9 +294,18 @@ def check_structure(sections, mode, ambiguous):
 # A --quick report (workflows/quick_university_report.md) omits both by design — there is no
 # grade margin to compute admission_likelihood from, and no priorities to rank.
 QUICK_OMITTED_ROWS = {"Admission likelihood", "Your priorities"}
+# A report order (report form, no list) has grades, so it keeps admission_likelihood, but the
+# form never asks for priorities.
+REPORT_ORDER_OMITTED_ROWS = {"Your priorities"}
 
 
-def check_snapshot(sections, mode, quick=False):
+def is_report_order(md_path):
+    """True for a report in a student folder that has no master_list.csv."""
+    student_dir = md_path.parent.parent
+    return (student_dir / "profile.json").exists() and not (student_dir / "master_list.csv").exists()
+
+
+def check_snapshot(sections, mode, quick=False, report_order=False):
     """Every Snapshot fact row present and filled.
 
     _fact_table() silently SKIPS a field whose value is empty, so a missing row is the only
@@ -306,6 +315,7 @@ def check_snapshot(sections, mode, quick=False):
 
     quick=True drops QUICK_OMITTED_ROWS from the required set — a standalone report has no
     student profile to compute either from, so their absence is correct, not a finding.
+    report_order=True drops REPORT_ORDER_OMITTED_ROWS the same way.
     """
     body = find_section(sections, "Snapshot")
     if body is None:
@@ -322,6 +332,8 @@ def check_snapshot(sections, mode, quick=False):
         wanted = SNAPSHOT_ROWS[mode]
     if quick:
         wanted = [label for label in wanted if label not in QUICK_OMITTED_ROWS]
+    if report_order:
+        wanted = [label for label in wanted if label not in REPORT_ORDER_OMITTED_ROWS]
     for label in wanted:
         if label not in rows:
             out.append(f"Snapshot has no {label!r} row — the research JSON left that field empty")
@@ -534,7 +546,7 @@ def check_tables(sections, mode):
 
 # --- Driver ----------------------------------------------------------------------------
 
-def run(text, wanted, student_name=None, quick=False):
+def run(text, wanted, student_name=None, quick=False, report_order=False):
     """(mode, {check: [findings]}) for one report's Markdown."""
     _, sections = parse_report(text)
     if not sections:
@@ -549,7 +561,7 @@ def run(text, wanted, student_name=None, quick=False):
     if set(h for _, h, _ in sections) != set(expected_headings(mode)):
         return mode, results
     if "snapshot" in wanted:
-        results["snapshot"] = check_snapshot(sections, mode, quick=quick)
+        results["snapshot"] = check_snapshot(sections, mode, quick=quick, report_order=report_order)
     if "notfound" in wanted:
         results["notfound"] = check_notfound(sections, mode)
     if "sources" in wanted:
@@ -584,7 +596,7 @@ def check_one(md_path, wanted, slug, limit, quick=False):
     """Lint one report, print its block, return the finding count."""
     text = md_path.read_text(encoding="utf-8")
     name = student_name_for(md_path, slug)
-    mode, results = run(text, wanted, student_name=name, quick=quick)
+    mode, results = run(text, wanted, student_name=name, quick=quick, report_order=is_report_order(md_path))
 
     total = sum(len(v) for v in results.values())
     label = md_path.relative_to(REPO_ROOT) if md_path.is_relative_to(REPO_ROOT) else md_path

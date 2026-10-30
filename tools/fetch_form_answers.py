@@ -7,6 +7,7 @@ tools/appsscript/Code.gs). Questions are tracked in forms/; answers are personal
 (PDPA), so they go only to gitignored folders:
 
     intake               -> data/form/intake_answers.csv
+    report_intake        -> data/form/report_answers.csv
     report_feedback      -> data/feedback/report_feedback.csv
     spreadsheet_feedback -> data/feedback/spreadsheet_feedback.csv
     survey               -> data/feedback/survey.csv
@@ -42,6 +43,7 @@ FEEDBACK_DIR = REPO_ROOT / "data" / "feedback"
 
 OUTPUTS = {
     "intake": FORM_DIR / "intake_answers.csv",
+    "report_intake": FORM_DIR / "report_answers.csv",
     "report_feedback": FEEDBACK_DIR / "report_feedback.csv",
     "spreadsheet_feedback": FEEDBACK_DIR / "spreadsheet_feedback.csv",
     "survey": FEEDBACK_DIR / "survey.csv",

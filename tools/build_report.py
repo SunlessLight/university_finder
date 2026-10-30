@@ -463,6 +463,10 @@ def main():
     if args.quick:
         # No master_list.csv row exists for a quick report — nothing to flip, nothing to reconcile.
         return
+    if not (STUDENTS_DIR / args.student / "master_list.csv").exists():
+        # A report order (report form, no list bought): same, the student just has a folder.
+        print("No master_list.csv for this student, so no finalist marker: the report is the deliverable.")
+        return
 
     write_finalist_marker(args.student, slug, data, args.mode)
     dates_path = save_dated_items(STUDENTS_DIR / args.student, slug, data, args.mode)

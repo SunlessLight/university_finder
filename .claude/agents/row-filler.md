@@ -184,6 +184,11 @@ the write fence (`.tmp/<slug>/` only; never `master_list.csv`, never any of the 
   the margin. This distinction is the pipeline's oldest bug — the workflow explains it.
   The override only balances the internal Reach/Match/Safety spread; the student never sees
   it (they see `admit_rate`). Always give its reason; never use it to stand in for an admit rate.
+- **Read `current_program.type` before comparing grades.** Not every student does A-Levels.
+  Compare against the bar the university publishes for that programme (STPM, UEC, IB, Foundation,
+  Matriculation, Diploma). If it publishes none, the grade bar is `Not published` and
+  `entry_margin` is `not_published`. Never convert the student's grades to A-Level equivalents by
+  guesswork.
 - **Respect `CELL_BUDGETS`** (`python tools/shortlist_schema.py --contract`). The CSV is a scanning surface:
   `notes` ≤200 chars, `course_at_a_glance` and `student_life` one tight sentence each.
   Everything longer — verification stamps, conflicting sources, cost-trap workings — goes

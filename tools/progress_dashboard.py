@@ -31,6 +31,7 @@ STUDENTS_DIR = REPO_ROOT / "data" / "students"
 # rank = how far along overall, used both to bucket the summary counts and to sort the table
 # furthest-along first.
 STAGE_LABELS = {
+    -1: "Report order",  # report form, no list bought: not stuck at Stage 1, there are no later stages
     0: "Stage 1 not started",
     1: "Stage 1 needs review",
     2: "Stage 3 not started",
@@ -120,6 +121,14 @@ def summarize_student(student_dir):
     finalist_count = s3["counts"].get("Finalist", 0) if s3 else 0
 
     reports_done, reports_total = stage4_detail(student_dir / "reports", finalist_count)
+    orders = (profile or {}).get("report_orders")
+    if orders and rows is None:
+        return {
+            "slug": student_dir.name,
+            "overall": STAGE_LABELS[-1],
+            "rank": -1,
+            "detail": f"{len(orders)} ordered, {reports_done} reports",
+        }
     s5 = stage5_status(student_dir)
 
     apply_prep_dir = student_dir / "application_prep"

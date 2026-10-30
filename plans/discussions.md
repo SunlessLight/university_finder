@@ -18,8 +18,19 @@
 | O7 | Store researched universities and reuse them for the next student | Good idea, after the pilot. See 2026-10-29 below | 2026-10-29 |
 | O8 | The demo says "15 of 15 rows are checked", but four facts aren't confirmed yet | Check the MQA register in Chrome before the 3 Nov printed sample, and fix the other three before the sample goes public. See 2026-10-30 below | 2026-10-30 |
 | O9 | The sample's dates go out of date during the pilot | Keep Cambridge in the top 5 for now; before 10 Nov, reword the Decide screen's "early round on 1 Nov". See 2026-10-30 below | 2026-10-30 |
+| O10 | Both forms now ask "Full Name (As in IC)", but the consent notice says "nickname" and folder names come from this answer | Change both titles back to "Nickname": fewer real names held, and the notice is already correct. If Evan needs real names to match payments, change the notice (English and Malay) instead | 2026-10-30 |
+| O11 | The list form asks the result month but no longer the year | Add "What year does your actual result come out?" back, 2026 / 2027 / 2028. The script already reads it; without it, every student raises a "no year" review line | 2026-10-30 |
+| O12 | The list form no longer asks for achievements | Fine to leave off: the list doesn't use them. Stage 4 and the apply guide do, so ask at that point if a list buyer goes on to a report | 2026-10-30 |
 
 ## 2026-10-30
+
+**Two forms, and how many grades Evan still checks**
+- Split the intake into a list form and a report form (`plans/intake_forms_plan.md`). The report
+  includes "your fit", grades are one text box for every programme, and budget stays a dropdown.
+- **20-clean-forms tally: 0 of 20.** AI tidies the grades and a script checks them. Evan looks at raw
+  vs tidied for 30 seconds until 20 forms in a row need no correction, then the look stops (R41).
+  +1 for a clean form, back to 0 for a correction.
+- The real forms differ from the plan in places. Three of those are open questions: O10, O11, O12.
 
 **Sample pack rebuild (T8) raised two questions**
 - **"15 of 15 rows are checked" (O8).** The website and every PDF card say the row was checked on the

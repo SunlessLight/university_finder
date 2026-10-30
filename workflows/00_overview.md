@@ -46,6 +46,9 @@ deadlines) via `build_application_prep.py`. Report-free and **read-only** (never
 was delivered and whether feedback came back onto Evan's Notion board via `/notion`. One-way: local
 files are the source of truth, Notion never drives pipeline work, and no PII beyond the name goes up.
 
+**Report order (a paid report with "your fit"):** the report form, `01_intake.md` → "The report form".
+The buyer gets a small student folder with no list, and `report-writer` gets their slug.
+
 **Quick university report:** `quick_university_report.md` (utility, not a stage) — a facts-only
 15-section report for a student who already knows which university they want, via `/quick-report`.
 Unlike every stage above, this needs **no student at all** — no `profile.json`, `preferences.json`,
@@ -338,7 +341,8 @@ The student's data bank holds personal data (grades, finances, nationality). `da
 
 `firecrawl_search.py` (discovery) · `init_student.py` (scaffold) · `fetch_form_responses.py` (pull
 not-yet-ingested form responses from the sheet; `--confirm` stamps them done) · `ingest_form_csv.py`
-(batch-scaffold from a Google Form CSV) · `shortlist_schema.py` (single source of truth) · `merge_candidates.py`
+(batch-scaffold from a Google Form CSV, both forms) · `check_grades.py` (tidied grades vs the programme's
+scale, at Stage 1 finalize) · `shortlist_schema.py` (single source of truth) · `merge_candidates.py`
 (collect + gate the discovery fragments) · `sync_shortlist.py` (score/dedupe/**append** new rows) ·
 `apply_backfill.py` (**patch** blank cells in rows that already exist — the one sync can't do) ·
 `apply_report_fx.py` (re-convert the ringgit prose in a delivered `.md` from a checked pairs fragment,

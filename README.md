@@ -92,7 +92,8 @@ export; see [workflows/01_intake.md](workflows/01_intake.md).
 **5. Let sessions read the forms' questions and answers** (same script, added 2026-10-26/27):
 `tools/fetch_form_questions.py` saves each form's questions and options to `forms/<name>.json`
 (tracked: questions only, no answers). `tools/fetch_form_answers.py` saves every response to
-`data/form/intake_answers.csv` and `data/feedback/<name>.csv` (gitignored: personal data). Both use
+`data/form/intake_answers.csv`, `data/form/report_answers.csv` and `data/feedback/<name>.csv`
+(gitignored: personal data). Both use
 the same script and the same token as step 4: no new token, and nothing to add to the other forms or
 their sheets. The script reads every form you own, and its responses sheet, from the intake
 responses sheet. Whenever `Code.gs` changes:
@@ -109,6 +110,7 @@ responses sheet. Whenever `Code.gs` changes:
    (not the Send link `forms/d/e/1FAIpQL.../viewform`, which is a different code and won't work):
    ```
    FORM_ID_INTAKE=              # optional: blank = the form linked to the responses sheet
+   FORM_ID_REPORT_INTAKE=...    # the report form; it also needs Responses tab -> Link to Sheets
    FORM_ID_REPORT_FEEDBACK=...
    FORM_ID_SPREADSHEET_FEEDBACK=...
    FORM_ID_SURVEY=...
@@ -116,15 +118,16 @@ responses sheet. Whenever `Code.gs` changes:
 
 ## Run
 
-**Intake is a Google Form.** Students request a search by filling it in; the responses become student
-data banks in bulk. Build the form once — the exact questions, sections, and consent gate are in
-[workflows/01_intake.md](workflows/01_intake.md) — then pull responses with
+**Intake is two Google Forms.** A list buyer fills the **list form**; a buyer of one report fills the
+shorter **report form**. The exact questions, sections, and consent gate are in
+[workflows/01_intake.md](workflows/01_intake.md). Pull list responses with
 `tools/fetch_form_responses.py`, which writes **`data/form/responses.csv`** (gitignored — PII) and
 hands back only respondents not yet ingested. Manual export still works as a fallback.
 
 Easiest: open this folder in VSCode and tell Claude **"ingest the form responses"** — Claude reads the
 workflows, finalizes the judgment-heavy fields per student (grades → subjects, recognition targets,
-degree level), and drives the remaining stages. Or by hand:
+degree level), and drives the remaining stages. Grades are typed as free text, so finalize tidies them
+and `tools/check_grades.py --student <slug>` checks the result before Evan's 30-second look. Or by hand:
 
 ```powershell
 python tools/fetch_form_responses.py --dry-run                        # who's pending
@@ -148,6 +151,16 @@ python tools/build_report.py --student <slug> --input .tmp/<slug>/report_manches
 #   ...one build_report.py per finalist; each writes a report + a marker, not a CSV change...
 python tools/flip_finalists.py --student <slug>    # ONCE: folds every marker into the CSV
 python tools/build_calendar.py --student <slug>
+```
+
+A **report form** answer takes a shorter route: it makes a small student folder (or adds the order to
+the buyer's existing one), with no list.
+
+```powershell
+python tools/fetch_form_answers.py --form report_intake                 # -> data/form/report_answers.csv
+python tools/ingest_form_csv.py "data/form/report_answers.csv" --dry-run
+python tools/ingest_form_csv.py "data/form/report_answers.csv"          # safe to re-run: never overwrites
+#   ...tidy the grades, run check_grades.py, then ask Claude for the report...
 ```
 
 `tools/init_student.py` still scaffolds a single student folder by hand (and its templates are the

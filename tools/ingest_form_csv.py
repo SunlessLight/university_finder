@@ -29,6 +29,16 @@ turned equal ticks into a ladder by form column order (Cost first), so derive_we
 weights from the points instead. Only the current tick form fills it; older numeric-slider and
 dropdown answers leave it None, and those profiles keep the rank formula.
 
+Changed 2026-10-30 (plans/intake_forms_plan.md T2). The grade grid became a programme question plus
+one free-text grades box, so a non-A-Level student fits. current_program.type now comes from that
+answer (blank keeps the "A-Level" default for old rows), and free-text grades stage in
+_intake_raw.grades for tools/check_grades.py. The sheet keeps a deleted question's column beside its
+replacement, so merge_duplicate_columns() counts an answer in either.
+
+Changed 2026-10-30 (plans/intake_forms_plan.md T5). The same tool reads the report form. A row that
+names a university gets profile.report_orders; a buyer who already has a folder only gains the order
+and nothing else changes, even with --force, because data/students/ has no undo.
+
 Columns are matched by a distinctive SUBSTRING of each question title (case-insensitive).
 QUESTION_MAP below is the single source of truth for the column<->field wiring; keep it in step
 with the form spec in workflows/01_intake.md. A reworded question can still drop the match
@@ -78,13 +88,17 @@ QUESTION_MAP = [
     ("when do you graduate", "current_completion"),  # current form's wording
     ("when do you finish", "current_completion"),    # legacy fallback (older form)
     ("final exam results", "current_completion"),    # legacy: "when will you get your actual final exam results"
-    ("final result", "current_completion"),          # current form: "When month does your final result comes out?"
+    ("final result", "current_completion"),          # legacy: "What month does your actual final result comes out?"
+    ("month does your actual result", "current_completion"),  # current form (2026-10-30): "What month does your actual result come out?"
     ("what year does your actual result", "current_completion_year"),  # current form: added 2026-09 as a
                                                                           # dedicated year column, fixing the
                                                                           # "January (Takes A2 in Oct/Nov)" no-year
                                                                           # ambiguity — map_row() concatenates this
                                                                           # with current_completion before parsing.
     ("list each subject", "grades_raw"),             # legacy paragraph-grades form; structured subjects handled separately
+    ("subject and grades", "grades_raw"),            # current form (2026-10-30): "Type you subject and grades (eg. ...)"
+    ("subjects and grades", "grades_raw"),           # the same question once its wording is tidied
+    ("pre-university programme", "program_type"),    # current form (2026-10-30): "Which pre-university programme are you doing?"
     ("actual results or predicted", "grade_status"),  # legacy wording
     ("forecast result or actual", "grade_status"),  # legacy: "Are you applying with forecast result or actual?"
     ("what are you applying with", "grade_status"),  # current form (2026-10-27): "Forecast Grades" / "Actual Grades"
@@ -103,6 +117,8 @@ QUESTION_MAP = [
                                                      # into years_in_english_min via LESSON_LANGUAGE_YEARS
     ("for ur secondary school", "secondary_qualification"),  # current form: "What did you take for ur
                                                              # secondary school?" (IGCSE / SPM / other)
+    ("your secondary school", "secondary_qualification"),    # the same question with "ur" fixed
+    ("for secondary school", "secondary_qualification"),     # report form: "What did you take for Secondary school?"
     ("total budget", "total_budget"),
     ("whole degree", "total_budget"),  # this form's wording: "your budget (RM) for the whole degree"
     ("per-year budget", "budget_per_year"),
@@ -120,10 +136,12 @@ QUESTION_MAP = [
                                           # checklist (replaces "belonging"); matched on the live form's own
                                           # typo ("perferences") since that's what's actually deployed —
                                           # --check-headers will flag it if the typo is ever fixed.
+    ("any other preferences", "needs"),  # the same question with the typo fixed
     ("achievements", "achievements_text"),  # current form: "Achievements / activities you'd want to write about..."
     # preferences
     ("which countries", "target_countries"),  # legacy fallback (older form: "Which countries would you consider?")
     ("chose your countries", "target_countries"),  # current form: "Chose your countries" (sic — live form's own typo)
+    ("choose your countries", "target_countries"),  # the same question with the typo fixed
     ("country matters most", "primary_country"),  # current form: "Which country matters most ( If you picked several )? "
     ("broad area", "fields_of_interest"),   # legacy fallback — the "Broad Area of Study" selector + per-area
                                               # grid was removed from the live form 2026-09 (see "choose your
@@ -152,6 +170,8 @@ QUESTION_MAP = [
                                           # "Any other perferences?" (-> needs) instead; unpopulated on the
                                           # current form by design.
     ("location preference", "location_prefs"),
+    ("want a report", "report_university"),  # report form: "Which University do you want a report of? ..."
+    ("anything specific", "report_question"),  # report form: "Anything specific you want the report to answer?"
     ("specific information you want to know", "additional_requirements"),  # legacy fallback — dropped from
                                                                               # the live form 2026-09, folded
                                                                               # into "Any other perferences?"
@@ -232,6 +252,7 @@ SUPPORTED_DESTINATIONS = ["UK", "Australia", "USA", "Singapore", "Malaysia", "Ch
 # Matched by substring on the lowercased label, first match wins — so "under" is checked
 # before the range, and the null bands last. Kept for pre-2026-10-27 exports.
 BUDGET_LIMIT_EXACT = {  # label with commas/spaces removed -> ceiling (MYR)
+    "100000": 100000,  # 2026-10-30: a plain number on purpose; any label with "under" reads as 500,000
     "200000": 200000,
     "500000": 500000,
     "1000000": 1000000,
@@ -307,6 +328,23 @@ def _years_in_english(answer):
         if substr in low:
             return years, True
     return None, False
+
+
+# Programme answer -> the one label current_program.type holds. The two forms spell the options
+# differently ("A-levels"/"A-Levels", "foundation"/"Foundation"), and check_grades.py picks its grade
+# scale from this label. Anything else (an "Other" answer) is kept verbatim.
+PROGRAM_NORMALIZE = {
+    "a-level": "A-Level",
+    "a-levels": "A-Level",
+    "a level": "A-Level",
+    "a levels": "A-Level",
+    "stpm": "STPM",
+    "uec": "UEC",
+    "ib": "IB",
+    "foundation": "Foundation",
+    "matriculation": "Matriculation",
+    "diploma": "Diploma",
+}
 
 
 # Priority dropdown labels -> short tokens used in preferences.priorities.
@@ -719,6 +757,30 @@ def build_col_index(fieldnames):
     return index
 
 
+def merge_duplicate_columns(rows, fieldnames):
+    """Copy an answer into the first column of its logical key, when that column is blank.
+
+    A question replaced on the form keeps its old sheet column, and the new one is added further
+    right: old consent + new consent, old month + new month. build_col_index() only reads the
+    first, so without this every new respondent reads as blank there, and a blank consent skips
+    them. Edits rows in place; never overwrites an answer.
+    """
+    headers_by_key = {}
+    for header in fieldnames or []:
+        low = (header or "").lower()
+        for substr, key in QUESTION_MAP:
+            if substr in low:
+                headers_by_key.setdefault(key, []).append(header)
+                break
+    for headers in headers_by_key.values():
+        first, rest = headers[0], headers[1:]
+        for row in rows:
+            if not _clean(row.get(first)):
+                filled = next((row[h] for h in rest if _clean(row.get(h))), None)
+                if filled is not None:
+                    row[first] = filled
+
+
 def get(row, col_index, key):
     """Fetch the cleaned cell for a logical key, or '' if the column is absent."""
     header = col_index.get(key)
@@ -777,13 +839,21 @@ def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None,
     # expected_completion -> "YYYY-MM". Current form: month and year are separate columns (year added
     # 2026-09, fixing the "January (Takes A2 in Oct/Nov)" no-year ambiguity found 2026-08-23) — combine
     # them before parsing. Legacy forms carried both in the one month+year dropdown cell already.
-    # type/institution are no longer asked — type stays the template default ("A-Level").
+    # type comes from the programme question (2026-10-30); a blank keeps the template default
+    # ("A-Level"), which is what every row from before that question reads as.
+    program_answer = get(row, col_index, "program_type")
+    if program_answer:
+        profile["current_program"]["type"] = PROGRAM_NORMALIZE.get(program_answer.lower(), program_answer)
     completion_raw = get(row, col_index, "current_completion")
     completion_year_raw = get(row, col_index, "current_completion_year")
     completion_combined = f"{completion_raw} {completion_year_raw}".strip() if completion_year_raw else completion_raw
-    profile["current_program"]["expected_completion"] = (
-        _normalize_month_year(completion_combined) or completion_combined or None
-    )
+    completion_iso = _normalize_month_year(completion_combined)
+    profile["current_program"]["expected_completion"] = completion_iso or completion_combined or None
+    if completion_combined and not completion_iso:
+        needs_review.append(
+            f"result date {completion_combined!r} has no year — ask the student, then set "
+            f"current_program.expected_completion to YYYY-MM"
+        )
     profile["secondary_qualification"] = get(row, col_index, "secondary_qualification") or None  # verbatim
 
     # --- profile: grades ---------------------------------------------------- #
@@ -814,7 +884,8 @@ def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None,
     # surfaces it automatically as a "Grades self-predicted" warning on every row of
     # the master list once the student reaches Stage 3, so flagging it again here was pure
     # duplication. Just leave it; upgrade grade_status by hand only if real/official results arrive.
-    # Legacy paragraph-grades form (no structured columns) — stage the free-text for the agent.
+    # Free-text grades (the current form's one box, and the legacy paragraph form) — stage the text
+    # for the agent to tidy and check_grades.py to verify.
     if not subjects:
         if profile["grade_status"] is None:
             grades_header = (col_index.get("grades_raw") or "").lower()
@@ -825,7 +896,10 @@ def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None,
         grades_raw = get(row, col_index, "grades_raw")
         if grades_raw:
             intake_raw["grades"] = grades_raw
-            needs_review.append("parse '_intake_raw.grades' into subjects[] (grade_status already set)")
+            needs_review.append(
+                f"tidy '_intake_raw.grades' into subjects[] (programme: {profile['current_program']['type']}), "
+                f"then run check_grades.py --student {slug} and show Evan raw vs tidied"
+            )
 
     # --- profile: english -------------------------------------------------- #
     english_test = get(row, col_index, "english_test")
@@ -961,7 +1035,9 @@ def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None,
         ranking_importance = _clean(row.get(slider_cols["ranking"])) or None
     prefs["ranking_importance"] = ranking_importance
     prefs["deal_breakers"] = _as_list(get(row, col_index, "deal_breakers"))
-    prefs["location_prefs"] = _split_multi(get(row, col_index, "location_prefs"))
+    # "No preference" says nothing about setting, so it must not reach the location score.
+    prefs["location_prefs"] = [p for p in _split_multi(get(row, col_index, "location_prefs"))
+                               if p.lower() != "no preference"]
     # Both ticked tells us nothing about setting. Settle it at finalize rather than letting it
     # reach every row's Warnings. Legacy exports only: since 2026-10-29 the question is a
     # single-choice dropdown, so a current answer can't hold both.
@@ -1000,6 +1076,20 @@ def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None,
             f"Decide with the student whether to research them out-of-band."
         )
         needs_review.append(f"target_countries dropped unsupported destination(s): {joined}")
+
+    # --- report form ------------------------------------------------------- #
+    report_university = get(row, col_index, "report_university")
+    if report_university:
+        profile["report_orders"] = [{
+            "university": report_university,
+            "course": " / ".join(prefs["specific_courses"]) or None,
+            "start_year": prefs["intake"],
+            "question": get(row, col_index, "report_question") or None,
+            "submitted": _clean(row.get("Timestamp")) or None,
+        }]
+        if not subjects and not get(row, col_index, "grades_raw"):
+            needs_review.append("no grades on this report order — ask the student; the report's fit "
+                                "sections and admission_likelihood need them")
 
     # --- provenance + staging ---------------------------------------------- #
     note_bits = ["Ingested from Google Form."]
@@ -1316,6 +1406,49 @@ def _existing_by_email():
 
 
 # --------------------------------------------------------------------------- #
+# Report orders: add to an existing folder, never rebuild it.
+# --------------------------------------------------------------------------- #
+def _report_order_home(slug, email_key, emails_on_disk):
+    """Which existing folder a report order belongs to, as (slug_or_None, problem_or_None).
+
+    Email first, because a list student's folder is named after the nickname they typed then. A
+    folder that only shares the name is used only if its email agrees: two people can share a name,
+    and one person's order must never land in another's file.
+    """
+    owner = emails_on_disk.get(email_key) if email_key else None
+    if owner:
+        return owner, None
+    profile_path = STUDENTS_DIR / slug / "profile.json"
+    if not profile_path.exists():
+        problem = f"folder '{slug}' has no profile.json; add the order by hand" if profile_path.parent.exists() else None
+        return None, problem
+    folder_email = _normalize_email(json.loads(profile_path.read_text(encoding="utf-8")).get("contact_email"))
+    if email_key and folder_email and folder_email != email_key:
+        return None, f"folder '{slug}' belongs to a different email — same name, another person? Fix by hand"
+    return slug, None
+
+
+def _add_report_order(home, order, dry_run):
+    """Append one order to an existing profile.json, touching nothing else.
+
+    Returns False if it is already there, so re-reading the same answers adds nothing.
+    """
+    path = STUDENTS_DIR / home / "profile.json"
+    data = json.loads(path.read_text(encoding="utf-8"))
+    orders = data.get("report_orders") or []
+
+    def key(item):
+        return (item.get("university") or "").lower(), (item.get("course") or "").lower()
+
+    if any(key(o) == key(order) for o in orders):
+        return False
+    if not dry_run:
+        data["report_orders"] = orders + [order]
+        path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+    return True
+
+
+# --------------------------------------------------------------------------- #
 # Main.
 # --------------------------------------------------------------------------- #
 def main():
@@ -1349,6 +1482,7 @@ def main():
         subject_grid_cols = _subject_grid_columns(reader.fieldnames)
         grid_cols = _grid_columns(reader.fieldnames)
         rows = list(reader)
+    merge_duplicate_columns(rows, reader.fieldnames)
 
     if args.check_headers:
         _check_headers(reader.fieldnames, col_index, grid_cols, slider_cols, subject_cols, subject_grid_cols)
@@ -1361,9 +1495,11 @@ def main():
         )
 
     created, skipped, review_flags = [], [], {}
+    orders_added = []
     seen_slugs = set()
     # Built ONCE, outside the row loop — a 30-row CSV must not re-read 29 profiles 30 times.
-    existing_emails = {} if args.force else _existing_by_email()
+    emails_on_disk = _existing_by_email()
+    existing_emails = {} if args.force else emails_on_disk
     seen_emails = {}
 
     for i, row in enumerate(rows, start=1):
@@ -1375,6 +1511,25 @@ def main():
         if skip_reason:
             skipped.append((i, get(row, col_index, "name") or "(no name)", skip_reason))
             continue
+
+        # A report order only ever adds to a folder that exists; --force doesn't change that.
+        if profile.get("report_orders"):
+            email_key = _normalize_email(profile.get("contact_email"))
+            home, problem = _report_order_home(slug, email_key, emails_on_disk)
+            if problem:
+                skipped.append((i, profile["name"], problem))
+                continue
+            if home:
+                if _add_report_order(home, profile["report_orders"][0], args.dry_run):
+                    orders_added.append(f"{home}: {profile['report_orders'][0]['university']}")
+                else:
+                    skipped.append((i, profile["name"], f"order already on '{home}'"))
+                continue
+            if slug in seen_slugs:  # dry run only: a real run wrote the folder, so home found it
+                orders_added.append(f"{slug}: {profile['report_orders'][0]['university']}")
+                continue
+            if email_key:
+                emails_on_disk[email_key] = slug
 
         student_dir = STUDENTS_DIR / slug
         if slug in seen_slugs:
@@ -1421,6 +1576,8 @@ def main():
     prefix = "[dry-run] " if args.dry_run else ""
     print(f"{prefix}Read {len(rows)} row(s) from {csv_path.name}.")
     print(f"{prefix}Created {len(created)} student folder(s): {', '.join(created) or '(none)'}")
+    if orders_added:
+        print(f"{prefix}Added {len(orders_added)} report order(s) to existing folders: {'; '.join(orders_added)}")
     if review_flags:
         print(f"\n{prefix}Needs agent review (finalize in workflows/01_intake.md):")
         for slug, items in review_flags.items():

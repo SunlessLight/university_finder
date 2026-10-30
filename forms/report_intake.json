@@ -1,0 +1,190 @@
+{
+  "form_id": "16FgLQvxA-BA1wCBbJuMYMgKmqe6oYady9CA2QWjpRnM",
+  "title": "University Report Intake Form",
+  "description": "Disclaimer\nPlease note: our reports are research to help you decide, not a guarantee of admission or funding. Fees, entry requirements and deadlines can change, so always confirm them on the university's official website before you apply. We are not a university or an official education agent.",
+  "items": [
+    {
+      "title": "Fill up these quick questions and ur done!",
+      "type": "PAGE_BREAK",
+      "description": ""
+    },
+    {
+      "title": "Full Name (as in IC)",
+      "type": "TEXT",
+      "description": "",
+      "required": true
+    },
+    {
+      "title": "Which University do you want a report of? Add the campus if it has several (e.g. Monash Malaysia vs Monash Australia)",
+      "type": "TEXT",
+      "description": "",
+      "required": true
+    },
+    {
+      "title": "Choose your desired course",
+      "type": "LIST",
+      "description": "",
+      "required": true,
+      "options": [
+        "Fine Arts — drawing, painting, sculpture",
+        "Design — graphic, fashion, product, interior",
+        "Performing Arts — music, theatre, dance",
+        "Languages & Literature — creative writing, English, linguistics",
+        "Humanities & Philosophy — culture, ethics, classical studies",
+        "Media & Communication — journalism, PR, filmmaking, content creation",
+        "Psychology - clinical, cognitive, organisational",
+        "Sociology & Anthropology — social work, criminology, culture",
+        "Political Science & International Relations — diplomacy, public policy, governance",
+        "Law — become a lawyer; legal research, paralegal work",
+        "Business Administration & Management — HR, operations, entrepreneurship",
+        "Accounting & Finance — numbers, audits, banking, FinTech",
+        "Marketing & Advertising — branding, digital marketing, social media",
+        "Economics — markets, public policy, econometrics",
+        "Hospitality, Tourism & Events — hotels, travel, F&B",
+        "Computer Science / Software Engineering / IT — coding, apps, systems",
+        "Data Science & Artificial Intelligence — machine learning, analytics",
+        "Cybersecurity — ethical hacking, network security",
+        "Mechanical Engineering — machines, engines, vehicles, ships",
+        "Civil Engineering — buildings, roads, bridges",
+        "Electrical & Electronics Engineering — circuits, power, robotics",
+        "Aerospace Engineering — aircraft, spacecraft",
+        "Chemical Engineering — oil & gas, materials, energy",
+        "Biomedical Engineering — medical devices, prosthetics, imaging tech",
+        "Architecture & Built Environment — designing buildings, urban planning, QS",
+        "Biological & Life Sciences — microbiology, genetics, biotech",
+        "Chemistry — pure & applied, forensics, materials",
+        "Physics — astrophysics, medical, engineering physics",
+        "Mathematics & Statistics — actuarial science, pure maths, data",
+        "Environmental & Agricultural Sciences — ecology, forestry, animal science",
+        "Medicine & Surgery (MBBS) — become a doctor",
+        "Nursing & Allied Health — nurse, physiotherapist, radiographer",
+        "Pharmacy — become a pharmacist",
+        "Biomedical Science & Lab Technology — lab research, diagnostics, pathology",
+        "Public Health & Nutrition — dietetics, disease prevention, policy",
+        "Special Needs & Inclusive Education — teaching students with disabilities",
+        "Secondary Education — teaching Form 1–5",
+        "Early Childhood & Primary Education — teaching kindergarten to Standard 6"
+      ]
+    },
+    {
+      "title": "Any SPECIFIC FIELD OF STUDIES interested in? Can write more than 1. ( Optional )\n\nEg. Mechatronics & Nanotech engineering / Criminal Law & Accounting Law",
+      "type": "PARAGRAPH_TEXT",
+      "description": "",
+      "required": false
+    },
+    {
+      "title": "Which year do you want to start? ",
+      "type": "MULTIPLE_CHOICE",
+      "description": "",
+      "required": true,
+      "options": [
+        "2027",
+        "2028",
+        "Not sure"
+      ],
+      "other": false
+    },
+    {
+      "title": "Which pre-university programme are you doing? ",
+      "type": "MULTIPLE_CHOICE",
+      "description": "",
+      "required": true,
+      "options": [
+        "A-Levels",
+        "STPM",
+        "UEC",
+        "IB",
+        "Foundation",
+        "Matriculation",
+        "Diploma"
+      ],
+      "other": true
+    },
+    {
+      "title": "What are you applying with? ",
+      "type": "MULTIPLE_CHOICE",
+      "description": "",
+      "required": true,
+      "options": [
+        "Forecast Grades",
+        "Actual Grades",
+        "Not sure"
+      ],
+      "other": false
+    },
+    {
+      "title": "What did you take for Secondary school? ",
+      "type": "MULTIPLE_CHOICE",
+      "description": "",
+      "required": true,
+      "options": [
+        "SPM",
+        "O-Levels",
+        "IGCSE",
+        "UEC"
+      ],
+      "other": true
+    },
+    {
+      "title": "What language were most of your lessons (maths, science, etc.) taught in? Not your English class.",
+      "type": "MULTIPLE_CHOICE",
+      "description": "",
+      "required": true,
+      "options": [
+        "English, all through secondary school and pre-university",
+        "English only in pre-university (e.g. SPM, then A-Levels)",
+        "Mixed: maths and science in English, the rest in Malay (DLP)",
+        "Mostly Malay",
+        "Mostly Chinese",
+        "Not sure"
+      ],
+      "other": true
+    },
+    {
+      "title": "English Test Taken",
+      "type": "MULTIPLE_CHOICE",
+      "description": "",
+      "required": true,
+      "options": [
+        "IELTS",
+        "TOEFL",
+        "Cambridge English Test",
+        "None"
+      ],
+      "other": true
+    },
+    {
+      "title": "If English test taken, what's the score? ( leave blank if haven't )",
+      "type": "TEXT",
+      "description": "",
+      "required": false
+    },
+    {
+      "title": "Achievements / activities you'd want to write about in your application? (To check whether it's qualities the university wants)",
+      "type": "PARAGRAPH_TEXT",
+      "description": "",
+      "required": false
+    },
+    {
+      "title": "Anything specific you want the report to answer?",
+      "type": "PARAGRAPH_TEXT",
+      "description": "",
+      "required": true
+    },
+    {
+      "title": "Consent",
+      "type": "PAGE_BREAK",
+      "description": ""
+    },
+    {
+      "title": "Consent to use your information / Persetujuan penggunaan maklumat anda (PDPA)",
+      "type": "MULTIPLE_CHOICE",
+      "description": "Before you submit, here's how we handle your answers, as required by Malaysia's Personal Data Protection Act 2010. \n• Who we are: Shortlisted, run by Evan Yeoh, Malaysia. Contact: evannsnv@gmail.com\n• What we collect: everything on this form: your email, nickname, race, grades, English test, budget band, course and country choices, priorities and preferences, and anything you write in the optional boxes.\n• Why: to research universities and courses for you, write your reports, and contact you about them. Race is used only to check which scholarships you can apply for. Halal and prayer ticks are used only to describe campus life for you.\n• Who handles it: only us. We use Google (Forms, Sheets) to collect answers and AI tools to help with research; these services may store or process data on servers outside Malaysia. We never sell your data, and we never share it with universities, agents or anyone else without asking you first. \n• How long we keep it: until 3 months after we last work with you, then we delete it.\n• Your rights: you can ask to see, correct or delete your data, or withdraw your consent, any time by emailing evannsnv@gmail.com. If you withdraw, we stop working on your record and delete it.\n• Do you have to? Ticking the box is required to use the service. If you don't tick it, we can't research for you and your answers won't be used.\n• Under 18? Please make sure a parent or guardian knows about and agrees to this.\nSebelum anda hantar, ini cara kami mengendalikan jawapan anda, seperti yang dikehendaki oleh Akta Perlindungan Data Peribadi 2010.\n• Siapa kami: Shortlisted, dikendalikan oleh Evan Yeoh, Malaysia. Hubungi: evannsnv@gmail.com\n• Apa yang kami kumpul: semua jawapan dalam borang ini: emel, nama panggilan, kaum, gred, ujian bahasa Inggeris, julat bajet, pilihan kursus dan negara, keutamaan dan pilihan anda (termasuk makanan halal atau kemudahan solat jika anda tandakan), dan apa-apa yang anda tulis dalam ruangan pilihan.\n• Mengapa: untuk mencari universiti dan kursus untuk anda, menyediakan laporan anda, dan menghubungi anda mengenainya. Kaum digunakan hanya untuk menyemak biasiswa yang layak anda mohon. Pilihan halal dan solat digunakan hanya untuk menerangkan kehidupan kampus kepada anda.\n• Siapa yang mengendalikannya: hanya kami. Kami menggunakan Google (Forms, Sheets) untuk mengumpul jawapan dan alat AI untuk membantu penyelidikan; perkhidmatan ini mungkin menyimpan atau memproses data di pelayan luar Malaysia. Kami tidak akan menjual data anda, dan tidak akan berkongsinya dengan universiti, ejen atau sesiapa pun tanpa bertanya kepada anda dahulu.\n• Tempoh simpanan: sehingga 3 bulan selepas kali terakhir kami berurusan dengan anda, kemudian kami padamkannya.\n• Hak anda: anda boleh meminta untuk melihat, membetulkan atau memadam data anda, atau menarik balik persetujuan, pada bila-bila masa dengan menghantar emel ke evannsnv@gmail.com. Jika anda menarik balik, kami akan berhenti dan memadam rekod anda.\n• Wajibkah? Kotak ini wajib ditanda untuk menggunakan perkhidmatan ini. Jika tidak ditanda, kami tidak dapat membuat penyelidikan untuk anda dan jawapan anda tidak akan digunakan.\n• Bawah 18 tahun? Sila pastikan ibu bapa atau penjaga anda tahu dan bersetuju.",
+      "required": true,
+      "options": [
+        "I agree to Shortlisted collecting and using my answers as described above, including my race and any halal or prayer preferences. / Saya bersetuju Shortlisted mengumpul dan menggunakan jawapan saya seperti yang diterangkan di atas, termasuk kaum saya dan apa-apa pilihan halal atau solat."
+      ],
+      "other": false
+    }
+  ]
+}

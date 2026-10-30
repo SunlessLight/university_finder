@@ -24,7 +24,8 @@ python tools/progress_dashboard.py                    # which stage every studen
 python tools/shortlist_schema.py --contract           # the CSV/fragment contract (never read the source for it)
 python tools/check_master_list.py --student <slug>    # gate before a list goes to a student
 python tools/fetch_form_questions.py --check          # live form questions -> forms/*.json, checked vs ingest
-python -m unittest tests.test_calendar_dates -v       # the only automatic tests (calendar dates)
+python tools/check_grades.py --student <slug>         # tidied grades vs the programme's scale
+python -m unittest tests.test_intake_forms tests.test_report_order tests.test_check_grades tests.test_list_checks tests.test_calendar_dates   # the automatic tests
 ```
 
 Each `/command` (`/intake`, `/longlist`, `/report`, `/decide`, `/apply-prep`, `/quick-report`,
@@ -70,6 +71,7 @@ Privacy and wording:
 ## Things that break silently
 
 - If a form question's wording changes, its `QUESTION_MAP` substring in `ingest_form_csv.py` stops matching. Looks like: one field null for **every** respondent. Fix the map, not the profiles. Catch it before anyone answers: `fetch_form_questions.py --check` after every form edit.
+- If a question is replaced on a form, the sheet keeps the old column beside the new one, so one field has two columns. `merge_duplicate_columns()` handles that in `ingest_form_csv.py`; without it a new student reads as "no consent" and is skipped. Looks like: every new respondent skipped.
 - If a report JSON's course isn't exactly the CSV `Course` string, `build_report.py` course mode still renders but never flips the row to Finalist. Looks like: report exists, row still Shortlist.
 
 ## Generated files: never edit by hand

@@ -1,6 +1,6 @@
 {
   "form_id": "1pQF8yWQG1WtkQcNVyF4eCTkdMXcOs-b-2G_O4qfZiZE",
-  "title": "University Research Intake Form",
+  "title": "University List Intake Form",
   "description": "",
   "items": [
     {
@@ -9,7 +9,7 @@
       "description": ""
     },
     {
-      "title": "Nickname",
+      "title": "Full Name (As in IC)",
       "type": "TEXT",
       "description": "",
       "required": true
@@ -22,7 +22,8 @@
       "options": [
         "Chinese",
         "Malay",
-        "Indian"
+        "Indian",
+        "Prefer not to say"
       ],
       "other": true
     },
@@ -33,9 +34,54 @@
       "required": true,
       "options": [
         "IGCSE",
-        "SPM"
+        "SPM",
+        "UEC",
+        "O-Level"
       ],
       "other": true
+    },
+    {
+      "title": "Which pre-university programme are you doing? ",
+      "type": "MULTIPLE_CHOICE",
+      "description": "",
+      "required": true,
+      "options": [
+        "A-levels",
+        "STPM",
+        "UEC",
+        "IB",
+        "foundation",
+        "Matriculation",
+        "Diploma"
+      ],
+      "other": true
+    },
+    {
+      "title": "Type you subject and grades (eg. physic A, Chemistry B, etc)",
+      "type": "TEXT",
+      "description": "",
+      "required": true
+    },
+    {
+      "title": "What month does your actual result come out?",
+      "type": "MULTIPLE_CHOICE",
+      "description": "",
+      "required": true,
+      "options": [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+      ],
+      "other": false
     },
     {
       "title": "What language were most of your lessons (maths, science, etc.) taught in? Not your English class.",
@@ -60,56 +106,6 @@
       "options": [
         "Forecast Grades",
         "Actual Grades"
-      ],
-      "other": true
-    },
-    {
-      "title": "Select the grades for your subjects based on the option you chose above. ",
-      "type": "CHECKBOX_GRID",
-      "description": "",
-      "required": false,
-      "rows": [
-        "Biology",
-        "Physic",
-        "Chemistry",
-        "Math",
-        "Further Math",
-        "English Literature",
-        "Economics",
-        "Accounting",
-        "Computer Science",
-        "Psychology",
-        "History",
-        "Law"
-      ],
-      "columns": [
-        "A*",
-        "A",
-        "B",
-        "C",
-        "D",
-        "E"
-      ]
-    },
-    {
-      "title": "What month does your actual final result comes out? ",
-      "type": "LIST",
-      "description": "",
-      "required": true,
-      "options": [
-        "January ( Takes A2 in Oct/Nov )",
-        "August ( Takes A2 in May/June )"
-      ]
-    },
-    {
-      "title": "What year does your actual result come out?",
-      "type": "MULTIPLE_CHOICE",
-      "description": "",
-      "required": true,
-      "options": [
-        "2026",
-        "2027",
-        "2028"
       ],
       "other": true
     },
@@ -182,7 +178,7 @@
       "title": "Chose your countries",
       "type": "CHECKBOX",
       "description": "",
-      "required": false,
+      "required": true,
       "options": [
         "UK",
         "Australia",
@@ -263,6 +259,7 @@
       "description": "",
       "required": true,
       "options": [
+        "100,000",
         "200,000",
         "500,000",
         "1,000,000",
@@ -286,16 +283,14 @@
       "required": true,
       "options": [
         "Urban / City",
-        "Rural / Campus-based",
-        "Near family",
-        "Close to public transport"
+        "Rural / Campus-based"
       ]
     },
     {
       "title": "Any other perferences? ",
       "type": "CHECKBOX",
       "description": "",
-      "required": true,
+      "required": false,
       "options": [
         "Stay close to family",
         "Low crime rate",
@@ -308,12 +303,6 @@
         "Muslim Facilities/Halal Food"
       ],
       "other": true
-    },
-    {
-      "title": "Achievements / activities you'd want to write about in your application? (Optional)",
-      "type": "PARAGRAPH_TEXT",
-      "description": "",
-      "required": false
     },
     {
       "title": "Consent",
@@ -331,7 +320,7 @@
       "other": false
     },
     {
-      "title": "Disclamer",
+      "title": "Disclaimer",
       "type": "PAGE_BREAK",
       "description": "Please note: our reports are research to help you decide, not a guarantee of admission or funding. Fees, entry requirements and deadlines can change, so always confirm them on the university's official website before you apply. We are not a university or an official education agent."
     }

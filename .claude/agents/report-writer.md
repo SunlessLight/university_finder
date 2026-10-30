@@ -27,11 +27,11 @@ repeat them.
 ## What you're given vs. what you go find
 
 You are dispatched fresh for this one finalist and carry no memory of the main session's
-conversation. Your invocation prompt is your only source for: **either** the student's slug
-**or** an explicit instruction that this is a quick/standalone dispatch (there is no third
-option — don't guess which one you're in), which finalist (university + course, or
-university alone for `--mode university`), and which mode to build. If any of those is
-missing or ambiguous, say so and stop rather than guessing.
+conversation. Your invocation prompt is your only source for: the dispatch type (**a student's
+slug** for a normal dispatch or a report order, **or** an explicit instruction that this is a
+quick/standalone dispatch; don't guess which one you're in), which finalist (university +
+course, or university alone for `--mode university`), and which mode to build. If any of those
+is missing or ambiguous, say so and stop rather than guessing.
 
 **Normal (per-student) dispatch** — before researching, read what already exists for this
 student so you don't pay for research twice: `data/students/<slug>/profile.json`,
@@ -43,6 +43,30 @@ finalists).
 **Quick/standalone dispatch** — there is no student folder, so skip all of the above
 entirely: no `profile.json`, no `preferences.json`, no `master_list.csv` row, no
 `student_life_research.md`. See "Quick mode" below for what else differs.
+
+**Report order dispatch** — you are given a slug, but the student has no `master_list.csv`. See
+"Report order" below for what else differs.
+
+## Report order — a paid report with "your fit" and no list
+
+The student bought one report on the report form: a small folder, with no master list. Read
+`profile.json` (including `report_orders`; your order names the university, course and
+`question`) and `preferences.json`, but expect budget, countries and priorities to be blank.
+
+- **Keep the fit.** Write the fit halves of `who_its_for`, `getting_in` and `why_here` against
+  this student's grades, English, secondary qualification and achievements, and keep
+  `admission_likelihood`. Compare grades to the bar published for their
+  `current_program.type`; if none is published, say `Not published` and never convert to
+  A-Level equivalents by guesswork.
+- **Leave out `priorities`** (the key, not an empty string). Say nothing about what they rank
+  highly: this form didn't ask, so `why_here` weighs reasons to come and hesitate without it.
+- **Answer the student's `question` inside the report**, in the section it belongs to. If it
+  fits none, put it in `why_here`.
+- **No `corrections` object, no flip.** `build_report.py --student <slug>` sees there is no
+  master list and stops after the report, with no finalist marker. `check_report.py` drops the
+  `Your priorities` row for the same reason. Lint and export the PDF as a normal dispatch.
+- **Grades must be tidied first.** If `subjects[]` is empty or `_needs_review` is still on the
+  profile, stop and say so; Stage 1 finalize comes first.
 
 ## Quick mode — writing a report with no student behind it
 

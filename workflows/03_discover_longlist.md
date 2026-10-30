@@ -238,6 +238,11 @@ fragment; the main session doesn't need it and shouldn't load it. The fixed cell
 `Application requirements` vocabulary, `Checked on`, `Admit rate`, no hedge words) live in
 `.claude/agents/row-filler.md` → "Fixed-format cells", since backfill dispatches read that and not 03b.
 
+**Non-A-Level students (2026-10-30).** Read `current_program.type` from the profile. The grade bar is
+the one the university publishes for that programme (STPM, UEC, IB, Foundation, Matriculation,
+Diploma). If it publishes none, use `Not published` (`entry_margin`: `not_published`). Never convert
+grades to A-Level equivalents by guesswork.
+
 ## Steps 4-6 — Merge, sync, check
 
 ```powershell

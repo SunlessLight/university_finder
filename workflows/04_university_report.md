@@ -21,6 +21,11 @@ A-tier and best-fit first.
 > full report into a university that turns out to be over budget or past its deadline. Two workflows must
 > not both claim ownership of verification; Stage 3 owns it.
 
+> **A report order skips the pre-flight (2026-10-30).** A buyer on the report form has no list to pick
+> from. Their university is in `profile.report_orders`; once Stage 1 finalize has tidied their grades,
+> dispatch `report-writer` with the slug. See the "Report order" section of
+> `.claude/agents/report-writer.md`.
+
 ## Before you research: pick and cut (the pre-flight)
 
 > **You don't need Stage 3 to be "finished" first.** This stage runs on whatever is on the Longlist

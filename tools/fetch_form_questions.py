@@ -29,12 +29,14 @@ question title against QUESTION_MAP (by rebuilding the sheet headers the form wo
 produce), and the options of the budget, countries, course, "other preferences" and
 priority-grid questions against their normalise maps. It prints anything unmatched and
 exits 1 only on the consent rules (I12), because a broken consent question silently
-skips every new student.
+skips every new student. When FORM_ID_REPORT_INTAKE is set it also checks the report form
+(its own required questions, plus: the consent wording may not name race or halal/prayer,
+because that form doesn't ask them).
 
 Requires in .env (see README, "Setup (first time)"):
     FORM_WEBAPP_URL, FORM_WEBAPP_TOKEN   same as fetch_form_responses.py
     FORM_ID_INTAKE                       optional; blank = the form linked to the responses sheet
-    FORM_ID_REPORT_FEEDBACK, FORM_ID_SPREADSHEET_FEEDBACK, FORM_ID_SURVEY
+    FORM_ID_REPORT_INTAKE, FORM_ID_REPORT_FEEDBACK, FORM_ID_SPREADSHEET_FEEDBACK, FORM_ID_SURVEY
         the ID is the long code in the form's EDIT address: docs.google.com/forms/d/<ID>/edit
         (not the /e/... share link). IDs are not secrets; .env is just where form settings live.
 """
@@ -77,6 +79,7 @@ FORMS_DIR = REPO_ROOT / "forms"
 # form linked to its own responses sheet).
 FORMS = {
     "intake": "FORM_ID_INTAKE",
+    "report_intake": "FORM_ID_REPORT_INTAKE",
     "report_feedback": "FORM_ID_REPORT_FEEDBACK",
     "spreadsheet_feedback": "FORM_ID_SPREADSHEET_FEEDBACK",
     "survey": "FORM_ID_SURVEY",
@@ -88,7 +91,10 @@ LAYOUT_TYPES = {"SECTION_HEADER", "PAGE_BREAK", "IMAGE", "VIDEO"}
 # QUESTION_MAP keys the current intake form must hit; a miss blanks that field for every
 # new student. Email is NOT here: "collect email addresses" is a form setting, not an item,
 # so it never appears in the question list (the sheet still gets the column).
-REQUIRED_KEYS = ["consent", "name", "total_budget", "target_countries", "specific_courses"]
+REQUIRED_KEYS = ["consent", "name", "total_budget", "target_countries", "specific_courses",
+                 "grades_raw", "program_type"]
+REPORT_REQUIRED_KEYS = ["consent", "name", "report_university", "specific_courses", "grades_raw",
+                        "program_type", "report_question"]
 
 # QUESTION_MAP keys whose answers ingest_form_csv.py splits on commas (_split_multi).
 SPLIT_KEYS = ["needs", "target_countries", "location_prefs"]
@@ -204,27 +210,53 @@ def check_intake(form):
         f"{item['title'][:50]!r}: {o!r} gets split in two on ingest"
         for item in items if item["title"] in split_titles for o in item.get("options", []) if "," in o])
 
-    # Consent (I12): the only checks that fail the run.
-    # A section header titled "consent" is fine (never a column), but the notice text often
-    # lives in its description, so placeholders are searched in those too.
+    return 1 if report("Consent question", consent_problems(items)) else 0
+
+
+def consent_problems(items):
+    """The consent rules (I12): the only checks that fail the run.
+
+    A section header titled "consent" is fine (never a column), but the notice text often
+    lives in its description, so placeholders are searched in those too.
+    """
     consent_all = [i for i in items if "consent" in i["title"].lower()]
     consent_items = [i for i in consent_all if i["type"] not in LAYOUT_TYPES]
-    consent_problems = []
+    problems = []
     if len(consent_items) != 1:
-        consent_problems.append(f"{len(consent_items)} question titles contain 'consent'; exactly 1 must "
-                                "(the program finds the consent question by that word)")
+        problems.append(f"{len(consent_items)} question titles contain 'consent'; exactly 1 must "
+                        "(the program finds the consent question by that word)")
     for item in consent_items:
         for o in item.get("options", []):
             if o.strip().lower().startswith("n"):
-                consent_problems.append(f"option {o!r} starts with N, which the program reads as 'No' "
-                                        "and skips the student")
+                problems.append(f"option {o!r} starts with N, which the program reads as 'No' "
+                                "and skips the student")
         if not item.get("required"):
-            consent_problems.append(f"{item['title'][:50]!r} is not required")
+            problems.append(f"{item['title'][:50]!r} is not required")
     for item in consent_all:
         text = " ".join([item["title"], item.get("description") or ""] + item.get("options", []))
         for hit in PLACEHOLDER_RE.findall(text):
-            consent_problems.append(f"unfilled placeholder {hit!r} in the consent question")
-    return 1 if report("Consent question", consent_problems) else 0
+            problems.append(f"unfilled placeholder {hit!r} in the consent question")
+    return problems
+
+
+def check_report_form(form):
+    """Check the report form against ingest_form_csv.py. Returns the exit code."""
+    items = form["items"]
+    col_index = build_col_index(sheet_headers(items))
+    print(f"\nReport form: {form.get('title')!r}")
+    report("Questions the program depends on",
+           [f"no question matches {k!r} — every new buyer gets it blank" for k in REPORT_REQUIRED_KEYS
+            if k not in col_index])
+
+    problems = consent_problems(items)
+    # A person may only agree to what the form collects: this form asks neither.
+    for item in items:
+        if "consent" not in item["title"].lower() or item["type"] in LAYOUT_TYPES:
+            continue
+        wording = " ".join(item.get("options", [])).lower()
+        problems += [f"the consent wording names {word!r}, which this form never asks"
+                     for word in ("race", "halal", "prayer") if word in wording]
+    return 1 if report("Consent question", problems) else 0
 
 
 def main():
@@ -235,7 +267,12 @@ def main():
     args = parser.parse_args()
 
     if args.check:
+        load_config()  # loads .env, so the report form's ID is visible below
         names = ["intake"]
+        if os.getenv(FORMS["report_intake"], "").strip() or (args.offline and (FORMS_DIR / "report_intake.json").exists()):
+            names.append("report_intake")
+        else:
+            print(f"Report form not checked: no {FORMS['report_intake']} in .env\n")
     elif args.form:
         names = args.form
     else:
@@ -248,7 +285,10 @@ def main():
     forms = fetch(names, args.offline)
     if args.check:
         print()
-        return check_intake(forms["intake"])
+        code = check_intake(forms["intake"])
+        if "report_intake" in forms:
+            code = max(code, check_report_form(forms["report_intake"]))
+        return code
     return 0
 
 

@@ -12,6 +12,10 @@ data at all**: no `profile.json`, no `preferences.json`, no `master_list.csv`, n
 under `data/students/`. Report `04_university_report.md` for how the *pipeline* version of this
 report works — this file only covers what's different when there's no student behind it.
 
+**A paid report is not this workflow (2026-10-30).** The RM 30 report includes "your fit", so its
+buyer fills the report form and gets a student folder: `01_intake.md` → "The report form". Quick
+reports stay facts-only, with no personal data, for anything that isn't a paid order.
+
 **Offer the full pipeline instead when it's a better fit.** If the student is still comparing
 options, wants a scored/balanced shortlist, or wants this university weighed against others,
 that's Stage 3→4, not this. This workflow is specifically for "I already know I want X, just

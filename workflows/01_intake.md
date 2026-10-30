@@ -12,14 +12,19 @@ judgment-heavy fields and hand each student off to **Stage 3** (discover longlis
 conversational intake path — a student you meet in person still fills the form (or you fill it for
 them) so the data bank is built the same way every time.
 
+**Two forms since 2026-10-30.** The **list form** (RM 50, `forms/intake.json`, most of this file) and
+the **report form** (RM 30, one university, `forms/report_intake.json`): a cut-down copy read by the
+same tool. See "The report form" below. Each buyer gets the form for what they bought; a buyer of
+both gets both links.
+
 > **Stage 1 and Stage 2 were merged on 2026-07-25.** The form asks who-you-are and what-you-want in
 > one sitting, so the old `01_student_intake.md` / `02_aspirations_intake.md` conversational SOPs were
 > deleted. Stages 3-5 keep their file numbers — **there is no Stage 2**.
 
 ## The Google Form (build once)
 
-Create **one form**, turn **"Collect email addresses" ON** (Settings → Responses), and add the
-questions below. Question **wording** maps to CSV column headers; the tool matches columns by a
+Turn **"Collect email addresses" ON** (Settings → Responses) on both forms, and keep the questions
+below. Question **wording** maps to CSV column headers; the tool matches columns by a
 distinctive **substring** (see `QUESTION_MAP` in `tools/ingest_form_csv.py`), so light rewording is
 fine — but keep the substring in bold intact.
 
@@ -40,19 +45,20 @@ fine — but keep the substring in bold intact.
   text starts with "n" — the explicit-No case, which no flag overrides.)*
 
 **Section 1 — About you → `profile.json`**
-- **Nickname**; **Race/ethnicity**.
-  - **Nickname permanently replaces "Full name" (2026-08+, identity protection).** `QUESTION_MAP`
-    maps `"nickname"` straight onto the `name` logical key — same slug/personalization path as
-    before, no special handling. Don't expect a real legal name in `profile.name`; a report should
-    address the student by whatever nickname they gave (some are gamertag-style handles, e.g.
-    `GwakGwak3000` — that's expected, not a data-quality problem).
+- **Full Name (As in IC)**; **Race/ethnicity**.
+  - **The name question.** "Nickname" replaced "Full name" in 2026-08 (identity protection), and the
+    live title went back to *"Full Name (As in IC)"* on 2026-10-30. `QUESTION_MAP` maps both onto the
+    `name` logical key, so the slug path is the same. Older profiles hold nicknames, some
+    gamertag-style (`GwakGwak3000`); that's expected. Open: the consent notice still says "nickname"
+    (O10 in `plans/discussions.md`).
   - **Age, Gender, Nationality, and "where you live in now" are gone (2026-08+), permanently.**
     None of them ever had a downstream read path — no tool, no agent prompt anywhere in the
     pipeline consumed them — so they were cut as pure friction. `profile_template()` no longer
     carries these keys at all; don't reintroduce them without wiring a real consumer first.
   - **Race/ethnicity → `profile.ethnicity`** (PDPA-sensitive). Captured because it drives
     **scholarship eligibility** in Malaysia (e.g. Bumiputra-only vs open funds) — the agent uses it as a
-    research signal in Stage 3/4. It is **never** a desirability-score input.
+    research signal in Stage 3/4. It is **never** a desirability-score input. **"Prefer not to say"**
+    (added 2026-10-30) means unknown: don't assume eligibility either way.
   - **The respondent's email is the identity key.** The tool writes it to
     **`profile.contact_email`** (structured, added 2026-09-23) *and* keeps the legacy
     `Contact: <email>` line in `profile.notes`. The structured field is what the re-submission guard
@@ -65,33 +71,25 @@ fine — but keep the substring in bold intact.
     re-add it, it is a post-study **aspiration** → `notes` + `intent_to_migrate`, never `home_country`.)*
 
 **Section 2 — Your studies, money & recognition → `profile.json`**
-- **Qualification type is a permanent hardcoded default, not a question (2026-08+).** The form no
-  longer asks "what are you studying now" or "which college" — this project targets A-Level students
-  only, so `current_program.type` is hardcoded to `"A-Level"` in `profile_template()`, the same
-  pattern as `home_country: "Malaysia"`. If a non-A-Level student ever comes through this form, fix
-  `current_program.type` by hand at finalize — the tool will not catch it, since nothing asks the
-  question any more. `current_program.institution` is gone from the schema entirely (no downstream
-  use, never wired to anything).
-- **When do you graduate** / get results — **two separate dropdowns now: month, then year** (added
-  2026-09, e.g. "January" + "2027"). The old single month+year dropdown's option text carried no year
-  at all ("January (Takes A2 in Oct/Nov)" — found 2026-08-23, see the edge case below); the dedicated
-  year column fixes that at the source. `map_row()` concatenates the two raw answers before calling
-  `_normalize_month_year` (`YYYY-MM`), so nothing downstream needs to change — an answer it can't read
-  as a month+year is kept verbatim, never guessed.
-- **Subjects & grades — a 12-column fixed-subject grid (2026-08+, replaces the old 4-slot free-choice
-  dropdown pairs).** The form now asks one column per subject — *"Select the grades for your subjects
-  based on the option you chose above. [`<Subject>`]"* (earlier: *"Select the forecast grades for your
-  subjects…"*; the rewording blanked every student's grades until the marker was widened, 2026-10-27) — for exactly these 12: **Biology,
-  Physic, Chemistry, Math, Further Math, English Literature, Economics, Accounting, Computer Science,
-  Psychology, History, Law**. A student leaves blank the ones they don't take. `_subject_grid_columns()`
-  detects these columns by the shared marker substring `"grades for your subjects"` plus the
-  bracketed subject name, and `_build_subjects_from_grid()` builds `profile.subjects[]` from every
-  non-blank cell — this is now the **primary** path; the legacy paired-dropdown detector
-  (`_subject_columns()`/`_build_subjects()`) only fires as a fallback for an old-format CSV. Same
-  `grade_status = "expected"` stamp as before (self-prediction, provisional — see the edge case below).
-  A separate question, **"Are you applying with forecast result or actual?"** (Forecast/Actual),
-  overrides `grade_status` to `"actual"` when answered "Actual" — every respondent answers this now,
-  not just an edge case.
+- **Which pre-university programme are you doing?** (added 2026-10-30): A-levels / STPM / UEC / IB /
+  foundation / Matriculation / Diploma. → `current_program.type`, spelling unified by
+  `PROGRAM_NORMALIZE` (an "Other" answer stays verbatim). A blank keeps the `"A-Level"` default, so
+  rows from before this question are unchanged. `build_list_pdf.py` prints it; `check_grades.py`
+  picks its scale from it; row-fillers compare against the bar published for it.
+- **What month does your actual result come out?** January to December (reworded 2026-10-30, when
+  the old year question was turned into this one, so **the form no longer asks the year**: O11 in
+  `plans/discussions.md`). A month with no year is kept verbatim and raises a `_needs_review` line. If
+  a year column ever comes back, `map_row()` concatenates the two before `_normalize_month_year`
+  (`YYYY-MM`). An answer it can't read is kept verbatim, never guessed. On the old rows, the year sits
+  in the column now headed "What month…" (the month is in the column to its left).
+- **Subjects & grades: one free-text box (2026-10-30; replaces the grade grid for everyone).** *"Type
+  you subject and grades (eg. physic A, Chemistry B, etc)"* (sic; `QUESTION_MAP` also matches the
+  tidied wording) → `_intake_raw.grades`. AI tidies it at finalize and `check_grades.py` checks the
+  tidy-up (step 1 of "Finalize"). Older rows still carry the grid columns, which
+  `_subject_grid_columns()` / `_build_subjects_from_grid()` read as before; the student's own
+  `grade_status` question then sets the status.
+- **what are you applying with?** (Forecast Grades / Actual Grades) → `grade_status` `predicted` /
+  `actual`. *(Older wording: "Are you applying with forecast result or actual?")*
 - **English proficiency — two SEPARATE questions now, watch the substring collision.** **"English Test
   Taken"** (IELTS / TOEFL / MUET / PTE / Duolingo / **None** / Other) and, positioned much later on the
   form (near the optional/free-text cluster, not adjacent to the test question), **"If English test
@@ -102,11 +100,12 @@ fine — but keep the substring in bold intact.
   order silently steals the score question's match and drops the score entirely. Keep this cautionary
   note if either header is reworded again. *Do NOT ask "when will you take it"* — each university sets
   its own bar; that's a research-stage fact, not an intake one.
-- **Total budget** for the whole degree — a **three-option dropdown of limits**, not free text
-  (reworded 2026-10-27, backlog I11): *"What's your limit (RM) for the whole degree. (include
-  tuition, living cost, etc)"* → **`500,000`** / **`1,000,000`** / **`1,500,000`**. No "Not sure"
-  option. `BUDGET_LIMIT_EXACT` matches them exactly (commas/spaces ignored) **before** the substring
-  list, because `500,000` is inside `1,500,000`. All three are real ceilings, so a student who could
+- **Total budget** for the whole degree — a **dropdown of limits**, not free text (reworded
+  2026-10-27, backlog I11): *"What's your limit (RM) for the whole degree. (include tuition, living
+  cost, etc)"* → **`100,000`** / **`200,000`** / **`500,000`** / **`1,000,000`** / **`1,500,000`**. No
+  "Not sure" option. `BUDGET_LIMIT_EXACT` matches them exactly (commas/spaces ignored) **before** the
+  substring list, because `500,000` is inside `1,500,000`. Keep labels plain numbers: any label with
+  "under" reads as RM 500,000. All are real ceilings, so a student who could
   pay more than RM 1.5M gets "Over budget" on rows above it (Evan accepted: budget is secondary). The
   title must keep "whole degree" or "total budget". Older exports' bands (`< 500000` / `500000-1000000`
   / `>1000000` = null floor / legacy "Not sure" = null) still go through `BUDGET_BAND_NORMALIZE`. The
@@ -155,11 +154,12 @@ fine — but keep the substring in bold intact.
   An "Other" answer is `null` plus a `_needs_review` line: at finalize, set a whole number only if the
   answer clearly supports it, else leave `null`. It is a floor, so a waiver needing N years is
   "likely" only when the floor ≥ N; below N or `null`, state the rule and let the student count.
-- **"What did you take for ur secondary school?"** (IGCSE / SPM / Other) → **`secondary_qualification`**,
+- **"What did you take for ur secondary school?"** (IGCSE / SPM / UEC / O-Level) → **`secondary_qualification`**,
   verbatim (mapped 2026-10-27). Nothing reads it automatically yet; it is context for the English-waiver
   call and for entry requirements that name SPM or IGCSE.
 - **"Achievements / activities you'd want to write about in your application?"** (optional, new
-  2026-08) → `profile.achievements`, free text. This exists specifically so Stage 4's "Who actually
+  2026-08; report form only since 2026-10-30, see O12 in `plans/discussions.md`) →
+  `profile.achievements`, free text. This exists specifically so Stage 4's "Who actually
   gets in" section and the application-prep guide can compare the student's real activities against
   what admitted applicants are shown to have, instead of only generic "here's what unis look for" text
   — the concrete need that prompted this: a student explicitly asked "what traits are universities
@@ -236,8 +236,9 @@ fine — but keep the substring in bold intact.
 - **Dealbreakers is gone from the live form (2026-09), permanently.** It used to be its own optional
   question (`preferences.deal_breakers`); it's now folded into "Any other perferences?" above (→
   `needs`), so `deal_breakers` stays an empty list on the current form by design, not a gap.
-  **Location preferences** (optional checkboxes, e.g. "Rural / Campus-based", "Close to public
-  transport") is still its own separate question → `preferences.location_prefs`.
+  **Location preferences** (required dropdown: "Urban / City" / "Rural / Campus-based") is still its
+  own separate question → `preferences.location_prefs`. A "No preference" answer, if that option is
+  added, becomes an empty list so it doesn't steer the location score.
 - **Preferred universities** — ✅ **wired (2026-08+).** *"Universities you already have in mind ( if
   any )? Can write more than 1."* → `preferences.preferred_universities`, free text (answers use
   "and" between names, not commas — don't split it into a list). A student naming unis they already
@@ -341,25 +342,53 @@ Four commands, in this order. Steps 1-3 are safe to repeat; step 4 is the one th
   it when there is no unconfirmed `responses.csv` sitting on disk.
 - **`--confirm` against a manual export** fails with a clear error — there's no `_row` column to stamp.
 
+## The report form (one report, no list)
+
+A report buyer answers the shorter form (`forms/report_intake.json`) and gets a small student folder,
+because their grades are personal data and `data/quick_reports/` is not for that: two buyers of one
+university would also overwrite each other there. There is no sheet-stamping step for this form.
+
+```powershell
+python tools/fetch_form_answers.py --form report_intake                 # data/form/report_answers.csv
+python tools/ingest_form_csv.py "data/form/report_answers.csv" --dry-run
+python tools/ingest_form_csv.py "data/form/report_answers.csv"
+```
+
+- A row that answers *"Which University do you want a report of?"* adds one entry to
+  `profile.report_orders` (university, course, start year, the student's `question`, submitted).
+- **A buyer who already has a folder keeps it untouched, apart from the new order**, even with
+  `--force`. The folder is found by email, then by name if the email agrees. A same-name folder with a
+  different email is skipped and named in the summary; settle it by hand. Re-reading the same answers
+  adds nothing, so the whole CSV is safe to re-run.
+- New folders have blank budget, countries and priorities by design. Finalize the grades as step 1
+  below; the other steps mostly have nothing to do. Then dispatch `report-writer` with the slug (the
+  "Report order" section of `.claude/agents/report-writer.md`), one per order.
+- `progress_dashboard.py` shows these students as **Report order**, not stuck at Stage 1.
+
 ## Finalize each student (the judgment layer — this is your job, not the tool's)
 
-**As of 2026-09, most of this stage is deterministic and needs no per-student review.** Grades,
-ethnicity, the scholarship gate, degree level, and recognition_targets matched off the "Choose your
-desired course" dropdown are all filled straight from clean form answers or an exact lookup against
-a closed, known set — none of them raise a `_needs_review` line any more. The only thing left to
-check per student is whatever the tool actually flagged in `profile.json`'s **`_needs_review`**
-(normally just a free-text recognition match, or the rare no-course-no-field case):
+**Most of this stage is deterministic and needs no per-student review.** Ethnicity, the scholarship
+gate, degree level, and recognition_targets matched off the "Choose your desired course" dropdown are
+all filled straight from clean form answers or an exact lookup against a closed, known set. What's left
+per student is whatever the tool flagged in `profile.json`'s **`_needs_review`** (normally the
+free-text grades, the result year, sometimes a free-text recognition match):
 
-1. **Grades** — nothing to check. `subjects[]` is built **deterministically** from the 12-column
-   subject grid (see Section 2 above); `grade_status` starts at `"expected"` (self-predicted /
-   "confident of getting") and is overridden to `"actual"`/`"predicted"` by the separate "forecast or
-   actual" question when answered. `sync_shortlist.py` already surfaces `expected` as a "Grades
-   unverified (self-predicted)" warning automatically once the student reaches the master list, so it
-   doesn't need flagging again at intake. Subject names are normalised via `SUBJECT_NORMALIZE` in
-   `tools/ingest_form_csv.py` (grid label → canonical, e.g. "Physic"→"Physics") — **if the form gains a
-   new subject grid column, add it to that map** so it doesn't pass through raw. *(Legacy
-   paragraph-grades forms still stage the free text under `_intake_raw.grades`; parse + delete it as
-   before — that path is the one remaining manual case.)*
+1. **Grades** — the one manual step on every form.
+   1. Tidy `_intake_raw.grades` into `subjects[]`, one `{"subject", "grade_or_predicted"}` per subject,
+      keeping the student's grades exactly. Subject names follow `SUBJECT_NORMALIZE`. Don't delete
+      `_intake_raw` yet.
+   2. Run `python tools/check_grades.py --student <slug>`. It fails a grade impossible for
+      `current_program.type`, or a tidied list shorter than the raw text appears to name (read that
+      one against the raw text: a subject with "and" in its name counts as two). Fix the tidy-up, not
+      the check. "Other" has no scale, so read those by hand.
+   3. Show Evan raw vs tidied (the tool prints both), a 30-second look.
+   4. Update the tally in `plans/discussions.md`: +1 if nothing needed correcting, back to 0 if
+      something did. At 20 in a row the look can stop (backlog R41).
+   5. Delete `_intake_raw`.
+
+   `grade_status` comes from the "what are you applying with" question. If it's blank (the report form
+   allows "Not sure"), ask the student. `sync_shortlist.py` surfaces `expected` as a "Grades unverified
+   (self-predicted)" warning once the student reaches the master list.
 2. **Ethnicity** — nothing to check, just a fact to carry forward. `profile.ethnicity` is a clean
    pass-through of one dropdown answer, captured for **scholarship-eligibility** research. When you
    research scholarships in Stage 3/4, use it to include/exclude ethnicity-gated funds (e.g. a
@@ -457,13 +486,15 @@ weights into `tools/shortlist_schema.py` — that shared file is exactly what ma
   line **and** `preferences.notes`, so nothing is lost silently. Decide with the student whether to
   research it out-of-band. (`SUPPORTED_DESTINATIONS` in `tools/ingest_form_csv.py` renders that message,
   so the count never drifts from `COUNTRY_NORMALIZE`.)
-- **Budget bands, and what each one means downstream.** The form's three-option dropdown removed the
+- **Budget bands, and what each one means downstream.** The form's dropdown removed the
   whole class of budget-parsing problems (see the two retired edge cases in the note below). What lands
   where (live labels from 2026-10-27; older exports below them):
 
   | Form answer | `total_budget` + `total_budget_ceiling` | Meaning |
   |---|---|---|
-  | `500,000` | `500000` | Real ceiling — cost checks apply |
+  | `100,000` | `100000` | Real ceiling — cost checks apply |
+  | `200,000` | `200000` | Real ceiling |
+  | `500,000` | `500000` | Real ceiling |
   | `1,000,000` | `1000000` | Real ceiling |
   | `1,500,000` | `1500000` | Real ceiling, even for a family that could pay more |
   | `< 500000` (pre-2026-10-27) | `500000` | Real ceiling |
@@ -499,8 +530,13 @@ weights into `tools/shortlist_schema.py` — that shared file is exactly what ma
   - **`preferences.notes`** — only written when the tool dropped an unsupported country. Anything else
     you want recorded there (e.g. which country matters most, preferred universities) you add at finalize.
 
-  `grade_status` is set from the subject dropdowns → `expected` (see the provisional grades note above);
-  a legacy "actual vs predicted" column, if present, overrides it.
+  `grade_status` is set from the "what are you applying with" question; older grid rows start at
+  `expected` (see the provisional grades note above).
+- **A question replaced on the form keeps its old sheet column.** The new one is added further right,
+  so one logical key can have two columns (old + new consent, month, applying-with).
+  `merge_duplicate_columns()` counts an answer in either. Without it, `build_col_index()` reads only the
+  first column, and every new respondent looks blank there: a blank consent skips them. Found
+  2026-10-30, before any new student was lost.
 - **No consent / no name** → row skipped (reported in the summary). This is the PDPA gate — respect it.
 - **Duplicate names** → same slug; the second is skipped rather than clobbering the first. Disambiguate
   the name (or `--force` deliberately) if two real people share a name.

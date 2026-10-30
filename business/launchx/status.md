@@ -51,7 +51,8 @@ it into a new deck rather than editing the 24 Oct one.
 - **Prices (23 Oct):** list (20–30 universities) RM50, single report RM30. Count the 25 Oct
   replies at the old price, then announce RM30 in the nudge.
 - **Pre-sale cap: 20 list spots** (24 Oct, up from 15), set by Evan's time (about 20 hours).
-- **After payment** the customer gets the existing Google Form, not WhatsApp.
+- **After payment** the customer gets a Google Form, not WhatsApp: the list form for a list, the
+  report form for a report, both links for both (30 Oct, `plans/intake_forms_plan.md`).
 - **Referral reward:** a free one-university report per friend who pays; only for people who have
   paid and received their list.
 - **Firecrawl costed** at its paid price (about RM77 a month). No legal or tax setup until a
@@ -100,9 +101,13 @@ it into a new deck rather than editing the 24 Oct one.
 - [x] 28 Oct: bunting submitted (`Bunting_design/SHORTLISTED_v3.png`).
 - [ ] Pilot plan, overdue since 27 Oct (pass line set 30 Oct: 5 paid sign-ups). By 3 Nov: the rest of the booth kit
       (A4 price sign, printed sample, booth kit). (Notion tasks)
-- [ ] Before 10 Nov: add one intake-form question, "Not doing A-levels? Type your programme and
-      result", because the bunting names STPM, UEC, IB, Foundation and Matriculation and the grade
-      grid takes A-level grades only. Then tell Claude to run `fetch_form_questions.py --check`.
+- [x] 30 Oct: split the intake into a list form and a report form; the grade grid is now one text
+      box for every programme (`plans/intake_forms_plan.md`). Scripts done and tested.
+- [ ] Before 10 Nov, fix the report form: add the grades question (the report's "your fit" needs
+      it), correct its consent wording, link it to a sheet, add its ID to `.env`, submit one test
+      answer on each form. Then tell Claude "T6". Steps: plan's "Evan's fix list".
+- [ ] After T6: send the list form link to list buyers and the report form link to report buyers,
+      including the 2 who already paid for a report.
 - [ ] **Tester chain, one after another** (Notion tasks):
   1. 28 Oct: list what to improve in the list and report from what testers actually read
      (Notion, Product Developing). Fixes done before 10 Nov, so the paid lists get them too.
