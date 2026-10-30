@@ -60,7 +60,7 @@ any Cardiff course/admissions/fees/scholarships page.
 **Cambridge charges a mandatory College fee ON TOP of the University tuition fee for international
 undergrads (learned 2026-09-18) — most aggregators and even some search snippets quote only the
 University figure.** ~GBP 13,300/yr average college fee, on top of ~GBP 46,872/yr University tuition
-(2026/27) — check both, sum them, and say so in `research_notes`. For a 4-yr MEng (the route that
+(2027 entry) — check both, sum them, and say so in `research_notes`. For a 4-yr MEng (the route that
 actually earns full JBM/CEng accreditation) this pushed one student's total right past their budget
 ceiling even though the headline tuition figure alone looked affordable.
 

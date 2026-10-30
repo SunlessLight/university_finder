@@ -236,3 +236,9 @@ Entry format:
 - Decisions (and why): a link must be `https://` plus a dotted host (so `https://` alone or `http://` fail), because the PDF prints it as a clickable link and a broken one reads as breakage.
 - Problems / lessons: none. Old lists upgrade in place with the two cells blank (checked on a `.tmp/` copy of the sample).
 - Next step: T5b (row-filler sheet names the two fields), then T7.
+
+## 2026-10-30 (5) · T7 sample re-check, part 1 (list PDF plan): researched + rehearsed, not yet written
+- Done: 15 row-filler helpers (BACKFILL) re-read the sample's 15 rows on official pages into `.tmp/toru/backfill_t7/`; main session read all 30 QS ranks on QS's own data (Chrome), the Home Affairs subclass 500 living cost, and Melbourne's scholarship pages. Checker fix: `Application requirements` no longer hedge-scanned (`tools/check_master_list.py`, +1 test, 18 pass). R25: `uk.md` Cambridge fee note says "2027 entry". Full rehearsal on a `.tmp/t7/preview/` copy: backfill + recompute → check 0 findings on the 15 rows, PDF builds without `--draft`. toru's real files NOT written yet.
+- Decisions (and why): see `decisions/log.md` (2026-10-30, checker exemption; Harvard mandatory fees in tuition).
+- Problems / lessons: the hedge regex flagged the vocabulary item "N recommendation letters", so four helpers dropped true letter counts to pass; the write tool refuses the whole batch on one hedge. QS tables are JS-rendered (403 to plain fetch); the page's own `/rankings/endpoint?nid=` JSON in Chrome reads them. Melbourne's undergrad scholarship excludes Malaysia.
+- Next step: Evan's yes, then write (carry-over `plans/carry-overs/2026-10-30-t7-sample-recheck.md`).

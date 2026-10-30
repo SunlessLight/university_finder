@@ -120,11 +120,13 @@ PROSE_COLUMNS = [
 # tool bug, not a research one), identity/provenance cells, and "Student grades", which is
 # the student's own form answer ("expected" is its true label). Every other column is
 # written from an official page, so a new column is scanned unless it is added here.
+# "Application requirements" is a closed vocabulary (check_requirements), and its
+# "N recommendation letters" item tripped the advice pattern (T7, 2026-10-30).
 _NOT_HEDGE_SCANNED = {
     "List status", "Desirability", "Tier", "Admission likelihood", "Warnings",
     "Grades vs entry bar", "Approx total (MYR)",
     "University", "Course", "Country", "City", "Course URL", "Info source", "Checked on",
-    "Student grades",
+    "Student grades", "Application requirements",
 }
 HEDGE_COLUMNS = [h for h in SHORTLIST_HEADERS if h not in _NOT_HEDGE_SCANNED]
 

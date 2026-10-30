@@ -90,6 +90,11 @@ class HedgeCheck(unittest.TestCase):
         row = make_row(Student_grades="AAA expected", Warnings="Recognition risk: not found on BEM list")
         self.assertEqual(cml.check_hedges(rows_as_dicts(row)), ([], []))
 
+    def test_recommendation_letters_vocabulary_not_a_hedge(self):
+        cell = "Essay · 2 recommendation letters · Test: SAT"
+        self.assertEqual(cml.cell_hedges("Application requirements", cell), [])
+        self.assertTrue(cml.cell_hedges("Notes", "We recommend applying early"))
+
 
 class FormatChecks(unittest.TestCase):
     def test_text_in_money_cell_fails(self):
