@@ -17,6 +17,10 @@
 MOE Taiwan Scholarship <field> undergraduate
 ```
 
+## Admit rate source
+
+None published (checked 2026-10-30). The MOE 校務資訊公開 (school information disclosure) items give 外國學生數 (enrolled) and 新生註冊率 (enrolment rate) only: neither is an admit rate.
+
 ## Known-good sources (locations, never values)
 
 > Places to **fetch**, never facts to quote — a fee, deadline or cutoff comes off the page every

@@ -23,6 +23,10 @@ JCU OR Curtin OR SIM Singapore <course> bachelor international fees
 Singapore Employment Pass minimum salary graduate
 ```
 
+## Admit rate source
+
+None published (checked 2026-10-30). NUS Indicative Grade Profile (`nus.edu.sg/oam/admissions/indicative-grade-profile`) gives grade percentiles of Singapore A-Level/polytechnic applicants offered places and places taken up per programme: no applicant or offer counts.
+
 ## Known-good sources (locations, never values)
 
 > Places to **fetch**, never facts to quote — a fee, deadline or cutoff comes off the page every

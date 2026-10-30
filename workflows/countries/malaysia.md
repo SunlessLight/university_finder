@@ -13,6 +13,10 @@ MQA recognised programme <course>
 EAC accredited engineering programme Malaysia
 ```
 
+## Admit rate source
+
+None published (checked 2026-10-30). The KPT (Ministry of Higher Education) intake media statement gives national totals only, no per-university figures.
+
 ## Known-good sources (locations, never values)
 
 > Places to **fetch**, never facts to quote — a fee, deadline or cutoff comes off the page every

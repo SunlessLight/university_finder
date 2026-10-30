@@ -12,6 +12,10 @@ US News best <field> programs
 OPT STEM <field> post study work
 ```
 
+## Admit rate source
+
+Each university's own Common Data Set (search `<university> Common Data Set`), item C1: first-time, first-year applicants and admits, all applicants (optional in-state/out-of-state split; international only where the university gives one). No central host. Counts: all applicants, admitted. checked 2026-10-30.
+
 ## Known-good sources (locations, never values)
 
 > Places to **fetch**, never facts to quote — a fee, deadline or cutoff comes off the page every

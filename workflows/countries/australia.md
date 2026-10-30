@@ -12,6 +12,10 @@ Australia 485 graduate visa <field>
 <university> international tuition <course>
 ```
 
+## Admit rate source
+
+None published for international applicants (checked 2026-10-30). Department of Education "Undergraduate applications and offers 2025" (Feb 2026) covers domestic Commonwealth supported places only: "no information in relation to international students".
+
 ## Known-good sources (locations, never values)
 
 > Places to **fetch**, never facts to quote — a fee, deadline or cutoff comes off the page every

@@ -17,6 +17,10 @@ DAAD international programmes <field> bachelor English
 <university> <course> ASIIN EUR-ACE accredited
 ```
 
+## Admit rate source
+
+None published (checked 2026-10-30). Auswahlgrenzen pages (e.g. Marburg) give cut-off grades, and applications/places that exclude international applicants.
+
 ## Known-good sources (locations, never values)
 
 > Places to **fetch**, never facts to quote — a fee, deadline or cutoff comes off the page every

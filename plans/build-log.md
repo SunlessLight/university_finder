@@ -212,3 +212,9 @@ Entry format:
 - Decisions (and why): a key over the 0.5 cap is cut and the excess shared equally, then the `course_match` floor is funded by scaling the others down in proportion (taking it from the biggest key, as the rank formula does, could drop a Must have below an Important). A blank tick is refused, not guessed.
 - Problems / lessons: first version floored before capping, which handed course match extra weight over other "Doesn't matter" topics; caught by the one-Must-have fake and swapped.
 - Next step: rest of Stage 1b (T3b, T11, T12); `workflows/01_intake.md` and the `init_student.py` template still describe `priorities` only (T9).
+
+## 2026-10-30 · T11 admit-rate sources (list PDF plan)
+- Done: `## Admit rate source` added to all 10 `workflows/countries/*.md` (pointers only, no figures); T11 ticked in `plans/list_pdf_plan.md`. Australia confirmed from the dept's 2025 applications-and-offers PDF (Evan downloaded it to `data/resources/`); Singapore from the NUS Indicative Grade Profile page; China by Evan's own check.
+- Decisions (and why): only USA (Common Data Set C1), UK Oxford/Cambridge and Japan (each university's 入試結果, international track) publish one; everything else is "None published", so the PDF cell will say `Not published` rather than an aggregator's guess. UCAS data counts acceptances, not offers, so no rate is derived from it.
+- Problems / lessons: Chrome can't read some government PDFs as text, and Evan stopped the web-fetch helpers and an extra Chrome tab mid-run. For a page or PDF that's stuck, asking Evan to download or check it by eye was faster.
+- Next step: Stage 2 of the list PDF plan (T4, T5, T6), target 3 Nov.

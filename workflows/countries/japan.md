@@ -13,6 +13,10 @@ MEXT scholarship undergraduate <field>
 <university> international tuition admission fee
 ```
 
+## Admit rate source
+
+Each university's own 入試結果 (admission results) page, 私費外国人留学生 (privately funded international) track: 志願者数 (applicants) and 合格者数 (passed) per faculty. Counts: international applicants, admitted. No central host; a university without that track on its page = Not published. checked 2026-10-30.
+
 ## Known-good sources (locations, never values)
 
 > Places to **fetch**, never facts to quote — a fee, deadline or cutoff comes off the page every

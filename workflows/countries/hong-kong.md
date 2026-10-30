@@ -14,6 +14,10 @@ HKU OR CUHK OR HKUST OR PolyU OR CityU OR HKBU OR Lingnan <course> international
 IANG Hong Kong post-study work visa immd.gov.hk
 ```
 
+## Admit rate source
+
+None published for non-JUPAS (international) applicants (checked 2026-10-30). EDB/UGC keeps no non-JUPAS application or offer counts (EDB reply of 13 May 2022, accessinfo.hk); JUPAS figures are local HKDSE applicants, city-wide totals only.
+
 ## Known-good sources (locations, never values)
 
 > Places to **fetch**, never facts to quote — a fee, deadline or cutoff comes off the page every

@@ -1,11 +1,11 @@
-> **Now** (updated 2026-10-29)
+> **Now** (updated 2026-10-30)
 > - **State:** Active, business first, families are the main track (Evan is in exams). LaunchX panel done 24 Oct; 5 of 19 real leads said yes, 4 paid a deposit (RM80; 2 lists, 2 reports). Bar: 20 paid family lists by 2 Dec; if short, decide continue / pivot / stop by 10 Dec. Backend: only cost cuts measured on the 10 Nov lists and fixes a customer would see.
 > - **Working on:** the pre-sale (cap 20 list spots). Detail and open items: `business/launchx/status.md`.
 > - **Next step:** the pilot plan, pass line first (overdue since 27 Oct). Bunting submitted 28 Oct (`business/launchx/Bunting_design/SHORTLISTED_v3.png`); it names all pre-U programmes, so the intake form needs a "Not doing A-levels?" question before 10 Nov. Then the ChatGPT side-by-side test and the list of tester fixes. By 3 Nov: A4 price sign, printed sample, booth kit.
 > - **Demo website:** top 5 = MIT / NUS / Monash / Cambridge / Tsinghua, merged into main 28 Oct and SP1-corrected (old worktree removed); not on the live site yet.
 > - **Waiting on:** more payer replies and replies to the 24 Oct nudge (count 27 Oct). Paid lists due 10 Nov, the day the booth pilot (10–13 Nov) opens.
 > - **Students:** `python tools/progress_dashboard.py`; each student's own `data/students/<slug>/status.md`.
-> - **Backlog:** `business/additionals.md` → "Start here". Before 10 Nov the fact-audit fixes run from `plans/list_pdf_plan.md` (replaces steps 2b/2c): the student's list becomes a portrait PDF with checked, dated, numbers-only facts and a hedge-word check; Stage 1 = T1-T3, target 31 Oct. Evan's own before 10 Nov: sales wording (R37). Budget choice RM 200k done 29 Oct (R26). Step 9 (reports) before the first paid report; everything else after 10 Nov. Open ideas (pricing, app, reusing research): `plans/discussions.md`.
+> - **Backlog:** `business/additionals.md` → "Start here". Before 10 Nov the fact-audit fixes run from `plans/list_pdf_plan.md` (replaces steps 2b/2c): the student's list becomes a portrait PDF with checked, dated, numbers-only facts and a hedge-word check; Stages 1 and 1b done 30 Oct (T11: only USA, UK's Oxford/Cambridge and Japan publish an admit rate); next Stage 2 = T4, T5, T6 in three sessions, target 3 Nov. Evan's own before 10 Nov: sales wording (R37). Budget choice RM 200k done 29 Oct (R26). Step 9 (reports) before the first paid report; everything else after 10 Nov. Open ideas (pricing, app, reusing research): `plans/discussions.md`.
 > - **Phone view:** Notion page "Shortlisted — Now" (under 🗓️ Everything), a copy of this box.
 > - **Last session:** newest entry in `plans/build-log.md`.
 

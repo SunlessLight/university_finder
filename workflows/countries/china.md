@@ -11,6 +11,10 @@ CSC scholarship <field> bachelor
 <university> international admissions <course>
 ```
 
+## Admit rate source
+
+None published (checked 2026-10-30, by Evan: no published rate on the universities' international admissions pages).
+
 ## Known-good sources (locations, never values)
 
 > Places to **fetch**, never facts to quote — a fee, deadline or cutoff comes off the page every

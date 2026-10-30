@@ -12,6 +12,10 @@ site:ac.uk <course> entry requirements
 UK Graduate Route post study work
 ```
 
+## Admit rate source
+
+Oxford and Cambridge only. Oxford: "Undergraduate admissions statistics" (`ox.ac.uk/about/the-university/facts-and-figures/admissions-statistics/undergraduate/current`, blocked to plain fetch) + Annual Admissions Statistical Report: applications, offers and admitted, by nationality/domicile and by course. Cambridge: "Undergraduate Admissions Statistics" (index `undergraduate.study.cam.ac.uk/apply/before/application-statistics`) Table 3.2: applications and offers by country outside the UK, Malaysia listed, so international, offered. UCAS provider-level data counts acceptances, not offers: never derive a rate from it. Every other UK university: None published. checked 2026-10-30.
+
 ## Known-good sources (locations, never values)
 
 > Places to **fetch**, never facts to quote — a fee, deadline or cutoff comes off the page every
