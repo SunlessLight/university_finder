@@ -44,6 +44,10 @@ instead of being refused; see shortlist_schema.upgrade_header().
 2026-10-29 (plans/list_pdf_plan.md T3b, R40): writes the third appended column,
 "Admit rate", from `admit_rate`; older files get it blank by the same upgrade. The
 "Admission likelihood" cell is still computed and written (the balanced shortlist uses it).
+
+2026-10-30 (plans/list_pdf_plan.md T3c): writes the last two appended columns, "Apply link"
+and "Scholarship link", from `apply_link` and `scholarship_link`; older files get them blank
+by the same upgrade.
 """
 
 import argparse
@@ -160,6 +164,8 @@ def candidate_to_row(c, score, tier, admission, flags):
         "Application requirements": c.get("application_requirements", ""),
         "Checked on": c.get("checked_on", ""),
         "Admit rate": c.get("admit_rate", ""),
+        "Apply link": c.get("apply_link", ""),
+        "Scholarship link": c.get("scholarship_link", ""),
     }
     return [values.get(h, "") for h in SHORTLIST_HEADERS]
 

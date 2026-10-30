@@ -230,3 +230,9 @@ Entry format:
 - Decisions (and why): each card's RM total prints the row's own `Approx total (MYR)`, so card and summary never disagree. A messy money cell or a total that doesn't add up now stops the build (listed on screen) instead of printing a note; `--draft` makes a review copy. A system named only as "not X" gets no link (MIT is "not Common App").
 - Problems / lessons: my first build printed "Figure needs re-checking: … we used the first number" on 9 cards because the T6 prompt asked for a mark; a note about our own process never belongs on the student's page. The sample builds only with `--draft` until T7 (12 money cells hold old caveat text; Admit rate and Application requirements blank). T7 leads: Cambridge's passed deadline with Warnings None; Monash/Melbourne say "UAC International".
 - Next step: Stage 3b (T3c, T5b, two short sessions), then T7.
+
+## 2026-10-30 (4) · T3c Apply link + Scholarship link columns (list PDF plan)
+- Done: `shortlist_schema.py` appends `Apply link` and `Scholarship link` (40 columns now), each one `https://` URL or `Not published` (`LINK_FORMAT`, checked by `cell_format_problem()`); `merge_candidates.py` requires and checks `apply_link`/`scholarship_link`; `sync_shortlist.py` writes them. T3c ticked.
+- Decisions (and why): a link must be `https://` plus a dotted host (so `https://` alone or `http://` fail), because the PDF prints it as a clickable link and a broken one reads as breakage.
+- Problems / lessons: none. Old lists upgrade in place with the two cells blank (checked on a `.tmp/` copy of the sample).
+- Next step: T5b (row-filler sheet names the two fields), then T7.

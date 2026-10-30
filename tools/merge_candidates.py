@@ -17,7 +17,7 @@ Checks, in the order they fire:
   2. no two fragments claim the same course_key            (duplicate dispatch)
   3. every REQUIRED_CANDIDATE_FIELD present and non-empty  (the completeness gate)
   4. all eight `scores` sub-scores present, numeric, 0-5
-  5. money, rank, requirements, checked_on and admit_rate fields in their fixed format
+  5. money, rank, requirements, checked_on, admit_rate and link fields in their fixed format
 
 Exit 1 lists every (university, problem) pair — the whole point is that one run tells you
 exactly which agents to re-dispatch and what each of them missed.
@@ -30,6 +30,10 @@ a row once it is in. Fragments written to the pre-T3 row-filler sheet fail both 
 2026-10-29 (plans/list_pdf_plan.md T3b, R40): `admit_rate` joins both checks (required,
 and in ADMIT_RATE_FORMAT or "Not published"). Fragments written before T5 updates the
 row-filler sheet lack it and fail.
+
+2026-10-30 (plans/list_pdf_plan.md T3c): `apply_link` and `scholarship_link` join both
+checks (required, and in LINK_FORMAT or "Not published"). Fragments written before T5b
+updates the row-filler sheet lack them and fail.
 
 Usage:
     python tools/merge_candidates.py --student <slug> --country "Hong Kong"
@@ -65,6 +69,8 @@ FORMATTED_FIELDS = {
     "application_requirements": "Application requirements",
     "checked_on": "Checked on",
     "admit_rate": "Admit rate",
+    "apply_link": "Apply link",
+    "scholarship_link": "Scholarship link",
 }
 
 

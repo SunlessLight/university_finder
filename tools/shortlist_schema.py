@@ -30,6 +30,11 @@ longer reads as an instruction; "Urban+Rural both ticked" left Warnings (Stage 1
 (ADMIT_RATE_FORMAT) or "Not published". It replaces Admission likelihood in what the
 student sees; Admission likelihood stays in the file and in classify_admission(),
 because the balanced Reach/Match/Safety shortlist still runs on it.
+
+2026-10-30 (plans/list_pdf_plan.md T3c, Decisions item 11): two more appended columns,
+"Apply link" and "Scholarship link" (candidate fields `apply_link`, `scholarship_link`),
+each one https:// URL or "Not published" (LINK_FORMAT), so the PDF card's "Useful links"
+can point at the exact application and scholarship pages.
 """
 
 import argparse
@@ -92,12 +97,16 @@ SHORTLIST_HEADERS = [
     "Application requirements",  # fixed vocabulary joined with " · " (APPLICATION_REQUIREMENTS_VOCAB)
     "Checked on",           # YYYY-MM-DD the row's facts were read on the official page
     "Admit rate",           # the university's published figure (ADMIT_RATE_FORMAT) or "Not published"
+    # Added 2026-10-30 (T3c).
+    "Apply link",           # the page this course is applied on (portal, Common App, UCAS): LINK_FORMAT
+    "Scholarship link",     # official page of the scholarship in "Scholarship & portal": LINK_FORMAT
 ]
 
 # Columns appended after a list may already exist. An older file that lacks ONLY these
 # is upgraded (blank cells) by upgrade_header(); any other difference still needs a
 # deliberate migration. Append new columns here, never in the middle of the header.
-ADDED_COLUMNS = ("Application requirements", "Checked on", "Admit rate")
+ADDED_COLUMNS = ("Application requirements", "Checked on", "Admit rate",
+                 "Apply link", "Scholarship link")
 
 # Allowed values for the "List status" column (first is the default for new rows).
 LIST_STATUSES = ["Longlist", "Shortlist", "Finalist", "Rejected"]
@@ -144,6 +153,8 @@ SENTINEL_VALUES = {
     "Application requirements": ["Not published"],
     # Most non-US universities publish no admit rate (T11 names each country's source).
     "Admit rate": ["Not published"],
+    "Apply link": ["Not published"],
+    "Scholarship link": ["Not published"],
 }
 
 # Sentinels still ACCEPTED (so old lists pass) but never to be WRITTEN on a new row.
@@ -197,6 +208,9 @@ REQUIRED_CANDIDATE_FIELDS = [
     "application_requirements",
     "checked_on",
     "admit_rate",
+    # Added 2026-10-30 (T3c).
+    "apply_link",
+    "scholarship_link",
 ]
 
 # Fields that may legitimately be present-but-empty (see the note above).
@@ -780,8 +794,14 @@ _ADMIT_RATE_RE = re.compile(
     r"(\d{4})-(\d{2})$"
 )
 
+# "Apply link" / "Scholarship link" (Decisions item 11): one official https:// page, nothing
+# around it, so the PDF can print it as a link.
+LINK_FORMAT = "one URL starting https:// with no spaces, e.g. https://www.ucas.com/; or Not published"
+LINK_COLUMNS = ("Apply link", "Scholarship link")
+_LINK_RE = re.compile(r"^https://[^\s/]+\.[^\s/]+(?:/\S*)?$")
+
 FORMATTED_COLUMNS = MONEY_COLUMNS + RANK_COLUMNS + ("Application requirements", "Checked on",
-                                                    "Admit rate")
+                                                    "Admit rate") + LINK_COLUMNS
 
 
 def cell_format_problem(column, value, today=None):
@@ -827,6 +847,11 @@ def cell_format_problem(column, value, today=None):
         if (int(m.group(2)) + 1) % 100 != int(m.group(3)):
             return f"{text!r}: the cycle must be two consecutive years, e.g. 2024-25"
         return None
+
+    if column in LINK_COLUMNS:
+        if text in SENTINEL_VALUES[column] or _LINK_RE.match(text):
+            return None
+        return f"{text!r} is not {LINK_FORMAT}"
 
     # Application requirements
     if text in SENTINEL_VALUES[column]:
@@ -971,6 +996,7 @@ def main():
                         "or 'Not published'"
                     ),
                     "Admit rate": ADMIT_RATE_FORMAT,
+                    **{c: LINK_FORMAT for c in LINK_COLUMNS},
                 },
                 "ISO_CURRENCIES": ISO_CURRENCIES,
                 "RANKING_EDITION": RANKING_EDITION,
