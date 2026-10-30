@@ -202,20 +202,20 @@ const check = (name, ok, detail) => results.push({ name, ok: !!ok, detail });
       if (!fs.existsSync(file) || fs.statSync(file).size === 0) return null;
       return fs.readFileSync(file).subarray(0, bytes).toString('latin1');
     };
-    const csvLinks = [await fileOf('results', '.screen-results a[download]'), await fileOf('list', '.screen-list a[download]')];
-    csvLinks.forEach((link, i) => {
+    const listLinks = [await fileOf('results', '.screen-results a[href$="sample_list.pdf"]'), await fileOf('list', '.screen-list a[href$="sample_list.pdf"]')];
+    listLinks.forEach((link, i) => {
       const where = i ? 'list' : 'results';
-      check(where + ': spreadsheet button exists and downloads', !!link && link.download, JSON.stringify(link));
-      const start = link ? head(link, 200) : null;
-      check(where + ': spreadsheet button opens the real sample CSV', !!start && /List status/.test(start) && /University/.test(start), start && start.slice(0, 60));
+      check(where + ': list button exists and opens in a new tab', !!link && link.target === '_blank', JSON.stringify(link));
+      const start = link ? head(link, 5) : null;
+      check(where + ': list button opens the real sample PDF', start === '%PDF-', start);
     });
     const pdfLink = await fileOf('report', '.screen-report .rp-actions a');
     check('report: PDF button exists and opens in a new tab', !!pdfLink && pdfLink.target === '_blank', JSON.stringify(pdfLink));
     const pdfStart = pdfLink ? head(pdfLink, 5) : null;
     check('report: PDF button opens the real sample PDF', pdfStart === '%PDF-', pdfStart);
     check('download buttons use the labels and paths in DATA.files',
-      !!csvLinks[0] && !!pdfLink && csvLinks[0].label === (await ev('DATA.files.list.label')) && pdfLink.label === (await ev('DATA.files.report.label')) &&
-      csvLinks[0].href === new URL(await ev('DATA.files.list.href'), page).href && pdfLink.href === new URL(await ev('DATA.files.report.href'), page).href);
+      !!listLinks[0] && !!pdfLink && listLinks[0].label === (await ev('DATA.files.list.label')) && pdfLink.label === (await ev('DATA.files.report.label')) &&
+      listLinks[0].href === new URL(await ev('DATA.files.list.href'), page).href && pdfLink.href === new URL(await ev('DATA.files.report.href'), page).href);
 
     // --- G. plan step 5: cost and grade figures on results match the same universities on list
     const figures = (id) => ev('(() => { App.go(' + JSON.stringify(id) + '); const out = {};' +
@@ -249,7 +249,7 @@ const check = (name, ok, detail) => results.push({ name, ok: !!ok, detail });
     check('list: clicking a row opens its detail', (await count('#detail-nus')) === 1);
     const colsShown = await ev('(() => { const t = document.querySelector(\'[data-row="nus"]\').innerText + document.querySelector("#detail-nus").innerText;' +
       ' return DATA.columns.filter((c) => App.uni("nus")[c.key] !== "" && !t.includes(c.label) && !t.includes(String(App.uni("nus")[c.key]).slice(0, 12))).map((c) => c.key).join(); })()');
-    // The collapsed row shows two columns reworded ("RM 383,438", "Checked"), so those two may differ.
+    // The collapsed row shows two columns reworded ("RM 398,048", "Checked"), so those two may differ.
     check('list: an open row shows every filled column',
       colsShown.split(',').filter(Boolean).every((k) => ['approxTotalMyr', 'infoSource'].includes(k)), colsShown);
     await click('[data-row="nus"] .row-toggle');
@@ -330,7 +330,7 @@ const check = (name, ok, detail) => results.push({ name, ok: !!ok, detail });
       esc: App.esc('<b>"R&D"</b>')
     })`));
     check('15 universities', d.n === 15, d.n);
-    check('35 columns, none missing on any row', d.cols === 35 && d.missing === 0, d.cols + '/' + d.missing);
+    check('40 columns, none missing on any row', d.cols === 40 && d.missing === 0, d.cols + '/' + d.missing);
     check('15 unique ids', new Set(d.ids).size === 15, d.ids.join(','));
     check('every row has a band', d.bands.every((b) => ['reach', 'match', 'safety'].includes(b)), d.bands.join(','));
     check('numeric columns are numbers', d.numeric);
@@ -347,7 +347,7 @@ const check = (name, ok, detail) => results.push({ name, ok: !!ok, detail });
     check('no price has been invented', d.price === null, d.price);
     check('no "undefined"/NaN leaked into DATA', d.undef === false);
     check('App.esc escapes', d.esc === '&lt;b&gt;&quot;R&amp;D&quot;&lt;/b&gt;', d.esc);
-    check('money format', d.mit.join('|') === 'RM 1,499,002|RM 1.50M|RM 383k', d.mit.join('|'));
+    check('money format', d.mit.join('|') === 'RM 1,499,002|RM 1.50M|RM 398k', d.mit.join('|'));
     // Rules for every session: no blanket "every fee checked" claim anywhere on screen.
     const claims = [];
     for (const id of ORDER) {

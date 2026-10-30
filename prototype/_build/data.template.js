@@ -19,10 +19,10 @@
  *   intake        { qualifications[], extraCountries[], budgetBands[] } the choices the sign-up
  *                   form offers besides the sample student's own answers
  *   bands[]       { key, label } reach / match / safety, in display order
- *   columns[]     { key, label } for all 35 spreadsheet columns, in spreadsheet order
+ *   columns[]     { key, label } for all 40 spreadsheet columns, in spreadsheet order
  *   columnGroups[] { title, keys[] } how those columns group when a list row is opened. A column
  *                   named in no group falls into the last one
- *   universities[] one object per spreadsheet row: the 35 column keys, plus
+ *   universities[] one object per spreadsheet row: the 40 column keys, plus
  *                   id            stable id, e.g. "mit"
  *                   shortName     "MIT"
  *                   band          "reach" | "match" | "safety"  (from admissionLikelihood; use
@@ -89,9 +89,9 @@
      label and value still come from COLUMNS and the row. */
   const columnGroups = [
     { title: 'The course', keys: ['courseAtAGlance', 'studentLife', 'intake'] },
-    { title: 'Getting in', keys: ['entryRequirements', 'studentGrades', 'englishReq', 'howToApply', 'keyDeadline'] },
+    { title: 'Getting in', keys: ['entryRequirements', 'studentGrades', 'englishReq', 'applicationRequirements', 'admitRate', 'howToApply', 'applyLink', 'keyDeadline'] },
     { title: 'What it costs', keys: ['annualTuition', 'totalTuition', 'estLivingPerYear', 'durationYears', 'moneyToShowVisa'] },
-    { title: 'Scholarships', keys: ['scholarshipAndPortal', 'scholarshipCoverage', 'scholarshipCompetitiveness', 'howToGetScholarship'] },
+    { title: 'Scholarships', keys: ['scholarshipAndPortal', 'scholarshipCoverage', 'scholarshipCompetitiveness', 'howToGetScholarship', 'scholarshipLink'] },
     { title: 'After you graduate', keys: ['workRightsAfterGraduating', 'recognisedInMalaysia'] },
     { title: 'How it ranks', keys: ['subjectRank', 'overallRank', 'desirability', 'tier', 'listStatus'] },
     { title: 'Good to know', keys: [] }
@@ -181,7 +181,7 @@
     universityId: mit.id,
     title: 'University Report — ' + mit.university,
     sampleNote: 'Sample, anonymised demo. A real report with the student\'s identity removed.',
-    pages: 19,
+    pages: 25,
     questions: ['Can I get in?', 'Will I belong there and do well?', 'What will applying demand of me?'],
     summary: [
       { label: 'University', value: mit.university },
@@ -369,7 +369,7 @@
   /* ---- Files the download buttons open (paths relative to prototype/index.html) ---- */
 
   const files = {
-    list: { href: '../business/sales/sample_pack/sample_master_list.csv', label: 'Download the spreadsheet' },
+    list: { href: '../business/sales/sample_pack/sample_list.pdf', label: 'Download the list' },
     report: { href: '../business/sales/sample_pack/sample_university-report_MIT.pdf', label: 'Download the PDF' }
   };
 

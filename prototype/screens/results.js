@@ -46,7 +46,7 @@
       const rest = unis.length - picks.length;
       const spread = data.bands.map((b) =>
         `<span class="badge badge-${b.key}">${unis.filter((u) => u.band === b.key).length} ${b.label}</span>`).join('');
-      const download = `<a class="btn btn-ghost" href="${esc(data.files.list.href)}" download>${esc(data.files.list.label)}</a>`;
+      const download = `<a class="btn btn-ghost" href="${esc(data.files.list.href)}" target="_blank" rel="noopener">${esc(data.files.list.label)}</a>`;
 
       root.innerHTML = `
         <header class="hero">

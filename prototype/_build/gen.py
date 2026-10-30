@@ -35,6 +35,8 @@ COLUMNS = [
     ("Recognised in Malaysia?", "recognisedInMalaysia"), ("How to apply", "howToApply"),
     ("Key deadline", "keyDeadline"), ("Intake", "intake"), ("Notes", "notes"),
     ("Course URL", "courseUrl"), ("Info source", "infoSource"),
+    ("Application requirements", "applicationRequirements"), ("Checked on", "checkedOn"),
+    ("Admit rate", "admitRate"), ("Apply link", "applyLink"), ("Scholarship link", "scholarshipLink"),
 ]
 IDS = {
     "Massachusetts Institute of Technology": ("mit", "MIT"),

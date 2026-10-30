@@ -69,7 +69,7 @@
               <span><i class="wt-bone" style="width:${[66, 70, 54, 60][i]}%"></i></span>
             </div>`).join('')}
         </div>
-        <p class="wt-preview-note muted">${data.columns.length} columns for each university, as a spreadsheet you can download and keep.</p>
+        <p class="wt-preview-note muted">The full details for each university, as a PDF you can download and keep.</p>
         <p class="section-title wt-later-title">After that</p>
         <ul class="wt-later">
           ${later.map((d) => '<li><strong>' + esc(d.name) + '</strong><span class="muted">' + esc(d.oneLine) + '</span></li>').join('')}

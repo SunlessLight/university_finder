@@ -16,6 +16,9 @@ Usage:
 
 Also builds sample_apply-guide_US.pdf from the source student's application_prep/us.md, with
 the same redaction contract as the report (explicit pairs, hard stop on a missing target).
+
+Also builds sample_list.pdf from the redacted sample_master_list.csv and sample_profile.json
+through tools/build_list_pdf.py, never --draft: a money problem stops the rebuild here too.
 """
 
 import argparse
@@ -102,6 +105,18 @@ def build_glossary(master_list_path: Path) -> Path:
     subprocess.run(
         [sys.executable, str(TOOLS_DIR / "build_glossary_sheet.py"),
          "--file", str(master_list_path), "--out", str(out_path)],
+        check=True,
+    )
+    return out_path
+
+
+def build_list_pdf(master_list_path: Path) -> Path:
+    # Built from the redacted CSV, so the PDF can't see anything the CSV doesn't carry.
+    out_path = OUT_DIR / "sample_list.pdf"
+    subprocess.run(
+        [sys.executable, str(TOOLS_DIR / "build_list_pdf.py"),
+         "--file", str(master_list_path), "--profile", str(OUT_DIR / "sample_profile.json"),
+         "--out", str(out_path)],
         check=True,
     )
     return out_path
@@ -233,9 +248,10 @@ def main():
 
     csv_path = build_master_list()
     glossary_path = build_glossary(csv_path)
+    list_path = build_list_pdf(csv_path)
     pdf_path = build_report_pdf(args.report)
     apply_path = build_apply_guide_pdf()
-    scan_for_leaks(csv_path, glossary_path, pdf_path, apply_path)
+    scan_for_leaks(csv_path, glossary_path, list_path, pdf_path, apply_path)
 
 
 if __name__ == "__main__":

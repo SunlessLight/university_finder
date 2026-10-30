@@ -20,6 +20,8 @@
   const IN_ROW = ['university', 'course', 'country', 'city', 'admissionLikelihood', 'gradesVsEntryBar',
     'approxTotalMyr', 'infoSource', 'warnings'];
 
+  const LINK_KEYS = ['courseUrl', 'applyLink', 'scholarshipLink'];
+
   const isCut = (u) => u.listStatus === 'Rejected';
   const has = (v) => v !== '' && v != null;
 
@@ -45,7 +47,8 @@
 
   function value(u, key) {
     const v = u[key];
-    if (key === 'courseUrl') return `<a href="${esc(v)}" target="_blank" rel="noopener">${esc(v)}</a>`;
+    /* A link cell can also say "Not published", which stays plain text. */
+    if (LINK_KEYS.includes(key) && /^https:/.test(v)) return `<a href="${esc(v)}" target="_blank" rel="noopener">${esc(v)}</a>`;
     if (key === 'desirability') return esc(v) + ' / 100';
     return esc(v);
   }
@@ -155,7 +158,7 @@
             <p class="muted">Click a row to see everything we found. Tick the ones you want a deep report on.</p>
             <p class="spread">${spread}</p>
           </div>
-          <a class="btn btn-ghost" href="${esc(data.files.list.href)}" download>${esc(data.files.list.label)}</a>
+          <a class="btn btn-ghost" href="${esc(data.files.list.href)}" target="_blank" rel="noopener">${esc(data.files.list.label)}</a>
         </header>
 
         <div class="table-wrap card">

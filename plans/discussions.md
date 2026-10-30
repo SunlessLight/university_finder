@@ -16,6 +16,20 @@
 | O5 | Is RM 50 for 20-30 universities too cheap? | Don't change the price before the pilot. Measure the real cost and hours on the first paid lists, then decide | 2026-10-29 |
 | O6 | Turn it into an app at USD 5 for 8-12 universities? | Not now. See 2026-10-29 below | 2026-10-29 |
 | O7 | Store researched universities and reuse them for the next student | Good idea, after the pilot. See 2026-10-29 below | 2026-10-29 |
+| O8 | The demo says "15 of 15 rows are checked", but four facts aren't confirmed yet | Check the MQA register in Chrome before the 3 Nov printed sample, and fix the other three before the sample goes public. See 2026-10-30 below | 2026-10-30 |
+| O9 | The sample's dates go out of date during the pilot | Keep Cambridge in the top 5 for now; before 10 Nov, reword the Decide screen's "early round on 1 Nov". See 2026-10-30 below | 2026-10-30 |
+
+## 2026-10-30
+
+**Sample pack rebuild (T8) raised two questions**
+- **"15 of 15 rows are checked" (O8).** The website and every PDF card say the row was checked on the
+  official page. T7 left four things not confirmed there: the MQA register on all rows, Northeastern's
+  application requirements, Tsinghua's living cost, NUS's living cost. The first one matters most,
+  because recognition in Malaysia is a hard gate for an engineering student.
+- **Dates that pass (O9).** Cambridge's deadline (15 Oct) has passed, so its PDF card says "Deadline
+  passed", but the website's Results screen still shows it in "5 to look at first" with no warning.
+  The Decide screen tells the student to aim for MIT's early round on 1 Nov, which will be over
+  before the booth opens on 10 Nov.
 
 ## 2026-10-29
 
