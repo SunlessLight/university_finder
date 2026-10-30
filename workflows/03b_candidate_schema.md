@@ -63,6 +63,8 @@ from tuition + living × duration"*, which is the normal case.
   "application_requirements": "Personal statement · 1 recommendation letter",
   "checked_on": "2026-07-29",
   "admit_rate": "Not published",
+  "apply_link": "https://www.ucas.com/",
+  "scholarship_link": "https://www.manchester.ac.uk/...",
   "scores": {
     "course_match": 5,
     "subject_reputation": 4,
@@ -91,7 +93,7 @@ from tuition + living × duration"*, which is the normal case.
     university's stated bar. It is a strict identity check, so the string `"No"` does **not** trigger
     the flag. The requirement itself goes in `english_req`, which *is* a column.
 - **Fixed-format fields** — money, ranks, `application_requirements`, `checked_on`, `admit_rate`,
-  `key_deadline` — follow `.claude/agents/row-filler.md` → "Fixed-format cells" (shapes, vocabulary,
+  `key_deadline`, `apply_link`, `scholarship_link` — follow `.claude/agents/row-filler.md` → "Fixed-format cells" (shapes, vocabulary,
   sources); `merge_candidates.py` rejects a miss. No hedge words (`likely`, `usually`, `confirm`, `~`)
   in any field that becomes a cell; doubt and calculations go in `research_notes`.
 - Put a date in `key_deadline` as `YYYY-MM-DD` so it parses. Where the university publishes none,

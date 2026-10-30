@@ -170,6 +170,11 @@ the write fence (`.tmp/<slug>/` only; never `master_list.csv`, never any of the 
     Cambridge) → `Not published`. Never from an aggregator, ranking site, news story or UCAS
     acceptance data.
   - **`key_deadline`**: `YYYY-MM-DD`, `Rolling` or `Not published`.
+  - **`apply_link`**: the official page where this course is applied for: the university's own
+    portal page, or `https://www.commonapp.org/` / `https://www.ucas.com/` when that is the route.
+  - **`scholarship_link`**: the official page of the scholarship named in `scholarship_portal`.
+  - Both links: one `https://` URL you opened in this session, nothing around it, or
+    `Not published`. Never an aggregator or a search-results page.
 - **No hedge words in any cell**: no `likely`, `usually`, `confirm`, `~`. A cell holds the fact
   or the sentinel. Doubt, ranges and caveats go in `research_notes`; an unverified hard fact
   means `source_authority: "Not verified"` and the fact named in `notes`.
