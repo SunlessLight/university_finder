@@ -213,25 +213,40 @@ learned" is exactly what a stress test asks for.
 
 ---
 
-## Results so far (25 Oct, 84 rows)
+## Results so far (30 Oct, 103 rows)
 
-*This is the only copy of these figures. Totals only. Recounted on 25 Oct from Evan's updated
-sheet (export "(3)", with "Enter number by accident", contact method and deposit columns); the
-20 Oct cut had 54 rows and the same pattern.*
+*This is the only copy of these figures. Totals only. Recounted on 30 Oct from the live form
+(`tools/fetch_form_answers.py --form survey` -> `data/feedback/survey.csv`, which carries Evan's
+hand columns: cleaned number, "Enter number by accident", contact method, response, amount,
+reason). 19 rows are new since the 25 Oct cut (84 rows): 13 on 27 Oct, 4 on 28 Oct, 2 on 29 Oct.
+On 30 Oct the price question's wording changed: the price now comes first ("RM50 : Personalised
+University List…"); the options are otherwise the same.*
 
-- **Who:** 46 friends, 26 "a little", **12 strangers**. **0 parents** (the form only offered
-  student options). 71 pre-university (29 applying this year), 12 at university.
-- **Leads:** 78 typed something in the number box, but 17 typed a number by accident and most
-  of the rest wrote a comment. **19 real leads** (valid numbers): 4 strangers, 9 "a little",
-  6 friends; 15 want the list, 4 the report. All 19 messaged on WhatsApp; 7 commenters emailed.
-- **Deposits:** 4 of the 19, RM80 in total. 0 strangers. 2 for the list, 2 for the report.
-- **Would prefer:** the list 56, the single report 11, neither 17.
-- **Nobody pays for help today:** 76 of 84 paid no one; 3 paid something; 1 paid over RM2,000.
-- Top worry: scholarships 29, essays 18, entry requirements 11, choosing a university 8, real
-  total cost 6, recognition / jobs 5.
-- Students decide (47 mostly me, 33 together, 4 parents); **parents pay (57)**, scholarships 18.
-- 35 already know exactly where to apply, 30 have a few in mind. Sell before applications.
-- Used: uni websites 68, ChatGPT/Gemini 59, rankings 52, seniors 47, social media 36, school 34,
-  fairs 32, agents 18, paid consultant 3.
-- Looked up: entry reqs 59, fees 55, scholarships 51, living costs 37, jobs 36, recognition 22,
-  safety 20, post-study work 18, visa funds 10. The "extras" are the least researched.
+- **Who:** 55 friends, 31 "a little", **17 strangers** (5 of the 19 new rows). **0 parents**
+  (the form only offers student options). 84 pre-university (36 applying this year), 18 at
+  university, 1 at secondary school.
+- **Leads:** 89 typed something in the number box. 18 are marked "by accident" and most of the
+  rest wrote a comment. **22 real leads** (valid numbers, all messaged on WhatsApp): 5 strangers,
+  9 "a little", 8 friends; on the form 14 want the list, 5 the report, 3 both. 7 commenters
+  emailed. Replies from the 22: 4 yes, 12 no, 6 silent.
+- **Deposits:** 7 rows have an amount, **RM110 in total** (5 × RM10, 1 × RM20, 1 × RM40). By "do
+  you know me": 3 friends, 3 "a little", **1 stranger**. 5 of the 7 are among the 22 leads; the
+  other 2 came another way. Their form picks: report 3, list 1, both 1, none 2, so the form does
+  not say which product each one bought. One of the 7 (RM20) is marked "no": Evan's reason
+  column says they "paid just to support me", so **6 deposits are demand**, 1 is kindness.
+- **Why "no" (Evan's reason column, 7 of the 12 no's):** already sorted 3 (used an education
+  agency / did lots of research / already applied), want to research themselves first 2, won't
+  spend money on this 1, thought it was free 1.
+- **Would prefer:** the list 57, the single report 14, both 9, neither 23.
+- **Nobody pays for help today:** 94 of 103 paid no one; 4 not sure; 4 paid something (1 over
+  RM2,000).
+- Top worry: scholarships 35, essays 21, entry requirements 14, choosing a university 9, real
+  total cost 7, recognition / jobs 6, visa 4, student life 3.
+- Students decide (57 mostly me, 42 together, 4 parents); **parents pay (74)**, scholarships 18,
+  PTPTN loan 6.
+- 45 already know exactly where to apply, 36 have a few in mind, 11 know only the country, 9
+  haven't started. Sell before applications.
+- Used: uni websites 84, ChatGPT/Gemini 70, rankings 61, seniors 58, social media 42, school 41,
+  fairs 35, agents 23, paid consultant 3.
+- Looked up: entry reqs 72, fees 70, scholarships 65, living costs 46, jobs 46, post-study work
+  26, recognition 24, safety 23, visa funds 12. The "extras" are the least researched.

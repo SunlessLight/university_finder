@@ -157,13 +157,13 @@
       "required": false
     },
     {
-      "title": "Which would would you prefer? ",
+      "title": "I have 2 services, which would you prefer?",
       "type": "CHECKBOX",
       "description": "",
       "required": true,
       "options": [
-        "Personalised University List: 20 to 30 universities of your desired country & course. Ranked according to how well they fit you. Includes Total cost of Attendance, Scholarships Avalilable, Whether its a Reach/Match/Safety and much more. RM50",
-        "A deep report on ONE university you name: the full cost in ringgit, scholarships, work rules, whether the degree is recognised in Malaysia, and what students there say about it. RM30",
+        "RM50 : Personalised University List: 20 to 30 universities of your desired country & course. Ranked according to how well they fit you. Includes Total cost of Attendance, Scholarships Avalilable, Whether its a Reach/Match/Safety and much more.:",
+        "RM30 : A deep report on ONE university you name: the full cost in ringgit, scholarships, work rules, whether the degree is recognised in Malaysia, and what students there say about it.",
         "None"
       ],
       "other": false
