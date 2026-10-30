@@ -242,3 +242,9 @@ Entry format:
 - Decisions (and why): see `decisions/log.md` (2026-10-30, checker exemption; Harvard mandatory fees in tuition).
 - Problems / lessons: the hedge regex flagged the vocabulary item "N recommendation letters", so four helpers dropped true letter counts to pass; the write tool refuses the whole batch on one hedge. QS tables are JS-rendered (403 to plain fetch); the page's own `/rankings/endpoint?nid=` JSON in Chrome reads them. Melbourne's undergrad scholarship excludes Malaysia.
 - Next step: Evan's yes, then write (carry-over `plans/carry-overs/2026-10-30-t7-sample-recheck.md`).
+
+## 2026-10-30 (7) · Mentor session: time on bugs, the database idea, survey recount
+- Done: downloaded the survey's live questions and all answers, recounted `business/launchx/survey.md` at 103 rows (22 real leads, 7 deposits RM110, 1 stranger paid, why people said no) and brought `business/launchx/status.md` and the Now box up to date.
+- Decisions (and why): no university database before 2 Dec, because tools are a flat RM158 a month, so it saves little and adds a system to maintain. No freeze: Evan keeps building in set time alongside marketing (the mentor advised stopping new columns and checks; Evan's call). Pilot pass line: 5 paid sign-ups across the 4 booth days, a guess. All in `decisions/log.md`.
+- Problems / lessons: the sheet's "by accident" column holds the text true/false, so a blank check counted every row as an accident. I wrote "the 2 other payers came another way" into survey.md unchecked; they came from the 7 emails, and that was the finding (email 2 of 7, WhatsApp 5 of 22, small numbers). Read Evan's Reason column first: it already held 7 reasons for "no".
+- Next step: finish the pilot plan; Evan says which product the 3 new payers bought.

@@ -219,24 +219,26 @@ learned" is exactly what a stress test asks for.
 (`tools/fetch_form_answers.py --form survey` -> `data/feedback/survey.csv`, which carries Evan's
 hand columns: cleaned number, "Enter number by accident", contact method, response, amount,
 reason). 19 rows are new since the 25 Oct cut (84 rows): 13 on 27 Oct, 4 on 28 Oct, 2 on 29 Oct.
-On 30 Oct the price question's wording changed: the price now comes first ("RM50 : Personalised
-University List…"); the options are otherwise the same.*
+The price question's wording has changed since the last saved copy of the form: the price now
+comes first ("RM50 : Personalised University List…"); the options are otherwise the same.*
 
 - **Who:** 55 friends, 31 "a little", **17 strangers** (5 of the 19 new rows). **0 parents**
   (the form only offers student options). 84 pre-university (36 applying this year), 18 at
   university, 1 at secondary school.
 - **Leads:** 89 typed something in the number box. 18 are marked "by accident" and most of the
   rest wrote a comment. **22 real leads** (valid numbers, all messaged on WhatsApp): 5 strangers,
-  9 "a little", 8 friends; on the form 14 want the list, 5 the report, 3 both. 7 commenters
-  emailed. Replies from the 22: 4 yes, 12 no, 6 silent.
+  9 "a little", 8 friends; on the form 14 want the list, 5 the report, 3 both. Replies from the
+  22: 4 yes, 12 no, 6 silent. **7 commenters emailed** (no number): 2 yes, 5 silent.
 - **Deposits:** 7 rows have an amount, **RM110 in total** (5 × RM10, 1 × RM20, 1 × RM40). By "do
-  you know me": 3 friends, 3 "a little", **1 stranger**. 5 of the 7 are among the 22 leads; the
-  other 2 came another way. Their form picks: report 3, list 1, both 1, none 2, so the form does
-  not say which product each one bought. One of the 7 (RM20) is marked "no": Evan's reason
-  column says they "paid just to support me", so **6 deposits are demand**, 1 is kindness.
-- **Why "no" (Evan's reason column, 7 of the 12 no's):** already sorted 3 (used an education
-  agency / did lots of research / already applied), want to research themselves first 2, won't
-  spend money on this 1, thought it was free 1.
+  you know me": 3 friends, 3 "a little", **1 stranger**. 5 came from the 22 WhatsApp leads, 2 from
+  the 7 emails. Their form picks: report 3, list 1, both 1, none 2, so the form does not say which
+  product each one bought. Every "yes" (6) paid. The 7th (RM20) is marked "no": Evan's reason
+  column says they "paid just to support me", so it is kindness, not demand. Of the 6, Evan said
+  on 25 Oct that one came after persuasion and a discount to RM40.
+- **Why "no" (Evan's reason column):** 13 no's in all (12 WhatsApp leads, 1 other). 1 is the
+  supporter above; of the other 12, 7 gave a reason: already sorted 3 (used an education agency /
+  did lots of research / already applied), want to research themselves first 2, won't spend money
+  on this 1, thought it was free 1.
 - **Would prefer:** the list 57, the single report 14, both 9, neither 23.
 - **Nobody pays for help today:** 94 of 103 paid no one; 4 not sure; 4 paid something (1 over
   RM2,000).

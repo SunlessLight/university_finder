@@ -1,6 +1,6 @@
 # LaunchX status
 
-*As of 2026-10-27. Rewritten whenever something changes; keep under about 70 lines. See
+*As of 2026-10-30. Rewritten whenever something changes; keep under about 70 lines. See
 [mentor.md](mentor.md) for how.*
 
 ## Dates
@@ -24,11 +24,12 @@
 
 ## Where things stand
 
-The product works: 29 friends used it free. Survey (out 12 Oct): 84 responses (12 strangers, 26 "a
-little", 46 friends); figures in [survey.md](survey.md), CSV in `data/form/` (gitignored). **19 real
-leads** (valid WhatsApp numbers; 17 numbers typed by accident don't count), all messaged and nudged;
-7 more who wrote a comment were emailed. **5 said yes; 4 have paid a deposit, RM80 in total.** Families are the
-main track; consultancies are learning chats. Evan is in exams.
+The product works: 29 friends used it free. Survey (out 12 Oct): 103 responses (17 strangers, 31 "a
+little", 55 friends); figures in [survey.md](survey.md), CSV in `data/feedback/` (gitignored). **22
+real leads** (valid WhatsApp numbers; 18 numbers typed by accident don't count): 4 yes, 12 no, 6
+silent. 7 who wrote a comment were emailed: 2 yes, 5 silent. **7 deposits, RM110 in total: 6 said
+yes, 1 paid just to support Evan; 1 of the 7 is a stranger.** Families are the main track;
+consultancies are learning chats. Evan is in exams.
 
 **Slides:** the live deck is the claude.ai Slides artifact
 [Shortlisted — Bootcamp 2](https://claude.ai/artifact/8jnzE6b56XdREqPGTKSNzi). It is the only
@@ -38,8 +39,13 @@ it into a new deck rather than editing the 24 Oct one.
 ## Decided
 
 - **Focus (24 Oct):** families first, with Evan learning marketing and referrals. Consultancies =
-  learning chats only, no selling. Backend: cost cuts measured on the 10 Nov lists, then only fixes
-  a customer would see. Internal fixes in additionals.md stay parked.
+  learning chats only, no selling. Backend: cost cuts measured on the 10 Nov lists. Internal fixes
+  in additionals.md stay parked.
+- **Pilot pass line (30 Oct): 5 paid sign-ups across the 4 booth days** (10 to 13 Nov). A guess, not
+  based on data; the pilot alone won't fill the 20 lists.
+- **No freeze (30 Oct):** Evan keeps developing the product, with set time for marketing and set
+  time for product work. Replaces the 24 Oct "only fixes a customer would see" limit. Mentor
+  advised stopping new columns and checks until 2 Dec; Evan decided otherwise.
 - **Continue-bar (24 Oct): 20 paid family lists by 2 Dec.** On a miss: pause, work out why,
   decide continue / pivot / stop by 10 Dec.
 - **Prices (23 Oct):** list (20–30 universities) RM50, single report RM30. Count the 25 Oct
@@ -58,13 +64,13 @@ it into a new deck rather than editing the 24 Oct one.
 | Known | Usable: 13 list ratings average 4.1 of 5, 6 report ratings 4.2. Testers: too wordy; score and Reach / Match / Safety labels not understood. |
 | Known (iLabs, 21 Oct) | Needs a better look, less text, email not WhatsApp. Asked: why not ChatGPT? one-time buyers only? |
 | Known (panel, 24 Oct) | "ChatGPT can do it. It may hallucinate, but students already use the free one. Most won't pay RM50 for research they could do themselves." |
-| Known (sheet, 25 Oct) | 4 of 19 real leads paid a deposit (RM80): 3 "a little", 1 friend, 0 strangers. 2 picked the list, 2 the single report, so only 2 count toward "20 paid lists" so far. Real leads: 4 strangers, 9 "a little", 6 friends. |
-| Known (Evan, 25 Oct) | 5 said yes, 4 paid a deposit. Of the 4: **2 paid willingly** (Evan: strangers; the sheet row above says 0 strangers paid, so check how they answered "do you know me"), 1 to support Evan, 1 after Evan persuaded him and gave a discount to RM40. The 5th said yes after persuasion, no deposit yet. Line that got a yes: "you don't need to know which uni, I'll search for you". A lead's own words for the problem: "the info is scattered at different places". Chats in `notes/customer_chats/` (gitignored, they name people). |
+| Known (sheet, 30 Oct) | 7 deposits (RM110): 3 friends, 3 "a little", 1 stranger. 5 from the 22 WhatsApp leads, 2 from the 7 emails. Real leads: 5 strangers, 9 "a little", 8 friends. Why no: 3 already sorted, 2 want to research first, 1 won't spend on this, 1 thought it was free (7 of 12 gave a reason). |
+| Known (Evan, 25 Oct) | Of the first 4 deposits: **2 paid willingly** (Evan: strangers; the sheet shows only 1 stranger among all 7 payers, so check how they answered "do you know me"), 1 to support Evan, 1 after Evan persuaded him and gave a discount to RM40. Line that got a yes: "you don't need to know which uni, I'll search for you". A lead's own words for the problem: "the info is scattered at different places". Chats in `notes/customer_chats/` (gitignored, they name people). |
 | Known (feedback forms, to 21 Sept) | List: most useful = course at a glance 4, entry reqs 3, total cost 2; nobody picked the 4 scholarship columns. Report: "getting in / your fit" clearest (5 of 6); culture and student life most interesting. Detail in `data/feedback/`. |
 | Known | Under 1 hour hands-on per student; tools about RM158 a month. Most listed universities are over budget (the tool ranks, it does not remove). |
 | Known (estimate) | At RM50 the reachable family market is about RM775,000 a year. Free competitors are paid by universities; paid help starts around RM2,000. |
 | Known (replies, 26 Oct) | Why not ChatGPT, one payer: "I don't really know what I should be asking", and its answers are surface level. Wants an admissions checklist, UCAS steps, where to find test / interview dates, cost, college choice. Another wants city lifestyle, scholarships, graduate outcomes, work visa after graduating. |
-| Not known | Why the other willing payer chose this over ChatGPT. Whether parents would pay. The booth pilot's pass line (not written yet; due 27 Oct with the pilot plan). |
+| Not known | Which product the 3 new payers bought, so how many of the 20 lists are sold (the form's pick isn't proof). Why the other willing payer chose this over ChatGPT. Whether parents would pay. |
 
 ## Guesses under test
 
@@ -89,10 +95,10 @@ it into a new deck rather than editing the 24 Oct one.
 
 **Then:**
 
-- [ ] 27 Oct: count the 19 as paid / yes-not-paid / no / silent. Only "paid" is demand. Ask one
-      "no" why.
+- [x] Count the leads (done 30 Oct, 22 leads, see "Where things stand"); "no" reasons collected.
+- [ ] Tell Claude which product the 3 new payers bought.
 - [x] 28 Oct: bunting submitted (`Bunting_design/SHORTLISTED_v3.png`).
-- [ ] Pilot plan (pass line first), overdue since 27 Oct. By 3 Nov: the rest of the booth kit
+- [ ] Pilot plan, overdue since 27 Oct (pass line set 30 Oct: 5 paid sign-ups). By 3 Nov: the rest of the booth kit
       (A4 price sign, printed sample, booth kit). (Notion tasks)
 - [ ] Before 10 Nov: add one intake-form question, "Not doing A-levels? Type your programme and
       result", because the bunting names STPM, UEC, IB, Foundation and Matriculation and the grade
@@ -120,6 +126,10 @@ it into a new deck rather than editing the 24 Oct one.
 
 ## Things Evan has said that matter
 
+- **30 Oct:** feels most of his time goes on fixing bugs; asked about a university database to cut
+  costs. Mentor: no database before 2 Dec, because money is not the limit, his time is (tools are
+  flat, about RM158 a month); revisit if 20 lists are sold and the same universities repeat. Evan
+  turned down a freeze: he wants to push himself on the product, with set time for each side.
 - **24 Oct:** after the panel, wanted a "big problem" pivot; feels his ideas are small ChatGPT
   wrappers. Then 4 deposits came in: "demand, just not enough"; wants 20 lists and to learn
   marketing. Mentor: the judge's view is a guess, 4 payments are what people did.
