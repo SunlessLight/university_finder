@@ -51,15 +51,16 @@ entirely: no `profile.json`, no `preferences.json`, no `master_list.csv` row, no
 
 The student bought one report on the report form: a small folder, with no master list. Read
 `profile.json` (including `report_orders`; your order names the university, course and
-`question`) and `preferences.json`, but expect budget, countries and priorities to be blank.
+`question`) and `preferences.json`, but expect countries and priorities to be blank.
 
 - **Keep the fit.** Write the fit halves of `who_its_for`, `getting_in` and `why_here` against
-  this student's grades, English, secondary qualification and achievements, and keep
-  `admission_likelihood`. Compare grades to the bar published for their
+  this student's grades, English, secondary qualification, achievements, budget and preferences,
+  and keep `admission_likelihood`. The budget, race and ticked-preferences rules are in
+  `workflows/04_university_report.md`. Compare grades to the bar published for their
   `current_program.type`; if none is published, say `Not published` and never convert to
   A-Level equivalents by guesswork.
 - **Leave out `priorities`** (the key, not an empty string). Say nothing about what they rank
-  highly: this form didn't ask, so `why_here` weighs reasons to come and hesitate without it.
+  highly: this form didn't ask, so `why_here` weighs their budget and ticks instead.
 - **Answer the student's `question` inside the report**, in the section it belongs to. If it
   fits none, put it in `why_here`.
 - **No `corrections` object, no flip.** `build_report.py --student <slug>` sees there is no
@@ -91,6 +92,8 @@ change:
   general "reasons to consider / reasons to hesitate" for the kind of student this place
   suits. Still evidence-based and still a key-value table matching the Snapshot's remaining
   fields — just not personalized.
+- **No halal, prayer or mosque content** unless the request asks: nobody ticked it. `check_report.py
+  --quick` flags it under `faith`. The scholarship table has no `Can you apply?` column.
 - All other 10 sections (`identity_mission`, `what_youll_study`, `signature_experiences`,
   `culture_vibe`, `student_life`, `city_and_belonging`, `costs`, `scholarships`, `outcomes`,
   `unique_facts`) are already pure facts — write them exactly as you would for any finalist.

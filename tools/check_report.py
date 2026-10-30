@@ -26,6 +26,8 @@ Checks (use --check to run a subset while working through a fix):
   voice       written TO the student — second person, no student name, no third person
   tables      the sections the writing rules say must be a table/checklist actually are,
               and the ⚠️ glyph only ever appears inside a blockquote callout
+  faith       no halal/prayer wording unless the student ticked it or asked (Evan, 2026-10-30:
+              it made other students read the report as built for Malays)
 
 Mode (course vs university) is DETECTED from the headings, not passed in — the whole point is
 that a cold session can run this on a report it did not build.
@@ -64,7 +66,7 @@ if hasattr(sys.stderr, "reconfigure"):
 REPO_ROOT = Path(__file__).resolve().parent.parent
 STUDENTS_DIR = REPO_ROOT / "data" / "students"
 
-CHECKS = ["structure", "snapshot", "notfound", "sources", "voice", "tables"]
+CHECKS = ["structure", "snapshot", "notfound", "sources", "voice", "tables", "faith"]
 
 # --- Thresholds (calibrated 2026-08-08 against the 20 reports on disk) -----------------
 # Observed max in a real report is 3. A few honest gaps are the convention working; fifteen
@@ -168,6 +170,7 @@ HEADING = re.compile(r"^## (\d+)\.\s*(.+?)\s*$")
 LEADING_NOISE = re.compile(r"^(?:[-*+>\s]|\[[ xX]\]|\d+\.)+")
 MD_LINK = re.compile(r"\[([^\]]*)\]\(([^)]*)\)")
 YEAR = re.compile(r"\b(20\d{2})\b")
+FAITH_WORDS = re.compile(r"\b(halal|prayers?|surau|mosques?|masjid|musalla|muslims?)\b", re.I)
 
 
 # --- Parsing ---------------------------------------------------------------------------
@@ -544,9 +547,40 @@ def check_tables(sections, mode):
     return out
 
 
+def check_faith(sections):
+    """Lines naming halal/prayer facilities, for a report whose student didn't ask for them.
+
+    The Sources list is left out (a page's title is not the report talking). A real name can
+    still hit ("Muslim Students' Association" in a list of societies): fix it or note it, as with
+    the other checks.
+    """
+    return [f"{heading}: not ticked or asked for, so leave it out: {excerpt(line)}"
+            for _, heading, body in sections if heading != "Sources"
+            for line in body if FAITH_WORDS.search(line)]
+
+
+def faith_allowed(md_path, slug=None):
+    """True when the student ticked halal/prayer, or wrote about it in their own words."""
+    folder = STUDENTS_DIR / slug if slug else md_path.parent.parent
+    answers = []
+    for name in ("profile.json", "preferences.json"):
+        try:
+            answers.append(json.loads((folder / name).read_text(encoding="utf-8")))
+        except (json.JSONDecodeError, OSError):
+            answers.append({})
+    profile, prefs = answers
+    needs = profile.get("needs") or {}
+    if needs.get("diet_halal") or needs.get("worship_facilities"):
+        return True
+    own_words = [o.get("question") or "" for o in profile.get("report_orders") or []]
+    own_words += prefs.get("other_preferences") or []
+    own_words.append(prefs.get("additional_requirements") or "")
+    return bool(FAITH_WORDS.search(" ".join(own_words)))
+
+
 # --- Driver ----------------------------------------------------------------------------
 
-def run(text, wanted, student_name=None, quick=False, report_order=False):
+def run(text, wanted, student_name=None, quick=False, report_order=False, faith_ok=False):
     """(mode, {check: [findings]}) for one report's Markdown."""
     _, sections = parse_report(text)
     if not sections:
@@ -570,6 +604,8 @@ def run(text, wanted, student_name=None, quick=False, report_order=False):
         results["voice"] = check_voice(sections, student_name)
     if "tables" in wanted:
         results["tables"] = check_tables(sections, mode)
+    if "faith" in wanted and mode == "report" and not faith_ok:
+        results["faith"] = check_faith(sections)
     return mode, results
 
 
@@ -596,7 +632,8 @@ def check_one(md_path, wanted, slug, limit, quick=False):
     """Lint one report, print its block, return the finding count."""
     text = md_path.read_text(encoding="utf-8")
     name = student_name_for(md_path, slug)
-    mode, results = run(text, wanted, student_name=name, quick=quick, report_order=is_report_order(md_path))
+    mode, results = run(text, wanted, student_name=name, quick=quick, report_order=is_report_order(md_path),
+                        faith_ok=faith_allowed(md_path, slug))
 
     total = sum(len(v) for v in results.values())
     label = md_path.relative_to(REPO_ROOT) if md_path.is_relative_to(REPO_ROOT) else md_path

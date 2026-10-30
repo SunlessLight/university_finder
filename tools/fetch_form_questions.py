@@ -30,8 +30,8 @@ produce), and the options of the budget, countries, course, "other preferences" 
 priority-grid questions against their normalise maps. It prints anything unmatched and
 exits 1 only on the consent rules (I12), because a broken consent question silently
 skips every new student. When FORM_ID_REPORT_INTAKE is set it also checks the report form
-(its own required questions, plus: the consent wording may not name race or halal/prayer,
-because that form doesn't ask them).
+(its own required questions and the same consent rules). Since 2026-10-30 it asks race, budget
+and preferences too, so its consent wording may name them.
 
 Requires in .env (see README, "Setup (first time)"):
     FORM_WEBAPP_URL, FORM_WEBAPP_TOKEN   same as fetch_form_responses.py
@@ -94,7 +94,8 @@ LAYOUT_TYPES = {"SECTION_HEADER", "PAGE_BREAK", "IMAGE", "VIDEO"}
 REQUIRED_KEYS = ["consent", "name", "total_budget", "target_countries", "specific_courses",
                  "grades_raw", "program_type"]
 REPORT_REQUIRED_KEYS = ["consent", "name", "report_university", "specific_courses", "grades_raw",
-                        "program_type", "report_question"]
+                        "program_type", "report_question", "ethnicity", "total_budget",
+                        "location_prefs", "needs"]
 
 # QUESTION_MAP keys whose answers ingest_form_csv.py splits on commas (_split_multi).
 SPLIT_KEYS = ["needs", "target_countries", "location_prefs"]
@@ -248,15 +249,7 @@ def check_report_form(form):
            [f"no question matches {k!r} — every new buyer gets it blank" for k in REPORT_REQUIRED_KEYS
             if k not in col_index])
 
-    problems = consent_problems(items)
-    # A person may only agree to what the form collects: this form asks neither.
-    for item in items:
-        if "consent" not in item["title"].lower() or item["type"] in LAYOUT_TYPES:
-            continue
-        wording = " ".join(item.get("options", [])).lower()
-        problems += [f"the consent wording names {word!r}, which this form never asks"
-                     for word in ("race", "halal", "prayer") if word in wording]
-    return 1 if report("Consent question", problems) else 0
+    return 1 if report("Consent question", consent_problems(items)) else 0
 
 
 def main():

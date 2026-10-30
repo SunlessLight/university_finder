@@ -210,6 +210,21 @@ Ordered decision-first. **Snapshot (1)** and **Sources (15)** are rendered by th
 Every content section below now applies to **every country** — the ones that used to be US-only carry
 a non-US example so you don't skip them for a UK or Singapore finalist.
 
+`build_report.py` puts a **Your profile** table above the Snapshot from `profile.json` +
+`preferences.json`. Don't write it into the JSON. It never shows race.
+
+> **Write to what the student ticked (Evan, 2026-10-30).** Read `preferences.other_preferences`,
+> `location_prefs` and `needs`. Spend the depth on what's ticked: "Low crime rate" gets real safety
+> detail, "Cold Weather" a month-by-month picture, an urban pick an honest read of a campus-town
+> setting. An unticked topic gets a line at most.
+>
+> **Halal, prayer rooms, mosques and Muslim communities appear only if the student asked:**
+> `needs.diet_halal` or `needs.worship_facilities` is true, or their own words raise it (their
+> `question`, `additional_requirements`, an "Other" tick). If not, leave them out completely, not
+> even as reassurance, because it made students feel the report was built for Malays. When they did
+> ask, surface it prominently. A `--quick` report has no student, so it stays out unless the request
+> asks. `check_report.py` flags a slip under `faith`.
+
 1. **Snapshot** *(auto-rendered as a fact table from the JSON's top-level fields)* — uni · course (or,
    in university mode, setting / type & size / est. net cost) · country/city · overall rank · subject
    rank · application system · admission likelihood, plus the student's ranked **`priorities`** (set
@@ -277,7 +292,7 @@ a non-US example so you don't skip them for a UK or Singapore finalist.
    personality archetype** (collaborative vs competitive, hands-on vs theoretical). This is the "is
    this energy right for me" section — day-to-day life, housing, and food live in §8 instead.
 8. **Student life, housing & food** — **housing** (on/off campus, residential-college systems),
-   **dining/meal plans and halal/dietary options**, **life outside study** (clubs, sport, weekends,
+   **dining/meal plans** (dietary options only as ticked, see above), **life outside study** (clubs, sport, weekends,
    nightlife), **first-year/orientation activities** (freshers, signature first-year projects),
    **what a newcomer needs to blend in**, and **real student voices** (Reddit / The Student Room /
    YouTube — links + snippets, not scraped). This is the **only** home for student-life research
@@ -286,8 +301,8 @@ a non-US example so you don't skip them for a UK or Singapore finalist.
    for early students**: some of this was already researched under the old verify-shortlist step and
    migrated there. Don't pay for it twice.
 9. **The city, the area & belonging** — the **city/area feel, safety, transport, and things to do /
-   sightseeing**, plus the **Malaysian / halal / prayer / religious-community** angle. Surface
-   `needs`-flagged items prominently; otherwise treat as reassuring background, not a decision driver.
+   sightseeing**, plus the **Malaysian community** (a line, more if ticked). Halal, prayer and
+   religious community only under the rule above. Surface what the student ticked prominently.
 10. **Costs (full)** — tuition (per year + full programme), living, application fees, deposit, and
     the **total cost of attendance in MYR**. For a need-based US finalist, **no single "your-share"
     figure**: the student record holds no family income, by design (S3, Evan 2026-10-27). Give
@@ -296,9 +311,24 @@ a non-US example so you don't skip them for a UK or Singapore finalist.
     calculator** link (e.g. MIT → MyinTuition), or "none for international students" if it has
     none or excludes them; (c) the **CSS Profile** link (the aid application, not an estimate).
     Never back-solve a figure from an income typed into `status.md` or a chat.
+    **Budget (`preferences.total_budget_ceiling`):** when set, say the total against their limit in
+    ringgit ("about RM X over your RM Y limit" or "within it"). If it's over, it's a reason to
+    hesitate in §14 and the scholarships in §11 matter more.
 11. **Scholarships & financial aid** — university + government/external + **Malaysian sponsors (JPA,
     MARA, Yayasan, PTPTN)**, each with eligibility; for a US finalist, also **need-blind vs
     need-aware for internationals**, meets-full-need or not, and merit awards.
+    **Say whether this student can apply (Evan, 2026-10-30).** A student who learns early that a fund
+    is closed to them saves time, so keep that row and add a **Can you apply?** column, read from
+    `profile.ethnicity`. For a fund limited to Bumiputera students (MARA, Yayasan Peneraju):
+    - Chinese or Indian: `No, Bumiputera only`.
+    - Malay: `Yes`, if its other rules fit.
+    - Other: read their text. Bumiputera also covers Orang Asli and the natives of Sabah and Sarawak.
+      If it's unclear, `Check: Bumiputera only`.
+    - Prefer not to say, or blank: `Check: Bumiputera only`. Don't guess either way.
+
+    The limit comes from the sponsor's own page. Name the rule, never the student's race, and never
+    let it touch a score or a recommendation. This replaces `sources.md`'s "surface only what the
+    student can claim" for reports.
 12. **Outcomes, network & practising in Malaysia** — graduate employment rate / salary data,
     internships, and alumni network (for the US, **OPT + the 24-month STEM-OPT extension**);
     **MQA recognition + the relevant Malaysian professional body (BEM/EAC, MMC, LPQB, MIA/ACCA,
@@ -348,7 +378,8 @@ questions — *can I get in? · can I afford it? · what do I actually do?* — 
   (the renderer styles them):
   - **Costs** — a small table (row per line item: tuition / COA / net-cost-in-MYR / aid structure).
   - **Getting in** — a stats table (admit rate or cutoff, entry requirements, test range).
-  - **Halal / dining** — a table (location · what's served · hours) when there are 3+ options.
+  - **Dining** — a table (location · what's served · hours) when there are 3+ options. Halal goes in
+    it only under the rule above.
   - **`why_here`** — a **key-value table matching the Snapshot**: column 1 = the topic/priority,
     column 2 = the honest read for it. One row per theme, and **fold each hesitation into its
     topic's verdict** (lead with the strength, then name the caveat with "But…/trade-off") rather

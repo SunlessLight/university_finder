@@ -142,7 +142,10 @@ fine — but keep the substring in bold intact.
   food and Prayer facilities were added as ticks 2026-10-25** (→ `needs.diet_halal` /
   `needs.worship_facilities` via the existing `NEEDS_NORMALIZE` "halal"/"prayer" keys; no code
   change). Responses before that date were never asked, so their `null` means "not asked", not "no
-  need". **Still not on the form:** Stay close to family, disability/accessibility,
+  need". **Since 2026-10-30:** the live tick is one option, "Muslim Facilities/Halal Food", and it sets
+  both flags (`NEEDS_NORMALIZE` "muslim"). A report mentions halal or prayer only when one is set
+  (`04_university_report.md`), so a miss here hides it. The exact ticks are kept in
+  `preferences.other_preferences`, because `needs` merges them. **Still not on the form:** Stay close to family, disability/accessibility,
   mental-health/wellbeing support, LGBT-friendly — their `needs` keys stay `null` = "not asked".
 - **Lesson-language question (added to the live form 2026-10-25, backlog S9):** "What language were
   most of your lessons (maths, science, etc.) taught in? Not your English class." Six options, from
@@ -360,7 +363,10 @@ python tools/ingest_form_csv.py "data/form/report_answers.csv"
   `--force`. The folder is found by email, then by name if the email agrees. A same-name folder with a
   different email is skipped and named in the summary; settle it by hand. Re-reading the same answers
   adds nothing, so the whole CSV is safe to re-run.
-- New folders have blank budget, countries and priorities by design. Finalize the grades as step 1
+- The form also asks budget, race and preferences (added 2026-10-30, so the report can compare cost
+  with their limit, say which funds they can apply for, and write to their ticks). Unlike the list
+  form it has no importance grid and no countries.
+- New folders have blank countries and priorities by design. Finalize the grades as step 1
   below; the other steps mostly have nothing to do. Then dispatch `report-writer` with the slug (the
   "Report order" section of `.claude/agents/report-writer.md`), one per order.
 - `progress_dashboard.py` shows these students as **Report order**, not stuck at Stage 1.

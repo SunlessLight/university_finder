@@ -10,7 +10,9 @@ What these pin down:
     column counts (otherwise every new student is skipped for "no consent");
   - RM 100,000 is a ceiling of 100,000, and "No preference" steers nothing;
   - a report-form row makes a small folder with report_orders, and only ever ADDS an order to a
-    folder that exists (data/students/ has no undo).
+    folder that exists (data/students/ has no undo);
+  - the report form's budget, race and preference answers reach the folder, the exact ticks are
+    kept, and "Muslim Facilities/Halal Food" opens both the halal and the prayer flag.
 
 Student files are written to a temporary folder only.
 
@@ -50,6 +52,9 @@ REPORT_UNI = ("Which University do you want a report of? Add the campus if it ha
               "(e.g. Monash Malaysia vs Monash Australia)")
 REPORT_QUESTION = "Anything specific you want the report to answer?"
 COURSE = "Choose your desired course"
+RACE = "Race ( For checking government scholarship eligibility )"
+LOCATION = "Location preferences"
+OTHER_PREFS = "Any other perferences? "
 
 # The live sheet's layout: deleted questions keep their columns, new ones sit further right.
 SHEET_HEADERS = [
@@ -63,6 +68,7 @@ REPORT_HEADERS = [
     "Timestamp", "Email Address", "Full Name (as in IC)", REPORT_UNI, COURSE,
     "Which year do you want to start? ", PROGRAMME, "What are you applying with? ",
     "What did you take for Secondary school? ", GRADES, REPORT_QUESTION, NEW_CONSENT,
+    RACE, BUDGET, LOCATION, OTHER_PREFS,
 ]
 
 
@@ -154,6 +160,17 @@ class NewFormRows(unittest.TestCase):
         _profile, prefs, *_ = mapped(new_row(**{"Location preferences": "Urban / City"}))
         self.assertEqual(prefs["location_prefs"], ["Urban / City"])
 
+    def test_the_exact_ticks_are_kept(self):
+        _profile, prefs, *_ = mapped(new_row(**{OTHER_PREFS: "Cold Weather, Low crime rate"}),
+                                     SHEET_HEADERS + [OTHER_PREFS])
+        self.assertEqual(prefs["other_preferences"], ["Cold Weather", "Low crime rate"])
+
+    def test_the_muslim_facilities_tick_opens_halal_and_prayer(self):
+        profile, *_ = mapped(new_row(**{OTHER_PREFS: "Muslim Facilities/Halal Food"}),
+                             SHEET_HEADERS + [OTHER_PREFS])
+        self.assertTrue(profile["needs"]["diet_halal"])
+        self.assertTrue(profile["needs"]["worship_facilities"])
+
 
 def report_row(**extra):
     return {"Timestamp": "30/10/2026 12:00:00", "Email Address": "buyer@b.com", "Full Name (as in IC)": "Report Buyer",
@@ -205,6 +222,18 @@ class ReportFormRows(unittest.TestCase):
         self.assertEqual(prefs["target_countries"], [])
         self.assertIsNone(prefs["total_budget_ceiling"])
         self.assertEqual(prefs["priorities"], [])
+
+    def test_budget_race_and_preferences_reach_the_folder(self):
+        self.run_ingest([report_row(**{BUDGET: "200,000", RACE: "Chinese", LOCATION: "Urban / City",
+                                       OTHER_PREFS: "Low crime rate, Cold Weather"})])
+        profile = self.read("report-buyer")
+        prefs = self.read("report-buyer", "preferences.json")
+        self.assertEqual(profile["financial"]["total_budget"], 200000)
+        self.assertEqual(prefs["total_budget_ceiling"], 200000)
+        self.assertEqual(profile["ethnicity"], "Chinese")
+        self.assertEqual(prefs["location_prefs"], ["Urban / City"])
+        self.assertEqual(prefs["other_preferences"], ["Low crime rate", "Cold Weather"])
+        self.assertTrue(profile["needs"]["personal_safety"])
 
     def test_existing_folder_gets_the_order_and_nothing_else(self):
         self.run_ingest([report_row()])
@@ -267,7 +296,8 @@ class ReportFormCheck(unittest.TestCase):
 
     def form(self, *drop, option="I agree to my answers being used."):
         titles = {"Full Name": "name", REPORT_UNI: "uni", COURSE: "course", PROGRAMME: "programme",
-                  GRADES: "grades", REPORT_QUESTION: "question"}
+                  GRADES: "grades", REPORT_QUESTION: "question", RACE: "race", BUDGET: "budget",
+                  LOCATION: "location", OTHER_PREFS: "other"}
         items = [{"title": t, "type": "TEXT", "required": True} for t, tag in titles.items() if tag not in drop]
         items.append({"title": NEW_CONSENT, "type": "MULTIPLE_CHOICE", "required": True, "options": [option]})
         return {"title": "Report form", "items": items}
@@ -287,10 +317,15 @@ class ReportFormCheck(unittest.TestCase):
         _code, printed = self.check(self.form("grades"))
         self.assertIn("grades_raw", printed)
 
-    def test_consent_naming_race_fails_when_the_form_never_asks_race(self):
-        code, printed = self.check(self.form(option="I agree, including my race."))
-        self.assertEqual(code, 1)
-        self.assertIn("race", printed)
+    def test_a_missing_budget_race_or_preference_question_is_named(self):
+        for tag, key in [("budget", "total_budget"), ("race", "ethnicity"),
+                         ("location", "location_prefs"), ("other", "needs")]:
+            _code, printed = self.check(self.form(tag))
+            self.assertIn(key, printed)
+
+    def test_consent_may_name_race_now_the_form_asks_it(self):
+        code, _printed = self.check(self.form(option="I agree, including my race."))
+        self.assertEqual(code, 0)
 
 
 class LiveFormTitles(unittest.TestCase):

@@ -103,8 +103,8 @@ it into a new deck rather than editing the 24 Oct one.
       (A4 price sign, printed sample, booth kit). (Notion tasks)
 - [x] 30 Oct: split the intake into a list form and a report form; the grade grid is now one text
       box for every programme (`plans/intake_forms_plan.md`). Scripts done and tested.
-- [ ] Before 10 Nov, fix the report form: add the grades question (the report's "your fit" needs
-      it), correct its consent wording, link it to a sheet, add its ID to `.env`, submit one test
+- [ ] Before 10 Nov, fix the report form: add the grades, race, budget, location and other-preferences
+      questions, trim its consent notice, link it to a sheet, add its ID to `.env`, submit one test
       answer on each form. Then tell Claude "T6". Steps: plan's "Evan's fix list".
 - [ ] After T6: send the list form link to list buyers and the report form link to report buyers,
       including the 2 who already paid for a report.

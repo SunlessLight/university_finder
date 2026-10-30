@@ -40,11 +40,18 @@ and the report form's ID need the real forms.
   clean. The report form's check fails on the first two items below, which is right.
 - **E1 was done before the code**, so the code follows the real forms, not the drafts below.
 
+**Changed 30 Oct, after Evan read this plan:** the report form now asks budget, race and preferences
+as well, and still has no importance grid. Its consent stays as it is, so the old fix "remove race
+and halal from the consent" is cancelled. The report compares cost with the budget, says which funds
+the student can apply for, and shows halal or prayer content only if ticked. Every student report
+opens with a "Your profile" table (never their race). `--check` lists the five missing questions.
+
 ### Evan's fix list (report form unless it says otherwise)
 
-1. **Add the grades question** (B7), same title as the list form. "Your fit" can't be written without it.
-2. **Consent answer:** remove "including my race and any halal or prayer preferences" (B14), in both
-   languages. The notice above it also lists race, budget and preferences, which this form doesn't ask.
+1. **Add 5 questions, copied from the list form with the exact same title and options:** the grades
+   question (B7), Race, the budget question, Location preferences, and "Any other perferences?".
+2. **Consent notice (not the answer):** in both languages, remove "country choices" and "priorities"
+   from the "What we collect" list, because this form doesn't ask them. Keep race, budget and preferences.
 3. **Link to Sheets** (E1d): Responses tab.
 4. **`.env`:** `FORM_ID_REPORT_INTAKE=16FgLQvxA-BA1wCBbJuMYMgKmqe6oYady9CA2QWjpRnM` (E1e).
 5. **Check "Collect email addresses" is on.** It's how a buyer's existing folder is found.
@@ -74,8 +81,9 @@ Then say "T6", and Claude finishes the check. Only then E2.
   student read as "no consent" and was skipped.
 - A same-name folder with a different email is never merged.
 - `check_report.py` drops the "Your priorities" row for a report order.
-- `fetch_form_questions.py --check` fails a report form whose consent names race, halal or prayer.
 - `grade_status` "Not sure" (report form) stays blank, for finalize to ask.
+- `check_report.py` flags halal or prayer wording the student didn't ask for (`faith`).
+- `preferences.other_preferences` keeps the exact ticks. "Muslim Facilities/Halal Food" sets both flags.
 
 ## The forms as drafted (the live wording is in forms/*.json)
 
@@ -113,7 +121,8 @@ Keep every other title word-for-word.
 | B11 | Achievements / activities… (keep) | Paragraph | |
 | B12 | Anything specific you want this report to answer? | Paragraph | |
 | B13 | Note: "Bought the list too? Fill that form as well." | Description only | |
-| B14 | Consent + disclaimer: keep the word "consent" in the title, and **remove "including my race and any halal or prayer preferences"** because this form doesn't ask for them | Choice | ✔ |
+| B14 | Consent + disclaimer: keep the word "consent" in the title. Race and halal stay in the answer, because the form now asks them | Choice | ✔ |
+| B15 | NEW 30 Oct: Race, budget, Location preferences and "Any other perferences?", copied from Form A | Same as A | Same as A |
 
 ## How the report's "fit" part will work
 
@@ -205,8 +214,8 @@ The same intake script reads both forms, so consent checks and grade handling ar
     `who_its_for`, `getting_in` and `why_here`, keep `admission_likelihood`, leave out `priorities`,
     and answer `report_question` inside the report.
   - `progress_dashboard.py`: show these students as "Report order", not stuck at Stage 1.
-- **Done when:** a fake report CSV creates a folder with `report_orders` and no budget or country
-  noise, and an existing folder keeps every other field unchanged.
+- **Done when:** a fake report CSV creates a folder with `report_orders` and no country noise, and
+  an existing folder keeps every other field unchanged.
 - **Prompt:** "Read plans/intake_forms_plan.md and do T5 only. Check step 9 of
   business/additionals.md is finished or not in progress first. Offer the commit."
 
@@ -228,6 +237,8 @@ The same intake script reads both forms, so consent checks and grade handling ar
 - **Do:**
   - Add `grades_raw` and `program_type` to `REQUIRED_KEYS`.
   - Run `python tools/fetch_form_questions.py --check`. Extend the check to Form B's own questions.
+  - Add `grades_raw`, `ethnicity`, `total_budget`, `location_prefs` and `needs` to
+    `test_report_form_questions_match`, now the saved form has them.
   - Fetch the test answers, then run `python tools/ingest_form_csv.py <csv> --dry-run` on each.
   - Stop and show Evan any problem before anything gets written.
   - Evan deletes the test rows, only when no unconfirmed `responses.csv` is on disk (deleting rows

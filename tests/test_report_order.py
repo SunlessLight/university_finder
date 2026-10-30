@@ -6,7 +6,10 @@ A report buyer has a student folder but no master_list.csv. What these pin down:
   - a student with a master list still gets the marker;
   - check_report.py doesn't ask that report for "Your priorities", which the form never asked,
     but does still ask for "Admission likelihood";
-  - progress_dashboard.py shows "Report order", not stuck at Stage 1.
+  - progress_dashboard.py shows "Report order", not stuck at Stage 1;
+  - a student's report opens with their profile (never their race), a quick report doesn't, and the
+    PDF's "Key terms" still lands after the Snapshot;
+  - check_report.py flags halal/prayer wording the student never asked for.
 
 Everything runs in a temporary folder.
 
@@ -68,6 +71,95 @@ class BuildReport(unittest.TestCase):
         (self.student / "master_list.csv").write_text("University,Course\n", encoding="utf-8")
         self.build()
         self.assertTrue(self.marker().exists())
+
+
+class StudentProfileBlock(unittest.TestCase):
+    PROFILE = {
+        "name": "Buyer", "ethnicity": "Chinese", "grade_status": "actual",
+        "current_program": {"type": "UEC"},
+        "subjects": [{"subject": "Physics", "grade_or_predicted": "A1"}],
+        "english_proficiency": {"test": "IELTS", "score": "7.0"},
+        "financial": {"total_budget": 200000}}
+    PREFS = {"specific_courses": ["Law"], "target_countries": [], "total_budget_ceiling": 200000,
+             "location_prefs": ["Urban / City"], "other_preferences": ["Low crime rate", "Cold Weather"],
+             "priorities": ["cost"]}
+
+    def block(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            (folder / "profile.json").write_text(json.dumps(self.PROFILE), encoding="utf-8")
+            (folder / "preferences.json").write_text(json.dumps(self.PREFS), encoding="utf-8")
+            return build_report.render_student_profile(folder)
+
+    def full(self, student=""):
+        data = {"university": "Test University", "course": "BSc Test", "sources": [{"title": "s"}],
+                "sections": SECTIONS}
+        return build_report.render_report(data, "course", student_profile=student)
+
+    def test_the_block_shows_what_they_told_us(self):
+        block = self.block()
+        for shown in ("UEC", "Physics A1", "IELTS 7.0", "Law", "RM 200,000", "Urban / City",
+                      "Low crime rate, Cold Weather"):
+            self.assertIn(shown, block)
+
+    def test_race_is_never_printed(self):
+        self.assertNotIn("Chinese", self.block())
+
+    def test_priorities_stay_in_the_snapshot_only(self):
+        self.assertNotIn("What matters most", self.block())
+
+    def test_it_sits_above_the_snapshot(self):
+        report = self.full(self.block())
+        self.assertLess(report.index("### Your profile"), report.index("## 1. Snapshot"))
+
+    def test_a_report_with_no_student_has_no_block(self):
+        self.assertNotIn("Your profile", self.full())
+
+    def test_no_profile_on_disk_is_not_a_crash(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertEqual(build_report.render_student_profile(Path(tmp)), "")
+
+    def test_key_terms_still_land_after_the_snapshot(self):
+        import report_to_pdf
+        text = report_to_pdf._insert_key_terms(self.full(self.block()), "## Key terms\n")
+        self.assertLess(text.index("## 1. Snapshot"), text.index("## Key terms"))
+        self.assertLess(text.index("## Key terms"), text.index("## 2. "))
+
+
+class FaithWording(unittest.TestCase):
+    def findings(self, line):
+        sections = [(2, "Student life, housing & food", [line]), (15, "Sources", ["- Halal guide"])]
+        return check_report.check_faith(sections)
+
+    def test_unasked_halal_is_flagged(self):
+        self.assertEqual(len(self.findings("Halal food is easy to find on campus.")), 1)
+
+    def test_a_neutral_line_passes(self):
+        self.assertEqual(self.findings("Three dining halls serve food until 9pm."), [])
+
+    def folder(self, profile=None, prefs=None):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        student = Path(tmp.name) / "buyer"
+        (student / "reports").mkdir(parents=True)
+        (student / "profile.json").write_text(json.dumps(profile or {}), encoding="utf-8")
+        (student / "preferences.json").write_text(json.dumps(prefs or {}), encoding="utf-8")
+        return student / "reports" / "x.md"
+
+    def test_a_tick_allows_it(self):
+        self.assertTrue(check_report.faith_allowed(self.folder({"needs": {"diet_halal": True}})))
+
+    def test_their_own_question_allows_it(self):
+        path = self.folder({"report_orders": [{"question": "Is halal food easy to find?"}]})
+        self.assertTrue(check_report.faith_allowed(path))
+
+    def test_nothing_ticked_allows_nothing(self):
+        path = self.folder({"needs": {"diet_halal": None}, "report_orders": [{"question": "Is it cold?"}]},
+                           {"other_preferences": ["Cold Weather"]})
+        self.assertFalse(check_report.faith_allowed(path))
+
+    def test_a_quick_report_has_no_student_to_allow_it(self):
+        self.assertFalse(check_report.faith_allowed(Path("data/quick_reports/x.md")))
 
 
 class CheckReport(unittest.TestCase):

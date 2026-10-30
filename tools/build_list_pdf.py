@@ -237,7 +237,9 @@ def cost_breakdown(row):
 # --------------------------------------------------------------------------- #
 # The five parts
 # --------------------------------------------------------------------------- #
-def profile_rows(profile, rows, prepared_on):
+def student_items(profile, rows=()):
+    """(label, value) facts about the student. build_report.py prints the same ones. rows is the
+    list's own rows, for the grades fallback."""
     prefs = profile.get("preferences") or {}
     items = []
 
@@ -277,6 +279,12 @@ def profile_rows(profile, rows, prepared_on):
                       fmt_rm(budget) if isinstance(budget, (int, float)) else str(budget)))
     if prefs.get("scholarship_required") is not None:
         items.append(("Scholarship needed", "Yes" if prefs["scholarship_required"] else "No"))
+    return items
+
+
+def profile_rows(profile, rows, prepared_on):
+    prefs = profile.get("preferences") or {}
+    items = student_items(profile, rows)
     priorities = prefs.get("priorities") or []
     if priorities:
         items.append(("What matters most, in order",

@@ -39,6 +39,11 @@ Changed 2026-10-30 (plans/intake_forms_plan.md T5). The same tool reads the repo
 names a university gets profile.report_orders; a buyer who already has a folder only gains the order
 and nothing else changes, even with --force, because data/students/ has no undo.
 
+Changed 2026-10-30 (Evan). The report form now also asks budget, race and preferences. The exact
+ticks are kept in preferences.other_preferences, because the needs flags lose them ("Cold Weather",
+"Summer Weather" and "4 seasons" are one climate_weather). "muslim" now opens worship_facilities:
+the live tick is "Muslim Facilities/Halal Food", and a report only mentions what was ticked.
+
 Columns are matched by a distinctive SUBSTRING of each question title (case-insensitive).
 QUESTION_MAP below is the single source of truth for the column<->field wiring; keep it in step
 with the form spec in workflows/01_intake.md. A reworded question can still drop the match
@@ -502,6 +507,7 @@ NEEDS_NORMALIZE = {
     "dietary": "diet_other",
     "worship": "worship_facilities",
     "prayer": "worship_facilities",
+    "muslim": "worship_facilities",  # "Muslim Facilities/Halal Food" — one tick, both flags
     "faith": "worship_facilities",
     "religio": "worship_facilities",
     "community": "diaspora_community",
@@ -976,6 +982,7 @@ def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None,
         for token, key in NEEDS_NORMALIZE.items():
             if token in low:
                 profile["needs"][key] = True
+    prefs["other_preferences"] = needs_selected
 
     # --- preferences: what they want --------------------------------------- #
     kept_countries, dropped_countries = _normalize_countries(get(row, col_index, "target_countries"))

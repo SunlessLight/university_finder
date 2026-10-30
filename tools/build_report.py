@@ -46,6 +46,12 @@ same shape, just without "admission_likelihood"/"priorities" (meaningless with n
 to compare against) — the Snapshot table already skips those rows when empty, so nothing else
 changes.
 
+Changed 2026-10-30 (Evan): a student's report opens with "Your profile", the same facts as the
+list PDF plus their location and other preferences, read from profile.json + preferences.json.
+Never their race: the Scholarships section uses it, the first page doesn't need it. It is a ###
+heading on purpose: report_to_pdf.py places "Key terms" by counting ## headings, and check_report.py
+only reads numbered ones. A --quick report has no student, so no block.
+
 Usage:
     python tools/build_report.py --student <slug> --input .tmp/<slug>/report_<report-slug>.json
     python tools/build_report.py --student <slug> --input .tmp/<slug>/uni_<uni-slug>.json --mode university
@@ -102,6 +108,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from build_list_pdf import load_profile, student_items  # noqa: E402
 from shortlist_schema import slugify  # noqa: E402
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -217,6 +224,20 @@ def _fact_table(rows):
     return "\n".join(out)
 
 
+def render_student_profile(student_dir):
+    """The "Your profile" block for the report's first page, or "" with no profile on disk."""
+    profile_path = Path(student_dir) / "profile.json"
+    if not profile_path.exists():
+        return ""
+    preferences_path = Path(student_dir) / "preferences.json"
+    profile = load_profile(profile_path, preferences_path if preferences_path.exists() else None)
+    prefs = profile.get("preferences") or {}
+    rows = student_items(profile)
+    rows.append(("Location", ", ".join(prefs.get("location_prefs") or [])))
+    rows.append(("Preferences", ", ".join(prefs.get("other_preferences") or [])))
+    return f"### Your profile\n{_fact_table(rows)}"
+
+
 def render_snapshot(data):
     rows = [
         ("University", data.get("university")),
@@ -288,7 +309,7 @@ def render_sources(sources):
     return "\n".join(lines)
 
 
-def render_report(data, mode):
+def render_report(data, mode, student_profile=""):
     if mode == "university":
         title = f"# University Report — {data['university']}"
         snapshot = render_university_snapshot(data)
@@ -297,6 +318,8 @@ def render_report(data, mode):
         snapshot = render_snapshot(data)
     schema = REPORT_SECTIONS
     parts = [title, ""]
+    if student_profile:
+        parts += [student_profile, ""]
     parts.append("## 1. Snapshot")
     parts.append(snapshot)
     parts.append("")
@@ -457,7 +480,8 @@ def main():
     reports_dir = (REPO_ROOT / "data" / "quick_reports") if args.quick else (STUDENTS_DIR / args.student / "reports")
     reports_dir.mkdir(parents=True, exist_ok=True)
     out_path = reports_dir / f"{slug}.md"
-    out_path.write_text(render_report(data, args.mode), encoding="utf-8")
+    student_profile = "" if args.quick else render_student_profile(STUDENTS_DIR / args.student)
+    out_path.write_text(render_report(data, args.mode, student_profile), encoding="utf-8")
     print(f"Wrote report: {out_path}")
 
     if args.quick:
