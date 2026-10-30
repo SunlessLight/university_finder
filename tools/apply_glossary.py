@@ -1191,26 +1191,46 @@ GLOSSARY = {
 # 2026-10-29 (T2b, R40): Admission likelihood removed. It is no longer shown to the
 # student (internal, for the balanced shortlist only); Admit rate, a published fact,
 # replaces it.
+# 2026-10-30 (E1, Evan): shortened to what a reader needs at a glance. Each still says
+# whose it is ("Our score/label" vs "The university's own figure"), and the two that
+# could be misread as odds say "not your chance".
 # --------------------------------------------------------------------------- #
 JUDGMENT_LABELS = {
     "Desirability": {
-        "definition": "Our label, not the university's: a 0–100 score made from eight 0–5 ratings "
-                      "we give (course, subject reputation, total cost, post-study work, "
-                      "scholarships, hands-on experience, location, recognition back home), weighted "
-                      "by the priorities you told us. It leaves out your chance of getting in.",
+        "definition": "Our score out of 100 for how well this university matches what you told us "
+                      "matters. Not your chance of getting in.",
     },
     "Grades vs entry bar": {
-        "definition": "Our label, not the university's: your grades against the entry grades the "
-                      "university publishes for this course — Well above, Above, Meets, Below or "
-                      "Well below. Grades only: tests, essays and selectivity are not counted. "
-                      "Not published means the university sets no grade bar.",
+        "definition": "Our label: your grades compared with the grades this university asks for. "
+                      "Not published means it doesn't set any.",
     },
     "Admit rate": {
-        "definition": "The university's own figure, not ours: the share of applicants it admitted "
-                      "(or offered a place) in the year shown. \"All applicants\" includes home "
-                      "students. It is not your own chance of getting in. Not published means the "
-                      "university gives no figure.",
+        "definition": "The university's own figure: the share of applicants it accepted that year. "
+                      "Not your personal chance.",
     },
+}
+
+
+# --------------------------------------------------------------------------- #
+# Official home page of each shared system a student has to use themselves (apply,
+# aid form, test). Keys are GLOSSARY terms, so present_terms() finds them in a list;
+# build_list_pdf.py prints the ones a card mentions under "Useful links". A
+# university's own pages are row facts (Course URL), not entries here.
+# Each URL opened 2026-10-30; IDOC's own domain redirects to the CSS Profile site.
+# --------------------------------------------------------------------------- #
+OFFICIAL_LINKS = {
+    "Common App": "https://www.commonapp.org/",
+    "UCAS": "https://www.ucas.com/",
+    "UAC": "https://www.uac.edu.au/",
+    "CSS Profile": "https://cssprofile.collegeboard.org/",
+    "IDOC": "https://cssprofile.collegeboard.org/idoc",
+    "SAT": "https://satsuite.collegeboard.org/sat",
+    "ACT": "https://www.act.org/",
+    "IELTS": "https://ielts.org/",
+    "TOEFL": "https://www.ets.org/toefl.html",
+    "PTE Academic": "https://www.pearsonpte.com/",
+    "ESAT": "https://esat-tmua.ac.uk/",
+    "TMUA": "https://esat-tmua.ac.uk/",
 }
 
 

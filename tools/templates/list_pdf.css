@@ -1,0 +1,138 @@
+/* The student list PDF (tools/build_list_pdf.py). A4 portrait, printed by WeasyPrint.
+   Colours and fonts copy the demo website (prototype/styles.css) so the two read as one product. */
+
+:root {
+  --navy: #10233f;
+  --ink: #1a1a1a;
+  --gray: #5b6b7f;
+  --line: #d7dee7;
+  --wash: #f4f6f9;
+  --accent: #1157b8;
+  --gold: #b07407;
+  --goldwash: #fbf3e2;
+  --free: #17784a;
+  --freewash: #eaf6ef;
+}
+
+@page {
+  size: A4 portrait;
+  margin: 16mm 14mm 18mm 14mm;
+  @bottom-left { content: element(footer); }
+  @bottom-right {
+    content: "Page " counter(page) " of " counter(pages);
+    font: 7.5pt "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: #5b6b7f;
+  }
+}
+
+.running-footer {
+  position: running(footer);
+  font-size: 7.5pt;
+  color: var(--gray);
+}
+
+html { font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; font-size: 9pt; color: var(--ink); line-height: 1.4; }
+body { margin: 0; }
+
+h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; color: var(--navy); font-weight: normal; }
+h1 { font-size: 24pt; margin: 0 0 2mm; }
+h2 { font-size: 15pt; margin: 0 0 4mm; padding-bottom: 1.5mm; border-bottom: 1.5pt solid var(--navy); }
+h3 { font-size: 11pt; margin: 0 0 2mm; }
+
+a { color: var(--accent); text-decoration: none; word-break: break-all; }
+.muted { color: var(--gray); }
+
+/* 1. Profile */
+.profile { margin-bottom: 8mm; }
+.eyebrow { text-transform: uppercase; letter-spacing: 0.08em; font-size: 8pt; color: var(--gold); margin: 0 0 1mm; font-weight: 600; }
+.prepared { color: var(--gray); margin: 0 0 4mm; }
+.sample-note { background: var(--goldwash); border-left: 2.5pt solid var(--gold); padding: 2mm 3mm; margin: 0 0 4mm; font-size: 8.5pt; }
+.profile-grid {
+  display: grid;
+  grid-template-columns: 38mm 1fr;
+  gap: 1.6mm 4mm;
+  margin: 0;
+  padding: 4mm 5mm;
+  background: var(--wash);
+  border-radius: 4pt;
+}
+.profile-grid dt { color: var(--gray); }
+.profile-grid dd { margin: 0; }
+
+/* 2. Summary table */
+.summary-table { width: 100%; border-collapse: collapse; font-size: 7.5pt; }
+.summary-table th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--navy);
+  border-bottom: 1pt solid var(--navy);
+  padding: 1.5mm 1.2mm;
+  vertical-align: bottom;
+}
+.summary-table td { padding: 1.6mm 1.2mm; border-bottom: 0.5pt solid var(--line); vertical-align: top; }
+.summary-table tr { break-inside: avoid; }
+.summary-table tbody tr:nth-child(even) td { background: var(--wash); }
+.summary-table .n { color: var(--gray); width: 4mm; }
+.summary-table .num { text-align: right; white-space: nowrap; }
+.summary-table .uni { font-weight: 600; }
+.summary-table .course { color: var(--gray); }
+
+.warn-mark {
+  display: inline-block;
+  background: var(--gold);
+  color: #fff;
+  font-weight: 700;
+  font-size: 6.5pt;
+  border-radius: 6pt;
+  padding: 0 1.4mm;
+  margin-left: 1mm;
+}
+
+/* 3. Key */
+.key { margin-top: 5mm; padding: 3.5mm 4.5mm; border: 0.75pt solid var(--line); border-radius: 4pt; break-inside: avoid; }
+.key dl { margin: 0; }
+.key dt { font-weight: 600; color: var(--navy); margin-top: 1.6mm; }
+.key dd { margin: 0.4mm 0 0; }
+
+/* 4. Cards */
+.cards { break-before: page; }
+.card {
+  border: 0.75pt solid var(--line);
+  border-radius: 4pt;
+  padding: 4mm 5mm 3mm;
+  margin-bottom: 5mm;
+}
+.card-head { break-after: avoid; margin-bottom: 2.5mm; }
+.card-head h3 { font-size: 13pt; margin: 0; }
+.card-head .num-badge { color: var(--gray); font-family: "Segoe UI", Arial, sans-serif; font-size: 9pt; margin-right: 1.5mm; }
+.card-head .sub { color: var(--gray); margin: 0.6mm 0 0; }
+.card-warn { background: var(--goldwash); border-left: 2.5pt solid var(--gold); padding: 1.6mm 3mm; margin: 0 0 2.5mm; }
+
+.group { break-inside: avoid; margin-bottom: 2.5mm; }
+.group h4 {
+  font-size: 7.5pt;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--gold);
+  margin: 0 0 1mm;
+  font-weight: 600;
+}
+.group dl { display: grid; grid-template-columns: 40mm 1fr; gap: 1mm 4mm; margin: 0; }
+.group dt { color: var(--gray); }
+.group dd { margin: 0; }
+
+.cost { border-collapse: collapse; font-size: 8.5pt; }
+.cost td { padding: 0.6mm 6mm 0.6mm 0; vertical-align: top; }
+.cost td.amt { text-align: right; white-space: nowrap; padding-right: 0; }
+.cost tr.total td { border-top: 0.75pt solid var(--navy); font-weight: 700; color: var(--navy); padding-top: 1.2mm; }
+.cost tr.rate td { color: var(--gray); }
+
+.source { border-top: 0.5pt solid var(--line); padding-top: 1.8mm; margin-top: 1mm; font-size: 8pt; color: var(--gray); }
+.source .checked { color: var(--free); font-weight: 600; }
+.source .unverified { color: var(--gold); font-weight: 600; }
+
+/* 5. Glossary */
+.glossary { break-before: page; }
+.glossary dl { margin: 0; }
+.glossary dt { font-weight: 600; color: var(--navy); margin-top: 2mm; break-after: avoid; }
+.glossary dd { margin: 0.4mm 0 0; }

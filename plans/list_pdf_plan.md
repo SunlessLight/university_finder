@@ -2,7 +2,8 @@
 
 *Written 2026-10-29 for Evan and for the Claude sessions that run it. Replaces backlog steps 2b, 2c
 and 2d in `business/additionals.md` (R27, R28, R29, R30 part a, R32, R39, R40, R38, then R23, R25,
-R31). Amended 2026-10-29 (Evan: "all new changes now, no waiting"): T2b, T3b, T10, T11, T12 added.*
+R31). Amended 2026-10-29 (Evan: "all new changes now, no waiting"): T2b, T3b, T10, T11, T12 added.
+Amended 2026-10-30 after E1 (Evan read the sample): Decisions items 7, 11, 12; T3c and T5b added.*
 
 **Goal:** a paying student on 10 Nov gets a tidy portrait PDF of their universities. Every fact is
 a plain number or a fixed wording from the official page, dated. Every judgment label is explained
@@ -46,6 +47,9 @@ From `decisions/log.md` (2026-10-28 and 2026-10-29) and `plans/discussions.md`:
 7. **Judgment labels** get one definition each, starting "Our label, not the university's:" plus
    the rule in one line: Desirability, Grades vs entry bar. The key also explains Admit rate (item
    9). Admission likelihood and Tier are not shown, so they need no entry.
+   *Amended 2026-10-30 (E1, Evan): one short sentence each, least effort to read. Each still says
+   whose it is ("Our score", "Our label", "The university's own figure"), and Desirability and
+   Admit rate still say they are not your chance of getting in.*
 8. **Rows with List status `Rejected` are left out of the PDF.**
 9. **Admit rate replaces Admission likelihood in everything the student sees** (Evan, 2026-10-29,
    R40). We can't judge whether a student gets in; a university's published admit rate is a fact.
@@ -58,6 +62,21 @@ From `decisions/log.md` (2026-10-28 and 2026-10-29) and `plans/discussions.md`:
      Reach/Match/Safety shortlist, internally only. The PDF and its key don't show it.
 10. **Score weights come from the tick levels** (R39): Must have 3 points, Important 2, Nice to
     have 1, Doesn't matter 0; a topic's weight = its points ÷ total points. Equal ticks, equal weight.
+11. **Every link a student needs is on the card** (Evan, 2026-10-30, E1). Each card ends with
+    "Useful links":
+    - the Course URL;
+    - two new columns at the end of the file, `Apply link` (the page where this course is applied
+      for: the university's portal, or Common App / UCAS when that is the route) and
+      `Scholarship link` (the official page of the scholarship named in `Scholarship & portal`),
+      each an `https://` URL or `Not published` (T3c, T5b);
+    - the official site of each shared system the card mentions (Common App, CSS Profile, IDOC,
+      IELTS…), from `OFFICIAL_LINKS` in `tools/apply_glossary.py`. A system named only as "not X"
+      gets no link.
+12. **No notes to ourselves on the student's page** (Evan, 2026-10-30, E1). Problems with the data
+    (a money cell with extra text, parts that don't add up) stop the build and are listed on
+    screen; `--draft` builds a review copy with "Draft, not for sending" in the footer. A list
+    goes to a student only from a build without `--draft`. Replaces the T6 prompt's "figure needs
+    re-checking" mark.
 
 ## Tasks
 
@@ -75,7 +94,9 @@ From `decisions/log.md` (2026-10-28 and 2026-10-29) and `plans/discussions.md`:
 | T5 | Research instructions: helpers write the new fields and formats | Claude | T3, T3b | `.claude/agents/row-filler.md`, `workflows/03_discover_longlist.md`, `workflows/03b_candidate_schema.md` | M |
 | T6 | The PDF builder, tested on the public sample | Claude | T2, T2b, T3, T3b | new `tools/build_list_pdf.py`, new `tools/templates/list_pdf.html` (+ `.css`), new `business/sales/sample_pack/sample_profile.json` | L |
 | E1 | Evan reads the sample PDF and says what to change | **Evan** | T6 | none | — |
-| T7 | Re-check the sample's facts on official pages (R23, R25, R31) in the source list | Claude | T4, T5, T11, E1 | the source student's `data/students/<slug>/` files, `workflows/countries/uk.md` | M |
+| T3c | Columns `Apply link` and `Scholarship link` (Decisions item 11) | Claude | E1 | `tools/shortlist_schema.py`, `tools/merge_candidates.py`, `tools/sync_shortlist.py` | S |
+| T5b | Research instructions: helpers write the two link fields | Claude | E1 | `.claude/agents/row-filler.md`, `workflows/03b_candidate_schema.md` | S |
+| T7 | Re-check the sample's facts on official pages (R23, R25, R31) in the source list | Claude | T4, T5, T11, E1, T3c, T5b | the source student's `data/students/<slug>/` files, `workflows/countries/uk.md` | M |
 | T8 | Rebuild the sample pack (now a PDF list) and the demo website's download | Claude | T7 | `business/sales/sample_pack/`, `prototype/data.js`, `prototype/_build/` | M |
 | T9 | Docs and backlog brought in line | Claude | T8 | `README.md`, `workflows/00_overview.md`, `business/sales/sample_pack/README.md`, `business/additionals.md`, `CLAUDE.md` | S |
 
@@ -88,14 +109,15 @@ STAGE 1  (parallel) → T1, T2, T3           done 2026-10-29 (T3 still to commit
 STAGE 1b (parallel) → T3b, T10, T11, T12    T3b needs T3 committed; the others need nothing
 STAGE 2  (parallel) → T4, T5, T6            three sessions          (needs T3b; T6 also T2b)
 STAGE 3             → E1                    Evan, 10 minutes        (needs T6)
-STAGE 4             → T7, then T8           one session each        (needs T4, T5, T11, E1)
+STAGE 3b (parallel) → T3c, T5b              two short sessions      (need E1; field names fixed in item 11)
+STAGE 4             → T7, then T8           one session each        (needs T4, T5, T11, E1, T3c, T5b)
 STAGE 5             → T9                    one short session       (needs T8)
 ```
 
 T10, T11 and T12 touch nothing Stage 2 touches, so they can keep running while Stage 2 starts.
 T2b was done in the T2 session.
 
-**Target dates:** Stage 1 by 31 Oct, Stage 2 by 3 Nov, E1 by 4 Nov, Stage 4 by 7 Nov, T9 by 8 Nov.
+**Target dates:** Stage 1 by 31 Oct, Stage 2 by 3 Nov, E1 by 4 Nov, Stage 3b by 5 Nov, Stage 4 by 7 Nov, T9 by 8 Nov.
 That leaves 9 Nov spare.
 
 **Rules for parallel sessions:**
@@ -124,8 +146,10 @@ commit as its work.
 | T12 | ✅ 2026-10-30 | (this commit) | On Evan's yes, 7 `profile.json` set by hand: 5 `predicted`, 2 `actual` (matched by email to the form answer; backups in `.tmp/t12_backup/`). No list re-synced, so those lists keep "Grades self-predicted" until one is re-synced for re-sending. 13 `expected` remain: no grade-type answer on file, genuinely self-guessed. |
 | T4 | ✅ 2026-10-30 | (this commit) | `check_master_list.py` adds `hedges` (fact-audit 08 regex table over `HEDGE_COLUMNS` = every researched column; FAIL on any row not `Not verified`, warning on `Not verified`; `~` only as `~RM`; a whole-cell sentinel is exempt, so the legacy `Not published — check portal` passes), `numbers` and `requirements` (both `cell_format_problem()`). `run()` now returns `(results, warnings)`; warnings never change the exit code. An old list fails `schema` but its cells are now checked on an `upgrade_header()` copy. `apply_backfill.py` pads old headers on load and refuses a bad format, a legacy sentinel or a hedge (warns on `Not verified` rows); `validate()` returns 4 values. 17 tests pass. Sample list: FAIL, 196 findings (75 hedges, 75 numbers, 45 blank new columns). **T7:** two borderline hits to reword, not loosen: Rose-Hulman "Expects 4 yrs math" → "Requires", Melbourne "about 5 years" → "5 years". **T6:** a PDF built from the sample will carry these until T7. |
 | T5 | ✅ 2026-10-30 | (this commit) | Formats live once, in `row-filler.md` → "Fixed-format cells" (both modes read it; 03b and 03 point there): money, ranks, requirements vocabulary, `checked_on` = today, `admit_rate` only from the country file's `## Admit rate source`, deadline sentinel `Not published`, no `likely`/`usually`/`confirm`/`~`; override = balancing only, with reason. 03b example fragment passes `cell_format_problem()`. "35 columns" → 38 in current text (dated history notes kept). On Evan's yes, the same fix in `workflows/countries/australia.md`, `china.md`, `japan.md` (outside T5's fence); the "check portal" grep now finds only the dated note in 03. |
-| T6 | | | |
-| E1 | | | |
+| T6 | ✅ 2026-10-30 | (this commit) | `tools/build_list_pdf.py` (`--student <slug>` → their `list.pdf`, or `--file/--profile/--out`); look copies `prototype/styles.css`. Checks: 19 portrait pages, five parts in order, no hidden word in the text, 14/14 card RM totals = `Approx total (MYR)`, Rejected row left out. Card total always prints the row's own figure. After E1: a money cell holding more than `<CODE> <number>`, or parts that don't add up, stops the build (problems listed on screen); `--draft` builds a review copy (sample today: 12 problems, all old caveat text, so it builds only with `--draft`). Admit rate prints "—" (+ key line "Not checked yet") when blank. **T7:** Cambridge's deadline (15 Oct 2026) has passed but its Warnings says None; Monash and Melbourne say "Direct / UAC International" (UAC is the NSW centre; Victoria isn't UAC), so their cards link UAC. **T8:** same command without `--draft`, `--out business/sales/sample_pack/sample_list.pdf`. Not owned by any task: the exchange-rate line prints `FX_AS_OF` for every currency, but the TWD rate is dated 2026-09-23. |
+| E1 | ✅ 2026-10-30 | (with T6) | Evan's six points, and what happened: (1) Admit rate "—": sample data not researched yet, T7 fills it; no PDF change. (2, 3) Label key too wordy: `JUDGMENT_LABELS` and the RM line cut to one short sentence each (Decisions item 7 amended; T2's "starts Our label, not the university's" check retired). (4) Every link on the card: "Useful links" block now (Course URL + `OFFICIAL_LINKS` in `apply_glossary.py`, 12 systems, each opened 2026-10-30); per-university Apply and Scholarship links = new T3c + T5b (Decisions item 11), filled for the sample in T7; the PDF already prints them when present. (5) Application requirements missing: they're in the plan and the card; the sample's column is blank until T7. (6) No AI notes to self: the "figure needs re-checking" mark came from the T6 prompt, now replaced by Decisions item 12 (build stops; `--draft` for review). Cell text like "MQA: verify", "Count yours" is R31, caught by T4's check, fixed in T7. |
+| T3c | | | |
+| T5b | | | |
 | T7 | | | |
 | T8 | | | |
 | T9 | | | |
@@ -142,6 +166,7 @@ commit as its work.
   - `grep -nE "Avoid it if|so check what|check its register|register and sit" tools/apply_glossary.py`
     finds nothing.
   - The three judgment-label definitions exist and start "Our label, not the university's:".
+    *(Retired by E1, 2026-10-30: shorter wording, Decisions item 7.)*
   - `python tools/build_glossary_sheet.py --file business/sales/sample_pack/sample_master_list.csv --out .tmp/glossary_test.csv` runs.
 - **T3:**
   - `python tools/shortlist_schema.py --contract` shows:
@@ -182,11 +207,22 @@ commit as its work.
   - Its text, read with `pypdf`, contains none of: "List status", "Tier", "Notes", "Student life",
     "Money to show", "Admission likelihood".
   - Every card's RM total equals its row's `Approx total (MYR)`.
+  - *(Added by E1)* Without `--draft`, a list with a messy money cell is not built (exit 1, the
+    cells listed); with `--draft` it is, and the text holds no "re-checking" and says "Draft, not
+    for sending". The MIT card ("not Common App") has no Common App link.
 - **E1:** Evan's changes are written in this plan's Progress table, row E1.
+- **T3c:**
+  - `--contract` shows `Apply link` and `Scholarship link` as the last two columns.
+  - `cell_format_problem()` passes `https://www.ucas.com/` and `Not published`; fails
+    `ucas.com`, `see portal` and a URL with a space.
+  - An old list on a `.tmp/` copy still syncs, the two columns blank.
+- **T5b:** the row-filler sheet's "Fixed-format cells" names `apply_link` and `scholarship_link`;
+  the 03b example fragment has both and passes `cell_format_problem()`.
 - **T7:**
   - The source list's 15 sample rows pass `check_master_list.py` with the new checks.
   - Every changed cell was read on the official page in this session, and written through
     `apply_backfill.py --overwrite`, dry run first.
+  - The T6 command builds the sample **without** `--draft` (no money problems left).
 - **T8:**
   - `sample_list.pdf` is in `business/sales/sample_pack/`.
   - The demo website's download button opens it.
@@ -348,9 +384,36 @@ briefly for the visual design, but the five parts and their order are fixed (Dec
 - Glossary at the back: apply_glossary.present_terms() over the list's text.
 - Hidden: see Decisions items 2 and 8. Old-format money cells with extra text: take the first
   number and mark the card "figure needs re-checking" rather than crashing.
+  *(Superseded by Decisions item 12 after E1: no mark on the card; the build stops, --draft.)*
 Output for a real student: data/students/<slug>/list.pdf (gitignored; never commit it).
 Verify with the T6 "Done when" checks. Show Evan the sample PDF path and ask him to read it (E1).
 Tick T6; offer the commit (not the PDF in .tmp/).
+```
+
+### T3c
+```
+Read plans/list_pdf_plan.md ("Decisions" item 11, the T3c rows, the T3b note in the Progress
+table). Do task T3c only. Write only tools/shortlist_schema.py, tools/merge_candidates.py and
+tools/sync_shortlist.py, the same way T3b added Admit rate. Add columns "Apply link" then
+"Scholarship link" at the END of SHORTLIST_HEADERS (after "Admit rate"), candidate fields
+`apply_link` and `scholarship_link`, in ADDED_COLUMNS (upgrade_header() pads old lists blank),
+REQUIRED_CANDIDATE_FIELDS and FORMATTED_COLUMNS. Shape: one URL starting https://, no spaces, or
+"Not published" (add to SENTINEL_VALUES). Add a dated note at the top of each file. Verify with
+the T3c "Done when" checks; tick T3c with a one-line note for T5b/T7; offer the commit. Explain to
+Evan in plain English.
+```
+
+### T5b
+```
+Read plans/list_pdf_plan.md ("Decisions" item 11, T5b rows, the T5 note in the Progress table).
+Do task T5b only. Write only .claude/agents/row-filler.md and workflows/03b_candidate_schema.md.
+In row-filler.md's "Fixed-format cells", add: `apply_link` = the official page where this course
+is applied for (the university's own portal page, or https://www.commonapp.org/ /
+https://www.ucas.com/ when that is the route); `scholarship_link` = the official page of the
+scholarship named in `scholarship_portal`; each one URL opened in this session, or "Not
+published". Never an aggregator or a search-results page. Add both to the 03b example fragment.
+Keep it terse (read by agents). Verify with the T5b "Done when" check; tick T5b; offer the
+commit. Explain to Evan in plain English.
 ```
 
 ### T7
@@ -361,17 +424,20 @@ the source student's list (named in business/sales/sample_pack/build_sample_pack
 fixed there, never in sample_master_list.csv. For each row, re-read the facts on the official page
 (free search first, then tools/firecrawl_search.py), using row-filler helpers in BACKFILL mode for
 volume (results to files, reply with path + count only), and fill the new fields
-(Application requirements, Checked on, Admit rate from the source T11 named) and number-only formats. Apply with
+(Application requirements, Checked on, Admit rate from the source T11 named, Apply link,
+Scholarship link) and number-only formats. Also check the T6 note's two leads (Cambridge's passed
+deadline; Monash/Melbourne "UAC International"). Apply with
 `apply_backfill.py --overwrite`, dry run first, and show Evan the dry run before writing (it
 rewrites student files). Fix the uk.md note (R25). Then check_master_list.py must be clean on
-those rows. Tick T7; offer the commit (workflow files only; data/ is gitignored).
+those rows, and the T6 command must build the sample without --draft. Tick T7; offer the commit
+(workflow files only; data/ is gitignored).
 ```
 
 ### T8
 ```
 Read plans/list_pdf_plan.md (T8 rows) and business/sales/sample_pack/README.md. Do task T8 only.
 Rebuild the sample pack with .venv/Scripts/python.exe business/sales/sample_pack/build_sample_pack.py,
-extended to also produce sample_list.pdf through tools/build_list_pdf.py. Point the demo website's
+extended to also produce sample_list.pdf through tools/build_list_pdf.py (never --draft). Point the demo website's
 list download (prototype/data.js `files.list`) at sample_list.pdf and regenerate prototype data as
 SP1 did (prototype/_build/gen.py). Run the privacy scan and `node prototype/_build/smoke.js`.
 Verify with the T8 "Done when" checks; tick T8; offer the commit.

@@ -1,0 +1,23 @@
+{
+  "_sample_note": "Sample student. A real end-to-end search with the name, school and family finances removed.",
+  "_source": "prototype/data.js `student` (anonymised 'Arif'); same keys as a real profile.json, plus a 'preferences' block for the course and countries. Budget left out: data.js marks its budget as a placeholder.",
+  "student_slug": "sample-arif",
+  "name": "Arif",
+  "home_country": "Malaysia",
+  "current_program": {"type": "A-Level", "expected_completion": null},
+  "subjects": [
+    {"subject": "Maths", "grade_or_predicted": "A*"},
+    {"subject": "Further Maths", "grade_or_predicted": "A*"},
+    {"subject": "Physics", "grade_or_predicted": "A*"},
+    {"subject": "Chemistry", "grade_or_predicted": "A*"}
+  ],
+  "grade_status": "predicted",
+  "english_proficiency": {"test": null, "score": null, "test_date_or_planned": null},
+  "preferences": {
+    "specific_courses": ["Mechanical Engineering (robotics)"],
+    "target_countries": ["USA", "Singapore", "Australia", "UK", "China"],
+    "scholarship_required": true,
+    "priorities": ["Scholarship", "Hands-on experience", "Ranking", "Location", "Employability",
+                   "Recognition back home"]
+  }
+}

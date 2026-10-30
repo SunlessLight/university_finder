@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>$title</title>
+<link rel="stylesheet" href="list_pdf.css">
+</head>
+<body>
+<div class="running-footer">$footer</div>
+
+<!-- 1. Student profile -->
+<section class="profile">
+  <p class="eyebrow">Your university list</p>
+  <h1>$heading</h1>
+  <p class="prepared">$prepared</p>
+  $sample_note
+  <dl class="profile-grid">
+    $profile_rows
+  </dl>
+</section>
+
+<!-- 2. Summary table -->
+<section class="summary">
+  <h2>$summary_heading</h2>
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th class="n">#</th>
+        <th>University</th>
+        <th>Course</th>
+        <th>City, country</th>
+        <th class="num">Desirability</th>
+        <th>Admit rate</th>
+        <th>Grades vs entry bar</th>
+        <th class="num">Approx total (RM)</th>
+        <th>Key deadline</th>
+      </tr>
+    </thead>
+    <tbody>
+      $summary_rows
+    </tbody>
+  </table>
+
+  <!-- 3. Key to the judgment labels -->
+  <div class="key">
+    <h3>What the labels mean</h3>
+    <dl>
+      $key_rows
+    </dl>
+  </div>
+</section>
+
+<!-- 4. One card per university -->
+<section class="cards">
+  <h2>Each university in full</h2>
+  $cards
+</section>
+
+<!-- 5. Glossary -->
+<section class="glossary">
+  <h2>Glossary</h2>
+  <p class="muted">The shorthand used in this list, in plain words.</p>
+  <dl>
+    $glossary_rows
+  </dl>
+</section>
+</body>
+</html>
