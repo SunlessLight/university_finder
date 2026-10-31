@@ -99,5 +99,5 @@ Log meaningful decisions (direction changes, trade-offs, things worth rememberin
 - `workflows/00_overview.md`: read first for any pipeline run (stages, tool reference, subagent fences, guardrails in full).
 - `plans/additionals.md`: every open task and question. Start at its "Start here" index; leftovers a task won't fix go there.
 - `business/launchx/mentor.md` + `status.md`: the business mentor brief and LaunchX state (`/mentor`).
-- `token_cost_report.md` and the dated notes at the top of each `tools/*.py`: the why behind past changes.
+- `notes/token_cost_report.md` and the dated notes at the top of each `tools/*.py`: the why behind past changes.
 - `archives/`: old copies replaced on 2026-10-21. History only, not instructions.

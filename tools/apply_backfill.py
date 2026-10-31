@@ -9,7 +9,7 @@ course_key and silently skips a repeat. So a longlist with holes — a legacy ro
 tool at all, and got patched by hand.
 
 Two real sessions did exactly that (2026-08-01 UK, 2026-08-02 USA, same student, one day apart)
-and both paid the same avoidable cost, measured in token_cost_report.md: each of ~10 row-fillers
+and both paid the same avoidable cost, measured in notes/token_cost_report.md: each of ~10 row-fillers
 reported its values as prose in its REPLY, so the orchestrating session had to hold ten replies
 in context and re-transcribe them by hand, then make ten sequential Edit calls against
 research_notes.md. Fragments on disk + one read-modify-write pass is the fix (plan.md Change 8b/8c):

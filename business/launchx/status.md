@@ -1,6 +1,6 @@
 # LaunchX status
 
-*As of 2026-10-30. Rewritten whenever something changes; keep under about 70 lines. See
+*As of 2026-10-31. Rewritten whenever something changes; keep under about 70 lines. See
 [mentor.md](mentor.md) for how.*
 
 ## Dates
@@ -12,13 +12,12 @@
   (`notes/customer_chats/`). **27 Oct:** count replies.
 - **26 Oct (done):** nudged the testers who hadn't filled the feedback forms.
 - **28 Oct (done):** bunting submitted, a day late:
-  [Bunting_design/SHORTLISTED_v3.png](Bunting_design/SHORTLISTED_v3.png). **Pilot plan still
-  due** (was 27 Oct).
+  [Bunting_design/SHORTLISTED_v3.png](Bunting_design/SHORTLISTED_v3.png).
 - **10 Nov:** paid lists delivered (what the pre-sale message promised; one payer was told "by
-  13 Nov" in chat, so 10 Nov is early for them). Same day the booth opens.
-- **10 to 13 Nov:** pilot = a four-day booth with a bunting and a QR to a Linktree ("Scan to see
-  samples"). Plan and checklist
-  in Notion (URP Marketing: "Plan the pilot", "Make the bunting and booth materials").
+  13 Nov" in chat, so 10 Nov is early for them).
+- **12 and 13 Nov:** pilot = a two-day booth in the school compound, on Evan's two LaunchX bootcamp
+  days, with A-level students around. Bunting with a QR to a Linktree ("Scan to see samples"). Plan
+  and checklist in Notion (URP Marketing: "Plan the pilot", "Make the bunting and booth materials").
 - **2 Dec:** demo day. Check: 20 paid family lists?
 - **10 Dec:** if short of the bar, the pause ends: continue, pivot or stop.
 
@@ -41,8 +40,11 @@ it into a new deck rather than editing the 24 Oct one.
 - **Focus (24 Oct):** families first, with Evan learning marketing and referrals. Consultancies =
   learning chats only, no selling. Backend: cost cuts measured on the 10 Nov lists. Internal fixes
   in additionals.md stay parked.
-- **Pilot pass line (30 Oct): 5 paid sign-ups across the 4 booth days** (10 to 13 Nov). A guess, not
-  based on data; the pilot alone won't fill the 20 lists.
+- **Pilot goal (31 Oct): 10 sign-ups across the 2 booth days** (12 and 13 Nov). A sign-up = form
+  filled and RM10 deposit paid. A guess, not based on data. Replaces 5 across 4 days (30 Oct). Hit:
+  repeat the booth and start referrals. Miss: read the "no" reasons and change one thing first.
+- **At the booth (31 Oct):** every talk and answer is written down, then typed into
+  `notes/customer_chats/` (gitignored) the same day. Audio only if the person says yes first.
 - **No freeze (30 Oct):** Evan keeps developing the product, with set time for marketing and set
   time for product work. Replaces the 24 Oct "only fixes a customer would see" limit. Mentor
   advised stopping new columns and checks until 2 Dec; Evan decided otherwise.
@@ -50,9 +52,12 @@ it into a new deck rather than editing the 24 Oct one.
   decide continue / pivot / stop by 10 Dec.
 - **Prices (23 Oct):** list (20–30 universities) RM50, single report RM30. Count the 25 Oct
   replies at the old price, then announce RM30 in the nudge.
-- **Pre-sale cap: 20 list spots** (24 Oct, up from 15), set by Evan's time (about 20 hours).
-- **After payment** the customer gets a Google Form, not WhatsApp: the list form for a list, the
-  report form for a report, both links for both (30 Oct, `archives/intake_forms_plan.md`).
+- **Pre-sale cap: 20 list spots** (24 Oct, up from 15), set by Evan's time (about 20 hours). If
+  they sell out, Evan raises the limit (31 Oct).
+- **How people buy (31 Oct, replaces paying first):** the Linktree holds the survey form, sample
+  PDFs, prices and both forms. A buyer fills the list form or the report form, which has a QR for
+  a RM10 deposit. Delivery in 7 days. The price is in the Linktree, not on a sign at the booth,
+  because Evan expects "RM50" on show to put people off.
 - **Referral reward:** a free one-university report per friend who pays; only for people who have
   paid and received their list.
 - **Firecrawl costed** at its paid price (about RM77 a month). No legal or tax setup until a
@@ -99,8 +104,10 @@ it into a new deck rather than editing the 24 Oct one.
 - [x] Count the leads (done 30 Oct, 22 leads, see "Where things stand"); "no" reasons collected.
 - [ ] Tell Claude which product the 3 new payers bought.
 - [x] 28 Oct: bunting submitted (`Bunting_design/SHORTLISTED_v3.png`).
-- [ ] Pilot plan, overdue since 27 Oct (pass line set 30 Oct: 5 paid sign-ups). By 3 Nov: the rest of the booth kit
-      (A4 price sign, printed sample, booth kit). (Notion tasks)
+- [x] 31 Oct: pilot plan set (see "Decided").
+- [ ] By 11 Nov: Linktree, the RM10 QR in both forms (then tell Claude "recheck"), printed samples,
+      tally sheet, booth kit. Print only the list until R52 is fixed. (Notion tasks)
+- [ ] Say when the rest of the price is paid. Default: when the list or report is delivered.
 - [x] 30 Oct: split the intake into a list form and a report form; the grade grid is now one text
       box for every programme (`archives/intake_forms_plan.md`). Scripts done and tested.
 - [x] 30 Oct: report form finished and both forms checked against the scripts (T6).

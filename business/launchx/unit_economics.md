@@ -35,7 +35,7 @@ it honestly and move on.
 it: when one key runs out of credits it moves to the next one by itself.
 
 **If you ever paid per use instead of a flat plan:** the one measured run (10 US universities,
-in `token_cost_report.md`) came to roughly USD 2 to 3 for the research step. That is an estimate
+in `notes/token_cost_report.md`) came to roughly USD 2 to 3 for the research step. That is an estimate
 for one country, and reports were never measured.
 
 ## One year, three ways

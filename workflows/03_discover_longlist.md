@@ -429,7 +429,7 @@ For **this country**: 8-12 rows in `master_list.csv`, every one of the 38 column
 `merge_candidates.py` and `check_master_list.py` both clean, and `status.md` naming the next country.
 
 **Token log (until 2 Dec 2026, Evan's capacity check):** before closing, add one entry to
-`token_cost_report.md` in its `## #N` format: stage, country, row-filler count, each subagent's
+`notes/token_cost_report.md` in its `## #N` format: stage, country, row-filler count, each subagent's
 token total from its result, and the main session's figure. Ask Evan to run `/cost` and read the
 5-hour-window % off the usage indicator. The file is in git: no student name or slug.
 

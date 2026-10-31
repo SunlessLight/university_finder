@@ -195,7 +195,8 @@ fine — but keep the substring in bold intact.
   a deliberate simplification Evan made, not a bug (confirmed 2026-09-03).
 
   The 38 option titles are unchanged from the **2026-09-01 rewording** (source of truth:
-  `google_form_notes.md`) — that revision work wasn't wasted, it just now serves one flat dropdown
+  `forms/intake.json`; each option is `Title — 3-4 concrete nouns`, no cross-references, so it
+  fits a phone line) — that revision work wasn't wasted, it just now serves one flat dropdown
   instead of eight per-area grids. Reworded for A-Level Malaysian students who don't know course
   names/descriptions going in (a relatable hook instead of an academic catalog phrase, e.g. "Design —
   graphic, fashion, product, interior"); merged only where fields truly overlap (Computing) or an
@@ -341,6 +342,9 @@ Four commands, in this order. Steps 1-3 are safe to repeat; step 4 is the one th
 
 ### Edge cases
 
+- **A filled form doesn't prove payment (2026-10-31).** Each form now carries a QR for the RM10
+  deposit, so an answer can arrive unpaid. Evan matches the deposit to the answer before Stage 1
+  starts for that student. Buyers before 31 Oct paid first, so this doesn't apply to them.
 - **Old answers (2026-10-31).** The list form now writes to "List Intake Form (Responses)", which
   started empty. That file also holds the Apps Script since 31 Oct, so never delete it. The old sheet,
   "List Intake (Responses)", is gone. Only its tab `Form Responses 2` is saved, in `data/form/`, with
@@ -426,7 +430,7 @@ free-text grades, the result year, sometimes a free-text recognition match):
    as "research broadly."
 4. **Recognition** — two independent sources, only one of which is ever flagged:
    - **The "Choose your desired course" dropdown** is a **closed, known set of 38 titles**
-     (`google_form_notes.md`). `_course_recognition_targets()` exact-matches the answer's title
+     (`forms/intake.json`). `_course_recognition_targets()` exact-matches the answer's title
      against `COURSE_ACCREDITATION_MAP` in `tools/ingest_form_csv.py` — deterministic, **never
      flagged**. The map was built from the same 38 titles and verified against the actual Malaysian
      regulator for each (BEM, MMC, LPQB, MIA+ACCA, Pharmacy Board, MDC, LAM, BQSM, Nursing Board
@@ -451,7 +455,7 @@ free-text grades, the result year, sometimes a free-text recognition match):
        that isn't the student's real direction. Read the matched keyword(s) in the `_needs_review` line
        against what the student actually typed, not just whether the word appears somewhere in it.
 5. **Course is always present now, so this is a true edge case, not the normal state.** The "Choose
-   your desired course" dropdown is a required single-select among the 38 `google_form_notes.md`
+   your desired course" dropdown is a required single-select among the 38 `forms/intake.json`
    options, so `specific_courses` should always be non-empty. If `_needs_review` ever names "no course
    and no field of study at all," that means the dropdown answer genuinely came back blank (a form
    bug, or a manually-entered legacy row) — contact the student, since there's nothing to search on.
@@ -576,7 +580,7 @@ weights into `tools/shortlist_schema.py` — that shared file is exactly what ma
   neither do you. A `null` is more useful than a fabricated grade or budget: it's an open question, not
   a wrong answer. Fill gaps by contacting the requester, and note what's still open in `profile.notes`.
 - **Empty `specific_courses` should no longer happen on the current form** — "Choose your desired
-  course" is a required single-select among the 38 `google_form_notes.md` options, so every respondent
+  course" is a required single-select among the 38 `forms/intake.json` options, so every respondent
   should have at least one entry. If `interest_discovery.decided` still comes back `false` with a
   `_needs_review` line naming this, treat it as a genuine anomaly (a form bug, or a legacy/manual row),
   not the normal path: there's no broad-area fallback to discover within any more (`fields_of_interest`

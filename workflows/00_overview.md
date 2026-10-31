@@ -317,7 +317,7 @@ These are *why this project exists* — they stop a tidy-looking list from being
    won't let the student practise in Malaysia is a dealbreaker, not a footnote. The profession → body
    mapping (MMC / BEM+Washington Accord / LPQB / MIA+ACCA / LAM+BQSM / Nursing Board Malaysia / MAHPC /
    …) lives in `tools/ingest_form_csv.py`'s `COURSE_ACCREDITATION_MAP`, keyed to the 38 known
-   `google_form_notes.md` course titles — `ingest_form_csv.py` exact-matches the student's chosen course
+   `forms/intake.json` course titles — `ingest_form_csv.py` exact-matches the student's chosen course
    against it deterministically (no verification needed). Only a target guessed from the optional
    free-text "specific field of studies" supplement is best-effort and gets flagged for you to verify —
    see `01_intake.md`, finalize step 4.

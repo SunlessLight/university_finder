@@ -400,4 +400,4 @@ receives; items 7 to 9 are operating risks.
 | The "who you are" file | `data/students/<student>/profile.json` |
 | The "what you want" file | `data/students/<student>/preferences.json` |
 | The scoring formula | `data/students/<student>/weights.json`, made by `tools/derive_weights.py` |
-| The list of 38 courses | `google_form_notes.md` |
+| The list of 38 courses | `forms/intake.json` |

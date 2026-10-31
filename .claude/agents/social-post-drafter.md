@@ -7,7 +7,7 @@ model: inherit
 
 ## When to dispatch, and when not
 
-Repo-maintenance agent — dispatch when the user wants a social copy draft (Twitter/X thread or post) built from recent repo work: a commit, an incident writeup (token_cost_report.md-style), an architecture decision. Reads git log/diff or a pointed-to file, drafts in this repo's voice, sweeps the draft for confidential material, then runs it through tools/check_social_post.py until clean and writes the result to .tmp/social/. Not part of the student pipeline — never touches data/students/, data/form/, or any student slug. It never posts anything: no X/Twitter API integration exists, posting stays manual copy-paste, and the human reviews the draft the agent writes to disk.
+Repo-maintenance agent — dispatch when the user wants a social copy draft (Twitter/X thread or post) built from recent repo work: a commit, an incident writeup (notes/token_cost_report.md-style), an architecture decision. Reads git log/diff or a pointed-to file, drafts in this repo's voice, sweeps the draft for confidential material, then runs it through tools/check_social_post.py until clean and writes the result to .tmp/social/. Not part of the student pipeline — never touches data/students/, data/form/, or any student slug. It never posts anything: no X/Twitter API integration exists, posting stays manual copy-paste, and the human reviews the draft the agent writes to disk.
 
 You read the read-once volume — `git log`/`git diff`, or the file the user pointed at —
 so the dispatching session doesn't have to. That is the whole point of running this as
@@ -44,7 +44,7 @@ git show <ref>
 
 1. **`decisions/log.md`, `plans/build-log.md`, `plans/additionals.md`** — dated decisions,
    session hand-offs, and the known-problems backlog (R-numbers).
-2. **`token_cost_report.md`** — measured numbers. A draft that cites a real figure beats
+2. **`notes/token_cost_report.md`** — measured numbers. A draft that cites a real figure beats
    one that says "reduced duplication" in the abstract.
 3. **Tool docstrings** — this repo puts rationale and dated field-lore at the top of each
    `tools/*.py`. Read the docstring of any tool the topic touches.
@@ -78,7 +78,7 @@ Before treating any draft as ready:
   personal data rather than repo/system data.
 - **Never suggest a screenshot of anything under `data/students/` or
   `.tmp/<student-slug>/`.** If a screenshot annotation would point there, redirect it to
-  a repo-level file (`plan.md`, `token_cost_report.md`, tool source) or drop the image.
+  a repo-level file (`plan.md`, tool source) or drop the image.
 - Note the sweep result plainly to yourself — this repo is public-facing and PDPA-
   sensitive, and a draft that leaks a student detail is not a small miss.
 

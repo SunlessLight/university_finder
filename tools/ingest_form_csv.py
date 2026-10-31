@@ -9,7 +9,7 @@ the SAME templates as init_student.py so the shape never drifts.
 The mechanically-mappable fields (name, budget, countries, priorities, ...) are filled
 here. Grades, ethnicity, the scholarship gate, and recognition_targets matched off the
 "Choose your desired course" dropdown are all deterministic and need no agent review (the
-dropdown is a closed set of 38 known titles — see COURSE_ACCREDITATION_MAP / google_form_notes.md).
+dropdown is a closed set of 38 known titles — see COURSE_ACCREDITATION_MAP / forms/intake.json).
 The only judgment-heavy bit left is flagged in a top-level "_needs_review" list on profile.json:
   - recognition_targets matched from the optional free-text "specific field of studies"
     supplement (open text, not the closed dropdown -> best-effort keyword-guess, verify)
@@ -165,7 +165,7 @@ QUESTION_MAP = [
     ("already know the exact course", "decided"),  # legacy fallback (older form)
     ("name the course", "specific_courses"),  # legacy fallback (older form)
     ("choose your desired course", "specific_courses"),  # current form: single dropdown, the 38
-                                                            # google_form_notes.md options flattened into
+                                                            # forms/intake.json options flattened into
                                                             # one question (replaces the old per-area grid).
     ("already have in mind", "preferred_universities"),  # current form: "Universities you already have in mind"
     ("degree level", "degree_level"),
@@ -596,13 +596,13 @@ PROFESSION_RECOGNITION = {
 }
 
 # Exact-title recognition targets for the "Choose your desired course" dropdown — the 38 fixed
-# options in google_form_notes.md. Because this is a CLOSED, KNOWN set (not open text), a match
+# options in forms/intake.json. Because this is a CLOSED, KNOWN set (not open text), a match
 # here is deterministic and needs no agent review, unlike the free-text keyword scan above. Keyed
 # on the option TITLE only (the text before " — "; see _course_title()) so the hook wording can be
 # revised without breaking the map — only a title rename requires updating this dict.
 #
 # Two rows bundle more than one real profession because the option itself does (see
-# google_form_notes.md hooks) — both bodies are included rather than guessing which one applies:
+# forms/intake.json hooks) — both bodies are included rather than guessing which one applies:
 #   - "Architecture & Built Environment" (hook: "...urban planning, QS") -> LAM (architects) AND
 #     BQSM (quantity surveyors) are two separate boards under two separate Acts.
 #   - "Nursing & Allied Health" (hook: "nurse, physiotherapist, radiographer") -> Nursing Board
@@ -655,7 +655,7 @@ COURSE_ACCREDITATION_MAP = {
 
 def _course_title(course_answer):
     """Extract the option TITLE from a 'Title — hook' dropdown answer (the format rule in
-    google_form_notes.md). Splits on the first ' — ' (em dash), or ' - ' (spaced hyphen, as the
+    forms/intake.json). Splits on the first ' — ' (em dash), or ' - ' (spaced hyphen, as the
     live "Psychology - clinical, ..." option was typed); returns the string unchanged if neither
     separator is present (a legacy export, or a title with no hook)."""
     text = _clean(course_answer)
@@ -996,12 +996,12 @@ def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None,
     prefs["primary_country"] = get(row, col_index, "primary_country") or None
     prefs["fields_of_interest"] = _as_list(get(row, col_index, "fields_of_interest"))
     # specific_courses: current form is a single "Choose your desired course" dropdown (the 38
-    # google_form_notes.md options), PLUS a separate free-text "specific field of studies" supplement —
+    # forms/intake.json options), PLUS a separate free-text "specific field of studies" supplement —
     # merge both, dropdown first, no duplicates. Legacy forms encoded the course in a per-area grid
     # instead (only the column matching the chosen broad area was filled) — grid_cols is empty on the
     # current form, so this falls through to the dropdown/free-text path automatically.
     # NOT _split_multi(desired_course): "Choose your desired course" is a single-select dropdown whose
-    # own option text contains commas (the google_form_notes.md "Title — 3-4 concrete nouns" hook
+    # own option text contains commas (the forms/intake.json "Title — 3-4 concrete nouns" hook
     # format), so comma-splitting it would shred one course title into several fake ones.
     desired_course = get(row, col_index, "specific_courses")
     grid_courses = [c for c in (_clean(row.get(h)) for h in grid_cols) if c]

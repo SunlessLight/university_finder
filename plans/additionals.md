@@ -9,7 +9,7 @@ done, delete it and its line in the steps below, and write one line in `plans/bu
 History: the full file up to 2026-10-28 (every closed entry, the old lane and round plans) is in
 git: `git show 10b847c:business/additionals.md`. Decisions are in `decisions/log.md`.*
 
-*Adding an entry: the next number is **R50**. Say whether it is **urgent**, and whether it is a
+*Adding an entry: the next number is **R53**. Say whether it is **urgent**, and whether it is a
 **tool gap** (the system will keep making the mistake) or **stale data** (old files only). Plain
 English, no student named, no grades, income or school. Then add it to a step below.*
 
@@ -21,21 +21,25 @@ English, no student named, no grades, income or school. Then add it to a step be
 
 | # | Question | Default | Raised |
 |---|---|---|---|
-| O5 | Is RM 50 for 20-30 universities too cheap? | Don't change the price before the pilot. Measure the real cost and hours on the first paid lists: type `/cost` after each country pass, add it to `token_cost_report.md`. One measured US pass: about 700,000 tokens, USD 2-3 at API prices. A full client is a guess of USD 8-15, about RM 50, so capacity is the limit, not a bill | 2026-10-29 |
+| O5 | Is RM 50 for 20-30 universities too cheap? | Don't change the price before the pilot. Measure the real cost and hours on the first paid lists: type `/cost` after each country pass, add it to `notes/token_cost_report.md`. One measured US pass: about 700,000 tokens, USD 2-3 at API prices. A full client is a guess of USD 8-15, about RM 50, so capacity is the limit, not a bill | 2026-10-29 |
 | O6 | Turn it into an app at USD 5 for 8-12 universities? | Not now. Per university it's the same price (about RM 2), and an app needs a server, logins, payments and PDPA-safe storage. Revisit after the pilot | 2026-10-29 |
 | O7 | Store researched universities and reuse them for the next student | Good idea, after the pilot. Fees and deadlines change yearly, so a stored fact needs its `Checked on` date. First version: reuse a row under X months old and only re-check it | 2026-10-29 |
 | O12 | The list form no longer asks for achievements | Fine to leave off: the list doesn't use them. Stage 4 and the apply guide do, so ask at that point if a list buyer goes on to a report | 2026-10-30 |
 | O13 | How does each buyer's list get its MQA check? | A small script that looks each university up live, plus a short file of matched register names. No full database. Build after 10 Nov. 27 lists hold 493 rows but 207 universities, so a lookup is quick; the catch is matching names ("MELBOURNE" also returns RMIT). The site's addresses are in `workflows/sources.md` | 2026-10-30 |
+| O14 | Run longlists and picked reports overnight from a job list? (designed 2026-09, never built) | Not before 2 Dec. Revisit if hands-on time is what limits the 20 lists. It must run on the laptop, because student files aren't in git and cloud routines can't see them. Stage 1 finalize, the Stage 4 pick and Stage 5 stay with Evan | 2026-10-31 |
 
 ### Steps — one session each. Type: "Execute step N of `plans/additionals.md`"
 
-**Before the 10 Nov paid lists and booth** (allowed under the freeze: a customer would see them)
+**Before the 10 Nov paid lists and the 12 Nov booth** (a customer would see them)
 
 | Step | Entries | Files it writes | Waits for | Size |
 |---|---|---|---|---|
-| **2b, 2c, 2d** | ✅ Done 2026-10-30, as [plans/list_pdf_plan.md](list_pdf_plan.md). What they left is R30 (step 10), R31 (step 2f) and R39 (waiting on a real case) | — | — | — |
+| **2b, 2c, 2d** | ✅ Done 2026-10-30, as [plans/list_pdf_plan.md](list_pdf_plan.md). What they left is R30 (step 10) and R39 (waiting on a real case) | — | — | — |
 | **2e** | R42 (accreditation check on every regulated row; plan first) | `workflows/sources.md`, `workflows/03b_candidate_schema.md`, `.claude/agents/row-filler.md`, `tools/check_master_list.py` | an approved plan | Medium |
-| **2f** | R31 (Monash's course title) | the source student's `master_list.csv`, `research_notes.md`, `score_log.jsonl`; `business/sales/sample_pack/`; `prototype/data.js`, `prototype/_build/` | a browser read of Monash's page | Small |
+| **2g** | R51 (Monash's link in the sample) | the source student's `master_list.csv`; `business/sales/sample_pack/`; `prototype/data.js`, `prototype/_build/` | nothing | Small |
+| **2h** | R50 (deadline cells that open with an early round) | `.claude/agents/row-filler.md`, `workflows/03b_candidate_schema.md` | not alongside 2e (same files) | Small |
+| **2i** | R52 (the public report and guide samples) | the source student's report and guide JSON; `business/sales/sample_pack/` | step 9 | Medium |
+| **9** | R33, R34 (reports; plan R34 first). **Moved up 2026-10-31: two report buyers have paid**, so this comes before the first paid report goes out | `tools/flip_finalists.py`, `tools/build_report.py`, `tools/check_report.py`, `workflows/04_university_report.md`, `.claude/agents/report-writer.md` | nothing | Medium |
 
 **After 10 Nov** (the old students' lists, then the bigger system changes)
 
@@ -47,12 +51,11 @@ English, no student named, no grades, income or school. Then add it to a step be
 | **6** | Per student: R16 apply, R17, R21 (all three touch the same list, so do them together) | that student's `master_list.csv`, `research_notes.md`, `status.md` | steps 3 and 5 | Medium per student. Never the same student as step 4 |
 | **7** | L5 + R36 (plan first, in plan mode) | `tools/shortlist_schema.py`, `tools/sync_shortlist.py`, `tools/check_master_list.py`, the row-filler sheet, `workflows/03_discover_longlist.md`, `workflows/countries/*.md` | an approved plan | Medium to large. Not alongside step 4 or 6 |
 | **8** | R20 (plan first) | to be planned | nothing | Large, a new build |
-| **9** | R33, R34 (reports; plan R34 first). **Before the first paid report goes out**, even if that is before 10 Nov | `tools/flip_finalists.py`, `tools/build_report.py`, `tools/check_report.py`, `workflows/04_university_report.md`, `.claude/agents/report-writer.md` | nothing | Medium |
 | **10** | R30, R35 (glossary facts, calendar, apply guide) | `tools/apply_glossary.py`, `tools/build_calendar.py`, `tools/build_application_prep.py`, `.claude/skills/application-guide/SKILL.md`, `workflows/05_decide_and_apply.md`, `workflows/08_application_prep.md` | nothing | Medium |
 | **11** | R46, then R45, then R44 (plan first) | `tools/shortlist_schema.py`, `.claude/agents/row-filler.md`, `tools/build_application_prep.py`, every script that reads the columns | an approved plan | Large |
-| **12** | R47, R48, R49 | `tools/flip_finalists.py`, `tools/shortlist_schema.py`, `tools/build_list_pdf.py` | nothing | Small |
+| **12** | R47, R48 | `tools/flip_finalists.py`, `tools/shortlist_schema.py`, `tools/build_list_pdf.py` | nothing | Small |
 
-**Not a session** (Evan's own, a reply someone owes, or a measurement): I3, I4, R9, R11, N1 / U4 / V2, V3, R41, **R26 and R37 (before 10 Nov)**.
+**Not a session** (Evan's own, a reply someone owes, or a measurement): I3, I4, R9, R11, N1 / U4 / V2, V3, R41, **R37 (before 10 Nov; a session drafts the wording, Evan approves it)**.
 
 **Waiting on a real case:** R43 (a buyer of both, report form first), R39 (an old list being re-sent).
 
@@ -84,17 +87,40 @@ with nine detailed reports beside it. Each entry names its report and finding nu
 
 ## Before 10 Nov
 
-#### R31. Monash's course title in the sample looks like the Malaysia campus's
+#### R52. The public report and guide samples still show AI notes and coaching
 
-- **Added 2026-10-28** (fact audit 04 #14–32, 08 #42–47); cut down 2026-10-31 (everything else is
-  fixed; the sample list has 0 findings). **Stale data the public sees, small** (the booth opens 10 Nov).
-- **What is true:** the row says "Bachelor of Robotics and Mechatronics Engineering (Honours)". T7
-  read Clayton's as BEng (Hons) with a Robotics & Mechatronics specialisation. On 2026-10-31 the
-  handbook gave only "E3001 - Bachelor of Engineering (Honours)", and Monash's course page refused
-  the fetch, so the specialisation's exact name is unread.
-- **Suggested fix:** read the course page in Chrome. A renamed course must be re-scored: `Course`
-  makes the row's key, so `apply_backfill.py` can't change it (see L2's note). Rebuild the sample and
-  the demo after. Demo text lives in `prototype/_build/data.template.js`, not `data.js`.
+- **Added 2026-10-31.** **Stale data the public sees, urgent:** both go on the Linktree and in print
+  before the 12 Nov booth.
+- **What is true:** `sample_university-report_MIT.pdf` says "Not found — free search cannot read
+  Reddit" and has "The verdict", "Honest read on your fit" and "Ask your college early".
+  `sample_apply-guide_US.pdf` says "Recommendation: spend the early card on…", shows Reach beside
+  its universities, and leads with a 1 Nov 2026 early deadline that will have passed.
+  `sample_list.pdf` is clean on the same search. Step 9 only changes new reports, and the guide's
+  fix is R35 (step 10).
+- **Suggested fix:** the list goes on the Linktree and in print first. After step 9, rebuild the
+  sample report in the new shape with `build_sample_pack.py` (rule 4). Fix the sample guide's
+  wording the same way, or keep it off the Linktree until R35 is done.
+
+#### R51. The Monash row in the sample links to the general engineering page
+
+- **Added 2026-10-31** (step 2f). **Stale data the public sees, small** (the booth opens 12 Nov).
+- **What is true:** `Course URL` is `https://www.monash.edu/engineering`; the course page is
+  `https://www.monash.edu/study/courses/find-a-course/engineering-e3001`. That page is headed
+  Bachelor of Engineering, so a reader needs `Course at a glance` to see it is the same degree.
+- **Suggested fix:** change the cell through `apply_backfill.py` (not part of the row's key, so no
+  re-score) in the source list, then rebuild the sample and the demo. Demo text lives in
+  `prototype/_build/data.template.js`, not `data.js`.
+
+#### R50. A deadline cell that opens with an early round reads as passed while the regular round is open
+
+- **Added 2026-10-31** (R49's note). **Tool gap, urgent before 10 Nov only if a paid list has one.**
+  A student sees it.
+- **What is true:** `_parse_iso_date` reads a cell's first date, so `2026-11-01 (EA); 2027-01-05 (RD)`
+  is flagged once 1 Nov goes by, by `sync_shortlist.py` and now by every PDF build. Up to 8 rows
+  across 5 old lists start that way; the sample doesn't (it leads with the regular date).
+- **Suggested fix:** the regular deadline goes first in the cell: a line in the row-filler sheet and
+  `workflows/03b_candidate_schema.md`, and those rows through `apply_backfill.py`. Not "use the last
+  date": some cells end with a date that isn't a deadline.
 
 #### R42. Nothing proves a degree is accredited before it reaches a list
 
@@ -293,15 +319,14 @@ with nine detailed reports beside it. Each entry names its report and finding nu
 
 #### R34. The university report asks for verdicts and coaching, and nothing checks for them
 
-- **Added 2026-10-28** (fact audit 05 #16–31, 06 #1–2, #6, #10–12). **Tool gap.** Plan first; needs
-  decision 2 in `fact_audit/00_START_HERE.md`.
+- **Added 2026-10-28** (fact audit 05 #16–31, 06 #1–2, #6, #10–12). **Tool gap.** Plan first.
 - **What is true:** fixed headings in `tools/build_report.py` ask for a fit verdict ("Who it's for —
   the archetype & your fit", "Why here / why hesitate", lines 124–135). The sample MIT report has
   verdict tables ("Honest read on your fit", "The verdict"), orders ("Ask your college early") and
   AI notes ("free search cannot read Reddit"). Reports print no "prepared on" date.
   `check_report.py` has no hedge, advice or chatter check. Real reports: 1,827 hedge words, 193
   advice phrases and 43 notes-to-self across 42 reports (08 #25–27).
-- **To decide (Evan). Default:** every section is facts with sources; all opinion goes in one box
+- **Decided 2026-10-28 (Evan):** every section is facts with sources; all opinion goes in one box
   headed "Our assessment (a judgment, not a fact)".
 - **Suggested fix:** rename the headings, add the box, print the date, add `hedges` / `advice` /
   `chatter` checks to `check_report.py`, and rewrite `04_university_report.md` + `report-writer.md`
@@ -396,14 +421,6 @@ step 1. Keep the script. **Tally: 0 of 20** (+1 for a clean form, back to 0 for 
   added on 2026-09-23.
 - **Suggested fix:** keep a date per currency where it differs, or re-stamp every rate on one date.
 
-#### R49. "Deadline passed" is only stamped when a list syncs
-
-- **Added 2026-10-31** (O9). **Tool gap, not urgent.** A student sees it only if a deadline falls
-  between a list's sync and its PDF.
-- **What is true:** `feasibility_flags()` compares the deadline with today during `sync_shortlist.py`
-  and writes `Warnings`. `build_list_pdf.py` prints that cell and doesn't look at the date again.
-- **Suggested fix:** the PDF build compares `Key deadline` with today and adds the warning itself.
-
 ---
 
 ## Not a session
@@ -425,12 +442,6 @@ step 1. Keep the script. **Tally: 0 of 20** (+1 for a clean form, back to 0 for 
   the cheapest step to deliver" ([decide_report.md](../business/product_report/decide_report.md)). Settle each
   by writing down time and AI usage on the next real run of that stage (the 10 Nov lists give N1
   and U4). Cost per student is what an investor uses to judge RM 50.
-- **R26. The intake form's budget choices start at RM 500,000** (fact audit 01 #4, #18). Urgent,
-  before 10 Nov; Evan's form. A family with RM 150,000 must pick 500,000, so "Over budget" never
-  shows. Default: replace the three choices with a number box (or add lower bands). The opening text
-  ("Hihi! … your data is safe with me 🤩🥰") is chatty and clashes with the consent text. Default:
-  "We use your answers to research universities for your course and countries." After the edit:
-  `fetch_form_questions.py --check`, and Claude updates the budget reader in `ingest_form_csv.py`.
 - **R37. The sales copy promises checks no program makes** (fact audit 09 #2–5, #14). Urgent:
   Evan says these lines at the booth. `positioning.md:71` "until a human has confirmed the fact"
   (the AI stamps its own rows); `positioning.md:76-77` "a row can't reach Shortlist on aggregator

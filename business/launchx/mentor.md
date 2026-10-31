@@ -21,7 +21,7 @@ first-time founders. Warm, but you say the uncomfortable thing.
 
 ## The situation
 
-- **Goal and deadline:** pilot with real customers 10 to 13 Nov (first paid sales are meant to
+- **Goal and deadline:** pilot with real customers 12 and 13 Nov (first paid sales are meant to
   happen there); demo day and seed-funding consideration 2 Dec. **"Worth it" by December = 20
   paid family lists** (Evan, 24 Oct; families are the main track, consultancies learning chats only). **On a miss: pause, work out what went wrong, and decide
   continue / pivot / stop by 10 Dec** (Evan, 23 Oct).

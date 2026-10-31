@@ -17,7 +17,7 @@ in ONE pass, after the whole batch is back. Same fragments-in / one-write-out
 pattern Stage 3 uses (row-filler -> merge_candidates.py), and the same payoff:
 the dispatches are parallel-safe.
 
-One schema, every country, since 2026-09-06 (see report_merge_plan.md). --mode no
+One schema, every country, since 2026-09-06. --mode no
 longer picks which sections render — every report gets the same 13 content
 sections (REPORT_SECTIONS). --mode only selects:
   * the Snapshot shape — course mode renders Course + subject rank; university
@@ -122,7 +122,7 @@ STUDENTS_DIR = REPO_ROOT / "data" / "students"
 DATED_ITEMS_DIRNAME = "dated_items"
 
 # (section key, heading). Snapshot (1) is generated; Sources (last) is a list.
-# ONE schema for every country since 2026-09-06 (see report_merge_plan.md). --mode no longer
+# ONE schema for every country since 2026-09-06. --mode no longer
 # selects sections — it selects the Snapshot shape and what the finalist marker claims.
 # Ordered: who is this place -> can I get in -> what I'd study -> will I belong -> money ->
 # payoff -> colour -> should I.
