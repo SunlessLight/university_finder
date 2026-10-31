@@ -291,3 +291,9 @@ Entry format:
 - Decisions (and why): see `decisions/log.md`. Script stays in the old sheet and follows the form.
 - Problems / lessons: `.env` held the spreadsheet's ID, which gives `Invalid ID`: same mix-up as 27 Oct, so it's now in `CLAUDE.md`. The redeploy isn't proven live yet; it needs Evan's paste. The old-tab stamping question is gone: the new sheet is empty and row 11 was a test.
 - Next step: Evan sets the form's ID in `.env`, pastes `Code.gs`, fixes one Malay phrase, says "recheck". Then E2.
+## 2026-10-31 (15) · Forms: script moved to the new list sheet, recheck clean
+- Done: Evan moved the Apps Script to "List Intake Form (Responses)" with a new deployment, and fixed `.env` and the report form's Malay notice. All five forms read, `--check` passes, nothing pending. `CLAUDE.md`, `README.md`, `01_intake.md`, the `Code.gs` header, the plan and `status.md` now name the new sheet. Header comment only, so the live script needs no new paste.
+- Decisions (and why): see `decisions/log.md`. Reverses today's earlier "script stays in the old sheet", at Evan's request.
+- Problems / lessons: a wrong list form ID gave `No item with the given ID`, not `Invalid ID`, so both are now in `CLAUDE.md`. Running one form at a time separated it fast: four forms worked, so only that ID was wrong. With no form ID, `answers` reads the script's own sheet, so a row count shows which sheet it lives in (0 = new, not the old 10). `intake_answers.csv` looks too small to hold the 10 old students, so the old sheet may be the only full copy: not opened, size only.
+- Next step: Evan backs up and deletes the old sheet, then E2. T9 is still uncommitted.
+

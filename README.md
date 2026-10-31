@@ -116,9 +116,11 @@ responses sheet. Whenever `Code.gs` changes:
    FORM_ID_SURVEY=...
    ```
 
-**The script lives in the old sheet, "List Intake (Responses)". Never delete that file**: it runs
-every form tool, and it holds the 10 students' answers from before 30 Oct. The tools find each form's
-sheet from its ID, so linking a form to a new sheet needs no script change and no new URL.
+**The script lives in the list form's sheet, "List Intake Form (Responses)" (moved 31 Oct). Never
+delete that file**: it runs every form tool. The tools find each form's sheet from its ID, so linking
+a form to a new sheet needs no script change and no new URL. The old sheet, "List Intake (Responses)",
+runs nothing now but holds the 10 students' answers from before 30 Oct: download every tab with
+answers before deleting it.
 
 ## Run
 

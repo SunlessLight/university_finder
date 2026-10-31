@@ -342,11 +342,12 @@ Four commands, in this order. Steps 1-3 are safe to repeat; step 4 is the one th
 ### Edge cases
 
 - **Old answers live in the old spreadsheet (2026-10-31).** The list form now writes to "List Intake
-  Form (Responses)", which started empty. The 10 rows from before 30 Oct stay in "List Intake
-  (Responses)", tab `Form Responses 1`, with their grades, consent and `Ingested at` stamps. That file
-  also holds the Apps Script, so never delete it. The tools find a form's sheet through
-  `FORM_ID_LIST_INTAKE`, so re-linking a form moves nothing. That value is the form's ID: a
-  spreadsheet's ID gives `Invalid ID`.
+  Form (Responses)", which started empty. That file also holds the Apps Script since 31 Oct, so never
+  delete it. The 10 rows from before 30 Oct stay in "List Intake (Responses)", tab `Form Responses 1`,
+  with their grades, consent and `Ingested at` stamps. That file runs nothing now; download every tab
+  with answers before deleting it. The tools find a form's sheet through `FORM_ID_LIST_INTAKE`, so
+  re-linking a form moves nothing. That value is the form's ID: anything else gives `Invalid ID` or
+  `No item with the given ID`.
 - **Never sort the responses sheet by hand.** Row identity is the sheet row number, which only holds
   because Forms *appends* responses and never reorders them. A `Data → Sort range` would make `_row`
   in an already-fetched CSV point at the wrong respondent, and `--confirm` would stamp the wrong rows.

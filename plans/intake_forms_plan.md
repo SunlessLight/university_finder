@@ -47,8 +47,9 @@ and the report form's ID need the real forms.
   `derive_weights.py` would then have stopped. The higher tick now counts, with a review line.
   `--check` names the grid until it is a Multiple choice grid.
 - **The list form moved to a new, empty sheet on 30 Oct**, "List Intake Form (Responses)". Old answers
-  stay in "List Intake (Responses)", which also holds the Apps Script. `Code.gs` now follows the form
-  to its linked sheet, so `FORM_ID_LIST_INTAKE` must hold the form's ID, not a spreadsheet's.
+  stay in "List Intake (Responses)". The Apps Script moved to the new sheet on 31 Oct, with a new
+  deployment and URL. `Code.gs` follows the form to its linked sheet, so `FORM_ID_LIST_INTAKE` must
+  hold the form's ID, not a spreadsheet's.
 - **Buying both, report form first:** the list row was told to use `--force`, which wipes the order.
   It's now skipped with the right advice. Merging is by hand (`01_intake.md`).
 
@@ -64,21 +65,23 @@ Done 30 Oct: the report form's new questions, Link to Sheets, "Collect email add
 answers (now deleted), Multiple choice grids, the name in both consent notices, the year question, and
 the list form's new sheet.
 
+Done 31 Oct: `FORM_ID_LIST_INTAKE` holds the form's ID, the script moved to "List Intake Form
+(Responses)" with a new URL in `.env`, and the report form's Malay notice is fixed. Recheck clean: all
+five forms read, `--check` passes, nothing pending, and the script's own sheet has 0 rows, so it is the
+new one.
+
 Still to do:
 
-1. **`.env`:** set `FORM_ID_LIST_INTAKE` to the form's ID,
-   `1pQF8yWQG1WtkQcNVyF4eCTkdMXcOs-b-2G_O4qfZiZE`. It holds the spreadsheet's ID now.
-2. **Paste the new script:** open "List Intake (Responses)", Extensions → Apps Script, replace all of
-   `Code.gs` with `tools/appsscript/Code.gs`, save. Deploy → Manage deployments → pencil → Version:
-   New version → Deploy. The URL stays the same, so nothing else changes in `.env`.
-3. **Report form, Malay notice:** "pilihan kursus dan negara" → "pilihan kursus". It asks no countries.
-4. **Keep "List Intake (Responses)".** Delete the spare "University List Intake Form (Responses)"
-   sheet: nothing reads it and it's another copy of student answers.
-5. **Small, either way:** the report form has no B13 note. The list form's grades box has no STPM/CGPA
+1. **Before deleting "List Intake (Responses)":** every student row has an `Ingested at` date (a blank
+   one means an unprocessed student: stop). Download every tab with answers to `data/form/`, then
+   delete it in Drive. Drive's bin keeps it for 30 days.
+2. **Delete the spare "University List Intake Form (Responses)" sheet:** nothing reads it and it's
+   another copy of student answers.
+3. **Small, either way:** the report form has no B13 note. The list form's grades box has no STPM/CGPA
    example and is a short answer, not a paragraph. Location has no "No preference". "Anything specific"
    is required on the report form. The scripts handle all of these.
 
-Then say "recheck", and Claude runs `--check` and the pending check. Then E2.
+Then E2.
 
 ### What the live forms say, where it differs from the tables below
 

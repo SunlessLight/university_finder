@@ -9,8 +9,8 @@
  * the tab it is linked to, like questions and answers already did. Reading "the
  * bound sheet's first tab" broke twice on 2026-10-30, when the list form was
  * re-linked: first to a new tab, then to a new spreadsheet. Linked to a new sheet,
- * nothing here needs moving. The script still lives in the OLD list sheet
- * ("List Intake (Responses)"), so that file must never be deleted.
+ * nothing here needs moving. The script moved on 2026-10-31 to the new list sheet
+ * ("List Intake Form (Responses)"), so that file must never be deleted.
  *
  * WHAT IT DOES
  *   Exposes the responses sheet as two HTTP actions so
