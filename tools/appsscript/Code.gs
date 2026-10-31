@@ -5,13 +5,22 @@
  * Form's responses spreadsheet. Edit it here, commit it, then paste it into the
  * bound Apps Script project (Extensions -> Apps Script) and redeploy.
  *
+ * Changed 2026-10-31: pending and confirm take ?form=<id> and follow that form to
+ * the tab it is linked to, like questions and answers already did. Reading "the
+ * bound sheet's first tab" broke twice on 2026-10-30, when the list form was
+ * re-linked: first to a new tab, then to a new spreadsheet. Linked to a new sheet,
+ * nothing here needs moving. The script still lives in the OLD list sheet
+ * ("List Intake (Responses)"), so that file must never be deleted.
+ *
  * WHAT IT DOES
  *   Exposes the responses sheet as two HTTP actions so
  *   tools/fetch_form_responses.py can pull only rows that have not been ingested
  *   yet, and stamp them as done afterwards:
  *
- *     ?action=pending&token=...              -> {headers, rows, row_numbers}
- *     ?action=confirm&token=...&rows=12,13   -> {stamped:[12,13]}
+ *     ?action=pending&token=...&form=<id>            -> {headers, rows, row_numbers}
+ *     ?action=confirm&token=...&form=<id>&rows=12,13 -> {stamped:[12,13]}
+ *
+ *   With no form=<id>, both use this bound sheet's first tab.
  *
  *   A third, read-only action serves a form's QUESTIONS (not answers) to
  *   tools/fetch_form_questions.py, so a session can see the live wording and
@@ -29,8 +38,8 @@
  *
  *   Reading forms other than the linked one needs the full Forms permission
  *   (Apps Script has no read-only Forms scope), and reading their responses
- *   sheets needs the full Sheets permission. This script never edits a form,
- *   and never writes to any sheet but its own.
+ *   sheets needs the full Sheets permission. This script never edits a form, and
+ *   the only thing it ever writes is the `Ingested at` column of the intake tab.
  *
  *   "Not ingested yet" is recorded IN THE SHEET, in a column called
  *   `Ingested at` (see INGESTED_HEADER). Blank cell = pending. A timestamp =
@@ -90,10 +99,10 @@ function doGet(e) {
 
   try {
     if (action === 'pending') {
-      return jsonOut(getPending());
+      return jsonOut(getPending(params.form || ''));
     }
     if (action === 'confirm') {
-      return jsonOut(confirmRows(params.rows || ''));
+      return jsonOut(confirmRows(params.rows || '', params.form || ''));
     }
     if (action === 'questions') {
       return jsonOut(getQuestions(params.form || ''));
@@ -119,8 +128,8 @@ function doGet(e) {
  * The `Ingested at` column itself is stripped from the payload — it is
  * bookkeeping, not a form answer, and there is no reason to ship it downstream.
  */
-function getPending() {
-  var sheet = getSheet();
+function getPending(formId) {
+  var sheet = getSheet(formId);
   var lastRow = sheet.getLastRow();
   var lastCol = sheet.getLastColumn();
 
@@ -171,8 +180,8 @@ function getPending() {
  * reported in `skipped` rather than silently ignored, so a mismatch between the
  * CSV on disk and the sheet is visible instead of quiet.
  */
-function confirmRows(rowsParam) {
-  var sheet = getSheet();
+function confirmRows(rowsParam, formId) {
+  var sheet = getSheet(formId);
   var lastRow = sheet.getLastRow();
   var lastCol = sheet.getLastColumn();
 
@@ -266,36 +275,13 @@ function getQuestions(formId) {
 /**
  * Every response row of a form, read-only: {headers, rows}.
  *
- * With no formId, reads this bound sheet (the intake responses), minus the
- * `Ingested at` bookkeeping column if it exists. Unlike getPending() it never
- * creates that column, so this action writes nothing.
- *
- * With a formId, opens the spreadsheet the form sends its responses to and
- * reads the tab linked to that form (a responses spreadsheet can hold several
- * tabs, and the linked one is not always first).
+ * Reads the form's linked tab (getSheet), minus the `Ingested at` bookkeeping
+ * column if it exists. Unlike getPending() it never creates that column, so
+ * this action writes nothing.
  */
 function getAnswers(formId) {
-  var ss, sheet;
-  if (formId) {
-    var form = FormApp.openById(formId);
-    var destId;
-    try {
-      destId = form.getDestinationId();
-    } catch (err) {
-      throw new Error('Form ' + formId + ' is not linked to a responses sheet (Responses tab -> Link to Sheets).');
-    }
-    ss = SpreadsheetApp.openById(destId);
-    // Matched by form ID, not URL: getFormUrl() and the form's own URLs come
-    // in several shapes (/d/<id>/edit, /d/e/<id>/viewform).
-    sheet = ss.getSheets().filter(function (sh) {
-      var url = sh.getFormUrl();
-      if (!url) return false;
-      try { return FormApp.openByUrl(url).getId() === form.getId(); } catch (err) { return false; }
-    })[0] || ss.getSheets()[0];
-  } else {
-    ss = SpreadsheetApp.getActiveSpreadsheet();
-    sheet = getSheet();
-  }
+  var sheet = getSheet(formId);
+  var ss = sheet.getParent();
 
   var lastRow = sheet.getLastRow();
   var lastCol = sheet.getLastColumn();
@@ -303,10 +289,8 @@ function getAnswers(formId) {
 
   var headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
   var markerCol = 0; // 0 = no marker column to strip
-  if (!formId) {
-    for (var c = 0; c < headers.length; c++) {
-      if (String(headers[c]).trim() === INGESTED_HEADER) markerCol = c + 1;
-    }
+  for (var c = 0; c < headers.length; c++) {
+    if (String(headers[c]).trim() === INGESTED_HEADER) markerCol = c + 1;
   }
 
   var tz = ss.getSpreadsheetTimeZone();
@@ -353,10 +337,28 @@ function authorizeForms() {
 
 
 /**
- * The sheet the form writes into. Uses the ACTIVE sheet of the bound
- * spreadsheet — correct for the standard one-form-one-sheet setup.
+ * The tab a form writes into. With a formId, that form's linked tab, wherever it
+ * is; a responses spreadsheet can hold several tabs, and the linked one is not
+ * always first. With none, the first tab of the bound spreadsheet.
  */
-function getSheet() {
+function getSheet(formId) {
+  if (formId) {
+    var form = FormApp.openById(formId);
+    var destId;
+    try {
+      destId = form.getDestinationId();
+    } catch (err) {
+      throw new Error('Form ' + formId + ' is not linked to a responses sheet (Responses tab -> Link to Sheets).');
+    }
+    var destination = SpreadsheetApp.openById(destId);
+    // Matched by form ID, not URL: getFormUrl() and the form's own URLs come
+    // in several shapes (/d/<id>/edit, /d/e/<id>/viewform).
+    return destination.getSheets().filter(function (sh) {
+      var url = sh.getFormUrl();
+      if (!url) return false;
+      try { return FormApp.openByUrl(url).getId() === form.getId(); } catch (err) { return false; }
+    })[0] || destination.getSheets()[0];
+  }
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   if (!ss) throw new Error('No bound spreadsheet — this script must be created from Extensions -> Apps Script inside the responses sheet.');
   var sheet = ss.getSheets()[0];

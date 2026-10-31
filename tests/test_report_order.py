@@ -4,8 +4,8 @@ test_report_order.py — a report sold without a list (plans/intake_forms_plan.m
 A report buyer has a student folder but no master_list.csv. What these pin down:
   - build_report.py stops after the report: no finalist marker, because there is no row to flip;
   - a student with a master list still gets the marker;
-  - check_report.py doesn't ask that report for "Your priorities", which the form never asked,
-    but does still ask for "Admission likelihood";
+  - check_report.py asks that report for "Your priorities" and "Admission likelihood" like any
+    other, because the report form has asked the importance grid since 2026-10-30;
   - progress_dashboard.py shows "Report order", not stuck at Stage 1;
   - a student's report opens with their profile (never their race), a quick report doesn't, and the
     PDF's "Key terms" still lands after the Snapshot;
@@ -171,29 +171,15 @@ class CheckReport(unittest.TestCase):
         body = [f"| **{label}** | filled |" for label in dict.fromkeys(wanted) if label != leave_out]
         return check_report.check_snapshot([(1, "Snapshot", body)], "report", **flags)
 
-    def test_a_report_order_needs_no_priorities_row(self):
-        self.assertEqual(self.findings("Your priorities", report_order=True), [])
-
-    def test_a_report_order_still_needs_admission_likelihood(self):
-        findings = self.findings("Admission likelihood", report_order=True)
-        self.assertEqual(len(findings), 1)
-        self.assertIn("Admission likelihood", findings[0])
-
-    def test_a_normal_report_still_needs_priorities(self):
+    def test_every_student_report_needs_priorities(self):
         findings = self.findings("Your priorities")
         self.assertEqual(len(findings), 1)
         self.assertIn("Your priorities", findings[0])
 
-    def test_only_a_student_with_no_master_list_is_a_report_order(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            student = Path(tmp) / "buyer"
-            (student / "reports").mkdir(parents=True)
-            (student / "profile.json").write_text("{}", encoding="utf-8")
-            report = student / "reports" / "x.md"
-            self.assertTrue(check_report.is_report_order(report))
-            (student / "master_list.csv").write_text("University\n", encoding="utf-8")
-            self.assertFalse(check_report.is_report_order(report))
-            self.assertFalse(check_report.is_report_order(Path(tmp) / "quick_reports" / "x.md"))
+    def test_every_student_report_needs_admission_likelihood(self):
+        findings = self.findings("Admission likelihood")
+        self.assertEqual(len(findings), 1)
+        self.assertIn("Admission likelihood", findings[0])
 
 
 class Dashboard(unittest.TestCase):

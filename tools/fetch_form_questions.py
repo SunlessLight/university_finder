@@ -35,10 +35,11 @@ and preferences too, so its consent wording may name them.
 
 Requires in .env (see README, "Setup (first time)"):
     FORM_WEBAPP_URL, FORM_WEBAPP_TOKEN   same as fetch_form_responses.py
-    FORM_ID_INTAKE                       optional; blank = the form linked to the responses sheet
-    FORM_ID_REPORT_INTAKE, FORM_ID_REPORT_FEEDBACK, FORM_ID_SPREADSHEET_FEEDBACK, FORM_ID_SURVEY
-        the ID is the long code in the form's EDIT address: docs.google.com/forms/d/<ID>/edit
-        (not the /e/... share link). IDs are not secrets; .env is just where form settings live.
+    FORM_ID_LIST_INTAKE, FORM_ID_REPORT_INTAKE, FORM_ID_REPORT_FEEDBACK,
+    FORM_ID_SPREADSHEET_FEEDBACK, FORM_ID_SURVEY
+        the ID is the long code in the FORM's edit address: docs.google.com/forms/d/<ID>/edit
+        (not the /e/... share link, and not a spreadsheet's ID: that gives "Invalid ID").
+        IDs are not secrets; .env is just where form settings live.
 """
 
 import argparse
@@ -49,7 +50,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from fetch_form_responses import call_endpoint, load_config  # noqa: E402
+from fetch_form_responses import LIST_FORM_ENV, call_endpoint, load_config  # noqa: E402
 from ingest_form_csv import (  # noqa: E402
     BUDGET_BAND_NORMALIZE,
     COUNTRY_NORMALIZE,
@@ -78,7 +79,7 @@ FORMS_DIR = REPO_ROOT / "forms"
 # name -> .env key holding its form ID. Only intake may be blank (Code.gs then opens the
 # form linked to its own responses sheet).
 FORMS = {
-    "intake": "FORM_ID_INTAKE",
+    "intake": LIST_FORM_ENV,
     "report_intake": "FORM_ID_REPORT_INTAKE",
     "report_feedback": "FORM_ID_REPORT_FEEDBACK",
     "spreadsheet_feedback": "FORM_ID_SPREADSHEET_FEEDBACK",
@@ -197,12 +198,7 @@ def check_intake(form):
                                          for o in options("needs")
                                          if not any(t in o.lower() for t in NEEDS_NORMALIZE)])
 
-    tick_problems = []
-    for item in items:
-        if TICK_MARKER in item["title"].lower():
-            tick_problems += [f"column {c!r} is not in TICK_IMPORTANCE_NORMALIZE (that answer is skipped)"
-                              for c in item.get("columns", []) if c.strip().lower() not in TICK_IMPORTANCE_NORMALIZE]
-    report("Priority grid columns", tick_problems)
+    report("Priority grid columns", grid_problems(items))
 
     # Google Forms joins ticked checkboxes with ", ", and _split_multi() splits on commas. Only
     # the fields that go through _split_multi() matter; courses and budget are read whole.
@@ -212,6 +208,20 @@ def check_intake(form):
         for item in items if item["title"] in split_titles for o in item.get("options", []) if "," in o])
 
     return 1 if report("Consent question", consent_problems(items)) else 0
+
+
+def grid_problems(items):
+    """Importance-grid problems: an unknown tick level, or a grid allowing two ticks on one row."""
+    problems = []
+    for item in items:
+        if TICK_MARKER not in item["title"].lower():
+            continue
+        problems += [f"column {c!r} is not in TICK_IMPORTANCE_NORMALIZE (that answer is skipped)"
+                     for c in item.get("columns", []) if c.strip().lower() not in TICK_IMPORTANCE_NORMALIZE]
+        if item["type"] == "CHECKBOX_GRID":
+            problems.append("students can tick two levels on one row (the higher counts, with a review "
+                            "line); change it to a Multiple choice grid")
+    return problems
 
 
 def consent_problems(items):
@@ -248,6 +258,7 @@ def check_report_form(form):
     report("Questions the program depends on",
            [f"no question matches {k!r} — every new buyer gets it blank" for k in REPORT_REQUIRED_KEYS
             if k not in col_index])
+    report("Priority grid columns", grid_problems(items))
 
     return 1 if report("Consent question", consent_problems(items)) else 0
 

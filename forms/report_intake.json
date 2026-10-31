@@ -1,7 +1,7 @@
 {
   "form_id": "16FgLQvxA-BA1wCBbJuMYMgKmqe6oYady9CA2QWjpRnM",
   "title": "University Report Intake Form",
-  "description": "Disclaimer\nPlease note: our reports are research to help you decide, not a guarantee of admission or funding. Fees, entry requirements and deadlines can change, so always confirm them on the university's official website before you apply. We are not a university or an official education agent.",
+  "description": "",
   "items": [
     {
       "title": "Fill up these quick questions and ur done!",
@@ -13,6 +13,19 @@
       "type": "TEXT",
       "description": "",
       "required": true
+    },
+    {
+      "title": "Race ( For checking government scholarship eligibility )",
+      "type": "MULTIPLE_CHOICE",
+      "description": "",
+      "required": true,
+      "options": [
+        "Chinese",
+        "Malay",
+        "Indian",
+        "Prefer not to say"
+      ],
+      "other": true
     },
     {
       "title": "Which University do you want a report of? Add the campus if it has several (e.g. Monash Malaysia vs Monash Australia)",
@@ -113,6 +126,45 @@
       "other": false
     },
     {
+      "title": "List down the subject and grades  (eg Physic A, Chemistry B, etc)",
+      "type": "PARAGRAPH_TEXT",
+      "description": "",
+      "required": true
+    },
+    {
+      "title": "What year does your actual results come out? ",
+      "type": "MULTIPLE_CHOICE",
+      "description": "",
+      "required": true,
+      "options": [
+        "2026",
+        "2027",
+        "2028"
+      ],
+      "other": false
+    },
+    {
+      "title": "What month does your actual results come out? ",
+      "type": "MULTIPLE_CHOICE",
+      "description": "",
+      "required": true,
+      "options": [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+      ],
+      "other": false
+    },
+    {
       "title": "What did you take for Secondary school? ",
       "type": "MULTIPLE_CHOICE",
       "description": "",
@@ -160,6 +212,69 @@
       "required": false
     },
     {
+      "title": "Tick the importance of each topic below\nWill be used to score each university for you. ",
+      "type": "GRID",
+      "description": "",
+      "required": true,
+      "rows": [
+        "Affordable Cost",
+        "Scholarship availability",
+        "University Ranking",
+        "Course Ranking",
+        "Employability",
+        "Recognition back home",
+        "Location",
+        "Hands-On Experience"
+      ],
+      "columns": [
+        "Must have",
+        "Important",
+        "Nice to have",
+        "Doesn't matter"
+      ]
+    },
+    {
+      "title": "What's your limit (RM) for the whole degree. (include tuition, living cost, etc)",
+      "type": "LIST",
+      "description": "",
+      "required": true,
+      "options": [
+        "100,000",
+        "200,000",
+        "500,000",
+        "1,000,000",
+        "1,500,000"
+      ]
+    },
+    {
+      "title": "Location preferences",
+      "type": "LIST",
+      "description": "",
+      "required": true,
+      "options": [
+        "Urban / City",
+        "Rural / Campus-based"
+      ]
+    },
+    {
+      "title": "Any other perferences? ",
+      "type": "CHECKBOX",
+      "description": "",
+      "required": false,
+      "options": [
+        "Stay close to family",
+        "Low crime rate",
+        "Malaysian Community nearby",
+        "Cold Weather",
+        "Summer Weather",
+        "4 seasons",
+        "Good public transport",
+        "Affordable living cost",
+        "Muslim Facilities/Halal Food"
+      ],
+      "other": true
+    },
+    {
       "title": "Achievements / activities you'd want to write about in your application? (To check whether it's qualities the university wants)",
       "type": "PARAGRAPH_TEXT",
       "description": "",
@@ -179,12 +294,17 @@
     {
       "title": "Consent to use your information / Persetujuan penggunaan maklumat anda (PDPA)",
       "type": "MULTIPLE_CHOICE",
-      "description": "Before you submit, here's how we handle your answers, as required by Malaysia's Personal Data Protection Act 2010. \n• Who we are: Shortlisted, run by Evan Yeoh, Malaysia. Contact: evannsnv@gmail.com\n• What we collect: everything on this form: your email, nickname, race, grades, English test, budget band, course and country choices, priorities and preferences, and anything you write in the optional boxes.\n• Why: to research universities and courses for you, write your reports, and contact you about them. Race is used only to check which scholarships you can apply for. Halal and prayer ticks are used only to describe campus life for you.\n• Who handles it: only us. We use Google (Forms, Sheets) to collect answers and AI tools to help with research; these services may store or process data on servers outside Malaysia. We never sell your data, and we never share it with universities, agents or anyone else without asking you first. \n• How long we keep it: until 3 months after we last work with you, then we delete it.\n• Your rights: you can ask to see, correct or delete your data, or withdraw your consent, any time by emailing evannsnv@gmail.com. If you withdraw, we stop working on your record and delete it.\n• Do you have to? Ticking the box is required to use the service. If you don't tick it, we can't research for you and your answers won't be used.\n• Under 18? Please make sure a parent or guardian knows about and agrees to this.\nSebelum anda hantar, ini cara kami mengendalikan jawapan anda, seperti yang dikehendaki oleh Akta Perlindungan Data Peribadi 2010.\n• Siapa kami: Shortlisted, dikendalikan oleh Evan Yeoh, Malaysia. Hubungi: evannsnv@gmail.com\n• Apa yang kami kumpul: semua jawapan dalam borang ini: emel, nama panggilan, kaum, gred, ujian bahasa Inggeris, julat bajet, pilihan kursus dan negara, keutamaan dan pilihan anda (termasuk makanan halal atau kemudahan solat jika anda tandakan), dan apa-apa yang anda tulis dalam ruangan pilihan.\n• Mengapa: untuk mencari universiti dan kursus untuk anda, menyediakan laporan anda, dan menghubungi anda mengenainya. Kaum digunakan hanya untuk menyemak biasiswa yang layak anda mohon. Pilihan halal dan solat digunakan hanya untuk menerangkan kehidupan kampus kepada anda.\n• Siapa yang mengendalikannya: hanya kami. Kami menggunakan Google (Forms, Sheets) untuk mengumpul jawapan dan alat AI untuk membantu penyelidikan; perkhidmatan ini mungkin menyimpan atau memproses data di pelayan luar Malaysia. Kami tidak akan menjual data anda, dan tidak akan berkongsinya dengan universiti, ejen atau sesiapa pun tanpa bertanya kepada anda dahulu.\n• Tempoh simpanan: sehingga 3 bulan selepas kali terakhir kami berurusan dengan anda, kemudian kami padamkannya.\n• Hak anda: anda boleh meminta untuk melihat, membetulkan atau memadam data anda, atau menarik balik persetujuan, pada bila-bila masa dengan menghantar emel ke evannsnv@gmail.com. Jika anda menarik balik, kami akan berhenti dan memadam rekod anda.\n• Wajibkah? Kotak ini wajib ditanda untuk menggunakan perkhidmatan ini. Jika tidak ditanda, kami tidak dapat membuat penyelidikan untuk anda dan jawapan anda tidak akan digunakan.\n• Bawah 18 tahun? Sila pastikan ibu bapa atau penjaga anda tahu dan bersetuju.",
+      "description": "Before you submit, here's how we handle your answers, as required by Malaysia's Personal Data Protection Act 2010. \n• Who we are: Shortlisted, run by Evan Yeoh, Malaysia. Contact: evannsnv@gmail.com\n• What we collect: everything on this form: your email, Full Name, race, grades, English test, budget band, course, priorities and preferences, and anything you write in the optional boxes.\n• Why: to research universities and courses for you, write your reports, and contact you about them. Race is used only to check which scholarships you can apply for. Halal and prayer ticks are used only to describe campus life for you.\n• Who handles it: only us. We use Google (Forms, Sheets) to collect answers and AI tools to help with research; these services may store or process data on servers outside Malaysia. We never sell your data, and we never share it with universities, agents or anyone else without asking you first. \n• How long we keep it: until 3 months after we last work with you, then we delete it.\n• Your rights: you can ask to see, correct or delete your data, or withdraw your consent, any time by emailing evannsnv@gmail.com. If you withdraw, we stop working on your record and delete it.\n• Do you have to? Ticking the box is required to use the service. If you don't tick it, we can't research for you and your answers won't be used.\n• Under 18? Please make sure a parent or guardian knows about and agrees to this.\nSebelum anda hantar, ini cara kami mengendalikan jawapan anda, seperti yang dikehendaki oleh Akta Perlindungan Data Peribadi 2010.\n• Siapa kami: Shortlisted, dikendalikan oleh Evan Yeoh, Malaysia. Hubungi: evannsnv@gmail.com\n• Apa yang kami kumpul: semua jawapan dalam borang ini: emel, nama penuh, kaum, gred, ujian bahasa Inggeris, julat bajet, pilihan kursus dan negara, keutamaan dan pilihan anda (termasuk makanan halal atau kemudahan solat jika anda tandakan), dan apa-apa yang anda tulis dalam ruangan pilihan.\n• Mengapa: untuk mencari universiti dan kursus untuk anda, menyediakan laporan anda, dan menghubungi anda mengenainya. Kaum digunakan hanya untuk menyemak biasiswa yang layak anda mohon. Pilihan halal dan solat digunakan hanya untuk menerangkan kehidupan kampus kepada anda.\n• Siapa yang mengendalikannya: hanya kami. Kami menggunakan Google (Forms, Sheets) untuk mengumpul jawapan dan alat AI untuk membantu penyelidikan; perkhidmatan ini mungkin menyimpan atau memproses data di pelayan luar Malaysia. Kami tidak akan menjual data anda, dan tidak akan berkongsinya dengan universiti, ejen atau sesiapa pun tanpa bertanya kepada anda dahulu.\n• Tempoh simpanan: sehingga 3 bulan selepas kali terakhir kami berurusan dengan anda, kemudian kami padamkannya.\n• Hak anda: anda boleh meminta untuk melihat, membetulkan atau memadam data anda, atau menarik balik persetujuan, pada bila-bila masa dengan menghantar emel ke evannsnv@gmail.com. Jika anda menarik balik, kami akan berhenti dan memadam rekod anda.\n• Wajibkah? Kotak ini wajib ditanda untuk menggunakan perkhidmatan ini. Jika tidak ditanda, kami tidak dapat membuat penyelidikan untuk anda dan jawapan anda tidak akan digunakan.\n• Bawah 18 tahun? Sila pastikan ibu bapa atau penjaga anda tahu dan bersetuju.",
       "required": true,
       "options": [
         "I agree to Shortlisted collecting and using my answers as described above, including my race and any halal or prayer preferences. / Saya bersetuju Shortlisted mengumpul dan menggunakan jawapan saya seperti yang diterangkan di atas, termasuk kaum saya dan apa-apa pilihan halal atau solat."
       ],
       "other": false
+    },
+    {
+      "title": "Disclaimer",
+      "type": "PAGE_BREAK",
+      "description": "\nPlease note: our reports are research to help you decide, not a guarantee of admission or funding. Fees, entry requirements and deadlines can change, so always confirm them on the university's official website before you apply. We are not a university or an official education agent."
     }
   ]
 }

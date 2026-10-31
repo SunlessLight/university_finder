@@ -297,18 +297,9 @@ def check_structure(sections, mode, ambiguous):
 # A --quick report (workflows/quick_university_report.md) omits both by design — there is no
 # grade margin to compute admission_likelihood from, and no priorities to rank.
 QUICK_OMITTED_ROWS = {"Admission likelihood", "Your priorities"}
-# A report order (report form, no list) has grades, so it keeps admission_likelihood, but the
-# form never asks for priorities.
-REPORT_ORDER_OMITTED_ROWS = {"Your priorities"}
 
 
-def is_report_order(md_path):
-    """True for a report in a student folder that has no master_list.csv."""
-    student_dir = md_path.parent.parent
-    return (student_dir / "profile.json").exists() and not (student_dir / "master_list.csv").exists()
-
-
-def check_snapshot(sections, mode, quick=False, report_order=False):
+def check_snapshot(sections, mode, quick=False):
     """Every Snapshot fact row present and filled.
 
     _fact_table() silently SKIPS a field whose value is empty, so a missing row is the only
@@ -318,7 +309,7 @@ def check_snapshot(sections, mode, quick=False, report_order=False):
 
     quick=True drops QUICK_OMITTED_ROWS from the required set — a standalone report has no
     student profile to compute either from, so their absence is correct, not a finding.
-    report_order=True drops REPORT_ORDER_OMITTED_ROWS the same way.
+    A report order (report form, no list) needs both: the form asks grades and the importance grid.
     """
     body = find_section(sections, "Snapshot")
     if body is None:
@@ -335,8 +326,6 @@ def check_snapshot(sections, mode, quick=False, report_order=False):
         wanted = SNAPSHOT_ROWS[mode]
     if quick:
         wanted = [label for label in wanted if label not in QUICK_OMITTED_ROWS]
-    if report_order:
-        wanted = [label for label in wanted if label not in REPORT_ORDER_OMITTED_ROWS]
     for label in wanted:
         if label not in rows:
             out.append(f"Snapshot has no {label!r} row — the research JSON left that field empty")
@@ -580,7 +569,7 @@ def faith_allowed(md_path, slug=None):
 
 # --- Driver ----------------------------------------------------------------------------
 
-def run(text, wanted, student_name=None, quick=False, report_order=False, faith_ok=False):
+def run(text, wanted, student_name=None, quick=False, faith_ok=False):
     """(mode, {check: [findings]}) for one report's Markdown."""
     _, sections = parse_report(text)
     if not sections:
@@ -595,7 +584,7 @@ def run(text, wanted, student_name=None, quick=False, report_order=False, faith_
     if set(h for _, h, _ in sections) != set(expected_headings(mode)):
         return mode, results
     if "snapshot" in wanted:
-        results["snapshot"] = check_snapshot(sections, mode, quick=quick, report_order=report_order)
+        results["snapshot"] = check_snapshot(sections, mode, quick=quick)
     if "notfound" in wanted:
         results["notfound"] = check_notfound(sections, mode)
     if "sources" in wanted:
@@ -632,7 +621,7 @@ def check_one(md_path, wanted, slug, limit, quick=False):
     """Lint one report, print its block, return the finding count."""
     text = md_path.read_text(encoding="utf-8")
     name = student_name_for(md_path, slug)
-    mode, results = run(text, wanted, student_name=name, quick=quick, report_order=is_report_order(md_path),
+    mode, results = run(text, wanted, student_name=name, quick=quick,
                         faith_ok=faith_allowed(md_path, slug))
 
     total = sum(len(v) for v in results.values())

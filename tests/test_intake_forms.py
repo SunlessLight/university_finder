@@ -12,7 +12,10 @@ What these pin down:
   - a report-form row makes a small folder with report_orders, and only ever ADDS an order to a
     folder that exists (data/students/ has no undo);
   - the report form's budget, race and preference answers reach the folder, the exact ticks are
-    kept, and "Muslim Facilities/Halal Food" opens both the halal and the prayer flag.
+    kept, and "Muslim Facilities/Halal Food" opens both the halal and the prayer flag;
+  - two ticks on one row of the importance grid count as the higher one, with a review line, so no
+    priority goes missing;
+  - a list row never overwrites a folder that a report order made, even with --force.
 
 Student files are written to a temporary folder only.
 
@@ -35,6 +38,7 @@ TOOLS = ROOT / "tools"
 sys.path.insert(0, str(TOOLS))
 
 import fetch_form_questions as questions  # noqa: E402
+import fetch_form_responses as responses  # noqa: E402
 import ingest_form_csv as ingest  # noqa: E402
 
 GRID = "Select the grades for your subjects based on the option you chose above.  "
@@ -55,6 +59,10 @@ COURSE = "Choose your desired course"
 RACE = "Race ( For checking government scholarship eligibility )"
 LOCATION = "Location preferences"
 OTHER_PREFS = "Any other perferences? "
+TICK = "Tick the importance of each topic below\nWill be used to score each university for you. "
+TICKS = [f"{TICK} [{row}]" for row in (
+    "Affordable Cost", "Scholarship availability", "University Ranking", "Course Ranking",
+    "Employability", "Recognition back home", "Location", "Hands-On Experience")]
 
 # The live sheet's layout: deleted questions keep their columns, new ones sit further right.
 SHEET_HEADERS = [
@@ -97,6 +105,47 @@ def new_row(**extra):
             GRADES: "Physics A-, Maths B+", NEW_MONTH: "June", NEW_STATUS: "Forecast Grades",
             COURSE: "Economics — markets, public policy, econometrics", "Chose your countries": "UK",
             BUDGET: "100,000", NEW_CONSENT: AGREE, **extra}
+
+
+class ListFormIdReachesTheScript(unittest.TestCase):
+    """pending and confirm send the form's ID, so the script follows it to the linked sheet."""
+
+    def test_pending_sends_the_form_id(self):
+        payload = {"headers": [], "rows": [], "row_numbers": []}
+        with mock.patch.dict("os.environ", {responses.LIST_FORM_ENV: "form123"}), \
+                mock.patch.object(responses, "call_endpoint", return_value=payload) as call:
+            responses.fetch_pending("url", "token")
+        self.assertEqual(call.call_args.args[2:], ("pending", {"form": "form123"}))
+
+    def test_no_id_sends_no_form(self):
+        with mock.patch.dict("os.environ", {responses.LIST_FORM_ENV: ""}):
+            self.assertEqual(responses.list_form_param(), {})
+
+    def test_the_setting_has_one_name(self):
+        self.assertEqual(questions.FORMS["intake"], "FORM_ID_LIST_INTAKE")
+
+
+class ImportanceTicks(unittest.TestCase):
+    def ticked(self, ranking):
+        cells = {header: "Important" for header in TICKS}
+        cells[f"{TICK} [University Ranking]"] = ranking
+        return mapped(new_row(**cells), headers=SHEET_HEADERS + TICKS)
+
+    def test_two_ticks_on_a_row_count_as_the_higher_one(self):
+        _profile, prefs, _review, _skip = self.ticked("Must have, Important")
+        self.assertEqual(prefs["priority_levels"]["ranking"], 3)
+        self.assertEqual(len(prefs["priority_levels"]), 8)
+        self.assertEqual(prefs["priorities"][0], "ranking")
+        self.assertEqual(len(prefs["priorities"]), 8)
+
+    def test_two_ticks_raise_a_review_line(self):
+        _profile, _prefs, review, _skip = self.ticked("Must have, Important")
+        self.assertTrue(any("ranking" in line and "more than one" in line for line in review))
+
+    def test_one_tick_raises_no_review_line(self):
+        _profile, prefs, review, _skip = self.ticked("Must have")
+        self.assertEqual(prefs["priority_levels"]["ranking"], 3)
+        self.assertFalse(any("more than one" in line for line in review))
 
 
 class OldFormRows(unittest.TestCase):
@@ -190,10 +239,10 @@ class ReportFormRows(unittest.TestCase):
         patcher.start()
         self.addCleanup(patcher.stop)
 
-    def run_ingest(self, rows, *flags):
+    def run_ingest(self, rows, *flags, headers=REPORT_HEADERS):
         path = self.students.parent / "report.csv"
         with path.open("w", newline="", encoding="utf-8") as fh:
-            writer = csv.DictWriter(fh, fieldnames=REPORT_HEADERS)
+            writer = csv.DictWriter(fh, fieldnames=headers)
             writer.writeheader()
             writer.writerows(rows)
         out = io.StringIO()
@@ -203,6 +252,27 @@ class ReportFormRows(unittest.TestCase):
 
     def read(self, slug, name="profile.json"):
         return json.loads((self.students / slug / name).read_text(encoding="utf-8"))
+
+    def test_the_importance_grid_reaches_preferences(self):
+        cells = {header: "Important" for header in TICKS}
+        self.run_ingest([report_row(**cells)], headers=REPORT_HEADERS + TICKS)
+        prefs = self.read("report-buyer", "preferences.json")
+        self.assertEqual(len(prefs["priorities"]), 8)
+        self.assertEqual(len(prefs["priority_levels"]), 8)
+
+    def test_a_list_row_never_replaces_a_report_order_folder(self):
+        self.run_ingest([report_row()])
+        same_buyer = new_row(**{"Email Address": "buyer@b.com", "Full Name (As in IC)": "Report Buyer"})
+        for flags in ((), ("--force",)):
+            printed = self.run_ingest([same_buyer], *flags, headers=SHEET_HEADERS)
+            self.assertIn("report order", printed)
+            self.assertNotIn("use --force", printed)
+            self.assertEqual(len(self.read("report-buyer")["report_orders"]), 1)
+
+    def test_a_list_folder_still_refuses_a_second_list_row_as_before(self):
+        self.run_ingest([new_row()], headers=SHEET_HEADERS)
+        printed = self.run_ingest([new_row()], headers=SHEET_HEADERS)
+        self.assertIn("use --force", printed)
 
     def test_row_creates_a_small_folder_with_the_order(self):
         self.run_ingest([report_row()])
@@ -327,6 +397,14 @@ class ReportFormCheck(unittest.TestCase):
         code, _printed = self.check(self.form(option="I agree, including my race."))
         self.assertEqual(code, 0)
 
+    def test_a_grid_that_allows_two_ticks_per_row_is_named(self):
+        for grid_type, warned in (("CHECKBOX_GRID", True), ("GRID", False)):
+            form = self.form()
+            form["items"].append({"title": TICK, "type": grid_type, "columns": ["Must have"]})
+            code, printed = self.check(form)
+            self.assertEqual(code, 0)
+            self.assertEqual("Multiple choice grid" in printed, warned)
+
 
 class LiveFormTitles(unittest.TestCase):
     """Reads the tracked forms/*.json, so a form edit that breaks a match fails here."""
@@ -351,8 +429,17 @@ class LiveFormTitles(unittest.TestCase):
         index = ingest.build_col_index(self.titles("report_intake"))
         for key in ("consent", "name", "report_university", "report_question", "specific_courses",
                     "program_type", "grade_status", "secondary_qualification", "intake",
-                    "english_test", "english_score", "lesson_language", "achievements_text"):
+                    "english_test", "english_score", "lesson_language", "achievements_text",
+                    "grades_raw", "ethnicity", "total_budget", "location_prefs", "needs"):
             self.assertIn(key, index)
+
+    def test_every_report_form_question_goes_somewhere(self):
+        headers = self.titles("report_intake")
+        known = set(ingest.build_col_index(headers).values()) | set(ingest._slider_columns(headers).values())
+        self.assertEqual([h for h in headers if h not in known], [])
+
+    def test_report_form_asks_all_eight_priorities(self):
+        self.assertEqual(len(ingest._slider_columns(self.titles("report_intake"))), 8)
 
 
 if __name__ == "__main__":

@@ -51,7 +51,7 @@ entirely: no `profile.json`, no `preferences.json`, no `master_list.csv` row, no
 
 The student bought one report on the report form: a small folder, with no master list. Read
 `profile.json` (including `report_orders`; your order names the university, course and
-`question`) and `preferences.json`, but expect countries and priorities to be blank.
+`question`) and `preferences.json`, but expect countries to be blank.
 
 - **Keep the fit.** Write the fit halves of `who_its_for`, `getting_in` and `why_here` against
   this student's grades, English, secondary qualification, achievements, budget and preferences,
@@ -59,13 +59,15 @@ The student bought one report on the report form: a small folder, with no master
   `workflows/04_university_report.md`. Compare grades to the bar published for their
   `current_program.type`; if none is published, say `Not published` and never convert to
   A-Level equivalents by guesswork.
-- **Leave out `priorities`** (the key, not an empty string). Say nothing about what they rank
-  highly: this form didn't ask, so `why_here` weighs their budget and ticks instead.
+- **Fill `priorities` from `preferences.priority_levels`, grouped by level** (e.g.
+  `Must have: Cost, Scholarships · Important: Ranking, Jobs`), not as 1, 2, 3: equal ticks are ties,
+  and `preferences.priorities` only orders them by form position. `why_here` weighs these with the
+  budget and ticks.
 - **Answer the student's `question` inside the report**, in the section it belongs to. If it
   fits none, put it in `why_here`.
 - **No `corrections` object, no flip.** `build_report.py --student <slug>` sees there is no
-  master list and stops after the report, with no finalist marker. `check_report.py` drops the
-  `Your priorities` row for the same reason. Lint and export the PDF as a normal dispatch.
+  master list and stops after the report, with no finalist marker. Lint and export the PDF as a
+  normal dispatch.
 - **Grades must be tidied first.** If `subjects[]` is empty or `_needs_review` is still on the
   profile, stop and say so; Stage 1 finalize comes first.
 

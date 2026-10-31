@@ -5,7 +5,7 @@ done, delete it and its line in the steps below, and write one line in `plans/bu
 History: the full file up to 2026-10-28 (every closed entry, the old lane and round plans) is in
 git: `git show 10b847c:business/additionals.md`. Decisions are in `decisions/log.md`.*
 
-*Adding an entry: the next number is **R43**. Say whether it is **urgent**, and whether it is a
+*Adding an entry: the next number is **R44**. Say whether it is **urgent**, and whether it is a
 **tool gap** (the system will keep making the mistake) or **stale data** (old files only). Plain
 English, no student named, no grades, income or school. Then add it to a step below.*
 
@@ -38,6 +38,8 @@ English, no student named, no grades, income or school. Then add it to a step be
 | **10** | R30 part b, R35 (glossary facts, calendar, apply guide) | `tools/apply_glossary.py`, `tools/build_calendar.py`, `tools/build_application_prep.py`, `.claude/skills/application-guide/SKILL.md`, `workflows/05_decide_and_apply.md`, `workflows/08_application_prep.md` | step 2b (same glossary file) | Medium |
 
 **Not a session** (Evan's own, a reply someone owes, or a measurement): I3, I4, R9, R11, N1 / U4 / V2, V3, R41, **R26 and R37 (before 10 Nov)**.
+
+**Waiting on a real case:** R43 (a buyer of both, report form first).
 
 **The fact audit (2026-10-28)** is behind R26–R37: [fact_audit/00_START_HERE.md](../fact_audit/00_START_HERE.md),
 with nine detailed reports beside it. Each entry names its report and finding numbers (e.g. "03 #16").
@@ -170,7 +172,6 @@ with nine detailed reports beside it. Each entry names its report and finding nu
 - **Related:** R16 repairs old US rows (the 174 non-US rows stay out of scope). O13 in
   `plans/discussions.md` is the MQA government-job lookup, a separate and smaller check.
 
-
 #### R39. Topics a student ticks the same are ranked by the form's question order
 
 - **Added 2026-10-29 (Evan).** **Tool gap, urgent:** every list scored from the tick form is
@@ -299,6 +300,14 @@ with nine detailed reports beside it. Each entry names its report and finding nu
 ---
 
 ## After 10 Nov: system changes
+
+#### R43. A buyer of both who fills the report form first needs a hand merge
+
+- **Added 2026-10-30. Tool gap, not urgent.** `ingest_form_csv.py` now skips that list row safely
+  instead of advising `--force`, which wipes the order. The list answers are copied in by hand
+  (`workflows/01_intake.md`, "The report form").
+- **Build it only if it happens more than once:** a merge that adds list answers to the folder and
+  keeps `report_orders` and any tidied `subjects[]`.
 
 #### L5. A row is labelled as a whole, so one missing fact shows "Not verified" on everything
 

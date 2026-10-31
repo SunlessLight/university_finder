@@ -44,6 +44,12 @@ ticks are kept in preferences.other_preferences, because the needs flags lose th
 "Summer Weather" and "4 seasons" are one climate_weather). "muslim" now opens worship_facilities:
 the live tick is "Muslim Facilities/Halal Food", and a report only mentions what was ticked.
 
+Changed 2026-10-30 (plans/intake_forms_plan.md T6). Evan's test answer ticked two levels on one row of
+the importance grid ("Must have, Important"). That text matched nothing, so Ranking silently left
+priorities, and derive_weights.py refuses a list missing a token. The higher tick now counts, with a
+_needs_review line. A list row also can't replace a folder a report order made: the report-first order
+used to end in "use --force", which wipes the order.
+
 Columns are matched by a distinctive SUBSTRING of each question title (case-insensitive).
 QUESTION_MAP below is the single source of truth for the column<->field wiring; keep it in step
 with the form spec in workflows/01_intake.md. A reworded question can still drop the match
@@ -1034,6 +1040,12 @@ def map_row(row, col_index, slider_cols=None, subject_cols=None, grid_cols=None,
     prefs["priorities"] = _build_priorities_from_sliders(row, slider_cols) or _build_priorities(row, col_index)
     # The tick points themselves (derive_weights.py weights from these when present).
     prefs["priority_levels"] = _build_priority_levels(row, slider_cols)
+    double_ticks = [token for token, header in slider_cols.items() if "," in _clean(row.get(header))]
+    if double_ticks:
+        needs_review.append(
+            f"ticked more than one importance level for {', '.join(double_ticks)} — the highest was "
+            f"used; confirm with the student if it matters"
+        )
 
     ranking_importance = get(row, col_index, "ranking_importance") or None
     if not ranking_importance and "ranking" in slider_cols:
@@ -1214,6 +1226,16 @@ def _slider_columns(fieldnames):
     return cols
 
 
+def _tick_points(raw):
+    """Points for one importance-grid answer, or None if no tick is readable.
+
+    The grid can be a checkbox grid, which lets a student tick two levels on one row; Forms joins
+    them with ", ". The higher one counts, so no priority drops out of the list.
+    """
+    points = [TICK_IMPORTANCE_NORMALIZE.get(part.strip().lower()) for part in raw.split(",")]
+    return max((p for p in points if p is not None), default=None)
+
+
 def _build_priorities_from_sliders(row, slider_cols):
     """Order the priority tokens by importance (desc), tie-broken by CANONICAL_SLIDER_ORDER.
 
@@ -1228,7 +1250,7 @@ def _build_priorities_from_sliders(row, slider_cols):
         try:
             value = float(raw)
         except (TypeError, ValueError):
-            value = TICK_IMPORTANCE_NORMALIZE.get(raw.lower())
+            value = _tick_points(raw)
             if value is None:
                 continue
         tie = CANONICAL_SLIDER_ORDER.index(token) if token in CANONICAL_SLIDER_ORDER else len(CANONICAL_SLIDER_ORDER)
@@ -1255,7 +1277,7 @@ def _build_priority_levels(row, slider_cols):
             return None
         except ValueError:
             pass
-        points = TICK_IMPORTANCE_NORMALIZE.get(raw.lower())
+        points = _tick_points(raw)
         if points is not None:
             levels[token] = points
     return levels or None
@@ -1435,6 +1457,24 @@ def _report_order_home(slug, email_key, emails_on_disk):
     return slug, None
 
 
+def _report_order_folder(slug, email_key, emails_on_disk):
+    """The folder a report order made for this buyer, or None.
+
+    That means a folder holding an order but no list answers. A buyer of both who fills the report
+    form first lands here, and --force would wipe the order, so their list row is added by hand.
+    """
+    home = emails_on_disk.get(email_key) if email_key else None
+    home = home or slug
+    profile_path = STUDENTS_DIR / home / "profile.json"
+    prefs_path = STUDENTS_DIR / home / "preferences.json"
+    if not profile_path.exists():
+        return None
+    if not json.loads(profile_path.read_text(encoding="utf-8")).get("report_orders"):
+        return None
+    prefs = json.loads(prefs_path.read_text(encoding="utf-8")) if prefs_path.exists() else {}
+    return None if prefs.get("target_countries") else home
+
+
 def _add_report_order(home, order, dry_run):
     """Append one order to an existing profile.json, touching nothing else.
 
@@ -1537,6 +1577,13 @@ def main():
                 continue
             if email_key:
                 emails_on_disk[email_key] = slug
+        else:
+            order_folder = _report_order_folder(slug, _normalize_email(profile.get("contact_email")), emails_on_disk)
+            if order_folder:
+                skipped.append((i, profile["name"],
+                                f"'{order_folder}' came from a report order; add this list row by hand "
+                                f"(see workflows/01_intake.md), --force would wipe the order"))
+                continue
 
         student_dir = STUDENTS_DIR / slug
         if slug in seen_slugs:

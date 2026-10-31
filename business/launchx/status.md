@@ -103,11 +103,14 @@ it into a new deck rather than editing the 24 Oct one.
       (A4 price sign, printed sample, booth kit). (Notion tasks)
 - [x] 30 Oct: split the intake into a list form and a report form; the grade grid is now one text
       box for every programme (`plans/intake_forms_plan.md`). Scripts done and tested.
-- [ ] Before 10 Nov, fix the report form: add the grades, race, budget, location and other-preferences
-      questions, trim its consent notice, link it to a sheet, add its ID to `.env`, submit one test
-      answer on each form. Then tell Claude "T6". Steps: plan's "Evan's fix list".
-- [ ] After T6: send the list form link to list buyers and the report form link to report buyers,
-      including the 2 who already paid for a report.
+- [x] 30 Oct: report form finished and both forms checked against the scripts (T6).
+- [x] 30 Oct: both forms finished: Multiple choice grids, consent notices, result year, test rows
+      deleted, list form on a new sheet.
+- [ ] Before 10 Nov, finish the setup: the list form's ID in `.env`, paste the new `Code.gs` and
+      redeploy (same URL), one Malay notice word. Then tell Claude "recheck". Steps: plan's
+      "Evan's fix list".
+- [ ] After the recheck: send the list form link to list buyers and the report form link to report
+      buyers, including the 2 who already paid for a report.
 - [ ] **Tester chain, one after another** (Notion tasks):
   1. 28 Oct: list what to improve in the list and report from what testers actually read
      (Notion, Product Developing). Fixes done before 10 Nov, so the paid lists get them too.

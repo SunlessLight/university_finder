@@ -49,8 +49,8 @@ fine — but keep the substring in bold intact.
   - **The name question.** "Nickname" replaced "Full name" in 2026-08 (identity protection), and the
     live title went back to *"Full Name (As in IC)"* on 2026-10-30. `QUESTION_MAP` maps both onto the
     `name` logical key, so the slug path is the same. Older profiles hold nicknames, some
-    gamertag-style (`GwakGwak3000`); that's expected. Open: the consent notice still says "nickname"
-    (O10 in `plans/discussions.md`).
+    gamertag-style (`GwakGwak3000`); that's expected. Since 2026-10-30 both consent notices say full
+    name too.
   - **Age, Gender, Nationality, and "where you live in now" are gone (2026-08+), permanently.**
     None of them ever had a downstream read path — no tool, no agent prompt anywhere in the
     pipeline consumed them — so they were cut as pure friction. `profile_template()` no longer
@@ -76,23 +76,22 @@ fine — but keep the substring in bold intact.
   `PROGRAM_NORMALIZE` (an "Other" answer stays verbatim). A blank keeps the `"A-Level"` default, so
   rows from before this question are unchanged. `build_list_pdf.py` prints it; `check_grades.py`
   picks its scale from it; row-fillers compare against the bar published for it.
-- **What month does your actual result come out?** January to December (reworded 2026-10-30, when
-  the old year question was turned into this one, so **the form no longer asks the year**: O11 in
-  `plans/discussions.md`). A month with no year is kept verbatim and raises a `_needs_review` line. If
-  a year column ever comes back, `map_row()` concatenates the two before `_normalize_month_year`
-  (`YYYY-MM`). An answer it can't read is kept verbatim, never guessed. On the old rows, the year sits
-  in the column now headed "What month…" (the month is in the column to its left).
+- **What month does your actual result come out?** January to December, and **What year does your
+  actual results come out?** 2026 / 2027 / 2028 (both forms; the year came back 2026-10-30).
+  `map_row()` concatenates the two before `_normalize_month_year` (`YYYY-MM`). A month with no year
+  is kept verbatim and raises a `_needs_review` line. An answer it can't read is kept verbatim, never guessed. On the old rows, the year sits
+  in the column now headed "What month…" of the old spreadsheet (see "Edge cases" below).
 - **Subjects & grades: one free-text box (2026-10-30; replaces the grade grid for everyone).** *"Type
   you subject and grades (eg. physic A, Chemistry B, etc)"* (sic; `QUESTION_MAP` also matches the
   tidied wording) → `_intake_raw.grades`. AI tidies it at finalize and `check_grades.py` checks the
-  tidy-up (step 1 of "Finalize"). Older rows still carry the grid columns, which
-  `_subject_grid_columns()` / `_build_subjects_from_grid()` read as before; the student's own
+  tidy-up (step 1 of "Finalize"). The report form's box is worded *"List down the subject and grades
+  (eg Physic A, Chemistry B, etc)"*. An export that still has the old grid columns goes through
+  `_subject_grid_columns()` / `_build_subjects_from_grid()` as before; the student's own
   `grade_status` question then sets the status.
 - **what are you applying with?** (Forecast Grades / Actual Grades) → `grade_status` `predicted` /
   `actual`. *(Older wording: "Are you applying with forecast result or actual?")*
 - **English proficiency — two SEPARATE questions now, watch the substring collision.** **"English Test
-  Taken"** (IELTS / TOEFL / MUET / PTE / Duolingo / **None** / Other) and, positioned much later on the
-  form (near the optional/free-text cluster, not adjacent to the test question), **"If English test
+  Taken"** (IELTS / TOEFL / Cambridge English Test / **None** / Other) and **"If English test
   taken, what's the score? ( leave blank if haven't )"**. The second header's text literally *contains*
   the first header's matching substring (`"english test taken"`), so `QUESTION_MAP`'s entry for
   `english_score` (`"what's the score"`) **must be listed before** the entry for `english_test`
@@ -145,8 +144,12 @@ fine — but keep the substring in bold intact.
   need". **Since 2026-10-30:** the live tick is one option, "Muslim Facilities/Halal Food", and it sets
   both flags (`NEEDS_NORMALIZE` "muslim"). A report mentions halal or prayer only when one is set
   (`04_university_report.md`), so a miss here hides it. The exact ticks are kept in
-  `preferences.other_preferences`, because `needs` merges them. **Still not on the form:** Stay close to family, disability/accessibility,
-  mental-health/wellbeing support, LGBT-friendly — their `needs` keys stay `null` = "not asked".
+  `preferences.other_preferences`, because `needs` merges them. **The live ticks (2026-10-30, both
+  forms):** Stay close to family / Low crime rate / Malaysian Community nearby / Cold Weather / Summer
+  Weather / 4 seasons / Good public transport / Affordable living cost / Muslim Facilities/Halal Food,
+  plus Other. "Good food" is no longer an option. **Still not on the form:**
+  disability/accessibility, mental-health/wellbeing support, LGBT-friendly — their `needs` keys stay
+  `null` = "not asked".
 - **Lesson-language question (added to the live form 2026-10-25, backlog S9):** "What language were
   most of your lessons (maths, science, etc.) taught in? Not your English class." Six options, from
   "English, all through secondary school and pre-university" to "Not sure", plus Other (labels:
@@ -209,31 +212,36 @@ fine — but keep the substring in bold intact.
   genuine supplement (`_split_free_list()`), so a student can name interests beyond their chosen course.
 
   This selection still sets `interest_discovery.decided = true`, same as before.
-- **"When do you want to start" is gone from the form (2026-08+), permanently.** The reasoning: the
+- **"When do you want to start" is gone from the list form (2026-08+), permanently** (the report form
+  asks "Which year do you want to start?"). The reasoning: the
   student should decide their intake based on the university research, not the other way around.
   `preferences.intake` therefore always resolves to the literal string **`"Flexible"`** (never `null`)
   via `_normalize_intake()`'s blank-input default — this is intentional, not a gap. *(No separate
   "degree level" question → the tool defaults `degree_level` to `"undergraduate"` automatically, 2026-08-29+;
   see item 6 below.)*
-- **"Tick the importance of each topic below"** — **eight per-category questions, a 3-tier scale now
-  (replaced the 1-8 numeric sliders 2026-09)**: **Must have** / **Important** / **Nice to have**, one
+- **"Tick the importance of each topic below"** (both forms) — **eight per-category questions, a
+  4-level scale now (replaced the 1-8 numeric sliders 2026-09)**: **Must have** / **Important** /
+  **Nice to have** / **Doesn't matter**, one
   each for: **Affordable Cost / Scholarship availability / University Ranking / Course Ranking /
   Employability / Recognition back home / Location / Hands-On Experience** (category wording also
   lightly reworded — e.g. "Cost"→"Affordable Cost" — but the substrings `QUESTION_MAP` matches on
   still hit). The tool detects them by the shared *"tick the importance"* marker (the legacy *"rank
   your priorities"* marker still works too, so an older export still parses) + the bracketed category,
-  normalises the tier to a number via `TICK_IMPORTANCE_NORMALIZE` (3/2/1), then orders the categories
-  by that value (highest first, ties broken by the form's column order) into `preferences.priorities` —
-  same ordering logic as the old numeric sliders, just fed a 3-tier value instead of a 1-8 one. This
-  still gives a full 8-way ranking including **Course Ranking** (`course_quality` → `course_match`).
+  normalises the tier to a number via `TICK_IMPORTANCE_NORMALIZE` (3/2/1/0), keeps it in
+  `preferences.priority_levels`, then orders the categories
+  by that value (highest first, ties broken by the form's column order) into `preferences.priorities`.
+  This still gives a full 8-way ranking including **Course Ranking** (`course_quality` → `course_match`).
+  **It must stay a Multiple choice grid** (one tick per row, since 2026-10-30). A checkbox grid
+  lets a student tick two levels on one row ("Must have, Important"); the higher one then counts, with
+  a `_needs_review` line, because a missing token stops `derive_weights.py`. `--check` flags that.
   *(Legacy forms with **#1/#2/#3 priority** dropdowns still work — the tool falls back automatically
   when neither marker is present.)*
 - **`ranking_importance`** is kept for reference only. It holds the **[University Ranking]** tick
   answer verbatim — a **3-tier label** on the current form ("Must have" / "Important" / "Nice to
   have"), a **1-8** number on older records — or the answer to a dedicated *"how much does your
-  subject's strength matter"* question if the form has one. Since 2026-09-17 nothing in scoring reads
-  it: `tools/derive_weights.py` builds `weights.json` from the full ordering in
-  `preferences.priorities` alone, so there is no scale to check before deriving weights.
+  subject's strength matter"* question if the form has one. Nothing in scoring reads it:
+  `tools/derive_weights.py` builds `weights.json` from `preferences.priority_levels`, or from the
+  `preferences.priorities` order on profiles from before the tick points.
 - Do you want to **work abroad** after graduating — Yes / No / Unsure. → `intent_to_migrate` (and the
   raw answer into `post_study_work_importance`).
 - **Dealbreakers is gone from the live form (2026-09), permanently.** It used to be its own optional
@@ -305,10 +313,9 @@ Four commands, in this order. Steps 1-3 are safe to repeat; step 4 is the one th
      whole run, so prefer fixing the row. The guard separately catches two rows sharing an email
      **inside one CSV**; `--force` does *not* override that one (same as the duplicate-slug check —
      the second row would clobber a folder the same run just wrote).
-   - **Testing the form with your own email now trips this.** `tofu` and `zephry` both carry
-     Evan's address, so a third test submission from it is reported as a re-submission of `tofu`.
-     Use a plus-address (`you+test3@gmail.com`) for test rows — Gmail delivers it to the same inbox
-     but it is a distinct identity to the guard.
+   - **Testing the form with your own email can trip this.** A list row and a report row from one
+     address count as one buyer. Use a plus-address (`you+test3@gmail.com`) for test rows — Gmail
+     delivers it to the same inbox but it is a distinct identity to the guard.
    - `--assume-consent` — **internal-only escape hatch.** If the form has no consent question (e.g. a
      friends-only test intake where the formal checkbox was dropped as too heavy), this treats a
      blank/absent consent as consent given so the row isn't skipped. It does **not** relax an explicit
@@ -334,6 +341,12 @@ Four commands, in this order. Steps 1-3 are safe to repeat; step 4 is the one th
 
 ### Edge cases
 
+- **Old answers live in the old spreadsheet (2026-10-31).** The list form now writes to "List Intake
+  Form (Responses)", which started empty. The 10 rows from before 30 Oct stay in "List Intake
+  (Responses)", tab `Form Responses 1`, with their grades, consent and `Ingested at` stamps. That file
+  also holds the Apps Script, so never delete it. The tools find a form's sheet through
+  `FORM_ID_LIST_INTAKE`, so re-linking a form moves nothing. That value is the form's ID: a
+  spreadsheet's ID gives `Invalid ID`.
 - **Never sort the responses sheet by hand.** Row identity is the sheet row number, which only holds
   because Forms *appends* responses and never reorders them. A `Data → Sort range` would make `_row`
   in an already-fetched CSV point at the wrong respondent, and `--confirm` would stamp the wrong rows.
@@ -363,12 +376,16 @@ python tools/ingest_form_csv.py "data/form/report_answers.csv"
   `--force`. The folder is found by email, then by name if the email agrees. A same-name folder with a
   different email is skipped and named in the summary; settle it by hand. Re-reading the same answers
   adds nothing, so the whole CSV is safe to re-run.
-- The form also asks budget, race and preferences (added 2026-10-30, so the report can compare cost
-  with their limit, say which funds they can apply for, and write to their ticks). Unlike the list
-  form it has no importance grid and no countries.
-- New folders have blank countries and priorities by design. Finalize the grades as step 1
+- The form also asks budget, race, preferences and the importance grid (2026-10-30, so the report can
+  compare cost with their limit, say which funds they can apply for, and write to their ticks and
+  priorities). Unlike the list form it has no countries and no "Is scholarship a must?".
+- New folders have blank countries by design. Finalize the grades as step 1
   below; the other steps mostly have nothing to do. Then dispatch `report-writer` with the slug (the
   "Report order" section of `.claude/agents/report-writer.md`), one per order.
+- **A buyer of both who fills the report form first:** the list row is skipped, because `--force`
+  would wipe the order. Copy the list answers in by hand: run that row alone through a temporary
+  folder, then copy its `preferences.json` fields and missing profile fields across, keeping
+  `report_orders` and any tidied `subjects[]`. List form first needs nothing special.
 - `progress_dashboard.py` shows these students as **Report order**, not stuck at Stage 1.
 
 ## Finalize each student (the judgment layer — this is your job, not the tool's)

@@ -109,12 +109,16 @@ responses sheet. Whenever `Code.gs` changes:
 4. Add each form's ID to `.env`, taken from its **edit** address `docs.google.com/forms/d/<ID>/edit`
    (not the Send link `forms/d/e/1FAIpQL.../viewform`, which is a different code and won't work):
    ```
-   FORM_ID_INTAKE=              # optional: blank = the form linked to the responses sheet
+   FORM_ID_LIST_INTAKE=...      # the list form: the FORM's ID, never a spreadsheet's
    FORM_ID_REPORT_INTAKE=...    # the report form; it also needs Responses tab -> Link to Sheets
    FORM_ID_REPORT_FEEDBACK=...
    FORM_ID_SPREADSHEET_FEEDBACK=...
    FORM_ID_SURVEY=...
    ```
+
+**The script lives in the old sheet, "List Intake (Responses)". Never delete that file**: it runs
+every form tool, and it holds the 10 students' answers from before 30 Oct. The tools find each form's
+sheet from its ID, so linking a form to a new sheet needs no script change and no new URL.
 
 ## Run
 

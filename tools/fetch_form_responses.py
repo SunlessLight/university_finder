@@ -34,8 +34,10 @@ substring against QUESTION_MAP, and neither name matches anything. That is why
 that tool needs no changes and the manual-export path still works as a fallback.
 
 Requires in .env (see README, "Setup (first time)"):
-    FORM_WEBAPP_URL    the Apps Script web app /exec URL
-    FORM_WEBAPP_TOKEN  the shared secret, same value as the FORM_TOKEN script property
+    FORM_WEBAPP_URL      the Apps Script web app /exec URL
+    FORM_WEBAPP_TOKEN    the shared secret, same value as the FORM_TOKEN script property
+    FORM_ID_LIST_INTAKE  the list form's ID (from its edit address, not the spreadsheet's). The
+                         script follows the form to its linked sheet, so re-linking moves nothing.
 
 data/form/ is gitignored (PII), same class as data/students/.
 """
@@ -67,6 +69,9 @@ ROW_COLUMN = "_row"
 # the contract are greppable together; Code.gs STRIPS this column from the
 # payload, so this tool never actually receives it.
 INGESTED_HEADER = "Ingested at"
+
+# The .env name of the list form's ID (renamed from FORM_ID_INTAKE 2026-10-31).
+LIST_FORM_ENV = "FORM_ID_LIST_INTAKE"
 
 # Apps Script deployed as "Anyone" answers with a 302 to googleusercontent.com.
 # urllib follows that fine for GET — which is exactly why Code.gs has no doPost().
@@ -174,9 +179,15 @@ def describe_rows(headers, rows, row_numbers):
         print(f"  row {row_num}: {' — '.join(bits) if bits else '(no name/email answered)'}")
 
 
+def list_form_param():
+    """{"form": <id>} so the script reads the list form's linked tab; {} if no ID is set."""
+    form_id = os.getenv(LIST_FORM_ENV, "").strip()
+    return {"form": form_id} if form_id else {}
+
+
 def fetch_pending(url, token):
     """Fetch the pending payload and sanity-check its shape before anything uses it."""
-    payload = call_endpoint(url, token, "pending")
+    payload = call_endpoint(url, token, "pending", list_form_param())
 
     if not isinstance(payload, dict):
         sys.exit(f"ERROR: expected a JSON object from the endpoint, got {type(payload).__name__}.")
@@ -268,7 +279,8 @@ def do_confirm(url, token):
     print(f"Confirming {len(row_numbers)} row(s) from {RESPONSES_CSV.relative_to(REPO_ROOT)}: "
           f"{', '.join(str(n) for n in row_numbers)}")
 
-    payload = call_endpoint(url, token, "confirm", {"rows": ",".join(str(n) for n in row_numbers)})
+    payload = call_endpoint(url, token, "confirm",
+                            {"rows": ",".join(str(n) for n in row_numbers), **list_form_param()})
     stamped = payload.get("stamped", []) if isinstance(payload, dict) else []
     skipped = payload.get("skipped", []) if isinstance(payload, dict) else []
 

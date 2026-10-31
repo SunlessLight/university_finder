@@ -32,13 +32,25 @@ Agreed with Evan on 30 Oct:
 both the old and new wording, so the switch is safe in either order. Only the checks at the end
 and the report form's ID need the real forms.
 
-## Where this stands (30 Oct, end of the build session)
+## Where this stands (30 Oct, after T6)
 
-- **Done and tested:** T1, T2, T3, T4, T5, T7 (72 tests pass). Old-form rows: all 10 real rows give
-  the same answers as before.
-- **T6, half done:** `REQUIRED_KEYS` and the report-form check are in. The list form's check is
-  clean. The report form's check fails on the first two items below, which is right.
-- **E1 was done before the code**, so the code follows the real forms, not the drafts below.
+- **Done and tested:** T1–T7, E1 (97 tests pass). `--check` passes on both live forms, and Evan's
+  test answer on each form lands in the right fields in a dry run. Nothing was written to
+  `data/students/`.
+- **Left, all Evan's:** the fix list below, then E2.
+
+**What T6 found:**
+- **The report form now has the importance grid.** Report orders use it: `priorities` is filled,
+  grouped by tick level, and `check_report.py` requires the row again. This reverses the "no
+  importance grid" line in the next paragraph.
+- **Two ticks on one grid row** ("Must have, Important") silently dropped that priority, and
+  `derive_weights.py` would then have stopped. The higher tick now counts, with a review line.
+  `--check` names the grid until it is a Multiple choice grid.
+- **The list form moved to a new, empty sheet on 30 Oct**, "List Intake Form (Responses)". Old answers
+  stay in "List Intake (Responses)", which also holds the Apps Script. `Code.gs` now follows the form
+  to its linked sheet, so `FORM_ID_LIST_INTAKE` must hold the form's ID, not a spreadsheet's.
+- **Buying both, report form first:** the list row was told to use `--force`, which wipes the order.
+  It's now skipped with the right advice. Merging is by hand (`01_intake.md`).
 
 **Changed 30 Oct, after Evan read this plan:** the report form now asks budget, race and preferences
 as well, and still has no importance grid. Its consent stays as it is, so the old fix "remove race
@@ -46,22 +58,27 @@ and halal from the consent" is cancelled. The report compares cost with the budg
 the student can apply for, and shows halal or prayer content only if ticked. Every student report
 opens with a "Your profile" table (never their race). `--check` lists the five missing questions.
 
-### Evan's fix list (report form unless it says otherwise)
+### Evan's fix list
 
-1. **Add 5 questions, copied from the list form with the exact same title and options:** the grades
-   question (B7), Race, the budget question, Location preferences, and "Any other perferences?".
-2. **Consent notice (not the answer):** in both languages, remove "country choices" and "priorities"
-   from the "What we collect" list, because this form doesn't ask them. Keep race, budget and preferences.
-3. **Link to Sheets** (E1d): Responses tab.
-4. **`.env`:** `FORM_ID_REPORT_INTAKE=16FgLQvxA-BA1wCBbJuMYMgKmqe6oYady9CA2QWjpRnM` (E1e).
-5. **Check "Collect email addresses" is on.** It's how a buyer's existing folder is found.
-6. **Submit one test answer on each form** (E1f), using a plus-address (`you+test3@gmail.com`).
-7. **Both forms: decide O10** (name vs the notice's "nickname"). **List form: decide O11** (the year).
-8. **Small, either way:** the report form has no Disclaimer page or the B13 note. The list form's
-   grades box has no STPM/CGPA example and is a short answer, not a paragraph. Location has no
-   "No preference". Race has no "Other". The scripts handle all of these.
+Done 30 Oct: the report form's new questions, Link to Sheets, "Collect email addresses", test
+answers (now deleted), Multiple choice grids, the name in both consent notices, the year question, and
+the list form's new sheet.
 
-Then say "T6", and Claude finishes the check. Only then E2.
+Still to do:
+
+1. **`.env`:** set `FORM_ID_LIST_INTAKE` to the form's ID,
+   `1pQF8yWQG1WtkQcNVyF4eCTkdMXcOs-b-2G_O4qfZiZE`. It holds the spreadsheet's ID now.
+2. **Paste the new script:** open "List Intake (Responses)", Extensions → Apps Script, replace all of
+   `Code.gs` with `tools/appsscript/Code.gs`, save. Deploy → Manage deployments → pencil → Version:
+   New version → Deploy. The URL stays the same, so nothing else changes in `.env`.
+3. **Report form, Malay notice:** "pilihan kursus dan negara" → "pilihan kursus". It asks no countries.
+4. **Keep "List Intake (Responses)".** Delete the spare "University List Intake Form (Responses)"
+   sheet: nothing reads it and it's another copy of student answers.
+5. **Small, either way:** the report form has no B13 note. The list form's grades box has no STPM/CGPA
+   example and is a short answer, not a paragraph. Location has no "No preference". "Anything specific"
+   is required on the report form. The scripts handle all of these.
+
+Then say "recheck", and Claude runs `--check` and the pending check. Then E2.
 
 ### What the live forms say, where it differs from the tables below
 
@@ -74,6 +91,9 @@ Then say "T6", and Claude finishes the check. Only then E2.
 | "Name you used when paying" | "Full Name (as in IC)" | Existing `full name` |
 | "What did you take for your secondary school?" | List: unchanged ("ur"). Report: "for Secondary school?" | All match |
 | Typos fixed in "Chose" and "perferences" | Left as they were | Old and new both match |
+| Report form has no importance grid | It has one, the same as the list form | Priorities reach the report |
+| Report's grades box "Type you subject and grades" | "List down the subject and grades" | Same match |
+| Report's month "actual result" | "actual results" | Same match |
 
 ### Added while building (not in the plan)
 
@@ -122,7 +142,7 @@ Keep every other title word-for-word.
 | B12 | Anything specific you want this report to answer? | Paragraph | |
 | B13 | Note: "Bought the list too? Fill that form as well." | Description only | |
 | B14 | Consent + disclaimer: keep the word "consent" in the title. Race and halal stay in the answer, because the form now asks them | Choice | ✔ |
-| B15 | NEW 30 Oct: Race, budget, Location preferences and "Any other perferences?", copied from Form A | Same as A | Same as A |
+| B15 | NEW 30 Oct: Race, budget, Location preferences, "Any other perferences?" and the importance grid, copied from Form A | Same as A | Same as A |
 
 ## How the report's "fit" part will work
 
@@ -219,7 +239,7 @@ The same intake script reads both forms, so consent checks and grade handling ar
 - **Prompt:** "Read plans/intake_forms_plan.md and do T5 only. Check step 9 of
   business/additionals.md is finished or not in progress first. Offer the commit."
 
-### [ ] E1. Evan edits and creates the forms
+### [x] E1. Evan edits and creates the forms
 - **Who:** Evan, in Google Forms. **Needs:** T2 for E1a; E1b can happen any time.
 - **E1a, wait first:** check the 2 list buyers have submitted, so nobody is mid-form.
 - **E1b, Form A:** make changes A1–A10. Existing answers stay in the sheet.
@@ -231,7 +251,7 @@ The same intake script reads both forms, so consent checks and grade handling ar
 - **E1f:** submit one test answer on each form.
 - **Done when:** Evan tells Claude it's done.
 
-### [ ] T6. Check the real forms (needs the forms)
+### [x] T6. Check the real forms (needs the forms)
 - **Who:** Claude. **Needs:** T2, T5, E1. **Size:** S.
 - **Touches:** `forms/intake.json`, `forms/report_intake.json`, `tools/fetch_form_questions.py`.
 - **Do:**
