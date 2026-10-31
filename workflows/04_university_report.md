@@ -180,6 +180,8 @@ python tools/check_master_list.py --student <slug>            # the gate — mus
    marker never blocks the rest — and leaves whatever failed on disk, named, for a re-run. Read its
    failure lines: `already_rejected` means the student demoted that row after its report was written
    (the tool refuses to resurrect it — re-promote by hand only if the rejection was a mistake);
+   `not_verified` means a matched row isn't `Official page` (do the official-source check from step 2,
+   stamp it through `apply_backfill.py` or the report's `corrections`, re-run);
    `no_match` usually means the agent's university/course string drifted from the row's.
 7. `check_master_list.py` is the gate, exactly as at Stage 3 — a list doesn't go to a student until it
    comes back clean. Run it **without** `--check`.

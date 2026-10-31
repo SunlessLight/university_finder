@@ -14,7 +14,8 @@ Checks (use --check to run a subset while working through a fix):
   budget       cells over their CELL_BUDGETS length
   plausibility "Approx total (MYR)" outside a sane range — a parse failure, not a cost
   jargon       bare acronyms that apply_glossary can explain, outside the allow-list
-  values       List status / Info source / Grades vs entry bar outside their allowed sets
+  values       List status / Info source / Grades vs entry bar outside their allowed sets; a
+               Finalist still reading "Not verified" (R33)
   contradiction  "Grades vs entry bar" vs "Admission likelihood" telling different stories
   hedges       guess/advice/chatter words in researched cells: FAIL on "Official page" rows,
                warning on "Not verified" rows (warnings never change the exit code)
@@ -378,6 +379,9 @@ def check_values(rows_as_dicts):
         source = (row.get("Info source") or "").strip()
         if source not in allowed_source:
             out.append(f"row {n} {uni} — Info source {source!r} is not one of {sorted(allowed_source)}")
+        if status == "Finalist" and source == INFO_SOURCE_UNVERIFIED:
+            out.append(f"row {n} {uni} — a Finalist can't be {source!r}: verify it on the official "
+                       f"page first (R33)")
 
         # Blankness is the completeness check's job now (it owns every required column);
         # this one only judges whether a filled-in value is a legal one.

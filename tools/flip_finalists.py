@@ -19,6 +19,7 @@ Per-fragment outcomes (SOFT-fail, unlike merge_candidates.py's all-or-nothing):
   corrected       matched, flipped and/or corrections applied   row changed, fragment deleted
   already_final   matched, already Finalist; corrections still  maybe changed, fragment deleted
   already_rejected  a matched row currently reads Rejected      NOT changed, fragment KEPT
+  not_verified    a matched row is not "Official page" (R33)    NOT changed, fragment KEPT
   no_match        no CSV row matched university(+course)        not changed, fragment kept
   guard_failed    --mode university marker hit a non-USA row    not changed, fragment kept
   bad_correction  a correction is not a writable column / too long   not changed, fragment kept
@@ -59,6 +60,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from shortlist_schema import (  # noqa: E402
     CELL_BUDGETS,
+    INFO_SOURCE_OFFICIAL,
     SHORTLIST_HEADERS,
     canonical_uni,
     course_key,
@@ -241,6 +243,24 @@ def plan_marker(path, marker, header, rows):
     clean, problems, warnings = validate_corrections(marker, header, label, mode, len(matches))
     if problems:
         return "bad_correction", label, "; ".join(p.split(": ", 1)[-1] for p in problems), [], {}, warnings
+
+    # The stamp each row will carry after this marker: corrections may set Info source too,
+    # as in apply_backfill.py. One unverified row refuses the whole marker, as for Rejected.
+    source_col = header.index("Info source")
+    stamps = [(i, clean.get("Info source", _cell(rows[i], source_col)).strip()) for i in matches]
+    unverified = [(i, stamp) for i, stamp in stamps if stamp != INFO_SOURCE_OFFICIAL]
+    if unverified:
+        named = ", ".join(
+            f"{_cell(rows[i], course_col) or '(no course)'} = {stamp or '(blank)'}"
+            for i, stamp in unverified
+        )
+        return (
+            "not_verified", label,
+            f"Info source must be {INFO_SOURCE_OFFICIAL!r} before a row can be a Finalist ({named}). "
+            f"Check the row's facts on the official page, stamp it through apply_backfill.py, "
+            f"then re-run",
+            [], {}, warnings,
+        )
 
     to_flip = [i for i in matches if _cell(rows[i], status_col).strip() != "Finalist"]
     courses = ", ".join(_cell(rows[i], course_col) or "(no course)" for i in matches)

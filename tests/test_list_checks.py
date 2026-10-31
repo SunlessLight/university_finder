@@ -9,24 +9,34 @@ What these pin down (backlog R28, Decisions items 3-5):
   - "Application requirements" accepts only the fixed vocabulary;
   - an old list missing only the appended columns still FAILS schema, but its cells are checked;
   - apply_backfill.py refuses (or warns on) the same things before it writes;
-  - the list PDF adds "Deadline passed" itself when Key deadline has gone by (R49).
+  - the list PDF adds "Deadline passed" itself when Key deadline has gone by (R49);
+  - a row reaches Finalist only as "Official page": flip_finalists.py refuses it, and
+    check_master_list.py fails a Finalist still reading "Not verified" (R33).
 
-Rows are built in memory from SHORTLIST_HEADERS; no student file is read or written.
+Rows are built in memory from SHORTLIST_HEADERS; no student file is read or written (the one
+full flip_finalists.py run uses a temporary folder).
 
 Run (stdlib only, no pytest needed):
     python -m unittest tests.test_list_checks -v
 """
 
+import contextlib
+import csv
+import io
+import json
 import re
 import sys
+import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 TOOLS = Path(__file__).resolve().parent.parent / "tools"
 sys.path.insert(0, str(TOOLS))
 
 import apply_backfill  # noqa: E402
 import check_master_list as cml  # noqa: E402
+import flip_finalists  # noqa: E402
 from build_list_pdf import build_html  # noqa: E402
 from shortlist_schema import ADDED_COLUMNS, SHORTLIST_HEADERS  # noqa: E402
 
@@ -225,6 +235,110 @@ class PdfDeadlineWarning(unittest.TestCase):
         before = dict(row)
         build_html([row], {"name": "Test"}, self.TODAY)
         self.assertEqual(row, before)
+
+
+class FinalistMustBeVerified(unittest.TestCase):
+    """R33: no Finalist on unverified facts, in the flip and in the gate before a list goes out."""
+
+    def plan(self, rows, marker=None):
+        header = SHORTLIST_HEADERS
+        csv_rows = [[row[h] for h in header] for row in rows]
+        marker = marker or {"university": "Test University", "course": "BSc Test", "mode": "course"}
+        return flip_finalists.plan_marker(Path("marker.json"), marker, header, csv_rows)
+
+    def test_gate_fails_a_finalist_that_is_not_verified(self):
+        row = make_row(List_status="Finalist", Info_source=UNVERIFIED)
+        failures = cml.check_values(rows_as_dicts(row))
+        self.assertEqual(len(failures), 1)
+        self.assertIn("row 2 Test University", failures[0])
+
+    def test_gate_allows_a_verified_finalist(self):
+        row = make_row(List_status="Finalist", Info_source=OFFICIAL)
+        self.assertEqual(cml.check_values(rows_as_dicts(row)), [])
+
+    def test_gate_allows_an_unverified_row_that_is_not_a_finalist(self):
+        for status in ("Longlist", "Shortlist", "Rejected"):
+            with self.subTest(status=status):
+                row = make_row(List_status=status, Info_source=UNVERIFIED)
+                self.assertEqual(cml.check_values(rows_as_dicts(row)), [])
+
+    def test_flip_refuses_anything_but_official_page(self):
+        for source in (UNVERIFIED, ""):
+            with self.subTest(source=source):
+                outcome, _, detail, matches, _, _ = self.plan(
+                    [make_row(List_status="Shortlist", Info_source=source)])
+                self.assertEqual(outcome, "not_verified")
+                self.assertEqual(matches, [])
+                self.assertIn("BSc Test", detail)
+
+    def test_flip_accepts_an_official_row(self):
+        outcome, *_ = self.plan([make_row(List_status="Shortlist")])
+        self.assertEqual(outcome, "flipped")
+
+    def test_flip_refuses_a_row_that_is_already_finalist_but_unverified(self):
+        outcome, *_ = self.plan([make_row(List_status="Finalist", Info_source=UNVERIFIED)])
+        self.assertEqual(outcome, "not_verified")
+
+    def test_one_unverified_course_stops_a_university_mode_marker(self):
+        rows = [
+            make_row(Country="USA", Course="BA One", List_status="Shortlist"),
+            make_row(Country="USA", Course="BA Two", List_status="Shortlist", Info_source=UNVERIFIED),
+        ]
+        outcome, _, detail, matches, _, _ = self.plan(
+            rows, {"university": "Test University", "course": None, "mode": "university"})
+        self.assertEqual(outcome, "not_verified")
+        self.assertEqual(matches, [])
+        self.assertIn("BA Two", detail)
+        self.assertNotIn("BA One", detail)
+
+    def test_report_that_verified_the_row_can_stamp_it_in_the_same_marker(self):
+        marker = {"university": "Test University", "course": "BSc Test", "mode": "course",
+                  "corrections": {"Info source": OFFICIAL}}
+        outcome, *_ = self.plan(
+            [make_row(List_status="Shortlist", Info_source=UNVERIFIED)], marker)
+        self.assertEqual(outcome, "corrected")
+
+    def test_a_rejected_row_still_reads_as_rejected(self):
+        outcome, *_ = self.plan([make_row(List_status="Rejected", Info_source=UNVERIFIED)])
+        self.assertEqual(outcome, "already_rejected")
+
+    def test_run_flips_the_verified_row_and_keeps_the_refused_marker(self):
+        rows = [
+            make_row(University="Good University", List_status="Shortlist"),
+            make_row(University="Unchecked University", List_status="Shortlist",
+                     Info_source=UNVERIFIED),
+        ]
+        with tempfile.TemporaryDirectory() as tmp:
+            students = Path(tmp) / "students"
+            (students / "test-student").mkdir(parents=True)
+            csv_path = students / "test-student" / "master_list.csv"
+            with csv_path.open("w", newline="", encoding="utf-8") as f:
+                writer = csv.DictWriter(f, fieldnames=SHORTLIST_HEADERS)
+                writer.writeheader()
+                writer.writerows(rows)
+            frags = Path(tmp) / "finalists"
+            frags.mkdir()
+            good, bad = frags / "good.json", frags / "bad.json"
+            for path, uni in ((good, "Good University"), (bad, "Unchecked University")):
+                path.write_text(json.dumps(
+                    {"university": uni, "course": "BSc Test", "mode": "course"}), encoding="utf-8")
+
+            argv = ["flip_finalists.py", "--student", "test-student",
+                    "--fragments", str(frags), "--csv", str(csv_path)]
+            with mock.patch.object(flip_finalists, "STUDENTS_DIR", students), \
+                    mock.patch.object(sys, "argv", argv), \
+                    contextlib.redirect_stdout(io.StringIO()) as printed, \
+                    self.assertRaises(SystemExit) as stopped:
+                flip_finalists.main()
+
+            self.assertEqual(stopped.exception.code, 1)
+            self.assertIn("Unchecked University", printed.getvalue())
+            with csv_path.open(newline="", encoding="utf-8") as f:
+                status = {r["University"]: r["List status"] for r in csv.DictReader(f)}
+            self.assertEqual(status, {"Good University": "Finalist",
+                                      "Unchecked University": "Shortlist"})
+            self.assertFalse(good.exists())
+            self.assertTrue(bad.exists())
 
 
 if __name__ == "__main__":
