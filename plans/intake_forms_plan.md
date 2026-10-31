@@ -37,7 +37,7 @@ and the report form's ID need the real forms.
 - **Done and tested:** T1–T7, E1 (97 tests pass). `--check` passes on both live forms, and Evan's
   test answer on each form lands in the right fields in a dry run. Nothing was written to
   `data/students/`.
-- **Left, all Evan's:** the fix list below, then E2.
+- **Left, all Evan's:** the fix list below. E2 done 31 Oct.
 
 **What T6 found:**
 - **The report form now has the importance grid.** Report orders use it: `priorities` is filled,
@@ -72,16 +72,17 @@ new one.
 
 Still to do:
 
-1. **Before deleting "List Intake (Responses)":** every student row has an `Ingested at` date (a blank
-   one means an unprocessed student: stop). Download every tab with answers to `data/form/`, then
-   delete it in Drive. Drive's bin keeps it for 30 days.
-2. **Delete the spare "University List Intake Form (Responses)" sheet:** nothing reads it and it's
-   another copy of student answers.
-3. **Small, either way:** the report form has no B13 note. The list form's grades box has no STPM/CGPA
-   example and is a short answer, not a paragraph. Location has no "No preference". "Anything specific"
-   is required on the report form. The scripts handle all of these.
+1. **"List Intake (Responses)" no longer shows in Drive search (31 Oct), so it's probably in the bin.**
+   The backup Evan made is the tab `Form Responses 2`: 9 rows, all with a blank `Ingested at`. The stamps
+   and the 10 rows `01_intake.md` describes are on `Form Responses 1`, which isn't in `data/form/`. 8 of
+   the 9 have a finished folder. The ninth (14 Oct, blank consent) has none. Restore from the bin,
+   download `Form Responses 1`, settle the ninth, then delete it again. The bin keeps it for 30 days.
+2. **Small, either way:** the report form has no B13 note. The list form's grades box has no STPM/CGPA
+   example and is a short answer, not a paragraph. Location has no "No preference" on either form.
+   "Anything specific" is required on the report form. The scripts handle all of these. After any edit,
+   run `fetch_form_questions.py --check`.
 
-Then E2.
+Done 31 Oct: E2, and the spare "University List Intake Form (Responses)" sheet is deleted.
 
 ### What the live forms say, where it differs from the tables below
 
@@ -285,7 +286,7 @@ The same intake script reads both forms, so consent checks and grade handling ar
   stale, and `README.md` covers both forms.
 - **Prompt:** "Read plans/intake_forms_plan.md and do T7 only. Offer the commit."
 
-### [ ] E2. Evan points each buyer at the right form
+### [x] E2. Evan points each buyer at the right form
 - **Who:** Evan. **Needs:** T6.
 - **Do:** Use the Form A link for list buyers and Form B for report buyers in the after-payment
   message. Send Form B to the 2 report buyers who paid. A buyer of both gets both links.
@@ -315,7 +316,7 @@ to `plans/build-log.md`, updates the Now box, and syncs Notion.
 3. `--dry-run` shows a test answer from each form landing in the right fields.
 4. An old-form CSV still gives the same result as before (protects the 2 list buyers).
 5. The first real STPM or UEC student: Evan reads the raw vs tidied grades, and the list PDF shows
-   the right programme.
+   the right programme. Evan does this when one applies (31 Oct).
 
 Only files each task touched get committed. The unrelated changes already in
 `forms/survey.json`, `business/launchx/survey.md` and `workflows/countries/uk.md` stay out.

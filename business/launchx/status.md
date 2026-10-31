@@ -108,10 +108,11 @@ it into a new deck rather than editing the 24 Oct one.
       deleted, list form on a new sheet.
 - [x] 31 Oct: setup finished: the list form's ID in `.env`, the script moved to the list form's new
       sheet (new URL), one Malay notice word. Recheck clean on all five forms.
-- [ ] Before deleting the old sheet "List Intake (Responses)": check every row has an `Ingested at`
-      date and download every tab with answers. Steps: plan's "Evan's fix list".
-- [ ] Send the list form link to list buyers and the report form link to report buyers, including
-      the 2 who already paid for a report.
+- [ ] Restore the old sheet "List Intake (Responses)" from the Drive bin, download the tab `Form
+      Responses 1`, settle the 14 Oct row with no folder, then delete it. Steps: plan's "Evan's fix list".
+- [x] 31 Oct: list form link sent to list buyers and report form link to report buyers, including
+      the 2 who already paid for a report. Spare sheet deleted.
+- [ ] Small form tidy-ups (optional): plan's "Evan's fix list", item 2.
 - [ ] **Tester chain, one after another** (Notion tasks):
   1. 28 Oct: list what to improve in the list and report from what testers actually read
      (Notion, Product Developing). Fixes done before 10 Nov, so the paid lists get them too.

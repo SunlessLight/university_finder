@@ -291,9 +291,33 @@ Entry format:
 - Decisions (and why): see `decisions/log.md`. Script stays in the old sheet and follows the form.
 - Problems / lessons: `.env` held the spreadsheet's ID, which gives `Invalid ID`: same mix-up as 27 Oct, so it's now in `CLAUDE.md`. The redeploy isn't proven live yet; it needs Evan's paste. The old-tab stamping question is gone: the new sheet is empty and row 11 was a test.
 - Next step: Evan sets the form's ID in `.env`, pastes `Code.gs`, fixes one Malay phrase, says "recheck". Then E2.
+
+## 2026-10-31 (13) · Catch-up on the list PDF plan
+- Done: checked T1-T8 against the files: all landed; sample list clean on the new checks; 18 list tests and 61 form tests pass. No Notion ticks to copy back. Now box corrected.
+- Decisions (and why): T9 should cover the handover step as well as wording, because a paying student's PDF depends on someone running the builder.
+- Problems / lessons: no workflow says to run `build_list_pdf.py` at handover. Stage 3 still ends at `check_master_list.py` and the glossary sheet, and T9's file list leaves out `workflows/03_discover_longlist.md`. T9's "After 10 Nov" items aren't in the backlog yet. The 30-31 Oct forms work is uncommitted and shares files with T9. `?? data/` is one public Australian PDF in `data/resources/`, not student data.
+- Next step: commit the forms work, then T9.
+
+## 2026-10-31 (14) · T9: list PDF plan finished, docs and backlog brought in line
+- Done: `README.md`, `00_overview.md`, `CLAUDE.md`, the sample pack README, `/longlist`, `notion_sync.md` and the `init_student.py` comment now describe a PDF, not a spreadsheet, and 40 columns. `03_discover_longlist.md` gained Step 8, which builds the PDF after the last country. Backlog: steps 2b, 2c and 2d closed; R23, R25, R28, R29, R32, R40 deleted; R30, R31, R39, R9 cut down; new R44-R48; new steps 2f, 11, 12. Plan marked done.
+- Decisions (and why): see `decisions/log.md`. The sample CSVs stay built but aren't sent, because `build_list_pdf.py` and `gen.py` read one. R31 stays open rather than closing with the step.
+- Problems / lessons: a plan's tick isn't proof that a backlog entry is finished. R31's demo line survived T7 and T8 because it is typed in `data.js`, outside the sample list the checks read. The `--student` route had never been run; it passed on a made-up folder, so nothing real was touched. The list PDF's sample wording differs from the banner the README described. Correction to entry 13: the forms work was already committed (`f436fc5`); the catch-up relied on the start-of-session snapshot.
+- Next step: commit T9, then the pilot plan.
+
 ## 2026-10-31 (15) · Forms: script moved to the new list sheet, recheck clean
 - Done: Evan moved the Apps Script to "List Intake Form (Responses)" with a new deployment, and fixed `.env` and the report form's Malay notice. All five forms read, `--check` passes, nothing pending. `CLAUDE.md`, `README.md`, `01_intake.md`, the `Code.gs` header, the plan and `status.md` now name the new sheet. Header comment only, so the live script needs no new paste.
 - Decisions (and why): see `decisions/log.md`. Reverses today's earlier "script stays in the old sheet", at Evan's request.
 - Problems / lessons: a wrong list form ID gave `No item with the given ID`, not `Invalid ID`, so both are now in `CLAUDE.md`. Running one form at a time separated it fast: four forms worked, so only that ID was wrong. With no form ID, `answers` reads the script's own sheet, so a row count shows which sheet it lives in (0 = new, not the old 10). `intake_answers.csv` looks too small to hold the 10 old students, so the old sheet may be the only full copy: not opened, size only.
 - Next step: Evan backs up and deletes the old sheet, then E2. T9 is still uncommitted.
 
+## 2026-10-31 (16) · O8 and O9 closed; one file for new tasks
+- Done: 14 `Recognised in Malaysia?` cells gained the MQA register reading through `apply_backfill.py --overwrite` (dry run first, backup in `.tmp/o8/backup/`; compared to the backup, 15 cells changed, the 14 plus Carnegie Mellon's Warnings). Demo sentence and Decide headline reworded in `data.template.js`; PDF card says "Estimated living". Sample and demo rebuilt. `additionals.md` is now the one task file: "Questions for Evan" added, `discussions.md` closed as history, R41's tally and R11 updated, review marked history, two finished root plans moved to `archives/`.
+- Decisions (and why): see `decisions/log.md`.
+- Problems / lessons: `data.js` is generated, so R31's note pointed at the wrong file. Warnings is a computed column that `apply_backfill.py` refuses; Carnegie Mellon's sentence was old typed text, not from a tool, so it was removed by an exact one-cell replace. `Course` can't be changed by backfill because it makes the row's key. `Deadline passed` is stamped at sync only, so it can go stale between syncs. Northeastern's page names no essay, so that cell stays as it was.
+- Next step: commit, then the pilot plan.
+
+## 2026-10-31 (17) · Intake forms plan: finish check, E2 done, old sheet backup is the wrong tab
+- Done: checked the plan against the files: T1-T7 hold (100 tests pass, `--check` clean, workflows current). Evan sent the form links (E2) and deleted the spare sheet. `data/form/intake_answers.csv` deleted at Evan's request: 0 rows, and `fetch_form_answers.py` remakes it. Plan, `status.md`, Now box and Notion updated.
+- Decisions (and why): the plan stays in `plans/` until the old sheet is settled, because it holds those steps. Evan will do the first-STPM check himself when one applies, so it needs no backlog entry.
+- Problems / lessons: the backup is tab `Form Responses 2`: 9 rows, all with a blank `Ingested at`. `01_intake.md` puts the stamps and 10 rows on `Form Responses 1`, which isn't in `data/form/`. The old sheet no longer shows in Drive search, so it's probably in the bin. 8 of the 9 match a finished folder by email; the 14 Oct row has blank consent and no folder. Compared by hashed email, so no answers were read.
+- Next step: Evan restores the old sheet, downloads `Form Responses 1` and settles the 14 Oct row, then archive the plan and update `01_intake.md` and `CLAUDE.md`.
