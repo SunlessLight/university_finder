@@ -8,7 +8,8 @@ What these pin down (backlog R28, Decisions items 3-5):
   - a money cell holds a currency code and a number, nothing else;
   - "Application requirements" accepts only the fixed vocabulary;
   - an old list missing only the appended columns still FAILS schema, but its cells are checked;
-  - apply_backfill.py refuses (or warns on) the same things before it writes.
+  - apply_backfill.py refuses (or warns on) the same things before it writes;
+  - the list PDF adds "Deadline passed" itself when Key deadline has gone by (R49).
 
 Rows are built in memory from SHORTLIST_HEADERS; no student file is read or written.
 
@@ -16,6 +17,7 @@ Run (stdlib only, no pytest needed):
     python -m unittest tests.test_list_checks -v
 """
 
+import re
 import sys
 import unittest
 from pathlib import Path
@@ -25,6 +27,7 @@ sys.path.insert(0, str(TOOLS))
 
 import apply_backfill  # noqa: E402
 import check_master_list as cml  # noqa: E402
+from build_list_pdf import build_html  # noqa: E402
 from shortlist_schema import ADDED_COLUMNS, SHORTLIST_HEADERS  # noqa: E402
 
 OFFICIAL = "Official page"
@@ -163,6 +166,65 @@ class BackfillRunsTheSameChecks(unittest.TestCase):
             {"Annual tuition": "GBP 46,872", "Application requirements": "Personal statement"})
         self.assertEqual((problems, warnings), ([], []))
         self.assertEqual(len(plan[0][2]), 2)
+
+
+class PdfDeadlineWarning(unittest.TestCase):
+    """Built for a fixed day, so the result never depends on the real date."""
+    TODAY = "2026-10-31"
+
+    def build(self, **cells):
+        html, _ = build_html([make_row(**cells)], {"name": "Test"}, self.TODAY)
+        return html
+
+    def card_warning(self, html):
+        m = re.search(r'<p class="card-warn"><strong>Warning\.</strong> (.*?)</p>', html)
+        return m.group(1) if m else None
+
+    def summary_marked(self, html):
+        return 'Test University<span class="warn-mark">' in html
+
+    def test_passed_date_warns_on_card_and_summary(self):
+        html = self.build(Key_deadline="2026-10-15", Warnings="None")
+        self.assertEqual(self.card_warning(html), "Deadline passed")
+        self.assertTrue(self.summary_marked(html))
+
+    def test_passed_date_joins_an_existing_warning(self):
+        html = self.build(Key_deadline="2026-10-15", Warnings="English short")
+        self.assertEqual(self.card_warning(html), "Deadline passed; English short")
+
+    def test_blank_warnings_shows_only_the_warning(self):
+        html = self.build(Key_deadline="2026-10-15", Warnings="")
+        self.assertEqual(self.card_warning(html), "Deadline passed")
+
+    def test_future_date_stays_quiet(self):
+        html = self.build(Key_deadline="2027-01-15", Warnings="None")
+        self.assertIsNone(self.card_warning(html))
+        self.assertFalse(self.summary_marked(html))
+
+    def test_deadline_today_has_not_passed(self):
+        html = self.build(Key_deadline="2026-10-31", Warnings="None")
+        self.assertIsNone(self.card_warning(html))
+
+    def test_no_real_date_gets_no_warning(self):
+        for cell in ("Rolling", "Not published", "Not published — check portal", ""):
+            with self.subTest(cell=cell):
+                html = self.build(Key_deadline=cell, Warnings="None")
+                self.assertIsNone(self.card_warning(html))
+                self.assertFalse(self.summary_marked(html))
+
+    def test_rolling_cell_holding_an_old_date_gets_no_warning(self):
+        html = self.build(Key_deadline="Rolling (priority 2026-01-15)", Warnings="None")
+        self.assertIsNone(self.card_warning(html))
+
+    def test_row_already_flagged_shows_it_once(self):
+        html = self.build(Key_deadline="2026-10-15", Warnings="Deadline passed; English short")
+        self.assertEqual(self.card_warning(html), "Deadline passed; English short")
+
+    def test_build_leaves_the_rows_unchanged(self):
+        row = make_row(Key_deadline="2026-10-15", Warnings="None")
+        before = dict(row)
+        build_html([row], {"name": "Test"}, self.TODAY)
+        self.assertEqual(row, before)
 
 
 if __name__ == "__main__":

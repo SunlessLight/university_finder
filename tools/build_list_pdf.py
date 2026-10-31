@@ -29,6 +29,11 @@ CSS Profile, IELTS...).
 2026-10-31 (O8, Evan): the card's living line says "Estimated", because living costs are
 estimates even on a row whose hard facts are checked on the official page.
 
+2026-10-31 (R49): sync_shortlist.py stamps "Deadline passed" only when it runs, so a date
+falling between sync and PDF went unwarned. build_html() now re-checks Key deadline against
+prepared_on (with_deadline_warning): feasibility_flags() decides and words it, on a copy of
+the row. The PDF still only reads master_list.csv.
+
 Engine: WeasyPrint via apply_prep_to_pdf._load_weasyprint() (adds the GTK DLL dir on
 Windows). Run with the project venv: .venv/Scripts/python.exe. Template + stylesheet:
 tools/templates/list_pdf.html / list_pdf.css (string.Template, $placeholders).
@@ -58,7 +63,7 @@ from apply_glossary import GLOSSARY, JUDGMENT_LABELS, OFFICIAL_LINKS, present_te
 from apply_prep_to_pdf import _load_weasyprint
 from shortlist_schema import (
     FX_AS_OF, FX_TO_MYR, INFO_SOURCE_OFFICIAL, RANKING_EDITION, SHORTLIST_HEADERS,
-    WARNINGS_NONE, parse_amount, upgrade_header,
+    WARNINGS_NONE, feasibility_flags, parse_amount, upgrade_header,
 )
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -162,6 +167,19 @@ def short_deadline(cell):
         return text
     approx = text[m.start() - 1:m.start()] == "~" or re.match(r"\s*\(approx", text[m.end():], re.I)
     return fmt_date(m.group(0)) + (" (approx.)" if approx else "")
+
+
+def with_deadline_warning(row, today):
+    """The row, or a copy of it with the passed deadline added to Warnings (first, as a sync
+    would put it). Given only a deadline, feasibility_flags() returns only that flag."""
+    cell = row.get("Key deadline", "")
+    if short_deadline(cell) in ("Rolling", "Not published"):
+        return row
+    current = row["Warnings"].strip() if has_warning(row) else ""
+    flags = [f for f in feasibility_flags({"key_deadline": cell}, today=today) if f not in current]
+    if not flags:
+        return row
+    return {**row, "Warnings": "; ".join(flags + [current] if current else flags)}
 
 
 # --------------------------------------------------------------------------- #
@@ -432,7 +450,9 @@ def load_profile(profile_path, preferences_path=None):
 def build_html(rows, profile, prepared_on, draft=False):
     """(html, problems): problems = [(university, problem), ...] for the terminal."""
     name = profile.get("name") or "you"
-    built = [card(n, r) for n, r in enumerate(rows, start=1)]
+    today = date.fromisoformat(prepared_on)
+    rows = [with_deadline_warning(r, today) for r in rows]
+    built =[card(n, r) for n, r in enumerate(rows, start=1)]
     cards_html = "\n".join(html for html, _ in built)
     problems = [(r.get("University", ""), p) for r, (_, ps) in zip(rows, built) for p in ps]
     footer = f"University list for {name} · prepared {fmt_date(prepared_on)}"

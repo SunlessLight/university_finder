@@ -39,7 +39,7 @@ protect your clients' data.
 1. These were scrubbed and scanned (zero hits for the name / school / income figures in both CSVs and
    all three PDFs). But **open all three PDFs yourself once** before the first send — you're the last
    gate. If you ever regenerate them from a different student, re-run the same scan and re-read them.
-2. **One small thing is still open:** R31 in `plans/additionals.md` (Monash's course title).
+2. **One small thing is still open:** R51 in `plans/additionals.md` (the Monash row's link).
 
 ## How they were built (to regenerate)
 
