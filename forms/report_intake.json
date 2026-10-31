@@ -126,7 +126,7 @@
       "other": false
     },
     {
-      "title": "List down the subject and grades  (eg Physic A, Chemistry B, etc)",
+      "title": "Type you subject and grades\n\ne.g. Physics A*, Chemistry A, Maths A. STPM: Physics A-, Maths B+. Foundation or Diploma: CGPA 3.6",
       "type": "PARAGRAPH_TEXT",
       "description": "",
       "required": true
@@ -284,11 +284,16 @@
       "title": "Anything specific you want the report to answer?",
       "type": "PARAGRAPH_TEXT",
       "description": "",
-      "required": true
+      "required": false
     },
     {
       "title": "Consent",
       "type": "PAGE_BREAK",
+      "description": ""
+    },
+    {
+      "title": "Bought the list too? Fill that form as well. ",
+      "type": "SECTION_HEADER",
       "description": ""
     },
     {

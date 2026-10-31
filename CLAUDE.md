@@ -74,7 +74,7 @@ Privacy and wording:
 
 - If a form question's wording changes, its `QUESTION_MAP` substring in `ingest_form_csv.py` stops matching. Looks like: one field null for **every** respondent. Fix the map, not the profiles. Catch it before anyone answers: `fetch_form_questions.py --check` after every form edit.
 - If a question is replaced on a form, the sheet keeps the old column beside the new one, so one field has two columns. `merge_duplicate_columns()` handles that in `ingest_form_csv.py`; without it a new student reads as "no consent" and is skipped. Looks like: every new respondent skipped.
-- If `FORM_ID_LIST_INTAKE` holds anything but the form's ID, the list form tools stop with `Invalid ID` or `No item with the given ID`. It wants the code from the form's edit address. The Apps Script moved on 31 Oct to the new sheet "List Intake Form (Responses)", so that file must never be deleted. The old sheet "List Intake (Responses)" holds the pre-30 Oct answers: back up every tab before deleting it.
+- If `FORM_ID_LIST_INTAKE` holds anything but the form's ID, the list form tools stop with `Invalid ID` or `No item with the given ID`. It wants the code from the form's edit address. The Apps Script moved on 31 Oct to the new sheet "List Intake Form (Responses)", so that file must never be deleted. The old sheet "List Intake (Responses)" is gone: anyone whose old answers are needed fills the form again.
 - If a report JSON's course isn't exactly the CSV `Course` string, `build_report.py` course mode still renders but never flips the row to Finalist. Looks like: report exists, row still Shortlist.
 
 ## Generated files: never edit by hand

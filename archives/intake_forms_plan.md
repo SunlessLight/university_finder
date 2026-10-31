@@ -32,12 +32,12 @@ Agreed with Evan on 30 Oct:
 both the old and new wording, so the switch is safe in either order. Only the checks at the end
 and the report form's ID need the real forms.
 
-## Where this stands (30 Oct, after T6)
+## Where this stands (finished 31 Oct, archived)
 
-- **Done and tested:** T1–T7, E1 (97 tests pass). `--check` passes on both live forms, and Evan's
+- **Done and tested:** T1–T7, E1, E2 (100 tests pass). `--check` passes on both live forms, and Evan's
   test answer on each form lands in the right fields in a dry run. Nothing was written to
   `data/students/`.
-- **Left, all Evan's:** the fix list below. E2 done 31 Oct.
+- **Left:** only verification 5, which Evan does when the first STPM or UEC student applies.
 
 **What T6 found:**
 - **The report form now has the importance grid.** Report orders use it: `priorities` is filled,
@@ -70,19 +70,14 @@ Done 31 Oct: `FORM_ID_LIST_INTAKE` holds the form's ID, the script moved to "Lis
 five forms read, `--check` passes, nothing pending, and the script's own sheet has 0 rows, so it is the
 new one.
 
-Still to do:
+Done 31 Oct, closing the list: E2. The spare "University List Intake Form (Responses)" sheet is deleted.
+Tidy-ups saved and `--check` clean: the grades box is a paragraph with the STPM/CGPA example, "Anything
+specific" is optional, and each form has a note about the other. "No preference" is on the list form's
+Location only, which is fine: the scripts handle both.
 
-1. **"List Intake (Responses)" no longer shows in Drive search (31 Oct), so it's probably in the bin.**
-   The backup Evan made is the tab `Form Responses 2`: 9 rows, all with a blank `Ingested at`. The stamps
-   and the 10 rows `01_intake.md` describes are on `Form Responses 1`, which isn't in `data/form/`. 8 of
-   the 9 have a finished folder. The ninth (14 Oct, blank consent) has none. Restore from the bin,
-   download `Form Responses 1`, settle the ninth, then delete it again. The bin keeps it for 30 days.
-2. **Small, either way:** the report form has no B13 note. The list form's grades box has no STPM/CGPA
-   example and is a short answer, not a paragraph. Location has no "No preference" on either form.
-   "Anything specific" is required on the report form. The scripts handle all of these. After any edit,
-   run `fetch_form_questions.py --check`.
-
-Done 31 Oct: E2, and the spare "University List Intake Form (Responses)" sheet is deleted.
+**The old sheet, Evan's call:** "List Intake (Responses)" is gone. The only copy kept is the tab `Form
+Responses 2` in `data/form/`: 9 rows, 8 with a finished folder, one (14 Oct, blank consent) with none.
+`Form Responses 1` was not restored. Evan asks anyone whose answers are needed to fill the form again.
 
 ### What the live forms say, where it differs from the tables below
 

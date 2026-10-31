@@ -120,8 +120,7 @@ responses sheet. Whenever `Code.gs` changes:
 **The script lives in the list form's sheet, "List Intake Form (Responses)" (moved 31 Oct). Never
 delete that file**: it runs every form tool. The tools find each form's sheet from its ID, so linking
 a form to a new sheet needs no script change and no new URL. The old sheet, "List Intake (Responses)",
-runs nothing now but holds the 10 students' answers from before 30 Oct: download every tab with
-answers before deleting it.
+is gone. One tab is saved in `data/form/`, and anyone whose old answers are needed fills the form again.
 
 ## Run
 

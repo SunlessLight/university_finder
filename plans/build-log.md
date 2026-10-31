@@ -327,3 +327,9 @@ Entry format:
 - Decisions (and why): see `decisions/log.md`. `plans/list_pdf_plan.md` stays because its Decisions still rule the product and tool notes cite it; `plans/intake_forms_plan.md` stays because it is running; `build-log.md` and `decisions/log.md` keep their old paths because they are history.
 - Problems / lessons: the commit stayed one piece because T9, O8 and the move share files. Another session was working here throughout, so edits were exact replacements and these entries were appended last.
 - Next step: Evan runs the R31 and R49 prompts; the pilot plan stays first.
+
+## 2026-10-31 (18) · Intake forms plan finished and archived
+- Done: Evan's form tidy-ups read back and `--check` is clean (100 tests pass); `forms/*.json` saved. Moved the plan to `archives/intake_forms_plan.md`. `CLAUDE.md`, `README.md`, `01_intake.md`, `status.md`, the Now box and Notion now say the old sheet is gone.
+- Decisions (and why): see `decisions/log.md`. Old paths in `tools/`, `tests/` and the logs stay because they are history; `archives/README.md` says where the plan went.
+- Problems / lessons: Evan typed the grades example into the question title, not the description. `--check` still matches it, so it stays. "No preference" is on the list form's Location only; the scripts handle both.
+- Next step: Evan gets the old students who are needed to refill the form, then the pilot plan.

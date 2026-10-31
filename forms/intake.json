@@ -57,8 +57,8 @@
       "other": true
     },
     {
-      "title": "Type you subject and grades (eg. physic A, Chemistry B, etc)",
-      "type": "TEXT",
+      "title": "Type you subject and grades\n\ne.g. Physics A*, Chemistry A, Maths A. STPM: Physics A-, Maths B+. Foundation or Diploma: CGPA 3.6",
+      "type": "PARAGRAPH_TEXT",
       "description": "",
       "required": true
     },
@@ -295,7 +295,8 @@
       "required": true,
       "options": [
         "Urban / City",
-        "Rural / Campus-based"
+        "Rural / Campus-based",
+        "No preference"
       ]
     },
     {
@@ -319,6 +320,11 @@
     {
       "title": "Consent",
       "type": "PAGE_BREAK",
+      "description": ""
+    },
+    {
+      "title": "Bought the report too? Fill that form as well.",
+      "type": "SECTION_HEADER",
       "description": ""
     },
     {

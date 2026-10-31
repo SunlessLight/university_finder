@@ -52,7 +52,7 @@ it into a new deck rather than editing the 24 Oct one.
   replies at the old price, then announce RM30 in the nudge.
 - **Pre-sale cap: 20 list spots** (24 Oct, up from 15), set by Evan's time (about 20 hours).
 - **After payment** the customer gets a Google Form, not WhatsApp: the list form for a list, the
-  report form for a report, both links for both (30 Oct, `plans/intake_forms_plan.md`).
+  report form for a report, both links for both (30 Oct, `archives/intake_forms_plan.md`).
 - **Referral reward:** a free one-university report per friend who pays; only for people who have
   paid and received their list.
 - **Firecrawl costed** at its paid price (about RM77 a month). No legal or tax setup until a
@@ -102,17 +102,16 @@ it into a new deck rather than editing the 24 Oct one.
 - [ ] Pilot plan, overdue since 27 Oct (pass line set 30 Oct: 5 paid sign-ups). By 3 Nov: the rest of the booth kit
       (A4 price sign, printed sample, booth kit). (Notion tasks)
 - [x] 30 Oct: split the intake into a list form and a report form; the grade grid is now one text
-      box for every programme (`plans/intake_forms_plan.md`). Scripts done and tested.
+      box for every programme (`archives/intake_forms_plan.md`). Scripts done and tested.
 - [x] 30 Oct: report form finished and both forms checked against the scripts (T6).
 - [x] 30 Oct: both forms finished: Multiple choice grids, consent notices, result year, test rows
       deleted, list form on a new sheet.
 - [x] 31 Oct: setup finished: the list form's ID in `.env`, the script moved to the list form's new
       sheet (new URL), one Malay notice word. Recheck clean on all five forms.
-- [ ] Restore the old sheet "List Intake (Responses)" from the Drive bin, download the tab `Form
-      Responses 1`, settle the 14 Oct row with no folder, then delete it. Steps: plan's "Evan's fix list".
+- [ ] Get the old sheet students whose answers are needed to fill the form again, including the one
+      from 14 Oct with no folder. The old sheet is gone; only one tab is saved in `data/form/`.
 - [x] 31 Oct: list form link sent to list buyers and report form link to report buyers, including
-      the 2 who already paid for a report. Spare sheet deleted.
-- [ ] Small form tidy-ups (optional): plan's "Evan's fix list", item 2.
+      the 2 who already paid for a report. Spare sheet deleted. Form tidy-ups done, recheck clean.
 - [ ] **Tester chain, one after another** (Notion tasks):
   1. 28 Oct: list what to improve in the list and report from what testers actually read
      (Notion, Product Developing). Fixes done before 10 Nov, so the paid lists get them too.
