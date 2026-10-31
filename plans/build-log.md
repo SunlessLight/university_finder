@@ -321,3 +321,9 @@ Entry format:
 - Decisions (and why): the plan stays in `plans/` until the old sheet is settled, because it holds those steps. Evan will do the first-STPM check himself when one applies, so it needs no backlog entry.
 - Problems / lessons: the backup is tab `Form Responses 2`: 9 rows, all with a blank `Ingested at`. `01_intake.md` puts the stamps and 10 rows on `Form Responses 1`, which isn't in `data/form/`. The old sheet no longer shows in Drive search, so it's probably in the bin. 8 of the 9 match a finished folder by email; the 14 Oct row has blank consent and no folder. Compared by hashed email, so no answers were read.
 - Next step: Evan restores the old sheet, downloads `Form Responses 1` and settles the 14 Oct row, then archive the plan and update `01_intake.md` and `CLAUDE.md`.
+
+## 2026-10-31 (17) · Old task files deleted; additionals moved to plans/
+- Done: on Evan's word, deleted `plans/discussions.md`, the product review, `plans/fact_audit_plan.md`, `prototype/BUILD_PLAN.md`, the two archived plans and the 9 finished `plans/carry-overs/` notes. Moved `business/additionals.md` to `plans/additionals.md` and pointed every live file, skill, agent and memory at it. The numbers behind O5, O6, O7 and O13 went into "Questions for Evan" first.
+- Decisions (and why): see `decisions/log.md`. `plans/list_pdf_plan.md` stays because its Decisions still rule the product and tool notes cite it; `plans/intake_forms_plan.md` stays because it is running; `build-log.md` and `decisions/log.md` keep their old paths because they are history.
+- Problems / lessons: the commit stayed one piece because T9, O8 and the move share files. Another session was working here throughout, so edits were exact replacements and these entries were appended last.
+- Next step: Evan runs the R31 and R49 prompts; the pilot plan stays first.

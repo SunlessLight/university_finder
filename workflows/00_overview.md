@@ -4,7 +4,8 @@
 
 Take a (Malaysian) student from *"who am I / what do I want"* all the way to *"here is exactly how I
 apply to these specific universities"* — producing a ranked, **narrowed**, decision-ready set of
-options with deep per-university reports, in one local data bank that opens in Excel / Google Sheets.
+options with deep per-university reports, in one local data bank. The student receives their list as a
+portrait PDF (`list.pdf`); `master_list.csv` is the internal working file.
 
 This is **agent-driven**. You (Claude) read these workflows, run the deterministic tools in `tools/`
 in the right order, exercise judgement where research is needed, and recover from errors. The student
@@ -18,7 +19,7 @@ university that hasn't passed the cheap cut first.
 | Stage | Workflow | Output | What it does |
 |---|---|---|---|
 | 1 | `01_intake.md` | `profile.json` + `preferences.json` | Who the student is (grades, budget, English, recognition needs) **and** what they want (countries, field, priorities) — batch-built from the Google Form CSV, then finalized by you |
-| 3 | `03_discover_longlist.md` | `master_list.csv` (Longlist) | **8-12 officially sourced rows per country, one country per session** — all 35 columns read off official pages, scored, with Reach/Match/Safety and the feasibility gates. **This stage owns fact verification** (guardrail 2). A student with three or four countries ends up with 20-40 rows in total; no single run produces that many |
+| 3 | `03_discover_longlist.md` | `master_list.csv` (Longlist), then `list.pdf` for the student | **8-12 officially sourced rows per country, one country per session** — all 40 columns read off official pages, scored, with Reach/Match/Safety and the feasibility gates. **This stage owns fact verification** (guardrail 2). A student with three or four countries ends up with 20-40 rows in total; no single run produces that many |
 | 4 | `04_university_report.md` | `reports/<uni>.md` | Student picks 3-5 finalists off the Longlist; a cheap pre-flight cut (are the already-verified facts still current, is the set balanced), then a full 15-section decision **university report** per finalist — the same sections for every country. `--mode` selects only which claim it makes: course-specific (default) or **university-general (US-only)** for whole-institution fit |
 | 5 | `05_decide_and_apply.md` | `recommendation.md` + `calendar.md` | Recommendation, application strategy, one deadline calendar |
 
@@ -169,6 +170,7 @@ data/students/<student-slug>/
   preferences.json     # Stage 1
   weights.json         # Stage 3: this student's desirability weights (scoring-weights skill; sync refuses without it)
   master_list.csv      # Stages 3-4: every candidate + a "List status" column
+  list.pdf             # Stage 3: what the student receives (build_list_pdf.py); fix the CSV and rebuild, never edit it
   score_log.jsonl      # Stage 3: append-only audit — weights_id + sub-scores + entry_margin behind each scored row
   reports/<uni>.md     # Stage 4  (reports/<uni>.pdf — exported automatically by report-writer; manual re-export via report_to_pdf.py)
   dated_items/<report-slug>.json  # Stage 4: permanent copy of each report's dated_items (build_report.py); build_calendar.py reads it first
@@ -197,7 +199,7 @@ student. Quick glossary of the less-obvious columns:
   hard to get into lives next door in `Admission likelihood`, which can carry a short reason —
   `Reach (very selective)`. Keeping those two apart is the whole point; see guardrail 1.
 - **`Course at a glance`** / **`Student life`** — one tight sentence each, **filled at Stage 3** like
-  every other column (they used to wait for Stage 4; that left the delivered spreadsheet full of holes).
+  every other column (they used to wait for Stage 4; that left the delivered list full of holes).
   An invented sentence is still a fabricated fact — a row-filler that couldn't find the answer writes a
   **sentinel**, never a guess. See `SENTINEL_VALUES` in `shortlist_schema.py`.
 - **Cell length budgets** — `CELL_BUDGETS` in `shortlist_schema.py`. The list is a *scanning* surface;
@@ -214,6 +216,13 @@ student. Quick glossary of the less-obvious columns:
 - Jargon to explain in cells, not headers: *"honours entry"* = a 4-year degree with a final research/
   project year; *"need-blind"* = the uni admits you without considering your ability to pay.
 
+> **The schema went 35 → 40 columns on 2026-10-29/30** (`plans/list_pdf_plan.md`): `Application
+> requirements`, `Checked on`, `Admit rate`, `Apply link` and `Scholarship link`, at the end. Money and
+> rank cells are numbers only (`cell_format_problem()`). **The student now gets `list.pdf`, not the
+> spreadsheet.** The PDF hides List status, Tier, Student grades, Notes, Student life, Money to show
+> (visa) and `Admission likelihood`, which still drives the balanced shortlist; students see the
+> published `Admit rate` instead.
+>
 > **The schema went 34 → 35 columns on 2026-07-25** (a student review found the list unreadable in
 > Google Sheets). `Fits grades?` → **`Grades vs entry bar`**, now derived from `entry_margin` alone;
 > `Backup entry route` moved into the Stage-4 university report; **`Course at a glance`** and **`Student life`**
@@ -350,7 +359,8 @@ one pass; `--inventory <slug>` lists the rate each file states) ·
 `check_master_list.py` (the gate; `--blanks` lists what a backfill needs to fill) ·
 `check_social_post.py` (confidentiality gate for a drafted social post — scans for live
 student slugs, `data/` paths, and credential-shaped secrets) ·
-`build_glossary_sheet.py` (Glossary tab) · `compare_universities.py` (comparison tables) ·
+`build_list_pdf.py` (the student's list PDF, run with `.venv`'s Python; `--draft` = review copy only) ·
+`build_glossary_sheet.py` (internal `glossary.csv`) · `compare_universities.py` (comparison tables) ·
 `match_finalists.py` (resolve a shorthand name like "UCL" or "UCL|mechanical engineering" typed after
 `/report` to its exact `master_list.csv` row — read-only, never guesses, reports `ambiguous_*`/`not_found`
 instead) · `build_report.py` (15-section university report + its finalist marker fragment; `--mode course`

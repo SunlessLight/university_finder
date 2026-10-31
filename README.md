@@ -4,7 +4,7 @@ A self-contained **WAT** (Workflows, Agents, Tools) project: probabilistic AI ha
 deterministic Python handles execution. It takes a **Malaysian student** from *"who am I / what do I want"*
 to *"here is exactly how I apply to these specific universities"* — through a four-stage narrowing pipeline
 that ends in deep per-university reports, a ranked recommendation, and a deadline calendar. Everything
-lives in one local data bank that opens in Excel / Google Sheets / LibreOffice.
+lives in one local data bank; the student receives their list as a portrait PDF.
 
 Sibling of the `guest_speakers/` project; reuses its proven discovery + scoring patterns.
 
@@ -17,9 +17,10 @@ See [CLAUDE.md](CLAUDE.md) for the agent operating instructions, and
 workflows/   Markdown SOPs (00_overview, 01_intake, 03_discover_longlist, 04_university_report,
              05_decide_and_apply, + 08_application_prep, resume)
 tools/       Python execution scripts (firecrawl_search, init_student, ingest_form_csv,
-             shortlist_schema, sync_shortlist, compare_universities, build_report, build_calendar)
+             shortlist_schema, sync_shortlist, build_list_pdf, compare_universities, build_report,
+             build_calendar)
 data/students/   One private data bank per student (gitignored — PII). Each holds profile/preferences,
-                 master_list.csv, reports/, dated_items/ (each report's deadlines, kept for the
+                 master_list.csv, list.pdf, reports/, dated_items/ (each report's deadlines, kept for the
                  calendar), recommendation.md, calendar.md — full list in workflows/00_overview.md
 data/form/       Google Form CSV exports dropped here for batch intake (gitignored — PII)
 business/    Product review + sales material (poster, scripts, sample pack) — not part of the pipeline
@@ -32,7 +33,7 @@ business/    Product review + sales material (poster, scripts, sample pack) — 
 | Stage | Output | What you get |
 |---|---|---|
 | 1 Intake | `profile.json` + `preferences.json` | Grades, budget, English, recognition needs — plus countries, field and priorities. Built from the Google Form CSV |
-| 3 Discover | `master_list.csv` (Longlist) | 8-12 officially sourced rows per country, one country per session — every fact read off official pages, scored, with Reach/Match/Safety. Three or four countries add up to 20-40 rows in total |
+| 3 Discover | `master_list.csv` (Longlist), then `list.pdf` | 8-12 officially sourced rows per country, one country per session — every fact read off official pages, scored, with Reach/Match/Safety kept internal. Three or four countries add up to 20-40 rows in total. The student receives `list.pdf`: profile, summary table, key to our labels, one card per university, glossary |
 | 4 Report | `reports/<uni>.md` | Student picks 3-5 finalists; a quick check that the already-verified facts are still current, then a deep 15-section **university report** each |
 | 5 Decide | `recommendation.md` + `calendar.md` | Ranked picks, application strategy, deadlines |
 
@@ -149,6 +150,10 @@ python tools/fetch_form_responses.py --confirm                        # LAST: ma
 python tools/firecrawl_search.py --student <slug> "BSc Computer Science UK entry requirements" --limit 6 --scrape-top 2
 #   ...review .tmp/<slug>/search_results.json, write .tmp/<slug>/uni_candidates.json (schema in workflow 03)...
 python tools/sync_shortlist.py --student <slug>          # add --dry-run to preview
+
+#   ...after the last country: check, then build the PDF the student receives...
+python tools/check_master_list.py --student <slug>                  # must be clean
+.\.venv\Scripts\python.exe tools/build_list_pdf.py --student <slug> # -> data/students/<slug>/list.pdf
 
 python tools/compare_universities.py --student <slug> --status Shortlist --dimensions all
 #   ...narrow by editing the List status column; promote finalists...

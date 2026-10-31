@@ -42,7 +42,7 @@ git show <ref>
 
 **Find the WHY, don't invent it** — this repo's reasoning trail, in this order:
 
-1. **`decisions/log.md`, `plans/build-log.md`, `business/additionals.md`** — dated decisions,
+1. **`decisions/log.md`, `plans/build-log.md`, `plans/additionals.md`** — dated decisions,
    session hand-offs, and the known-problems backlog (R-numbers).
 2. **`token_cost_report.md`** — measured numbers. A draft that cites a real figure beats
    one that says "reduced duplication" in the abstract.

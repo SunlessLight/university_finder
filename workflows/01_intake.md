@@ -164,7 +164,7 @@ fine — but keep the substring in bold intact.
   verbatim (mapped 2026-10-27). Nothing reads it automatically yet; it is context for the English-waiver
   call and for entry requirements that name SPM or IGCSE.
 - **"Achievements / activities you'd want to write about in your application?"** (optional, new
-  2026-08; report form only since 2026-10-30, see O12 in `plans/discussions.md`) →
+  2026-08; report form only since 2026-10-30, see O12 in `plans/additionals.md`) →
   `profile.achievements`, free text. This exists specifically so Stage 4's "Who actually
   gets in" section and the application-prep guide can compare the student's real activities against
   what admitted applicants are shown to have, instead of only generic "here's what unis look for" text
@@ -406,7 +406,7 @@ free-text grades, the result year, sometimes a free-text recognition match):
       one against the raw text: a subject with "and" in its name counts as two). Fix the tidy-up, not
       the check. "Other" has no scale, so read those by hand.
    3. Show Evan raw vs tidied (the tool prints both), a 30-second look.
-   4. Update the tally in `plans/discussions.md`: +1 if nothing needed correcting, back to 0 if
+   4. Update the tally in R41 of `plans/additionals.md`: +1 if nothing needed correcting, back to 0 if
       something did. At 20 in a row the look can stop (backlog R41).
    5. Delete `_intake_raw`.
 

@@ -114,7 +114,7 @@ def preferences_template():
         "currency": "MYR",
         "scholarship_required": None,
         "scholarship_interests": None,  # no longer asked; stays null by design — research broadly regardless (see 04_university_report.md §6)
-        "priorities": [],        # ordered, e.g. ["cost","employability","recognition","ranking","location"]
+        "priorities": [],        # ordered, e.g. ["cost","employability","recognition","ranking","location"]; the tick form also sets priority_levels (token -> 3/2/1/0)
         "ranking_importance": None,
         "min_subject_rank_pref": None,
         "post_study_work_importance": None,

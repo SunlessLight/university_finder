@@ -26,6 +26,9 @@ Scholarship link (columns planned in T3c; printed when present), and the officia
 of every shared system the card mentions (apply_glossary.OFFICIAL_LINKS: Common App,
 CSS Profile, IELTS...).
 
+2026-10-31 (O8, Evan): the card's living line says "Estimated", because living costs are
+estimates even on a row whose hard facts are checked on the official page.
+
 Engine: WeasyPrint via apply_prep_to_pdf._load_weasyprint() (adds the GTK DLL dir on
 Windows). Run with the project venv: .venv/Scripts/python.exe. Template + stylesheet:
 tools/templates/list_pdf.html / list_pdf.css (string.Template, $placeholders).
@@ -209,7 +212,7 @@ def cost_breakdown(row):
     total_local = tuition
     if tuition is not None and living is not None and years is not None and code:
         years_txt = f"{years:g} year" + ("" if years == 1 else "s")
-        lines.append((f"Living, {fmt_money(code, living)} a year × {years_txt}",
+        lines.append((f"Estimated living, {fmt_money(code, living)} a year × {years_txt}",
                       fmt_money(code, living * years), ""))
         total_local = tuition + living * years
         lines.append((f"Whole degree in {code}", fmt_money(code, total_local), ""))

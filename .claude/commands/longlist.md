@@ -8,10 +8,11 @@ Run `workflows/03_discover_longlist.md` for student `$1`, country `$2`.
 If `$2` is empty, pick the country per that workflow's "Pick the next country" step: the next
 entry in `preferences.target_countries` with **no rows yet in `master_list.csv`**. The CSV is the
 oracle, not `status.md` — if they disagree, trust the CSV. Every target country already having rows
-means Stage 3 is done; say so instead of inventing another pass.
+means Stage 3 is done; say so instead of inventing another pass, and build the student's PDF
+(the workflow's Step 8).
 
 **One country per pass.** That's a hard gate (`--country` on both tools), and it's what keeps this
-session's context small enough to fill 35 columns a row.
+session's context small enough to fill 40 columns a row.
 
 Read `data/students/$1/status.md` first and cross-check it against `profile.json`,
 `preferences.json` and `master_list.csv` (files win over the note). Confirm `weights.json` exists —

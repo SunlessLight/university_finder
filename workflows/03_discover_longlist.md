@@ -21,7 +21,7 @@ glance; Stage 4 no longer re-verifies it, it only writes reports on the survivor
 > if the fact exists and you couldn't reach it, say so in `notes`.
 
 > **The longlist is a SCANNING surface, not a report.** A row carries only what the student needs in
-> order to **cut** — enough to say "keep looking at this one" or "drop it" at a glance in Google Sheets.
+> order to **cut** — enough to say "keep looking at this one" or "drop it" at a glance.
 > Anything that needs a paragraph belongs somewhere else: the long-form research goes to
 > `research_notes.md` now, and the real depth goes into the Stage-4 **university report**
 > (`04_university_report.md`), which is the document the student actually reads to *decide*. Cell
@@ -50,6 +50,7 @@ small enough to research 38 columns a row, and it's now a hard gate (`--country`
 6. python tools/check_master_list.py --student <slug>
    python tools/build_glossary_sheet.py --student <slug>
 7. Update status.md      — name the NEXT country explicitly.
+8. After the LAST country: build the student's PDF (Step 8).
 ```
 
 **Search routing: free first, Firecrawl when free is blocked.** Claude's `WebSearch`/`WebFetch` is the
@@ -249,7 +250,7 @@ grades to A-Level equivalents by guesswork.
 python tools/merge_candidates.py  --student <slug> --country "<Country>"   # gaps stop here
 python tools/sync_shortlist.py    --student <slug> --country "<Country>"   # --dry-run to preview
 python tools/check_master_list.py --student <slug>                          # the gate
-python tools/build_glossary_sheet.py --student <slug>                       # refresh Glossary tab
+python tools/build_glossary_sheet.py --student <slug>                       # refresh glossary.csv (internal; the PDF prints its own)
 ```
 
 `merge_candidates.py` collects `.tmp/<slug>/candidates/*.json` into `.tmp/<slug>/uni_candidates.json`
@@ -275,6 +276,23 @@ below the bar can't be a Safety; grades above it that are still a Reach must say
 Rewrite "Master list state → Destinations covered" and "Next action" to name the **specific** next
 country. Record the pass's cost (rough token spend + wall-clock) while you still know it — the
 per-country budget is a measurement nobody has taken yet.
+
+## Step 8 — Build the student's PDF (after the last country)
+
+The student receives `list.pdf`, never `master_list.csv`. Run this once every target country has
+its rows:
+
+```powershell
+python tools/check_master_list.py --student <slug>                 # must be clean
+.venv/Scripts/python.exe tools/build_list_pdf.py --student <slug>  # -> data/students/<slug>/list.pdf
+```
+
+Use the venv's Python: WeasyPrint lives there. `Rejected` rows and the hidden columns are left out
+automatically. A money cell holding more than `<CODE> <number>`, or parts that don't add up to
+`Approx total (MYR)`, stops the build and lists the cells: fix them with `apply_backfill.py
+--overwrite`, never in the PDF. `--draft` builds a review copy marked "Draft, not for sending"; a
+list goes to a student only from a build without it. Rebuild after any change to the CSV. Evan
+reads the PDF before it goes out; note the date in `status.md`.
 
 ## Backfilling an existing longlist (rows that are already there, with holes)
 

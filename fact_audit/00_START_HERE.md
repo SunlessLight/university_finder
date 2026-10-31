@@ -81,7 +81,7 @@ Everything about reports, guides and the calendar waits until after 10 Nov.
 **Note:** another session fixed the sample pack and demo website (SP1) while this audit ran, so a
 few sample-pack findings are already fixed. Backlog entry R31 lists what was still there afterwards.
 
-**In the backlog:** these became entries **R26–R37** in `business/additionals.md`, steps 2b and
+**In the backlog:** these became entries **R26–R37** in `plans/additionals.md`, steps 2b and
 2c (before 10 Nov) and steps 7, 9 and 10 (after). R26 (the form) and R37 (the sales lines) are
 your own edits.
 

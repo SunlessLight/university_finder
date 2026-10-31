@@ -13,7 +13,7 @@ chained guesses drop to 59%; scripts don't drift.
 ## Human docs
 
 - `README.md`: setup, and how to run every stage by hand.
-- `business/README.md`: index of the business side (product review, stage explainers, LaunchX).
+- `business/README.md`: index of the business side (stage explainers, LaunchX).
 
 When you change how a stage runs, check whether these need updating too.
 
@@ -23,6 +23,7 @@ When you change how a stage runs, check whether these need updating too.
 python tools/progress_dashboard.py                    # which stage every student is at
 python tools/shortlist_schema.py --contract           # the CSV/fragment contract (never read the source for it)
 python tools/check_master_list.py --student <slug>    # gate before a list goes to a student
+.venv/Scripts/python.exe tools/build_list_pdf.py --student <slug>   # the list PDF the student receives
 python tools/fetch_form_questions.py --check          # live form questions -> forms/*.json, checked vs ingest
 python tools/check_grades.py --student <slug>         # tidied grades vs the programme's scale
 python -m unittest tests.test_intake_forms tests.test_report_order tests.test_check_grades tests.test_list_checks tests.test_calendar_dates   # the automatic tests
@@ -39,9 +40,10 @@ file stays the source of truth.
 | How-tos | `workflows/` (start at `00_overview.md`; there is no `02`) | One file per stage: objective, tools in order, edge cases |
 | Scripts | `tools/` | Fetch/ingest the form, sync the master list, build reports, run the checks |
 | Helpers | `.claude/agents/row-filler.md`, `report-writer.md` (Opus) | Volume only: one per university (Stage 3), one per finalist (Stage 4) |
-| Student files | `data/students/<slug>/` (gitignored) | profile, preferences, `weights.json`, `master_list.csv`, `research_notes.md`, `status.md` |
+| Student files | `data/students/<slug>/` (gitignored) | profile, preferences, `weights.json`, `master_list.csv`, `list.pdf`, `research_notes.md`, `status.md` |
 | Form exports | `data/form/` (gitignored) | Google Form responses CSV |
-| Business | `business/` | LaunchX pitch (`launchx/`), sales, backlog `additionals.md` |
+| Business | `business/` | LaunchX pitch (`launchx/`), sales |
+| Tasks and plans | `plans/` | `additionals.md` (every open task and question), running plans, `build-log.md` |
 | Scratch | `.tmp/` | Throwaway fragments and JSON inputs |
 
 ## Guardrails
@@ -49,13 +51,13 @@ file stays the source of truth.
 Running the pipeline:
 - Don't enter plan mode for a routine run, because the workflow file is the plan. Plan mode is for changing the system (schema, new tool, workflow rewrite).
 - Stop and talk to Evan at: **Stage 1 finalize** (settle `_needs_review` before Stage 3 scores anything) · **Stage 4** (Evan picks finalists: render `compare_universities.py` and wait) · **anything destructive** (`--force` on a student folder, demoting/rejecting a row he hasn't agreed to drop), because `data/students/` has no git undo.
-- Don't send a list to a student until `check_master_list.py` is clean, or call a social draft ready until `check_social_post.py` is clean.
+- Don't send a list to a student until `check_master_list.py` is clean, or call a social draft ready until `check_social_post.py` is clean. Students get `list.pdf` built without `--draft`, never the CSV.
 - Don't hand-build what a tool owns (a shortlist, `master_list.csv` + `research_notes.md` via `apply_backfill.py`). Check `tools/` before writing a new script.
 - Don't build stage-owning helpers, because Stages 1, 5 and 8 are conversations with Evan. Helper write fences: `00_overview.md` → "Subagents".
 - When something breaks: fix the tool, retest, write the lesson into the workflow.
 
 Facts and scoring:
-- Desirability ≠ admissibility: the 0–100 score excludes entry fit, which lives in `Admission likelihood` (Reach/Match/Safety) + `Warnings`. An unreachable uni must not rank high.
+- Desirability ≠ admissibility: the 0–100 score excludes entry fit, which lives in `Admission likelihood` (Reach/Match/Safety, internal only: students see the published `Admit rate`) + `Warnings`. An unreachable uni must not rank high.
 - Don't put weights in `tools/shortlist_schema.py`, because it's shared and concurrent sessions overwrite each other. Weights are per student (`weights.json`, `scoring-weights` skill).
 - Hard facts (fees, requirements, deadlines) come from the official uni / UCAS / Common App page. Stage 3 verifies and stamps `Info source = Official page`; no Finalist on unverified facts. Aggregators are for discovery only.
 - Cost is total in MYR (approximate), not annual tuition, so a 3-year UK and a 4-year US degree compare.
@@ -78,11 +80,12 @@ Privacy and wording:
 ## Generated files: never edit by hand
 
 - Student reports, application guides and `calendar.md`: made by `build_report.py`, `build_application_prep.py` and `build_calendar.py` from JSON inputs. Edit the JSON and rebuild.
+- `list.pdf`: made by `build_list_pdf.py` from `master_list.csv`. Fix the cell through `apply_backfill.py` and rebuild.
 
 ## Status
 
 - Current status: the **Now** box at the top of `STATUS.md`. Start a session with `/catchup` (or `/catchup <slug>` for one student).
-- Ideas and open questions under discussion with Evan: `plans/discussions.md` (one running file, dated sections). Add to it whenever a session raises an idea or question that isn't settled.
+- New tasks, problems, ideas and open questions: only `plans/additionals.md` (Evan, 2026-10-31). Add to it whenever a session raises one. Open a separate plan file only for one big job with many steps, and move its leftovers there when it ends. Evan's dated business to-dos stay in `business/launchx/status.md`.
 - At the end of a session that changed files or decided something, add an entry to `plans/build-log.md` (done / decisions / problems / next step) and update the Now box.
 - Then mirror it to Notion, without asking, so Evan can follow on his phone: rewrite the "Shortlisted — Now" page (`40525bdf03ad8167895cf78073e5a1ac`, under 🗓️ Everything) from the Now box, and bring the Tasks database in line with the open items in `business/launchx/status.md` (new item → new task, ticked → Done, new date → Due). Files are the source; Notion is the copy. Only touch tasks that match an item in the files (the rest are Evan's own) and only `Project Area = University Research Agent` (a new task gets its Area from its `Project`). End the reply with "Notion updated" or why not. Addresses: `workflows/notion_sync.md`.
 
@@ -94,7 +97,7 @@ Log meaningful decisions (direction changes, trade-offs, things worth rememberin
 
 - Google Sheets: the Google Drive connector (`search_files`, then `read_file_content`) is for a quick look only. It returns a *sample* of rows (5 of ~15 on a test sheet) and cuts long cells, and it can't see Google Forms at all. Full answers: `fetch_form_answers.py` (all four forms, feedback included), `fetch_form_responses.py` (intake, the pending batch for Stage 1). Forms' questions: `forms/*.json`.
 - `workflows/00_overview.md`: read first for any pipeline run (stages, tool reference, subagent fences, guardrails in full).
-- `business/additionals.md`: known problems not yet fixed. Start at its "Start here" index; leftovers a task won't fix go there.
+- `plans/additionals.md`: every open task and question. Start at its "Start here" index; leftovers a task won't fix go there.
 - `business/launchx/mentor.md` + `status.md`: the business mentor brief and LaunchX state (`/mentor`).
 - `token_cost_report.md` and the dated notes at the top of each `tools/*.py`: the why behind past changes.
 - `archives/`: old copies replaced on 2026-10-21. History only, not instructions.

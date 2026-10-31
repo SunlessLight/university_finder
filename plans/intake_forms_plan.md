@@ -160,7 +160,7 @@ The same intake script reads both forms, so consent checks and grade handling ar
 ### [x] T1. Save the notes and this plan
 - **Who:** Claude. **Needs:** none. **Size:** S.
 - **Touches:** `plans/intake_forms_plan.md` (copy of this file), `plans/discussions.md`,
-  `decisions/log.md`, `business/additionals.md`, `business/launchx/status.md`, `STATUS.md`,
+  `decisions/log.md`, `plans/additionals.md`, `business/launchx/status.md`, `STATUS.md`,
   `plans/build-log.md`, Notion "Shortlisted — Now" and Tasks.
 - **Do:**
   - Log the decisions (Context above) in `decisions/log.md`, append-only.
@@ -241,7 +241,7 @@ The same intake script reads both forms, so consent checks and grade handling ar
 - **Done when:** a fake report CSV creates a folder with `report_orders` and no country noise, and
   an existing folder keeps every other field unchanged.
 - **Prompt:** "Read plans/intake_forms_plan.md and do T5 only. Check step 9 of
-  business/additionals.md is finished or not in progress first. Offer the commit."
+  plans/additionals.md is finished or not in progress first. Offer the commit."
 
 ### [x] E1. Evan edits and creates the forms
 - **Who:** Evan, in Google Forms. **Needs:** T2 for E1a; E1b can happen any time.

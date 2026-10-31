@@ -153,7 +153,7 @@
       `before any scholarship. That is more than ${Math.floor(dearest.approxTotalMyr / cheapest.approxTotalMyr)} times the price for the same course area.`,
     `${names(needBlind)} decide admission without looking at whether you asked for aid, then cover the full gap. ` +
       `${names(cut)} gives international undergraduates no aid, so we cut it from your list.`,
-    `${total - unverified.length} of ${total} rows are checked on the official university page. ` +
+    `Fees, requirements and deadlines on ${total - unverified.length} of ${total} rows are checked on the official university page; living costs are estimates. ` +
       (unverified.length
         ? `The other ${unverified.length} (${names(unverified)}) stay marked "Not verified" until they are.`
         : 'Any row we cannot check stays marked "Not verified" until it is.')
@@ -269,7 +269,7 @@
 
   const decision = {
     recommendedId: mit.id,
-    headline: `Put ${mit.shortName} first, and make sure the rest of your list carries the weight.`,
+    headline: `Recommended first choice: ${mit.shortName}.`,
     balance: balance,
     rounds: { early: 'Early round', regular: 'Regular round' },
     plan: plan,

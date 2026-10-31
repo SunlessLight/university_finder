@@ -1,9 +1,13 @@
 # Plan: the student list becomes a PDF, with checked facts (before 10 Nov 2026)
 
 *Written 2026-10-29 for Evan and for the Claude sessions that run it. Replaces backlog steps 2b, 2c
-and 2d in `business/additionals.md` (R27, R28, R29, R30 part a, R32, R39, R40, R38, then R23, R25,
+and 2d in `plans/additionals.md` (R27, R28, R29, R30 part a, R32, R39, R40, R38, then R23, R25,
 R31). Amended 2026-10-29 (Evan: "all new changes now, no waiting"): T2b, T3b, T10, T11, T12 added.
 Amended 2026-10-30 after E1 (Evan read the sample): Decisions items 7, 11, 12; T3c and T5b added.*
+
+**✅ Plan done 2026-10-31.** Every task is finished. A list is handed over through Step 8 of
+`workflows/03_discover_longlist.md`. What it left is in `plans/additionals.md`: R30, R31, R39,
+R44–R49.
 
 **Goal:** a paying student on 10 Nov gets a tidy portrait PDF of their universities. Every fact is
 a plain number or a fixed wording from the official page, dated. Every judgment label is explained
@@ -98,7 +102,7 @@ From `decisions/log.md` (2026-10-28 and 2026-10-29) and `plans/discussions.md`:
 | T5b | Research instructions: helpers write the two link fields | Claude | E1 | `.claude/agents/row-filler.md`, `workflows/03b_candidate_schema.md` | S |
 | T7 | Re-check the sample's facts on official pages (R23, R25, R31) in the source list | Claude | T4, T5, T11, E1, T3c, T5b | the source student's `data/students/<slug>/` files, `workflows/countries/uk.md` | M |
 | T8 | Rebuild the sample pack (now a PDF list) and the demo website's download | Claude | T7 | `business/sales/sample_pack/`, `prototype/data.js`, `prototype/_build/` | M |
-| T9 | Docs and backlog brought in line | Claude | T8 | `README.md`, `workflows/00_overview.md`, `business/sales/sample_pack/README.md`, `business/additionals.md`, `CLAUDE.md` | S |
+| T9 | Docs and backlog brought in line | Claude | T8 | `README.md`, `workflows/00_overview.md`, `workflows/03_discover_longlist.md`, `business/sales/sample_pack/README.md`, `plans/additionals.md`, `CLAUDE.md` | S |
 
 Size key: S under 20k tokens, M 20–60k, L 60–100k.
 
@@ -152,7 +156,7 @@ commit as its work.
 | T5b | ✅ 2026-10-30 | (this commit) | `row-filler.md` → "Fixed-format cells" names `apply_link` (course's own portal page, or Common App / UCAS home) and `scholarship_link` (official page of the `scholarship_portal` scholarship): one `https://` URL opened in the session, or `Not published`; never an aggregator or search-results page. 03b example fragment has both (`https://www.ucas.com/`, placeholder Manchester URL) and every formatted field passes `cell_format_problem()`; `ucas.com` / `see portal` fail. Stage 3 can run again (merge requires both, the sheet names both). |
 | T7 | ✅ 2026-10-30 | 3e853e4 + (this commit) | On Evan's yes, 264 cells + 15 research-notes sections written to toru through `apply_backfill.py --overwrite`, then RM totals, Warnings and R23 labels recomputed (15 changes, 2 score_log lines); backups in `.tmp/t7/backup/`. Real files are byte-identical to the rehearsal copy. Checks: the 15 rows = 0 findings; PDF builds without `--draft` on a redacted copy (14 universities, `.tmp/t7/final_sample_list.pdf`); 18 tests pass. toru's whole list still fails (`hedges`, `numbers`): the other 28 rows are in the old format and are not in the sample (legacy backfill, not T7). **Melbourne fee:** official 2027 BSc total AUD 181,310–211,405 + two-thirds of the Master's 220,950 (the 2-year entry point) = AUD 328,610–358,705, so `AUD 333,760` stands; read in Chrome after the write, so toru's `research_notes.md` still says the BSc rate was unreadable. **T8, read before the sample goes public:** not confirmed on an official page: MQA eSISRAF on all rows (the register opens in Chrome; a few clicks per university; `workflows/sources.md`), Northeastern Application requirements (Chrome blocks the site; Common App essay not read), Tsinghua living CNY 40,000 (no official figure), NUS living (official parts + hostel midpoint). Cambridge's card now says "Deadline passed". Not owned by any task: Monash's Course is the Monash Malaysia title (Clayton = BEng (Hons), Robotics & Mechatronics specialisation); CMU Warnings says "clashes with his #1 priority" (a note about the student). |
 | T8 | ✅ 2026-10-30 | (this commit) | `build_sample_pack.py` now also builds `sample_list.pdf` (14 universities, 22 pages; the Rejected row left out) through `build_list_pdf.py`, never `--draft`, and includes it in the leak scan. Checks: build clean; `check_master_list.py --file` sample = 0 findings; 14/14 card totals = CSV; a wider one-off scan (13 values from toru's profile and preferences, all 5 files + PDF metadata + `prototype/`) found only "Malaysian" and Princeton's public USD 150,000 line; `smoke.js` 147/147; a real mouse click on both buttons opens the PDF in a new tab and the demo tab stays put. Site: `files.list` = `sample_list.pdf`, label "Download the list"; `gen.py` and `columnGroups` carry all 40 columns. Outside T8's file list, because the list is now a PDF: `results.js`, `list.js` (buttons open in a new tab like the report's, not `download`; Apply and Scholarship links clickable, "Not published" stays text), `waiting.js` (said "spreadsheet"). Corrected: `smoke.js` NUS RM 383k → 398k (SGD 124,780 × 3.19, T7's figure); `report.pages` 19 → 25 (the PDF's real length). **T9:** `sample_pack/README.md` still says four files, 35 columns, "Last rebuilt 2026-10-20"; say whether the CSV stays in the pack (it stays built: `gen.py` reads it). Open, not owned by any task (`plans/discussions.md`): T7's four unconfirmed facts vs the site's "15 of 15 rows are checked"; Cambridge in the top 5 past its deadline; the Decide screen's "early round on 1 Nov". |
-| T9 | | | |
+| T9 | ✅ 2026-10-31 | (this commit) | Beyond the task's wording: no workflow ran the PDF builder, so `03_discover_longlist.md` gained Step 8 (`--student` tested on a made-up folder: 14 universities, 22 pages). The sample pack keeps its CSVs as working files, not for sending. Closed R23, R25, R28, R29, R32, R40, each checked against the files. Not everything had landed: R31 stays open for the Decide screen's advice line, Carnegie Mellon's note about the student and Monash's Course title (step 2f); R30 and R39 stay, cut down. New R44–R46 ("After 10 Nov" below), R47 and R48 (notes no task owned). The list PDF says "Sample student", not the banner's wording; the README now says so. |
 
 ## Done when (checks anyone can run)
 
@@ -229,7 +233,7 @@ commit as its work.
   - The sample pack's privacy scan is clean.
   - `node prototype/_build/smoke.js` passes.
 - **T9:**
-  - Steps 2b and 2c in `business/additionals.md` point here and are marked done.
+  - Steps 2b and 2c in `plans/additionals.md` point here and are marked done.
   - The "After 10 Nov" list below is in the backlog.
   - The build log has an entry.
 
@@ -239,7 +243,7 @@ Every prompt starts the same way, so a fresh session needs nothing from the chat
 
 ### T1
 ```
-Read plans/list_pdf_plan.md ("Decisions" and the T1 rows) and business/additionals.md entries R27
+Read plans/list_pdf_plan.md ("Decisions" and the T1 rows) and plans/additionals.md entries R27
 and R29. Do task T1 only. Write only tools/ingest_form_csv.py. R27: the live intake form's grade-type
 option is "Forecast Grades"; map it to `predicted`, not `expected`. R29 part: stop the "Urban+Rural
 both ticked" note reaching Warnings by making it a Stage 1 `_needs_review` item in the ingest
@@ -251,7 +255,7 @@ only, no names). Then tick T1 in the plan's Progress table and offer the commit.
 
 ### T2
 ```
-Read plans/list_pdf_plan.md ("Decisions" items 7 and the T2 rows) and business/additionals.md
+Read plans/list_pdf_plan.md ("Decisions" items 7 and the T2 rows) and plans/additionals.md
 entries R30 and R32, plus fact_audit/04_spreadsheet_text.md findings #1-11 for the exact lines.
 Do task T2 only. Write only tools/apply_glossary.py (it is 75 KB: grep for the lines, don't read
 it whole). Part a of R30: rewrite every definition that tells the reader what to do ("Avoid it
@@ -266,7 +270,7 @@ the T2 "Done when" checks; tick T2 in the plan; offer the commit. Explain to Eva
 
 ### T3
 ```
-Read plans/list_pdf_plan.md ("Decisions" items 3-5 and the T3 rows) and business/additionals.md
+Read plans/list_pdf_plan.md ("Decisions" items 3-5 and the T3 rows) and plans/additionals.md
 entry R29. Do task T3 only. Write only tools/shortlist_schema.py, tools/merge_candidates.py and
 tools/sync_shortlist.py. Start with `python tools/shortlist_schema.py --contract`.
 1) Add columns "Application requirements" and "Checked on" at the END of SHORTLIST_HEADERS, with
@@ -287,7 +291,7 @@ the new constants for T4/T5/T6; offer the commit. Explain to Evan in plain Engli
 ### T3b
 ```
 Read plans/list_pdf_plan.md ("Decisions" items 2 and 9, the T3b rows, the T3 note in the Progress
-table) and business/additionals.md entry R40. Do task T3b only. Write only tools/shortlist_schema.py,
+table) and plans/additionals.md entry R40. Do task T3b only. Write only tools/shortlist_schema.py,
 tools/merge_candidates.py and tools/sync_shortlist.py. Run `git log -1 -- tools/shortlist_schema.py`
 first: T3 must be committed; if not, stop and tell Evan. Add column "Admit rate" at the END of
 SHORTLIST_HEADERS (after "Checked on"), candidate field `admit_rate`, in ADDED_COLUMNS so
@@ -301,7 +305,7 @@ in plain English.
 
 ### T10
 ```
-Read plans/list_pdf_plan.md ("Decisions" item 10, the T10 rows) and business/additionals.md entry
+Read plans/list_pdf_plan.md ("Decisions" item 10, the T10 rows) and plans/additionals.md entry
 R39, then .claude/skills/scoring-weights/SKILL.md and the docstring of tools/derive_weights.py.
 Do task T10 only. Write only tools/ingest_form_csv.py, tools/derive_weights.py and that skill.
 Ingest keeps the tick levels as preferences.priority_levels (token -> 3/2/1/0) beside the existing
@@ -316,7 +320,7 @@ to Evan in plain English.
 
 ### T11
 ```
-Read plans/list_pdf_plan.md ("Decisions" item 9, the T11 rows) and business/additionals.md entry
+Read plans/list_pdf_plan.md ("Decisions" item 9, the T11 rows) and plans/additionals.md entry
 R40. Do task T11 only. Write only workflows/countries/*.md. For each country file, find where that
 country's universities officially publish an admit or offer rate (e.g. US: Common Data Set C1;
 UK: Oxford and Cambridge admissions statistics, UCAS data if per university), using free search
@@ -329,17 +333,17 @@ check; tick T11; offer the commit. Report to Evan in plain English: which countr
 
 ### T12
 ```
-Read plans/list_pdf_plan.md (T12 rows) and business/additionals.md entry R38 and its "Rules for
+Read plans/list_pdf_plan.md (T12 rows) and plans/additionals.md entry R38 and its "Rules for
 every step session". Do task T12 only. List the 7 profiles for Evan by slug (in the chat only),
 with each one's form answer and the grade_status it would get. Wait for his yes. Then copy each
 profile.json to .tmp/ and set grade_status by hand (no --force re-ingest). Don't re-sync any list.
-Delete R38 from business/additionals.md and its step line; tick T12; offer the commit
+Delete R38 from plans/additionals.md and its step line; tick T12; offer the commit
 (additionals.md and the plan only; data/ is gitignored). Explain to Evan in plain English.
 ```
 
 ### T4
 ```
-Read plans/list_pdf_plan.md (T4 rows and the T3 and T3b notes in the Progress table), business/additionals.md
+Read plans/list_pdf_plan.md (T4 rows and the T3 and T3b notes in the Progress table), plans/additionals.md
 entry R28, and the regex table in fact_audit/08_output_sweep.md. Do task T4 only. Write only
 tools/check_master_list.py, tools/apply_backfill.py and a new tests/test_list_checks.py.
 Add check_hedges over the fact columns: fail on rows stamped "Official page", warn on "Not
@@ -418,7 +422,7 @@ commit. Explain to Evan in plain English.
 
 ### T7
 ```
-Read plans/list_pdf_plan.md (T7 rows, E1 note) and business/additionals.md entries R23, R25 and
+Read plans/list_pdf_plan.md (T7 rows, E1 note) and plans/additionals.md entries R23, R25 and
 R31, and its "Rules for every step session". Do task T7 only. The sample pack's 15 rows come from
 the source student's list (named in business/sales/sample_pack/build_sample_pack.py); facts are
 fixed there, never in sample_master_list.csv. For each row, re-read the facts on the official page
@@ -445,7 +449,7 @@ Verify with the T8 "Done when" checks; tick T8; offer the commit.
 
 ### T9
 ```
-Read plans/list_pdf_plan.md (Progress table and "After 10 Nov") and business/additionals.md
+Read plans/list_pdf_plan.md (Progress table and "After 10 Nov") and plans/additionals.md
 "Start here". Do task T9 only. Mark steps 2b and 2c done with a pointer to this plan; add the
 "After 10 Nov" items below as backlog entries in the right section, with the index updated. Update
 README.md, workflows/00_overview.md and business/sales/sample_pack/README.md wherever they describe
@@ -453,12 +457,12 @@ the student's download as a spreadsheet. Add a plan-done banner here. Write the 
 update the STATUS.md Now box and do the Notion mirror (CLAUDE.md -> Status). Offer the commit.
 ```
 
-## After 10 Nov (not in this plan; T9 moves these into the backlog)
+## After 10 Nov (moved into the backlog by T9: R44, R45, R46, plus R34 and R30)
 
 - Delete List status, Tier, Notes, Student life and Money to show (visa) from `master_list.csv`
   and every script that reads them (List status alone is in 27 files).
 - Stop researching Student life, Notes and Money to show in Stage 3. That's fewer tokens per
-  university, which also helps the pricing question in `plans/discussions.md`.
+  university, which also helps the pricing question (O5 in `plans/additionals.md`).
 - Money to show (visa) goes into the how-to-apply guide (Stage 8).
 - Student life is covered by the university report.
 - Reports and guides: one "Our assessment (a judgment, not a fact)" box (R34, step 9).

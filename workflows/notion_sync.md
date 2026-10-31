@@ -65,7 +65,7 @@ back. Keep exactly these two headings, newest line first, one line each:
 
 ```markdown
 ## Delivered
-- YYYY-MM-DD — <what was sent, e.g. "UK longlist spreadsheet" or "reports: Imperial, Heriot-Watt">
+- YYYY-MM-DD — <what was sent, e.g. "list PDF" or "reports: Imperial, Heriot-Watt">
 
 ## Feedback
 - YYYY-MM-DD — <asked, waiting | received: one-line gist>

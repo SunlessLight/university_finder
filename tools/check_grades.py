@@ -6,7 +6,7 @@ AI tidies that text into profile.subjects[] at Stage 1 finalize. This is the che
 fails any grade impossible for current_program.type, and any tidied list with fewer subjects than the
 raw text appears to name, so a dropped subject is caught. It then prints raw and tidied side by side
 for Evan's 30-second look, which stays until 20 forms in a row need no correction (tally:
-plans/discussions.md).
+R41 in plans/additionals.md).
 
 Scales: A-Level A*-E. STPM A, A-, B+, B, B-, C+, C, C-, D+, D, F. UEC A1, A2, B3-B6, C7, C8, F9.
 IB 1-7 per subject, and a subject named "Total" up to 45. Foundation / Matriculation / Diploma CGPA
