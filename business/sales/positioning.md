@@ -68,13 +68,14 @@ structural. A cheap uni you can't get into can never rank #1 on your list. That'
 
 ### 4.2 It won't tell you when it's guessing
 
-Every row stamps **`Info source`** — `Not verified` until a human has confirmed the fact on the
-university's own page, `Official page` after. Gemini will state a 2022 tuition fee as current fact, with
-total confidence, and never flag it.
+Every row says whether its facts came from the university's own page. **`Info source`** reads
+`Official page` if the AI researcher read that page, and `Not verified` if it couldn't. Gemini will
+state a 2022 tuition fee as current fact, with total confidence, and never flag it.
 
 That fee is the single most decision-relevant number in the entire exercise, and it's the one most
-likely to be silently stale. Aggregators are discovery-only here — a row can't reach Shortlist on
-aggregator facts. Everything hard gets re-checked against the official uni / UCAS / Common App page.
+likely to be silently stale. Aggregators are discovery-only here. The researcher's rule is to read
+hard facts from the official uni / UCAS / Common App page, and every row says whether that happened.
+A row still marked `Not verified` can't become a Finalist.
 
 ### 4.3 It forgets you
 

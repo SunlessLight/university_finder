@@ -301,7 +301,9 @@ them as plain warnings next to the score:
 - **Grades self-predicted** (the student has not sat the exams yet, so every admission judgement is provisional)
 - **Recognition risk** (for careers such as engineering or medicine, the degree may not let the student practise in Malaysia)
 
-A row with no problems says "None". That way the student knows it was checked.
+A row with none of these warnings says "None". That means no problem was found, not that everything
+was checked: if a student gave no spending limit, for example, the cost can't be compared and "Over
+budget" can't appear.
 
 ---
 
