@@ -10,3 +10,6 @@ Old copies, kept instead of deleted. Claude Code does not load anything here. Hi
 
 2026-10-31:
 - `intake_forms_plan.md`: finished, moved from `plans/`. Older notes in `tools/`, `tests/`, `decisions/log.md` and `plans/build-log.md` still name the old path.
+
+2026-11-02:
+- `seven_tasks.md`: finished, moved from `plans/`. The order of work for R34, R42, R30, R37, R50, R51 and R52.

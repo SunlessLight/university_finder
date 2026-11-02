@@ -18,6 +18,9 @@ data/feedback/
 # Standalone (--quick) university reports — no PII, just generated research output
 data/quick_reports/
 
+# Public PDFs saved for reference — not personal data, no tool needs them
+data/resources/
+
 # Session-artifact plans/notes that name real students — local history, never committed
 notes/
 

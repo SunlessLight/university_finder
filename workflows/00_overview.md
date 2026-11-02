@@ -20,7 +20,7 @@ university that hasn't passed the cheap cut first.
 |---|---|---|---|
 | 1 | `01_intake.md` | `profile.json` + `preferences.json` | Who the student is (grades, budget, English, recognition needs) **and** what they want (countries, field, priorities) — batch-built from the Google Form CSV, then finalized by you |
 | 3 | `03_discover_longlist.md` | `master_list.csv` (Longlist), then `list.pdf` for the student | **8-12 officially sourced rows per country, one country per session** — all 40 columns read off official pages, scored, with Reach/Match/Safety and the feasibility gates. **This stage owns fact verification** (guardrail 2). A student with three or four countries ends up with 20-40 rows in total; no single run produces that many |
-| 4 | `04_university_report.md` | `reports/<uni>.md` | Student picks 3-5 finalists off the Longlist; a cheap pre-flight cut (are the already-verified facts still current, is the set balanced), then a full 15-section decision **university report** per finalist — the same sections for every country. `--mode` selects only which claim it makes: course-specific (default) or **university-general (US-only)** for whole-institution fit |
+| 4 | `04_university_report.md` | `reports/<uni>.md` | Student picks 3-5 finalists off the Longlist; a cheap pre-flight cut (are the already-verified facts still current, is the set balanced), then a full 15-section **university report** per finalist (sourced facts plus one labelled opinion box) — the same sections for every country. `--mode` selects only which claim it makes: course-specific (default) or **university-general (US-only)** for whole-institution fit |
 | 5 | `05_decide_and_apply.md` | `recommendation.md` + `calendar.md` | Recommendation, application strategy, one deadline calendar |
 
 > **Stage 3 and Stage 4 are independent — don't gate one on the other.** Stage 4 operates on
@@ -47,11 +47,11 @@ deadlines) via `build_application_prep.py`. Report-free and **read-only** (never
 was delivered and whether feedback came back onto Evan's Notion board via `/notion`. One-way: local
 files are the source of truth, Notion never drives pipeline work, and no PII beyond the name goes up.
 
-**Report order (a paid report with "your fit"):** the report form, `01_intake.md` → "The report form".
+**Report order (a paid report with the "Our assessment" box):** the report form, `01_intake.md` → "The report form".
 The buyer gets a small student folder with no list, and `report-writer` gets their slug.
 
 **Quick university report:** `quick_university_report.md` (utility, not a stage) — a facts-only
-15-section report for a student who already knows which university they want, via `/quick-report`.
+14-section report for a student who already knows which university they want, via `/quick-report`.
 Unlike every stage above, this needs **no student at all** — no `profile.json`, `preferences.json`,
 `master_list.csv` row, or `data/students/<slug>/` folder. It reuses the same `report-writer`
 subagent and the same `build_report.py`, just with `--quick` instead of `--student <slug>`, output
@@ -71,7 +71,7 @@ likelihood, "your fit", priorities-based synthesis) dropped in favor of the fact
 > `.claude/agents/report-writer.md` (pinned to **Opus**), once per surviving finalist —
 > it's the highest-stakes, lowest-volume, deepest-synthesis stage. `tools/check_report.py`
 > (2026-08-08) gates the mechanical half — missing Snapshot fields, gap density, thin
-> sourcing, voice, required tables — but **no linter checks a report's synthesis quality**,
+> sourcing, voice, required tables, and since 2026-11-02 hedges, advice and chatter — but **no linter checks a report's synthesis quality**,
 > only its structure and completeness; that judgement call is still why the stage is pinned
 > to Opus rather than a deterministic script. The pre-flight pick/verify/cut in that
 > workflow stays in this (Sonnet) session — it's a checkpoint with the student, not
@@ -368,9 +368,9 @@ default or `--mode university` for a US whole-institution claim — same section
 `--quick` instead of `--student <slug>` renders a standalone report with no finalist marker, to
 `data/quick_reports/<slug>.md` — see `quick_university_report.md`) ·
 `check_report.py` (the Stage 4 report-quality gate —
-structure, sourcing, voice, required tables — read never re-read; `--all` for every report a student
-has; `--file <path>` to lint a report with no `--student`; `--quick` to skip the two
-student-only Snapshot rows for a `--quick`-built report) · `flip_finalists.py` (**fold** every
+structure, sourcing, voice, required tables, faith, hedges, advice, chatter — read never re-read; `--all`
+for every report a student has; `--file <path>` to lint a report with no `--student`; `--quick` for a
+`--quick`-built report, which has no box and no student-only Snapshot rows) · `flip_finalists.py` (**fold** every
 finalist marker into `master_list.csv` in one pass — the
 Stage 4 counterpart to `merge_candidates.py`, and the only thing that flips a row to `Finalist`) ·
 `report_to_pdf.py` (export a report to PDF for the student; `--file <path>` instead of `--student`
