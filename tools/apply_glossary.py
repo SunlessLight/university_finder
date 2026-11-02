@@ -24,6 +24,9 @@ import re
 # `present_terms` filters this down to what a given guide actually uses, so extra
 # entries here are free — they only render when the guide mentions them.
 # Definitions are one plain-English line, written to the student ("you").
+# 2026-11-02 (R30): no dates, money, changing statistics or rule lengths in a definition.
+# Nobody re-checks them here and they print into every list PDF; they belong in the
+# master list's cells, with a source.
 # --------------------------------------------------------------------------- #
 GLOSSARY = {
     # --- Early-application types (the ones the student called out) ------------
@@ -88,7 +91,7 @@ GLOSSARY = {
     "CSS Profile": {
         "aliases": ["CSS"],
         "definition": "The College Board's detailed financial-aid application most US universities use "
-                      "to assess your need (separate from the FAFSA). Opens 1 October.",
+                      "to assess your need (separate from the FAFSA).",
     },
     "IDOC": {
         "aliases": [],
@@ -104,7 +107,8 @@ GLOSSARY = {
         "aliases": ["International Student Application for Financial Assistance",
                     "International Student Financial Aid Application"],
         "definition": "**International Student Application for Financial Assistance** — Stanford's "
-                      "alternative aid form if you can't pay the CSS Profile fee.",
+                      "own aid form, filed instead of the CSS Profile if you can't pay its fee or the "
+                      "College Board can't take payment from your country.",
     },
     "fee waiver": {
         "aliases": [],
@@ -196,7 +200,7 @@ GLOSSARY = {
     "MOE Tuition Grant": {
         "aliases": [],
         "definition": "Singapore's Ministry of Education subsidy that cuts tuition sharply in exchange "
-                      "for a 3-year work bond after graduation.",
+                      "for a work bond after graduation.",
     },
     "JPA": {
         "aliases": ["JPA-MARA", "PKJM"],
@@ -210,13 +214,13 @@ GLOSSARY = {
     },
     "X1 visa": {
         "aliases": ["X1"],
-        "definition": "China's long-stay student visa, for a course longer than 180 days; you swap it "
-                      "for a residence permit within 30 days of arriving.",
+        "definition": "China's long-stay student visa; you swap it for a residence permit after "
+                      "arriving.",
     },
     "K visa": {
         "aliases": [],
-        "definition": "China's visa for young science and technology graduates, live since 1 October "
-                      "2025 — it does not require a Chinese employer to invite you first.",
+        "definition": "China's visa for young science and technology graduates — it does not require "
+                      "a Chinese employer to invite you first.",
     },
     "STEAM": {
         "aliases": [],
@@ -234,8 +238,8 @@ GLOSSARY = {
     # guides — recognition-back-home, post-study work, and department shorthand.
     "AAU": {
         "aliases": ["Association of American Universities"],
-        "definition": "**Association of American Universities** — an invitation-only group of the "
-                      "~70 leading research universities in North America; membership is a shorthand "
+        "definition": "**Association of American Universities** — an invitation-only group of "
+                      "leading research universities in North America; membership is a shorthand "
                       "for research heavyweight.",
     },
     "FAFSA": {
@@ -287,12 +291,12 @@ GLOSSARY = {
         # and was rewritten to "you must post-study work permit IN". Excluded by context.
         "not_followed_by": r"\s+(?:in|out)\b",
         "definition": "**Optional Practical Training** — US work permission that lets you work in "
-                      "your field for up to 12 months after graduating on a student visa.",
+                      "your field for a limited period after graduating on a student visa.",
     },
     "STEM OPT": {
         "aliases": ["STEM-OPT", "STEM extension", "STEM OPT extension"],
-        "definition": "**STEM OPT extension** — a 24-month extension of OPT for science/engineering "
-                      "degrees, giving up to 36 months of US work authorisation after you graduate.",
+        "definition": "**STEM OPT extension** — an extension of OPT for science/engineering degrees, "
+                      "adding more US work authorisation after you graduate.",
     },
     "ABET": {
         "aliases": [],
@@ -315,14 +319,14 @@ GLOSSARY = {
     "CEEAA": {
         "aliases": ["China Engineering Education Accreditation Association"],
         "definition": "**China Engineering Education Accreditation Association** — China's engineering "
-                      "accreditation body and its Washington Accord signatory since 2016; a "
-                      "CEEAA-accredited Chinese degree carries over to BEM.",
+                      "accreditation body and its Washington Accord signatory; a CEEAA-accredited "
+                      "Chinese degree carries over to BEM.",
     },
     "BEM-GAP": {
         "aliases": ["Graduate Assessment Programme"],
-        "definition": "**BEM Graduate Assessment Programme** — a 2-year top-up route that lets a "
-                      "graduate of an unrecognised engineering degree still register as a Graduate "
-                      "Engineer in Malaysia.",
+        "definition": "**BEM Graduate Assessment Programme** — a top-up route that lets a graduate "
+                      "of an unrecognised engineering degree still register as a Graduate Engineer "
+                      "in Malaysia.",
     },
     "MMC": {
         "aliases": ["Malaysian Medical Council", "Majlis Perubatan Malaysia"],
@@ -340,8 +344,8 @@ GLOSSARY = {
     "housemanship": {
         "aliases": ["house officer", "houseman"],
         "definition": "**Housemanship** — the supervised internship you must complete in Ministry "
-                      "of Health hospitals after graduating, across six postings, before the MMC "
-                      "will grant you full registration as a doctor.",
+                      "of Health hospitals after graduating, across a series of postings, before the "
+                      "MMC will grant you full registration as a doctor.",
     },
     "MOH": {
         "aliases": ["Ministry of Health Malaysia", "Kementerian Kesihatan Malaysia"],
@@ -431,7 +435,7 @@ GLOSSARY = {
         "aliases": ["South East Asia Community Observatory", "Southeast Asia Community Observatory"],
         "definition": "**South East Asia Community Observatory** — Monash Malaysia's long-running "
                       "population health research site in Segamat, Johor, which tracks the health "
-                      "of tens of thousands of residents over time.",
+                      "of local residents over time.",
     },
     "CSJB": {
         "aliases": ["Clinical School Johor Bahru"],
@@ -446,9 +450,8 @@ GLOSSARY = {
     },
     "SETARA": {
         "aliases": [],
-        "definition": "**SETARA** — MOHE's official rating of Malaysian universities. Since 2022 it "
-                      "has just two tiers, Berdaya Saing (Competitive) and Berdaya Maju (Viable), "
-                      "so it tells you which side of a line a university sits on, not its rank.",
+        "definition": "**SETARA** — MOHE's official rating of Malaysian universities. It sorts them "
+                      "into tiers, so it tells you which tier a university sits in, not its rank.",
     },
     "CGPA": {
         "aliases": ["Cumulative Grade Point Average"],
@@ -570,12 +573,12 @@ GLOSSARY = {
     "SAIL": {
         "aliases": ["Stanford Artificial Intelligence Laboratory"],
         "definition": "**Stanford Artificial Intelligence Laboratory** — Stanford's long-running AI "
-                      "and robotics research lab, founded in 1962.",
+                      "and robotics research lab.",
     },
     "BOSP": {
         "aliases": ["Bing Overseas Studies Program"],
         "definition": "**Bing Overseas Studies Program** — Stanford's own study-abroad system, where "
-                      "credit transfers automatically and roughly half of each class takes part.",
+                      "credit transfers automatically.",
     },
     "VPUE": {
         "aliases": ["Vice Provost for Undergraduate Education"],
@@ -603,7 +606,7 @@ GLOSSARY = {
         "aliases": ["CIP"],
         "definition": "**Classification of Instructional Programs code** — the US government's "
                       "subject code printed on your I-20. Whether yours is on the STEM list is what "
-                      "decides if you get the 24-month STEM OPT extension.",
+                      "decides if you get the STEM OPT extension.",
     },
     "S/NC": {
         "aliases": ["Satisfactory/No Credit", "SNC"],
@@ -720,8 +723,7 @@ GLOSSARY = {
     "Kijang Scholarship": {
         "aliases": ["Kijang", "BNM Kijang"],
         "definition": "Bank Negara Malaysia's scholarship for high-scoring Malaysians to study abroad in "
-                      "finance-adjacent fields, including data science; it carries a service bond of two "
-                      "years for each sponsored year.",
+                      "finance-adjacent fields, including data science; it carries a service bond.",
     },
     "UPC": {
         "aliases": ["Undergraduate Preparatory Certificate"],
@@ -782,7 +784,7 @@ GLOSSARY = {
     "E-Verify": {
         "aliases": [],
         "definition": "The US government system employers use to confirm a hire may legally work. "
-                      "Only an E-Verify employer can sponsor the 24-month STEM OPT extension.",
+                      "Only an E-Verify employer can sponsor the STEM OPT extension.",
     },
     "USCIS": {
         "aliases": ["United States Citizenship and Immigration Services"],
@@ -873,13 +875,12 @@ GLOSSARY = {
     },
     "UCAS": {
         "aliases": [],
-        "definition": "The UK's central undergraduate application service — one form to apply to up to "
-                      "five UK universities, with a mid-January equal-consideration deadline.",
+        "definition": "The UK's central undergraduate application service — one form for all your UK "
+                      "university choices.",
     },
     "Graduate Route": {
         "aliases": [],
-        "definition": "The UK's post-study work visa — lets graduates stay and work after their degree "
-                      "(18 months for bachelor's/master's applying from 1 January 2027).",
+        "definition": "The UK's post-study work visa — lets graduates stay and work after their degree.",
     },
     "NAOME": {
         "aliases": [],
@@ -978,8 +979,7 @@ GLOSSARY = {
     "OSHC": {
         "aliases": ["Overseas Student Health Cover"],
         "definition": "**Overseas Student Health Cover** — the private health insurance every Australian "
-                      "student visa holder must buy and keep for the whole stay. Roughly AUD 650-800 a year "
-                      "for a single student.",
+                      "student visa holder must buy and keep for the whole stay.",
     },
     "CRICOS": {
         "aliases": ["CRICOS code"],
@@ -998,8 +998,8 @@ GLOSSARY = {
     },
     "Genuine Student requirement": {
         "aliases": ["Genuine Student", "GS requirement", "GS statement", "GS Declaration"],
-        "definition": "The written test of intent in an Australian student visa application — short answers, "
-                      "150 words each, on why you are studying this course here. A weak one gets visas refused.",
+        "definition": "The written test of intent in an Australian student visa application — short answers "
+                      "on why you are studying this course here. A weak one gets visas refused.",
     },
     "WAM": {
         "aliases": ["Weighted Average Mark"],
@@ -1011,8 +1011,8 @@ GLOSSARY = {
         # ordering consumes the bare number too, rather than stranding it.
         "aliases": ["485 Temporary Graduate visa", "Temporary Graduate visa (subclass 485)",
                     "485 visa", "Temporary Graduate visa"],
-        "definition": "Australia's post-study work visa — lets you stay and work for a few years after "
-                      "graduating. Regional campuses can qualify for an extra year.",
+        "definition": "Australia's post-study work visa — lets you stay and work for a set period after "
+                      "graduating. Regional campuses can qualify for longer.",
     },
     "IGP": {
         "aliases": ["Indicative Grade Profile"],
@@ -1043,8 +1043,8 @@ GLOSSARY = {
     "IANG": {
         "aliases": ["Immigration Arrangements for Non-local Graduates"],
         "definition": "**Immigration Arrangements for Non-local Graduates** — Hong Kong's post-study work "
-                      "route. Graduates get 24 months to stay and work with no job offer needed, then "
-                      "renew 2+2+3 years; seven continuous years qualifies for permanent residency.",
+                      "route. Graduates can stay and work with no job offer needed, and can renew it; "
+                      "enough continuous years can qualify for permanent residency.",
     },
     "JUPAS": {
         "aliases": ["Joint University Programmes Admissions System"],
@@ -1055,8 +1055,8 @@ GLOSSARY = {
     "non-JUPAS": {
         "aliases": ["non-local admission", "non-local student"],
         "definition": "Everyone in Hong Kong who isn't a local HKDSE student. It is the admissions route "
-                      "you use — and the tuition rate you pay: non-local fees run four to six times the "
-                      "subsidised local rate shown beside them on the same fee page.",
+                      "you use — and the tuition rate you pay: the non-local fee, not the subsidised "
+                      "local rate shown beside it on the same fee page.",
     },
     "G30": {
         "aliases": [],
@@ -1106,8 +1106,8 @@ GLOSSARY = {
     "Commonwealth Supported Place": {
         "aliases": ["CSP"],
         "definition": "A government-subsidised university place in Australia, open to **domestic students "
-                      "only**. Its fee is printed next to the international one — if an Australian annual "
-                      "fee looks under about A$25,000, this is the number you are reading.",
+                      "only**. Its fee is printed next to the international one, so it is not the fee "
+                      "an international student pays.",
     },
     "GES": {
         "aliases": ["Graduate Employment Survey"],
@@ -1128,9 +1128,8 @@ GLOSSARY = {
     },
     "DSAAI": {
         "aliases": ["Data Science and Applied AI"],
-        "definition": "**Data Science and Applied AI** — the NUS BSc (Hons) major that replaces Data "
-                      "Science and Analytics from the AY2026/27 cohort onwards, adding an applied "
-                      "artificial-intelligence spine to the statistics and computing core.",
+        "definition": "**Data Science and Applied AI** — the NUS BSc (Hons) major that adds an applied "
+                      "artificial-intelligence spine to a statistics and computing core.",
     },
     "NOC": {
         "aliases": ["NUS Overseas Colleges"],
