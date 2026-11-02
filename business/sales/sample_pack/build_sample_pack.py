@@ -126,16 +126,10 @@ def build_list_pdf(master_list_path: Path) -> Path:
 # grammatical contexts). Applied after the generic redact() pass. Keeping these as
 # explicit find/replace pairs (not regex) so a failed match is loud (ValueError) rather
 # than silently leaving PII in a sales asset.
-REPORT_TEXT_REDACTIONS = [
-    ("the family income on your file is under about RM 150,000 a year, roughly USD 37,000, far below",
-     "the family income on your file is in a lower-income band, far below"),
-    ("You study in English at Sunway,", "You study in English at your college,"),
-    ("Ask Sunway early;", "Ask your college early;"),
-    ("if Sunway has no humanities", "if your college has no humanities"),
-    ("Confirm Sunway can send", "Confirm your college can send"),
-    ("than Bandar Sunway,", "than a Malaysian suburb,"),
-    ("Not open to a Sunway College student", "Not open to a private-college student"),
-]
+# 2026-11-02 (R52): empty for now. The MIT report was rewritten in the facts-plus-one-box shape and
+# no longer holds the income figure or the school name, so every old pair had nothing to match.
+# scan_for_leaks() still runs on the PDF and stops the build if either comes back.
+REPORT_TEXT_REDACTIONS = []
 
 
 def build_report_pdf(report_slug: str) -> Path:
@@ -153,9 +147,9 @@ def build_report_pdf(report_slug: str) -> Path:
             )
         text = text.replace(before_r, after_r)
 
-    # Insert the banner right after the H1 title, before the first ## section.
+    # Insert the banner under the title and date, above "### Your profile" and the first section.
     lines = text.splitlines()
-    h2_at = next(i for i, ln in enumerate(lines) if ln.startswith("## "))
+    h2_at = next(i for i, ln in enumerate(lines) if ln.startswith(("## ", "### ")))
     text = "\n".join(lines[:h2_at] + [BANNER, ""] + lines[h2_at:])
 
     tmp_md = OUT_DIR / ".sample_report_redacted.md"

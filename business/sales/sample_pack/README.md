@@ -9,7 +9,7 @@ spreadsheet,"* you send one of these files and stop typing. The gap argues for y
 | File | Tier it shows | What the prospect sees |
 |---|---|---|
 | `sample_list.pdf` | **Tier 1 — The List** | 14 real universities in a portrait PDF (22 pages): student profile, summary table, a key to our labels, one card per university with its cost breakdown in ringgit and useful links, glossary at the back. Each card says when its facts were checked on the official page. |
-| `sample_university-report_MIT.pdf` | **Tier 2 — The University Reports** | One full **15-section decision report** (25 pages) — who actually gets in, aid maths, and honest *reasons to hesitate*. |
+| `sample_university-report_MIT.pdf` | **Tier 2 — The University Reports** | One full **15-section report** (22 pages): sourced facts on who gets in, costs and aid, plus one box clearly labelled as our opinion. |
 | `sample_apply-guide_US.pdf` | **Tier 3 — The Apply Pack** | One **per-region apply guide** (28 pages, 9 universities) — grouped by application system, every deadline, the exact financial-aid mechanics. |
 
 Send **one**, not all three, unless someone asks for the full thing — the university-report PDF is usually the
@@ -34,12 +34,11 @@ Each PDF says it is a sample at the top ("Sample — anonymized demo" on the rep
 student" on the list) so nobody mistakes it for a real person's private file, and so it's obvious you
 protect your clients' data.
 
-## Before you share these — two checks
+## Before you share these — one check
 
-1. These were scrubbed and scanned (zero hits for the name / school / income figures in both CSVs and
-   all three PDFs). But **open all three PDFs yourself once** before the first send — you're the last
-   gate. If you ever regenerate them from a different student, re-run the same scan and re-read them.
-2. **One small thing is still open:** R51 in `plans/additionals.md` (the Monash row's link).
+These were scrubbed and scanned (zero hits for the name / school / income figures in both CSVs and
+all three PDFs). But **open all three PDFs yourself once** before the first send — you're the last
+gate. If you ever regenerate them from a different student, re-run the same scan and re-read them.
 
 ## How they were built (to regenerate)
 
@@ -51,7 +50,7 @@ glossary from that redacted list (`build_glossary_sheet.py`), builds the list PD
 after the title, and does the same for the US apply guide (`md_to_pdf.py --type apply`). It ends by re-running the same leak scan by hand ("zero hits") described below, so a
 regeneration re-proves the guarantee instead of assuming it still holds.
 
-**Last rebuilt: 2026-10-30**, at the exchange rates stamped `FX_AS_OF 2026-09-05` in
+**Last rebuilt: 2026-11-02**, at the exchange rates stamped `FX_AS_OF 2026-09-05` in
 `tools/shortlist_schema.py` (USD 4.04). Every ringgit figure in the list, the MIT report and the apply guide is at
 those rates. If `FX_AS_OF` moves, the source student's list and report need re-converting first, then
 this rebuild — the script copies the source's ringgit figures, it does not recompute them.
@@ -60,6 +59,7 @@ Re-run it whenever the source student's list or reports change materially — a 
 corrected fact, a re-scored row — so the sample stops drifting from what the pipeline produces today.
 `check_master_list.py --file sample_master_list.csv` and `check_report.py --file <redacted .md>` should
 both still come back at 0 findings after a regeneration; if they don't, the source data has an issue
-worth fixing before it goes in a sample, not redaction to work around.
+worth fixing before it goes in a sample, not redaction to work around. (2026-11-02: the list check
+still fails `deadlines` on four rows, because they hold more than one date.)
 
 The un-redacted source stays in the gitignored data bank and is never shared.

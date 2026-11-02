@@ -338,7 +338,7 @@
       "keyDeadline": "Rolling",
       "intake": "2027 (Jul realistic; Feb 2027 too early for A2 results)",
       "notes": "Clayton campus hosts Monash Nova Rover, a student team building Mars rovers for the University Rover Challenge in Utah.",
-      "courseUrl": "https://www.monash.edu/engineering",
+      "courseUrl": "https://www.monash.edu/study/courses/find-a-course/engineering-e3001",
       "infoSource": "Official page",
       "applicationRequirements": "Not published",
       "checkedOn": "2026-10-30",
