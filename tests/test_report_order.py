@@ -4,12 +4,19 @@ test_report_order.py — a report sold without a list (plans/intake_forms_plan.m
 A report buyer has a student folder but no master_list.csv. What these pin down:
   - build_report.py stops after the report: no finalist marker, because there is no row to flip;
   - a student with a master list still gets the marker;
-  - check_report.py asks that report for "Your priorities" and "Admission likelihood" like any
-    other, because the report form has asked the importance grid since 2026-10-30;
+  - check_report.py asks that report for "Your priorities" and "Admit rate" like any other, because
+    the report form has asked the importance grid since 2026-10-30;
   - progress_dashboard.py shows "Report order", not stuck at Stage 1;
   - a student's report opens with their profile (never their race), a quick report doesn't, and the
     PDF's "Key terms" still lands after the Snapshot;
   - check_report.py flags halal/prayer wording the student never asked for.
+
+Facts plus one opinion box (R34, plans/seven_tasks.md T1, 2026-11-02):
+  - the new headings render, the box carries our label, and the report prints its date;
+  - a JSON written the old way fails, a quick report has no box, Reach/Match/Safety never prints;
+  - hedges, advice and chatter each catch a bad line and pass a good one, including the words the
+    audit's trial showed would be false alarms;
+  - a report in the old shape is still recognised, and doesn't get the new checks.
 
 Everything runs in a temporary folder.
 
@@ -19,10 +26,12 @@ Run (stdlib only, no pytest needed):
 
 import io
 import json
+import re
 import sys
 import tempfile
 import unittest
 from contextlib import redirect_stdout
+from datetime import date
 from pathlib import Path
 from unittest import mock
 
@@ -176,10 +185,188 @@ class CheckReport(unittest.TestCase):
         self.assertEqual(len(findings), 1)
         self.assertIn("Your priorities", findings[0])
 
-    def test_every_student_report_needs_admission_likelihood(self):
-        findings = self.findings("Admission likelihood")
+    def test_every_student_report_needs_the_published_admit_rate(self):
+        findings = self.findings("Admit rate")
         self.assertEqual(len(findings), 1)
-        self.assertIn("Admission likelihood", findings[0])
+        self.assertIn("Admit rate", findings[0])
+
+    def test_a_quick_report_keeps_the_admit_rate_because_it_is_a_fact(self):
+        self.assertEqual(len(self.findings("Admit rate", quick=True)), 1)
+
+
+def report_data(**extra):
+    """A report JSON, with every field the Snapshot and box print."""
+    return {"university": "Test University", "course": "BSc Test", "country": "Malaysia",
+            "overall_rank": "#1", "subject_rank": "#2", "application_system": "UCAS",
+            "admit_rate": "12% (university's figure)", "priorities": "Must have: Cost",
+            "grades_vs_bar": "At the bar", "sources": [{"title": "s"}],
+            "sections": dict(SECTIONS), **extra}
+
+
+class ReportShape(unittest.TestCase):
+    def test_the_new_headings_render(self):
+        report = build_report.render_report(report_data(), "course")
+        for heading in ("Who it's for", "Getting in — requirements and who gets in", "Campus culture",
+                        "Notable facts", "Our assessment (a judgment, not a fact)"):
+            self.assertRegex(report, rf"(?m)^## \d+\. {re.escape(heading)}$")
+
+    def test_no_heading_asks_for_a_verdict(self):
+        report = build_report.render_report(report_data(), "course")
+        for old in ("your fit", "Why here", "hesitate", "vibe", "quirks"):
+            self.assertNotIn(old, report)
+
+    def test_the_box_is_a_box_opening_with_our_label(self):
+        report = build_report.render_report(report_data(), "course")
+        box = report[report.index("## 14."):report.index("## 15.")]
+        self.assertIn('<div class="callout-note" markdown="1">', box)
+        self.assertIn("**Grades vs entry bar: At the bar.** Our label:", box)
+        self.assertIn("</div>", box)
+
+    def test_reach_match_safety_never_prints(self):
+        report = build_report.render_report(report_data(admission_likelihood="Reach"), "course")
+        self.assertNotIn("Reach", report)
+        self.assertNotIn("Admission likelihood", report)
+        self.assertIn("| **Admit rate** | 12% (university's figure) |", report)
+
+    def test_the_date_prints_under_the_title(self):
+        self.assertEqual(build_report.prepared_line(date(2026, 11, 2)), "_Prepared on 2 November 2026._")
+        report = build_report.render_report(report_data(), "course")
+        self.assertEqual(report.splitlines()[2], build_report.prepared_line())
+
+    def test_old_json_fails_the_build(self):
+        sections = {("why_here" if k == "our_assessment" else k): v for k, v in SECTIONS.items()}
+        with self.assertRaises(SystemExit) as stop:
+            build_report.validate(report_data(sections=sections), "course")
+        self.assertIn("our_assessment", str(stop.exception))
+
+    def test_quick_needs_no_box_and_prints_none(self):
+        sections = {k: v for k, v in SECTIONS.items() if k != "our_assessment"}
+        data = report_data(sections=sections)
+        build_report.validate(data, "course", quick=True)
+        report = build_report.render_report(data, "course", quick=True)
+        self.assertNotIn("Our assessment", report)
+        self.assertIn("## 14. Sources", report)
+
+
+class ReportChecks(unittest.TestCase):
+    def results(self, line="Tuition is GBP 29,000 a year.", section="costs", **flags):
+        data = report_data(sources=[{"title": "s", "url": "https://x.edu", "authority": "Official",
+                                     "as_of": "2026"}])
+        data["sections"][section] = line
+        quick = flags.get("quick", False)
+        if quick:
+            del data["sections"]["our_assessment"]
+        return check_report.run(build_report.render_report(data, "course", quick=quick),
+                                check_report.CHECKS, **flags)
+
+    def assertFlagged(self, check, *lines):
+        for line in lines:
+            with self.subTest(line=line):
+                self.assertEqual(len(self.results(line)[1][check]), 1)
+
+    def assertPasses(self, check, *lines):
+        for line in lines:
+            with self.subTest(line=line):
+                self.assertEqual(self.results(line)[1][check], [])
+
+    def test_a_built_report_passes_the_shape_checks(self):
+        mode, found = self.results()
+        self.assertEqual(mode, "report")
+        self.assertEqual(found["structure"], [])
+        self.assertEqual(found["snapshot"], [])
+
+    def test_a_built_quick_report_passes_structure(self):
+        self.assertEqual(self.results(quick=True)[1]["structure"], [])
+
+    def test_a_quick_report_with_a_box_fails_structure(self):
+        text = build_report.render_report(report_data(), "course")
+        self.assertTrue(check_report.run(text, ["structure"], quick=True)[1]["structure"])
+
+    def test_no_date_fails_structure(self):
+        text = build_report.render_report(report_data(), "course").replace("_Prepared on", "_Made on")
+        self.assertIn("Prepared on", " ".join(check_report.run(text, ["structure"])[1]["structure"]))
+
+    def test_the_box_needs_our_label(self):
+        data = report_data(grades_vs_bar="")
+        data["sections"]["our_assessment"] = "| Topic | Our judgment |\n|---|---|\n| Cost | Hard (§10) |"
+        found = check_report.run(build_report.render_report(data, "course"), ["tables"])[1]["tables"]
+        self.assertTrue(any("Grades vs entry bar" in line for line in found))
+        data["grades_vs_bar"] = "At the bar"
+        found = check_report.run(build_report.render_report(data, "course"), ["tables"])[1]["tables"]
+        self.assertFalse(any("Grades vs entry bar" in line for line in found))
+
+    def test_hedges_catch_guesses_and_verdicts(self):
+        self.assertFlagged("hedges", "Fees will likely rise.", "Offers usually arrive in March.",
+                           "Around 200 students join.", "Tuition is ~USD 60,000.",
+                           "About A$25,000 a year.", "Predicted grades put you well above the bar.")
+
+    def test_hedges_leave_ordinary_words_and_ringgit_alone(self):
+        self.assertPasses("hedges", "Total ~RM 400,000 at the 2026 rate.", "About RM 5,000 a year.",
+                          "Students are certain about medicine.", "Around the campus are three parks.",
+                          "It costs about the same as Year 1.")
+
+    def test_a_hedge_is_fine_in_the_box_and_nowhere_else(self):
+        line = "| Cost | Likely a stretch (§10) |"
+        self.assertEqual(self.results(line, section="our_assessment")[1]["hedges"], [])
+        self.assertEqual(len(self.results(line, section="costs")[1]["hedges"]), 1)
+
+    def test_advice_catches_orders(self):
+        self.assertFlagged("advice", "You should apply in October.", "We recommend the foundation year.",
+                           "Check the fee page each year.", "**Ask your college early.**",
+                           "- [ ] Confirm your second referee.", "The score is 7.5. Take it if offered.",
+                           "| Letters | Bring one thing you enjoy |", "Apply early for housing.")
+
+    def test_advice_leaves_rules_and_nouns_alone(self):
+        self.assertPasses("advice", "You must declare fitness to practise.", "The SAT is recommended.",
+                          "| JPA | Check: Bumiputera only |", "A background check is required.",
+                          "Staff will verify your documents.", "Check-in opens at 9am.")
+
+    def test_the_box_gets_no_pass_on_orders(self):
+        found = self.results("| Offer | Take it if offered |", section="our_assessment")[1]["advice"]
+        self.assertEqual(len(found), 1)
+
+    def test_chatter_catches_notes_to_self(self):
+        self.assertFlagged("chatter", "Not found — free search cannot read Reddit.", "Note: fees vary.",
+                           "**Note:** fees vary.", "I found no transfer figures.", "Let me explain.",
+                           "The pages read here give no numbers.", "Not checked (eSISRAF needs a browser).",
+                           "It's worth noting the fees.")
+
+    def test_chatter_leaves_ordinary_words_alone(self):
+        self.assertPasses("chatter", "Phase I covers anatomy.", "The Great Dome is open.",
+                          "A great many students cycle.", "Not found — MIT publishes no transfer figures.")
+
+    def test_sources_are_not_read(self):
+        section = [(15, "Sources", ["- You should read this forum thread, it seems"])]
+        self.assertEqual(check_report.check_advice(section), [])
+        self.assertEqual(check_report.check_chatter(section), [])
+        self.assertEqual(check_report.check_hedges(section), [])
+
+    def test_a_url_is_not_prose(self):
+        line = "See [the fees page](https://x.edu/you-should-apply-early-likely)."
+        self.assertPasses("advice", line)
+        self.assertPasses("hedges", line)
+
+    def old_report(self):
+        lines = ["# University Report — Old", ""]
+        labels = check_report.LEGACY_REPORT_SNAPSHOT_CORE + check_report.NEW_SNAPSHOT_BY_SCOPE["course"]
+        rows = "\n".join(f"| **{label}** | filled |" for label in labels)
+        lines += ["## 1. Snapshot", rows, ""]
+        for i, (_, heading) in enumerate(build_report.LEGACY_REPORT_SECTIONS, start=2):
+            lines += [f"## {i}. {heading}", "You should expect fees to be likely higher.", ""]
+        lines += ["## 15. Sources", "- [s](https://x.edu)", ""]
+        return "\n".join(lines)
+
+    def test_an_old_report_is_recognised_and_parked(self):
+        mode, found = check_report.run(self.old_report(), check_report.CHECKS)
+        self.assertEqual(mode, "legacy_report")
+        self.assertEqual(found["structure"], [])
+        self.assertEqual(found["snapshot"], [])
+        for check in ("hedges", "advice", "chatter"):
+            self.assertNotIn(check, found)
+
+    def test_an_old_report_keeps_the_faith_check(self):
+        text = self.old_report().replace("You should", "Halal food means you should")
+        self.assertTrue(check_report.run(text, ["faith"])[1]["faith"])
 
 
 class Dashboard(unittest.TestCase):

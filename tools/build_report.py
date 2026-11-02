@@ -42,15 +42,22 @@ involved at all: no profile.json/preferences.json/master_list.csv, no finalist m
 step. Output goes to data/quick_reports/<slug>.md instead of data/students/<slug>/reports/.
 Use it instead of --student when a student already knows the university and just wants the
 facts, without going through Stage 1 (intake) or Stage 3 (longlist) first. The input JSON is the
-same shape, just without "admission_likelihood"/"priorities" (meaningless with no student profile
-to compare against) — the Snapshot table already skips those rows when empty, so nothing else
-changes.
+same shape, just without "priorities"/"grades_vs_bar"/"our_assessment" (meaningless with no student
+profile to compare against) — the Snapshot table already skips a row when empty, and --quick skips
+the box.
 
 Changed 2026-10-30 (Evan): a student's report opens with "Your profile", the same facts as the
 list PDF plus their location and other preferences, read from profile.json + preferences.json.
 Never their race: the Scholarships section uses it, the first page doesn't need it. It is a ###
 heading on purpose: report_to_pdf.py places "Key terms" by counting ## headings, and check_report.py
 only reads numbered ones. A --quick report has no student, so no block.
+
+Changed 2026-11-02 (R34, Evan): every section is sourced fact; all opinion goes in one box, section
+14 "Our assessment (a judgment, not a fact)", key our_assessment. The key changed from why_here on
+purpose, so a JSON written the old way fails the build instead of pouring a verdict into the new
+shape. The Snapshot prints the published admit_rate, not Reach/Match/Safety (internal only). The box
+opens with grades_vs_bar, explained in JUDGMENT_LABELS' words. Reports print "Prepared on <build
+date>". --quick is sold as facts only, so it has no box: 12 content sections, numbered 1 to 14.
 
 Usage:
     python tools/build_report.py --student <slug> --input .tmp/<slug>/report_<report-slug>.json
@@ -65,17 +72,20 @@ whole-institution Snapshot:
       "country": "...", "city": "...",
       "setting": "urban | college town | rural",       # university mode only
       "type": "private research university | public | liberal arts college",  # university mode only
-      "size": "~4,500 undergrads",                     # university mode only
+      "size": "4,500 undergraduates",                  # university mode only
       "net_cost": "By family income: ~RM Xk-Yk/yr (uni's examples, 20XX; approx)",  # university mode only; no single your-share (S3)
       "overall_rank": "...", "subject_rank": "...",    # subject_rank is course mode only
-      "application_system": "...", "admission_likelihood": "...",
+      "application_system": "...",
+      "admit_rate": "4.6% overall, 2.0% international (MIT, 2025)",  # the published figure, or "Not published"
+      "grades_vs_bar": "Not published",                # our label; printed in the box, not the Snapshot
       "priorities": "1. Funding · 2. Hands-on · 3. ...",  # optional; shown in the Snapshot
       "slug": "manchester-cs",                # optional; derived if absent
       "sections": {
         "identity_mission": "...", "who_its_for": "...", "getting_in": "...",
         "what_youll_study": "...", "signature_experiences": "...", "culture_vibe": "...",
         "student_life": "...", "city_and_belonging": "...", "costs": "...",
-        "scholarships": "...", "outcomes": "...", "unique_facts": "...", "why_here": "..."
+        "scholarships": "...", "outcomes": "...", "unique_facts": "...",
+        "our_assessment": "..."                        # left out with --quick
       },
       "sources": [
         {"title": "...", "url": "...", "authority": "Official"|"Aggregator", "as_of": "2026"}
@@ -105,9 +115,11 @@ sources and corrections are unchanged by the 2026-09-06 merge.
 import argparse
 import json
 import sys
+from datetime import date
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from apply_glossary import JUDGMENT_LABELS  # noqa: E402
 from build_list_pdf import load_profile, student_items  # noqa: E402
 from shortlist_schema import slugify  # noqa: E402
 
@@ -125,8 +137,30 @@ DATED_ITEMS_DIRNAME = "dated_items"
 # ONE schema for every country since 2026-09-06. --mode no longer
 # selects sections — it selects the Snapshot shape and what the finalist marker claims.
 # Ordered: who is this place -> can I get in -> what I'd study -> will I belong -> money ->
-# payoff -> colour -> should I.
+# payoff -> notable facts -> our judgment. Facts only, except the last (R34).
 REPORT_SECTIONS = [
+    ("identity_mission", "Identity & what it's known for"),
+    ("who_its_for", "Who it's for"),
+    ("getting_in", "Getting in — requirements and who gets in"),
+    ("what_youll_study", "What you'll actually study"),
+    ("signature_experiences", "Signature academic experiences"),
+    ("culture_vibe", "Campus culture"),
+    ("student_life", "Student life, housing & food"),
+    ("city_and_belonging", "The city, the area & belonging"),
+    ("costs", "Costs (full)"),
+    ("scholarships", "Scholarships & financial aid"),
+    ("outcomes", "Outcomes, network & practising in Malaysia"),
+    ("unique_facts", "Notable facts"),
+    ("our_assessment", "Our assessment (a judgment, not a fact)"),
+]
+
+# A quick report is sold as facts only, so it has no box.
+QUICK_SECTIONS = [s for s in REPORT_SECTIONS if s[0] != "our_assessment"]
+
+# READ-ONLY history. Reports built before 2026-11-02 use these; check_report.py needs them to
+# lint what is already on disk. build_report.py NEVER emits them again — do not add to them,
+# do not "fix" them, and do not route new work through them.
+LEGACY_REPORT_SECTIONS = [
     ("identity_mission", "Identity & what it's known for"),
     ("who_its_for", "Who it's for — the archetype & your fit"),
     ("getting_in", "Getting in — requirements, who gets in & your fit"),
@@ -142,9 +176,7 @@ REPORT_SECTIONS = [
     ("why_here", "Why here / why hesitate"),
 ]
 
-# READ-ONLY history. Reports built before 2026-09-06 use these; check_report.py needs them to
-# lint what is already on disk. build_report.py NEVER emits them again — do not add to them,
-# do not "fix" them, and do not route new work through them.
+# READ-ONLY history, as above, for reports built before 2026-09-06.
 LEGACY_COURSE_SECTIONS = [
     ("entry_and_fit", "Entry requirements & this student's fit"),
     ("admitted_profiles", "Who actually gets in"),
@@ -182,12 +214,13 @@ LEGACY_UNIVERSITY_SECTIONS = [
 # Every schema check_report.py may encounter. Only "report" is buildable.
 SCHEMAS = {
     "report": REPORT_SECTIONS,
+    "legacy_report": LEGACY_REPORT_SECTIONS,
     "legacy_course": LEGACY_COURSE_SECTIONS,
     "legacy_university": LEGACY_UNIVERSITY_SECTIONS,
 }
 
 
-def validate(data, mode):
+def validate(data, mode, quick=False):
     """Fail loudly if required identity fields or content sections are missing/empty.
 
     Course mode needs both university + course; university mode needs only university
@@ -197,7 +230,7 @@ def validate(data, mode):
         if not (data.get(field) or "").strip():
             sys.exit(f"ERROR: report JSON is missing required field '{field}'.")
     sections = data.get("sections") or {}
-    schema = REPORT_SECTIONS
+    schema = QUICK_SECTIONS if quick else REPORT_SECTIONS
     missing = [key for key, _ in schema if not (sections.get(key) or "").strip()]
     if missing:
         sys.exit(
@@ -246,7 +279,7 @@ def render_snapshot(data):
         ("Overall rank", data.get("overall_rank")),
         ("Subject rank", data.get("subject_rank")),
         ("How to apply", data.get("application_system")),
-        ("Admission likelihood", data.get("admission_likelihood")),
+        ("Admit rate", data.get("admit_rate")),
         ("Your priorities", data.get("priorities")),
     ]
     return _fact_table(rows)
@@ -265,11 +298,27 @@ def render_university_snapshot(data):
         ("Type & size", type_size),
         ("Overall rank", data.get("overall_rank")),
         ("How to apply", data.get("application_system")),
-        ("Admission likelihood", data.get("admission_likelihood")),
+        ("Admit rate", data.get("admit_rate")),
         ("Est. net cost after aid (MYR)", data.get("net_cost")),
         ("Your priorities", data.get("priorities")),
     ]
     return _fact_table(rows)
+
+
+def render_assessment(body, grades_vs_bar):
+    """Section 14: the one box that may hold opinion, opening with our grades label."""
+    lines = ['<div class="callout-note" markdown="1">', ""]
+    if grades_vs_bar:
+        definition = JUDGMENT_LABELS["Grades vs entry bar"]["definition"]
+        lines += [f"**Grades vs entry bar: {grades_vs_bar}.** {definition}", ""]
+    lines += [body.strip(), "", "</div>"]
+    return "\n".join(lines)
+
+
+def prepared_line(day=None):
+    """The date under the title, so a printed fee or deadline can be seen to have aged."""
+    day = day or date.today()
+    return f"_Prepared on {day.day} {day:%B %Y}._"
 
 
 def render_sources(sources):
@@ -309,15 +358,15 @@ def render_sources(sources):
     return "\n".join(lines)
 
 
-def render_report(data, mode, student_profile=""):
+def render_report(data, mode, student_profile="", quick=False):
     if mode == "university":
         title = f"# University Report — {data['university']}"
         snapshot = render_university_snapshot(data)
     else:
         title = f"# University Report — {data['university']}: {data['course']}"
         snapshot = render_snapshot(data)
-    schema = REPORT_SECTIONS
-    parts = [title, ""]
+    schema = QUICK_SECTIONS if quick else REPORT_SECTIONS
+    parts = [title, "", prepared_line(), ""]
     if student_profile:
         parts += [student_profile, ""]
     parts.append("## 1. Snapshot")
@@ -326,7 +375,10 @@ def render_report(data, mode, student_profile=""):
     sections = data.get("sections") or {}
     for i, (key, heading) in enumerate(schema, start=2):
         parts.append(f"## {i}. {heading}")
-        parts.append(sections[key].strip())
+        if key == "our_assessment":
+            parts.append(render_assessment(sections[key], data.get("grades_vs_bar")))
+        else:
+            parts.append(sections[key].strip())
         parts.append("")
     parts.append(f"## {len(schema) + 2}. Sources")
     parts.append(render_sources(data["sources"]))
@@ -450,7 +502,7 @@ def main():
     parser.add_argument(
         "--mode", choices=("course", "university"), default="course",
         help="What this report claims: course (default) = one University+Course row, US-only "
-             "university = every row for that university. Both render the same 13 sections.",
+             "university = every row for that university. Both render the same sections.",
     )
     args = parser.parse_args()
 
@@ -466,7 +518,7 @@ def main():
         sys.exit(f"ERROR: {input_path} not found.")
 
     data = json.loads(input_path.read_text(encoding="utf-8"))
-    validate(data, args.mode)
+    validate(data, args.mode, quick=args.quick)
     # Before anything is written: a malformed dated_items stops the build, like an empty section.
     dated_items = normalize_dated_items(data.get("dated_items"))
 
@@ -481,7 +533,7 @@ def main():
     reports_dir.mkdir(parents=True, exist_ok=True)
     out_path = reports_dir / f"{slug}.md"
     student_profile = "" if args.quick else render_student_profile(STUDENTS_DIR / args.student)
-    out_path.write_text(render_report(data, args.mode, student_profile), encoding="utf-8")
+    out_path.write_text(render_report(data, args.mode, student_profile, quick=args.quick), encoding="utf-8")
     print(f"Wrote report: {out_path}")
 
     if args.quick:

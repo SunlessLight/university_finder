@@ -2,7 +2,7 @@
 
 ## Objective
 
-Produce a full 15-section university report for a student who already knows which university
+Produce a full 14-section university report for a student who already knows which university
 (and, usually, which course) they want, and just wants the facts — without going through Stage 1
 (`01_intake.md`) or Stage 3 (`03_discover_longlist.md`) first.
 
@@ -27,21 +27,22 @@ tell me about it" — one university (or a short named list), no comparison, no 
 `master_list.csv` — it only needs a valid report JSON. The two-way split between "facts" and
 "fit" in a normal report lives in the *instructions* the research agent follows
 (`.claude/agents/report-writer.md`), not in the rendering code, so a facts-only report is a
-different brief to the same agent, not a different tool. The only two Snapshot fields that don't
-apply without a student — `admission_likelihood` and `priorities` — are already optional and
-silently skipped by the renderer when absent.
+different brief to the same agent, not a different tool. `--quick` tells the renderer to leave out
+the opinion box, and the one Snapshot field that doesn't apply without a student, `priorities`, is
+already optional and skipped when absent.
 
 ## What's different from the normal Stage 4 report
 
-**Same 13 content sections, same research depth, same sourcing standard, same writing rules**
-(second person, tables over prose, blockquote callouts, the acronym auto-glossary). Only:
+**Same headings and order, same research depth, same sourcing standard, same writing rules**
+(second person, tables over prose, blockquote callouts, the acronym auto-glossary, information not
+advice). Only:
 
-- **Snapshot** omits `admission_likelihood` and `priorities` — there's no grade margin and no
-  student priorities to state.
-- **`who_its_for`, `getting_in`, `why_here`** keep their factual half and drop the personalized
-  half (fit-check, achievements comparison, priorities-based synthesis). The exact per-section
-  rule is written once, in `.claude/agents/report-writer.md`'s "Quick mode" section — read it
-  there, don't re-derive it here.
+- **No "Our assessment" box (Evan, 2026-11-02).** This report is sold as facts only, so there are 12
+  content sections and Sources is §14. No `our_assessment`, no `grades_vs_bar`.
+- **Snapshot** omits `priorities`. It keeps `admit_rate`, a published fact.
+- **`getting_in`** drops the table setting a student's file beside the published facts. The exact
+  rule is written once, in `.claude/agents/report-writer.md`'s "Quick mode" section — read it there,
+  don't re-derive it here.
 - **No finalist marker, no `corrections`, no CSV flip, ever.** There is no `master_list.csv` row
   to claim or correct.
 - **Output lives at `data/quick_reports/<slug>.md`**, not `data/students/<slug>/reports/`.
@@ -58,12 +59,12 @@ silently skipped by the renderer when absent.
 > The agent's own file has a "Quick mode" section covering exactly what to research, what to
 > render, and how — don't re-paste that brief here.
 
-1. *(agent research)* gather the facts for the 13 content sections, same standard as Stage 4:
+1. *(agent research)* gather the facts for the 12 content sections, same standard as Stage 4:
    official sources for hard facts, free search first and Firecrawl when free is blocked
    (guardrail 6 in `00_overview.md`), decision-texture sections stay free-search-only.
 2. *(agent step)* assemble `.tmp/quick/report_<slug>.json` (or `uni_<slug>.json` for
-   `--mode university`) — same shape as a normal report JSON, minus `admission_likelihood`/
-   `priorities`, and with no `corrections`.
+   `--mode university`) — same shape as a normal report JSON, minus `priorities`/`grades_vs_bar`/
+   `our_assessment`, and with no `corrections`.
 3. *(agent step)* render and check, then export:
    ```powershell
    python tools/build_report.py --quick --input .tmp/quick/report_<slug>.json [--mode university]
@@ -80,7 +81,8 @@ silently skipped by the renderer when absent.
   and recognition come from official sites, not aggregators, each source stamped with its cycle
   year.
 - **Capture social/forum/video links, don't scrape them** — identical rule to Stage 4, for the
-  same sections (`getting_in`, `culture_vibe`, `student_life`, `city_and_belonging`).
+  same sections (`getting_in`, `culture_vibe`, `student_life`, `city_and_belonging`), and every such
+  claim says whose view it is.
 - **A student who later does full intake gets a fresh report, not a promoted one.** A quick
   report is never "upgraded" into a Stage 4 finalist report or linked to a student folder — if
   the student goes through intake and this university survives to Shortlist/Finalist, Stage 4

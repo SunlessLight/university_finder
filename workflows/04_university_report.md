@@ -5,9 +5,13 @@
 For each **finalist** (the 3-5 universities the student picks from the Longlist), produce a deep,
 standardized **15-section university report** (Snapshot + 13 content sections + Sources) that answers three
 decision questions — **can I get in? · will I belong & thrive? · what will it take to apply?** — so the
-student can *decide*, not just compare. Lead with texture that determines whether they apply; keep the
-hard-fact sections as guardrails. This is the most research-intensive stage — do it only for finalists,
-A-tier and best-fit first.
+student can *decide*, not just compare. This is the most research-intensive stage — do it only for
+finalists, A-tier and best-fit first.
+
+> **Sections 1–13 are sourced facts. All opinion goes in one box (Evan, 2026-10-28, R34).** §14 "Our
+> assessment (a judgment, not a fact)" is the only place for a fit verdict, a weighing-up or a
+> "this looks hard". Nothing else judges, advises or guesses. `check_report.py` enforces this with
+> `hedges`, `advice` and `chatter`.
 
 > **The report is where depth lives — the master list stays a scan.** Stage 3 deliberately keeps
 > `master_list.csv` to one-line, budgeted cells so a student can *cut* by skimming it; everything that
@@ -76,7 +80,7 @@ kills a pick (deadline passed, a stale row that fails verification, entry unreac
 **`Rejected`** with a one-line reason in `Notes` and have the student pick a replacement from the
 Longlist — *before* you sink report research into it. For a kept Reach where direct entry is a stretch,
 research the **backup entry route** (foundation year / INTO-Kaplan-Navitas / community-college transfer)
-and its rough entry bar, so a grades-short student still has a route. **This is a report section, not a
+and its published entry bar, or `Not found — <why>`, so a grades-short student still has a route. **This is a report section, not a
 column** (it left the CSV on 2026-07-25): on a longlist the student is still scanning to cut, and most
 cells just restated the obvious — "direct entry is a Safety on his grades" tells them nothing. It earns
 its space once a row survives to Shortlist, where the detail is actually actionable.
@@ -169,8 +173,8 @@ python tools/check_master_list.py --student <slug>            # the gate — mus
 5. `check_report.py --all` lints every report just built, in one pass, without you reading any of
    them back into this session's context — that re-read is exactly what cost an earlier session 390
    lines. It catches the mechanical half of "is this report finished": missing Snapshot fields,
-   `Not found` density, thin or all-aggregator sourcing, third-person slips, and a required section
-   that isn't actually a table/checklist. `report-writer` is instructed to run this on its own report
+   `Not found` density, thin or all-aggregator sourcing, third-person slips, a required section
+   that isn't actually a table/checklist, and guesses, orders or notes-to-self. `report-writer` is instructed to run this on its own report
    before ending its dispatch, so a clean run here is confirmation, not the first check — but run it
    anyway; it's cheap, and it also catches a report someone built by hand outside the agent. **It is
    not a synthesis judge** — passing it means the report is structurally sound, not that the writing
@@ -213,11 +217,12 @@ Every content section below now applies to **every country** — the ones that u
 a non-US example so you don't skip them for a UK or Singapore finalist.
 
 `build_report.py` puts a **Your profile** table above the Snapshot from `profile.json` +
-`preferences.json`. Don't write it into the JSON. It never shows race.
+`preferences.json`, and "Prepared on <date>" under the title (the day it is built). Don't write
+either into the JSON. It never shows race.
 
 > **Write to what the student ticked (Evan, 2026-10-30).** Read `preferences.other_preferences`,
 > `location_prefs` and `needs`. Spend the depth on what's ticked: "Low crime rate" gets real safety
-> detail, "Cold Weather" a month-by-month picture, an urban pick an honest read of a campus-town
+> detail, "Cold Weather" a month-by-month picture, an urban pick the facts of a campus-town
 > setting. An unticked topic gets a line at most.
 >
 > **Halal, prayer rooms, mosques and Muslim communities appear only if the student asked:**
@@ -229,48 +234,46 @@ a non-US example so you don't skip them for a UK or Singapore finalist.
 
 1. **Snapshot** *(auto-rendered as a fact table from the JSON's top-level fields)* — uni · course (or,
    in university mode, setting / type & size / est. net cost) · country/city · overall rank · subject
-   rank · application system · admission likelihood, plus the student's ranked **`priorities`** (set
-   this field — it's where the priorities get stated once, up front).
-2. **Identity & what it's known for** — the aim, values, and what the place is known for. Applies
-   everywhere: Cambridge's Tripos + supervision system says as much about identity as any US mission
-   statement.
-3. **Who it's for — the archetype & your fit** — the signature "type" of student the place recruits
-   and shapes, plus an honest fit check against the student's `profile` / `preferences`.
+   rank · application system · **`admit_rate`** (the published figure with its year, or
+   `Not published`), plus the student's ranked **`priorities`** (set this field — it's where the
+   priorities get stated once, up front). Reach/Match/Safety is internal and never appears in a
+   report. Our label goes in `grades_vs_bar` and prints in the box (§14).
+2. **Identity & what it's known for** — the aim, values, and what the place is known for, as the
+   university says it, with a source. Applies everywhere: Cambridge's Tripos + supervision system
+   says as much about identity as any US mission statement.
+3. **Who it's for** — the kind of student the university says it wants, **in its own words, from its
+   admissions or mission page, with a source**. No archetype from memory ("MIT → makers") and no
+   judgment of whether the student is that person: that goes in §14.
    > **For US finalists.** US universities differ far more in character than in course catalogue, so
-   > the archetype read matters most there. Look at: **institutional archetype** (Stanford →
-   > founders/builders, MIT → makers/hands-on problem-solvers, Princeton → scholars/researchers,
-   > Harvard → future leaders/humanities + breadth, Caltech → pure scientists, an LAC →
-   > discussion-driven generalists — name it, then say honestly whether the student *is* that
-   > person); **curriculum shape** (open curriculum vs core vs distribution — the biggest single
+   > this section matters most there. Look at: **what the admissions page says it looks for**;
+   > **curriculum shape** (open curriculum vs core vs distribution — the biggest single
    > US-vs-elsewhere difference, covered in full at §5); **size & setting** (large research
    > university vs small liberal-arts college; urban / college-town / rural — affects class size,
-   > teaching, daily life); **culture** (collaborative vs competitive, Greek life, sports, traditions
-   > — covered in full at §7); **aid model** (need-blind vs need-aware for internationals,
-   > meets-full-need or not, merit scholarships — often the real gate for a Malaysian student, keep
-   > it honest and in MYR); and **support & advising** for internationals.
-4. **Getting in — requirements, who gets in & your fit** — academic + English requirements, the grade
-   margin → Reach/Match/Safety, and the **pathway/foundation route** if direct entry is short; plus
-   real admitted-student texture: the **extracurriculars, awards, academic profile, and
-   essay/interview angles** of people who got in. Sources: results/decision threads (Reddit, The
-   Student Room offer-holder threads), "how I got into X" blogs/YouTube, the US **Common Data Set** /
-   acceptance-rate, or the grades-based **IGP / cutoff** (NUS, China).
+   > teaching, daily life); **culture** (covered in full at §7); **aid model** (need-blind vs
+   > need-aware for internationals, meets-full-need or not, merit scholarships, stated in MYR); and
+   > **support & advising** for internationals.
+4. **Getting in — requirements and who gets in** — academic + English requirements and the
+   **pathway/foundation route** if direct entry is short; plus admitted-student evidence: the
+   **extracurriculars, awards, academic profile, and essay/interview angles** of people who got in.
+   Sources: results/decision threads (Reddit, The Student Room offer-holder threads), "how I got
+   into X" blogs/YouTube, the US **Common Data Set** / acceptance-rate, or the grades-based **IGP /
+   cutoff** (NUS, China).
    > **"Grades-based" ≠ grades-only.** Systems that publish a cutoff/IGP increasingly *also* require a
    > personal statement / short-response essays and an achievements/CCA list from **every** applicant
    > (e.g. NUS's Aptitude-Based Admissions). Verify the real required components on the official
-   > application page before writing "admission is just the grades" — and if the student can't yet
-   > evidence a required one, reflect it in this section's admissibility read, not only in
-   > Scholarships.
+   > application page before writing "admission is just the grades". A required component the
+   > student can't yet evidence is stated as a fact here ("Not yet on your file"); what it means
+   > goes in §14.
 
-   **Fallback when thin:** admit-rate /
-   cutoff stats **plus official *and* unofficial social channels** (subreddit, IG, Discord, student-society
-   pages) as leads for the student to dig further. If genuinely nothing exists, write `Not found — <why>`.
+   **Fallback when thin:** admit-rate / cutoff stats plus links to official *and* unofficial social
+   channels (subreddit, IG, Discord, student-society pages), listed as sources. If genuinely nothing
+   exists, write `Not found — <why>`.
 
    **When `profile.achievements` and/or `preferences.additional_requirements` are set (2026-08+),
-   compare directly against what you just researched** — this section's whole point, made concrete:
-   line up the student's stated activities/achievements against the admitted-applicant profile you
-   found, and answer their `additional_requirements` ask (often literally "what traits are you
-   looking for, and do I match?") against the same evidence. Say plainly where they match and where
-   there's a visible gap — this is admissibility signal, not filler.
+   put the student's facts beside the published ones:** a table with one column for what the
+   university or admitted applicants show and one for what's on the student's file ("Predicted A*A*A*",
+   "Not yet sat"). No verdict words in it. Their `additional_requirements` ask gets its facts here
+   and its judgment ("do I match?") in §14.
 
    **State what applying here demands** (supplement count, admissions tests, portfolio) as a
    decision input — the *load*, not the instructions. "3 supplements + an admissions test" is
@@ -288,11 +291,12 @@ a non-US example so you don't skip them for a UK or Singapore finalist.
    makerspaces/labs, first-year signature projects — the hands-on texture. Applies everywhere: NUS's
    residential colleges run their own signature modules and mentoring, for instance. *(Scope: named
    programmes and hands-on opportunities — not curriculum structure, that's §5.)*
-7. **Culture & vibe** — the tone and personality of the place: collaborative vs competitive,
-   intellectual vs pre-professional, Greek life (where relevant), sports culture, traditions, and the
-   **workload / teaching style / intensity** of actually studying there, plus the **student
-   personality archetype** (collaborative vs competitive, hands-on vs theoretical). This is the "is
-   this energy right for me" section — day-to-day life, housing, and food live in §8 instead.
+7. **Campus culture** — collaborative vs competitive, intellectual vs pre-professional, Greek life
+   (where relevant), sports culture, traditions, and the **workload / teaching style / intensity** of
+   actually studying there. Use published figures where they exist (class size, contact hours,
+   survey results). **§7, §8 and §9 draw on forums and video, so every such claim says whose view it
+   is and links it** ("one student on The Student Room says…"). Day-to-day life, housing, and food
+   live in §8 instead.
 8. **Student life, housing & food** — **housing** (on/off campus, residential-college systems),
    **dining/meal plans** (dietary options only as ticked, see above), **life outside study** (clubs, sport, weekends,
    nightlife), **first-year/orientation activities** (freshers, signature first-year projects),
@@ -314,8 +318,7 @@ a non-US example so you don't skip them for a UK or Singapore finalist.
     none or excludes them; (c) the **CSS Profile** link (the aid application, not an estimate).
     Never back-solve a figure from an income typed into `status.md` or a chat.
     **Budget (`preferences.total_budget_ceiling`):** when set, say the total against their limit in
-    ringgit ("about RM X over your RM Y limit" or "within it"). If it's over, it's a reason to
-    hesitate in §14 and the scholarships in §11 matter more.
+    ringgit ("about RM X over your RM Y limit" or "within it"). What that means goes in §14.
 11. **Scholarships & financial aid** — university + government/external + **Malaysian sponsors (JPA,
     MARA, Yayasan, PTPTN)**, each with eligibility; for a US finalist, also **need-blind vs
     need-aware for internationals**, meets-full-need or not, and merit awards.
@@ -340,13 +343,16 @@ a non-US example so you don't skip them for a UK or Singapore finalist.
     whether the right to stay and work exists at all is a *reason to pick a country*, so it stays
     here. The *paperwork* to actually get it (forms, financial proof, fees, lead times) is Stage 8's
     job.
-13. **Unique facts & quirks** — traditions, notable alumni *in the student's field*, fun/quirky facts
-    — the colour that makes it real. Applies everywhere: a UK university's year-in-industry option is
-    just as much a quirk worth naming as a US school's founding myth.
-14. **Why here / why hesitate** — a short honest synthesis tied to this student's `priorities` /
-    `needs`: **2–4 reasons to choose** (the standout hook — signature labs, flagship projects,
-    societies, notable alumni *in the student's field*) **and** an explicit **"reasons to hesitate"**.
-    Inform conviction — don't sell.
+13. **Notable facts** — traditions and notable alumni *in the student's field*. Each is one sourced
+    fact, with no commentary. Applies everywhere: a UK university's year-in-industry option belongs
+    here as much as a US school's founding story.
+14. **Our assessment (a judgment, not a fact)** — the one box for opinion, tied to this student's
+    `priorities` / `needs`. Set **`grades_vs_bar`** (a `GRADE_FIT_LABELS` value from
+    `shortlist_schema.py`): the tool prints it at the top of the box with the list PDF's wording. Then
+    a table, one row per theme: the fit with what the university wants, the strengths and the reasons
+    to hesitate, each naming the section its evidence is in. Judgments and hedges are fine here.
+    Orders are not: "Take it if offered" fails `advice` here too. Don't sell, and don't repeat the
+    facts. Skip this section for a quick report.
 15. **Sources** — each with **authority (Official/Aggregator) + as-of cycle year**.
 
 > **Moved to Stage 8 (2026-09-06).** Visa mechanics, the application-prep checklist, and key dates now
@@ -367,13 +373,18 @@ questions — *can I get in? · can I afford it? · what do I actually do?* — 
 **skim** to each answer. Write to that:
 
 - **Second person.** Write *to* the student ("**you**"), never *about* them — no student name, no
-  third-person "his/her/their". It's their guide, not an internal report.
+  third-person "his/her/their".
+- **Information, not advice.** Outside the box: no orders ("you should", "ask your college early",
+  "take it"), no guesses ("likely", "usually", "about 200"), no verdict words ("well above", "best
+  fit", "realistic"). State the university's rule and the figure. A required step is a fact when the
+  university sets it ("You must declare fitness to practise"). Approximate ringgit (`~RM`) is fine;
+  any other figure is the published one.
 - **State the ranked priorities once, up front.** Fill the Snapshot's `priorities` field (e.g.
   `"1. Funding · 2. Hands-on · 3. Safe/nature setting"`). After that, refer to a priority by name —
   don't re-rank it every section, and never write "#1 priority" without the list being visible.
 - **Say each key fact once.** Pick the section that owns a fact (funding → Costs; test-not-yet-sat →
-  Getting in) and state it there. `why_here` is **net-new synthesis**
-  (the standout hook + honest hesitations), *not* a re-read of the whole report — keep it short.
+  Getting in) and state it there. `our_assessment` is **net-new judgment**, *not* a re-read of the
+  whole report — keep it short.
 - **Bold budget.** Bold only genuinely key figures and actions. If half a paragraph is bold, nothing
   stands out — prefer a short lead phrase or a table over bolding every clause.
 - **Tables beat prose** for anything structured. Write these sections **as Markdown**
@@ -382,12 +393,11 @@ questions — *can I get in? · can I afford it? · what do I actually do?* — 
   - **Getting in** — a stats table (admit rate or cutoff, entry requirements, test range).
   - **Dining** — a table (location · what's served · hours) when there are 3+ options. Halal goes in
     it only under the rule above.
-  - **`why_here`** — a **key-value table matching the Snapshot**: column 1 = the topic/priority,
-    column 2 = the honest read for it. One row per theme, and **fold each hesitation into its
-    topic's verdict** (lead with the strength, then name the caveat with "But…/trade-off") rather
-    than a separate pros/cons column — keeps the format consistent with the Snapshot/cost tables and
-    lets long verdicts wrap cleanly. Still cover the real strengths *and* explicit hesitations;
-    inform, don't sell. Don't use ⚠️ in cells — that glyph is reserved for the red callouts below.
+  - **`our_assessment`** — a **2-column table**: column 1 = the topic/priority, column 2 = our
+    judgment, naming the section its evidence is in ("Hard on cost: over your limit (§10)"). One row
+    per theme, with the strength and caveat in the same cell rather than a separate pros/cons
+    column. Cover real strengths *and* reasons to hesitate. Don't use ⚠️ in cells — that glyph is
+    reserved for the red callouts below.
 - **Critical warnings are a callout, not a sentence in a wall.** For a make-or-break rule (e.g. "an
   international who doesn't request aid at application is barred from applying later"), write a
   **blockquote** so it renders as an unmissable red callout:
@@ -397,9 +407,9 @@ questions — *can I get in? · can I afford it? · what do I actually do?* — 
   ```
   Reserve blockquotes for these — don't use them for ordinary notes. For a softer neutral aside use
   `<div class="callout-note" markdown="1"> … </div>`.
-- **Collect every "confirm this yourself" task in the section it actually belongs to** — don't
-  scatter "confirm the 4-year English record" across five sections; state it once, in `getting_in`.
-  The application-prep **checklist** itself — the readiness list of documents, tests, essays, and
+- **What couldn't be confirmed is a fact, not a to-do.** Put it in a short "Not yet confirmed" list
+  in the section it belongs to: what is unknown and where it is published ("MIT's deadline page
+  prints no year"), once, with no orders. The application-prep **checklist** itself — the readiness list of documents, tests, essays, and
   fees to gather — now lives in Stage 8 (`workflows/08_application_prep.md`), since it's region-level
   and was being rewritten once per finalist.
 - **Acronyms are auto-glossaried — don't hand-expand every one.** `report_to_pdf.py` builds a
@@ -419,7 +429,8 @@ shape — including which top-level fields are university-mode-only). Each of th
 sections** is a Markdown string under `"sections"`, keyed exactly as in `REPORT_SECTIONS`:
 `identity_mission`, `who_its_for`, `getting_in`, `what_youll_study`, `signature_experiences`,
 `culture_vibe`, `student_life`, `city_and_belonging`, `costs`, `scholarships`, `outcomes`,
-`unique_facts`, `why_here` — the same keys and order for both modes.
+`unique_facts`, `our_assessment` — the same keys and order for both modes. A JSON with the old
+`why_here` key fails the build on purpose. Don't write the box's `<div>`: the tool adds it.
 
 The institution-scope variant (`--mode university`) swaps the identity fields for the
 whole-institution Snapshot and drops `course`; `"sections"` is unchanged:
@@ -430,10 +441,11 @@ whole-institution Snapshot and drops `course`; `"sections"` is unchanged:
   "country": "USA", "city": "Cambridge, Massachusetts",
   "setting": "urban (Boston metro)",
   "type": "private research university",
-  "size": "~4,500 undergraduates",
-  "overall_rank": "QS #1 / US News ~#2",
+  "size": "4,500 undergraduates",
+  "overall_rank": "QS #1 / US News #2",
   "application_system": "MIT's own portal (not Common App)",
-  "admission_likelihood": "Reach",
+  "admit_rate": "<overall>% overall, <international>% international (MIT, <year>)",
+  "grades_vs_bar": "Not published",
   "net_cost": "By family income: ~RM <low>k–<high>k/yr (MIT's own income-band examples, <year>; approx). See Costs",
   "priorities": "1. Funding · 2. Hands-on · 3. Safe/nature setting",
   "sections": { "identity_mission": "markdown...", "...": "the same 13 keys as course mode" },
@@ -464,7 +476,9 @@ Two optional-but-recommended extras (unchanged by the 2026-09-06 schema merge):
   at most one of them; `"Student life"` is fine (campus-wide).
 
 If a fact genuinely can't be found, write `"Not found — <why>"` in that section rather than leaving it
-empty (empty sections fail the build on purpose — a half-researched report shouldn't pass).
+empty (empty sections fail the build on purpose — a half-researched report shouldn't pass). The
+`<why>` says what is missing and where it was looked for: "Not found — MIT publishes no transfer
+admit numbers". No tool names ("free search cannot read Reddit"), no advice, no guess from the gap.
 
 ## Render
 
@@ -527,7 +541,7 @@ silently, and the fix is to re-run the manual command above once the environment
   research inside `getting_in`, `culture_vibe`, `student_life`, and `city_and_belonging`.
   `firecrawl_search.py` hard-skips IG / FB / TikTok / X (they return "Website Not Supported"); Reddit /
   The Student Room / YouTube aren't skipped but are JS-heavy and unreliable to scrape — get what you
-  need from **search snippets** and record the URL + snippet as a lead for the student to follow,
+  need from **search snippets** and list the URL as a source, saying whose view each claim is,
   rather than scraping the page.
 - **Recognition is a gate, not a footnote** — for regulated professions, if the degree isn't recognised by
   MQA / the professional body, say so prominently; it may demote the finalist.
@@ -536,7 +550,8 @@ silently, and the fix is to re-run the manual command above once the environment
   `Not checked (eSISRAF needs a browser)`, not `Not found`, and moves on. After the reports are back,
   the main session looks each finalist up with the Chrome tools, following the steps in `sources.md`,
   and corrects the line. If Chrome isn't connected, it goes to Evan as a hand lookup. Do this only
-  where recognition matters: a regulated profession or a government-sponsored student.
+  where recognition matters: a regulated profession or a government-sponsored student. That wording
+  must not reach a student: `check_report.py` flags it under `chatter` until it's corrected.
 
 ## Done when
 

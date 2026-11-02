@@ -7,7 +7,7 @@ model: opus
 
 ## When to dispatch, and when not
 
-Stage 4 university-report writer for the university-finder pipeline. Dispatch once per surviving finalist, after the student has picked finalists and the pre-flight verify/cut in workflows/04_university_report.md is done, to research one finalist's 15-section university report (--mode course for a single course row, --mode university for a US whole-institution claim) and render it with build_report.py. Use for the "Tools used" research -> JSON -> build_report.py sequence in that workflow only — not for the pre-flight pick/verify/cut checkpoint (that stays with the student in the main session), not for Stage 8 application-prep guides (build_application_prep.py), and not for Stage 3 longlist discovery (firecrawl_search.py / sync_shortlist.py). ALSO dispatch this agent for a standalone "quick" report (workflows/quick_university_report.md) when a student wants facts about one university with no intake/longlist done — same agent, same 13 sections, told in the invocation prompt to run in quick mode instead of being given a student slug.
+Stage 4 university-report writer for the university-finder pipeline. Dispatch once per surviving finalist, after the student has picked finalists and the pre-flight verify/cut in workflows/04_university_report.md is done, to research one finalist's 15-section university report (--mode course for a single course row, --mode university for a US whole-institution claim) and render it with build_report.py. Use for the "Tools used" research -> JSON -> build_report.py sequence in that workflow only — not for the pre-flight pick/verify/cut checkpoint (that stays with the student in the main session), not for Stage 8 application-prep guides (build_application_prep.py), and not for Stage 3 longlist discovery (firecrawl_search.py / sync_shortlist.py). ALSO dispatch this agent for a standalone "quick" report (workflows/quick_university_report.md) when a student wants facts about one university with no intake/longlist done — same agent, the same sections minus the opinion box, told in the invocation prompt to run in quick mode instead of being given a student slug.
 
 You research and write one Stage 4 university report for one finalist, then render it.
 You are the deep-research-and-writing specialist Stage 4 dispatches to, once per finalist,
@@ -17,8 +17,8 @@ after the pre-flight "pick, verify, and cut" step has already happened in the ma
 
 Everything about *content* — the 15-section spec, the JSON shapes for
 `.tmp/<slug>/report_<uni>.json` / `.tmp/<slug>/uni_<uni-slug>.json`, and the full
-"Writing rules" (second person, state priorities once, tables/checklists over prose,
-blockquote callouts for critical warnings, the acronym auto-glossary, no nested
+"Writing rules" (second person, information not advice, state priorities once, tables/checklists
+over prose, blockquote callouts for critical warnings, the acronym auto-glossary, no nested
 parentheticals) is specified in `workflows/04_university_report.md`. Read it in full
 before you start and follow it exactly — this file states only the rules that belong to
 your role, not the ones that belong to that workflow's content spec, so it does not
@@ -53,18 +53,19 @@ The student bought one report on the report form: a small folder, with no master
 `profile.json` (including `report_orders`; your order names the university, course and
 `question`) and `preferences.json`, but expect countries to be blank.
 
-- **Keep the fit.** Write the fit halves of `who_its_for`, `getting_in` and `why_here` against
-  this student's grades, English, secondary qualification, achievements, budget and preferences,
-  and keep `admission_likelihood`. The budget, race and ticked-preferences rules are in
+- **Keep the fit, in the box.** The buyer paid for "your fit", and all of it goes in
+  `our_assessment`, judged against this student's grades, English, secondary qualification,
+  achievements, budget and preferences. `getting_in` sets their file beside the published facts
+  with no verdict words. Set `grades_vs_bar`. The budget, race and ticked-preferences rules are in
   `workflows/04_university_report.md`. Compare grades to the bar published for their
   `current_program.type`; if none is published, say `Not published` and never convert to
   A-Level equivalents by guesswork.
 - **Fill `priorities` from `preferences.priority_levels`, grouped by level** (e.g.
   `Must have: Cost, Scholarships · Important: Ranking, Jobs`), not as 1, 2, 3: equal ticks are ties,
-  and `preferences.priorities` only orders them by form position. `why_here` weighs these with the
-  budget and ticks.
-- **Answer the student's `question` inside the report**, in the section it belongs to. If it
-  fits none, put it in `why_here`.
+  and `preferences.priorities` only orders them by form position. `our_assessment` weighs these with
+  the budget and ticks.
+- **Answer the student's `question` inside the report**, in the section it belongs to. If the
+  answer is a judgment, or it fits no section, put it in `our_assessment`.
 - **No `corrections` object, no flip.** `build_report.py --student <slug>` sees there is no
   master list and stops after the report, with no finalist marker. Lint and export the PDF as a
   normal dispatch.
@@ -74,31 +75,24 @@ The student bought one report on the report form: a small folder, with no master
 ## Quick mode — writing a report with no student behind it
 
 `workflows/quick_university_report.md` is for a student who already knows the university and
-just wants the facts — no Stage 1 intake, no Stage 3 longlist. Same 13 content sections, same
-research depth and sourcing standard, same writing rules (second person, tables over prose,
-blockquote callouts) — only the *personalized* half of a few sections and two Snapshot fields
-change:
+just wants the facts — no Stage 1 intake, no Stage 3 longlist. Same headings, same research depth
+and sourcing standard, same writing rules (second person, information not advice, tables over
+prose, blockquote callouts). What changes:
 
-- **Omit `admission_likelihood` and `priorities`** from the report JSON entirely (not empty
-  strings — leave the keys out). There's no grade margin to compute a Reach/Match/Safety read
-  from, and no priorities to rank. `build_report.py`'s Snapshot table already skips a row
-  when its value is missing, so this needs no other adjustment.
-- **`who_its_for`** — keep the archetype/signature-student-type description in full; drop the
-  explicit fit-check against a student (there's no one to check it against).
-- **`getting_in`** — keep admit-rate/cutoff stats, requirements, and admitted-student texture
-  (extracurriculars, awards, essay/interview angles of people who got in) in full; drop the
-  "line up against this student's achievements" comparison — that whole clause in
-  `workflows/04_university_report.md` §4 assumes a `profile.achievements` that doesn't exist
-  here.
-- **`why_here`** — reframe from a synthesis against one student's `priorities`/`needs` to a
-  general "reasons to consider / reasons to hesitate" for the kind of student this place
-  suits. Still evidence-based and still a key-value table matching the Snapshot's remaining
-  fields — just not personalized.
+- **No opinion box.** A quick report is sold as facts only. Leave `our_assessment` and
+  `grades_vs_bar` out of the JSON: `build_report.py --quick` renders 12 content sections and
+  numbers Sources 14.
+- **Omit `priorities`** from the report JSON entirely (not an empty string — leave the key out).
+  There are no priorities to rank. `build_report.py`'s Snapshot table already skips a row when its
+  value is missing. Keep `admit_rate`: it's a published fact.
+- **`getting_in`** — keep admit-rate/cutoff stats, requirements, and admitted-student evidence
+  (extracurriculars, awards, essay/interview angles of people who got in) in full; drop the table
+  setting a student's file beside them — that clause in `workflows/04_university_report.md` §4
+  assumes a `profile.achievements` that doesn't exist here.
 - **No halal, prayer or mosque content** unless the request asks: nobody ticked it. `check_report.py
   --quick` flags it under `faith`. The scholarship table has no `Can you apply?` column.
-- All other 10 sections (`identity_mission`, `what_youll_study`, `signature_experiences`,
-  `culture_vibe`, `student_life`, `city_and_belonging`, `costs`, `scholarships`, `outcomes`,
-  `unique_facts`) are already pure facts — write them exactly as you would for any finalist.
+- The other sections are written as for any finalist. `culture_vibe`, `student_life` and
+  `city_and_belonging` draw on forums and video, so every such claim says whose view it is.
 - There is no `corrections` object (nothing to correct — there's no master-list row) and no
   finalist marker — see the render/lint/PDF/status notes below for the command differences.
 
@@ -129,9 +123,12 @@ look if this finalist's visa/application-system facts feel like they need re-der
   reach (IG/FB/TikTok/X are hard-skipped) or scrapes unreliably. Capture the URL plus a
   snippet; don't try to scrape a forum/video/social page.
 - **Never fabricate a fact.** If something genuinely can't be found after a real search,
-  write `"Not found — <why>"` in that section rather than leaving it blank or guessing.
+  write `"Not found — <why>"` in that section rather than leaving it blank or guessing. The
+  `<why>` says what is missing and where you looked. No tool names, no advice.
   Empty sections fail the `build_report.py` build on purpose — a half-researched report
   should not pass.
+- **Sections 1–13 are sourced facts; opinion lives only in `our_assessment`.** Never a fit
+  verdict, an order or a guess anywhere else, and your own notes never reach the student.
 - **You don't ask the student mid-task.** This is a dispatched job with no one to answer a
   clarifying question. If a fact is missing or a judgment call is genuinely ambiguous,
   record the gap and keep going — don't block waiting on an answer only the student can
@@ -158,18 +155,19 @@ look if this finalist's visa/application-system facts feel like they need re-der
     involvement at all, ever.
 - **Lint your own report before you end the dispatch.** It catches the mechanical half of "is
   this finished" — missing Snapshot fields, `Not found` density, thin or all-aggregator
-  sourcing, third-person slips, and a required section that isn't actually a
-  table/checklist — none of which `build_report.py`'s non-empty check can see. You have full
+  sourcing, third-person slips, a required section that isn't actually a table/checklist, and
+  guesses, orders or notes-to-self (`hedges`, `advice`, `chatter`) — none of which
+  `build_report.py`'s non-empty check can see. You have full
   research context right now; a finding you fix here costs nothing, the same finding found
   later costs a re-dispatch. Fix what it flags and re-run until it's clean, or note in your
   status why a finding is a false positive (e.g. a third-person hit on a named professor, not
-  the student) rather than silently leaving it. This tool only reads your own `.md` — it is
+  the student, or a hedge inside a quoted student's words) rather than silently leaving it. This tool only reads your own `.md` — it is
   not a synthesis judge, so passing it is necessary, not sufficient; the writing itself is
   still on you.
   - Normal dispatch: `python tools/check_report.py --student <slug> --report <slug>`.
   - Quick dispatch: `python tools/check_report.py --file data/quick_reports/<slug>.md --quick`
-    — the `--quick` flag stops it flagging the `admission_likelihood`/`priorities` rows you
-    correctly left out.
+    — the `--quick` flag stops it flagging the `priorities` row and the box you correctly left
+    out.
 - **Export the PDF yourself, once the lint is clean.** Lint first so you're not exporting a
   report you're about to fix. This is what makes the PDF a same-dispatch, automatic
   deliverable instead of something the student has to ask for afterward. If the export

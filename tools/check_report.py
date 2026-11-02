@@ -28,6 +28,16 @@ Checks (use --check to run a subset while working through a fix):
               and the ⚠️ glyph only ever appears inside a blockquote callout
   faith       no halal/prayer wording unless the student ticked it or asked (Evan, 2026-10-30:
               it made other students read the report as built for Malays)
+  hedges      no guesses or verdict words outside the "Our assessment" box
+  advice      no orders or recommendations, box included
+  chatter     no notes-to-self or tool names, box included
+
+hedges, advice and chatter (R34, 2026-11-02) run only on reports in the current shape: older
+reports are parked. Like faith, a hit means look at it: fix the line, or note a false alarm. The
+lists were trialled on the four quick reports and the sample, and are narrow on purpose: `~RM` stays
+(ringgit is approximate by rule, CLAUDE.md), so does `you must` (usually a real university rule),
+`recommended` (the university's word), `Check: Bumiputera only` (a required cell), and `about`,
+`check` or `great` as ordinary words.
 
 Mode (course vs university) is DETECTED from the headings, not passed in — the whole point is
 that a cold session can run this on a report it did not build.
@@ -54,7 +64,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from build_report import SCHEMAS  # noqa: E402
+from build_report import QUICK_SECTIONS, REPORT_SECTIONS, SCHEMAS  # noqa: E402
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -66,7 +76,8 @@ if hasattr(sys.stderr, "reconfigure"):
 REPO_ROOT = Path(__file__).resolve().parent.parent
 STUDENTS_DIR = REPO_ROOT / "data" / "students"
 
-CHECKS = ["structure", "snapshot", "notfound", "sources", "voice", "tables", "faith"]
+CHECKS = ["structure", "snapshot", "notfound", "sources", "voice", "tables", "faith",
+          "hedges", "advice", "chatter"]
 
 # --- Thresholds (calibrated 2026-08-08 against the 20 reports on disk) -----------------
 # Observed max in a real report is 3. A few honest gaps are the convention working; fifteen
@@ -96,6 +107,9 @@ EXCERPT = 70
 # report from an institution one; the Snapshot can. A course report has a "Course" row, an
 # institution report has "Setting" / "Type & size".
 NEW_SNAPSHOT_CORE = [
+    "University", "Overall rank", "How to apply", "Admit rate", "Your priorities",
+]
+LEGACY_REPORT_SNAPSHOT_CORE = [
     "University", "Overall rank", "How to apply", "Admission likelihood", "Your priorities",
 ]
 NEW_SNAPSHOT_BY_SCOPE = {
@@ -129,6 +143,13 @@ REQUIRED_TABLES = {
         "costs": "a line-item cost table (tuition / living / total in MYR)",
         "scholarships": "a table of schemes with value + eligibility",
         "getting_in": "a stats table (admit rate or cutoff, entry requirements, test range)",
+        "our_assessment": "a 2-column table (topic | our judgment, naming the section its "
+                          "evidence is in)",
+    },
+    "legacy_report": {
+        "costs": "a line-item cost table (tuition / living / total in MYR)",
+        "scholarships": "a table of schemes with value + eligibility",
+        "getting_in": "a stats table (admit rate or cutoff, entry requirements, test range)",
         "why_here": "a 2-column key-value table matching the Snapshot",
     },
     "legacy_course": {
@@ -147,6 +168,7 @@ REQUIRED_TABLES = {
 # the Stage 8 apply guide (workflows/08_application_prep.md) on 2026-09-06.
 REQUIRED_CHECKLISTS = {
     "report": {},
+    "legacy_report": {},
     "legacy_course": {
         "application_checklist": "`- [ ]` items, one per thing to gather",
         "key_dates": "`- [ ]` items with dates, not a paragraph",
@@ -171,6 +193,37 @@ LEADING_NOISE = re.compile(r"^(?:[-*+>\s]|\[[ xX]\]|\d+\.)+")
 MD_LINK = re.compile(r"\[([^\]]*)\]\(([^)]*)\)")
 YEAR = re.compile(r"\b(20\d{2})\b")
 FAITH_WORDS = re.compile(r"\b(halal|prayers?|surau|mosques?|masjid|musalla|muslims?)\b", re.I)
+PREPARED_ON = re.compile(r"^_Prepared on \d{1,2} [A-Z][a-z]+ \d{4}\._$", re.M)
+BOX_HEADING = dict(REPORT_SECTIONS)["our_assessment"]
+BOX_GRADES_ROW = "**Grades vs entry bar:"
+# The opinion sections that must be a 2-column table with no ⚠️ in it.
+OPINION_KEYS = ("our_assessment", "why_here")
+# Guessing words, approximate numbers (ringgit excepted, see the header), and verdicts.
+HEDGE_WORDS = re.compile(
+    r"\b(?:likely|probably|usually|typically|generally|often|tends? to|seems?|well above|best fit"
+    r"|honest read|verdict|realistic(?:ally)?)\b"
+    r"|(?:\b(?:about|around|roughly|approximately|approx\.?)\s+|~\s?)"
+    r"(?-i:[A-Z]{1,2}\$|[$£€]|(?!MYR)[A-Z]{3}\s?)?\d",
+    re.I,
+)
+ADVICE_WORDS = re.compile(
+    r"\b(?:you should|we recommend|i recommend|our recommendation|make sure|best to|be sure to"
+    r"|apply early|start early|worth applying|take it if)\b",
+    re.I,
+)
+# An order opening a sentence, a table cell or a bold lead-in. Case-sensitive, and a following
+# space is required, so "Check: Bumiputera only" and "the visa check" both pass.
+ORDER_WORDS = re.compile(
+    r"(?:^|[.!?:|]\s+|\*\*)(?:Check|Confirm|Verify|Re-check|Ask|Bring|Consider|Avoid)\s+(?=\S)"
+)
+CHATTER_WORDS = re.compile(
+    r"\bnote\*{0,2}:|\b(?:let me|it seems|free search|firecrawl|read here|needs a browser"
+    r"|great choice|worth noting)\b",
+    re.I,
+)
+# Case-sensitive: "Phase I" and "Part I" are not the writer talking about itself.
+FIRST_PERSON = re.compile(r"\bI (?:could|couldn't|found|read|searched|checked|think|was|am|have|did)\b"
+                          r"|\bI'(?:m|ve)\b")
 
 
 # --- Parsing ---------------------------------------------------------------------------
@@ -208,8 +261,10 @@ def detect_mode(sections):
     return best, (len(tied) > 1)
 
 
-def expected_headings(mode):
-    return ["Snapshot"] + [h for _, h in SCHEMAS[mode]] + ["Sources"]
+def expected_headings(mode, quick=False):
+    # A quick report has no box. An older quick report keeps its old last section.
+    schema = QUICK_SECTIONS if quick and mode == "report" else SCHEMAS[mode]
+    return ["Snapshot"] + [h for _, h in schema] + ["Sources"]
 
 
 def section_bodies(sections, mode):
@@ -263,8 +318,8 @@ def excerpt(line):
 
 # --- Checks ----------------------------------------------------------------------------
 
-def check_structure(sections, mode, ambiguous):
-    """All 15 sections, the right headings, in the right order, numbered 1..15.
+def check_structure(sections, mode, ambiguous, quick=False):
+    """All 15 sections (14 for quick), the right headings, in the right order, numbered 1..n.
 
     build_report.py renders this itself, so a failure here means the file was NOT rendered by
     the current tool — an older section spec, or a hand-edited report. Either way the rest of
@@ -273,7 +328,7 @@ def check_structure(sections, mode, ambiguous):
     out = []
     if ambiguous:
         out.append("headings match no known schema — not the current spec, not either legacy one")
-    expected = expected_headings(mode)
+    expected = expected_headings(mode, quick)
     actual = [h for _, h, _ in sections]
     if actual == expected:
         pass
@@ -294,8 +349,9 @@ def check_structure(sections, mode, ambiguous):
 
 
 # Rows that only mean something when the report was written against a real student profile.
-# A --quick report (workflows/quick_university_report.md) omits both by design — there is no
-# grade margin to compute admission_likelihood from, and no priorities to rank.
+# A --quick report (workflows/quick_university_report.md) omits them by design — there is no
+# student to rank priorities for. Admission likelihood is only on older reports. Admit rate is a
+# published fact, so a quick report keeps it.
 QUICK_OMITTED_ROWS = {"Admission likelihood", "Your priorities"}
 
 
@@ -308,8 +364,8 @@ def check_snapshot(sections, mode, quick=False):
     top-ranked priority" reference is meaningless without that row visible.
 
     quick=True drops QUICK_OMITTED_ROWS from the required set — a standalone report has no
-    student profile to compute either from, so their absence is correct, not a finding.
-    A report order (report form, no list) needs both: the form asks grades and the importance grid.
+    student profile to compute them from, so their absence is correct, not a finding.
+    A report order (report form, no list) needs Your priorities: the form asks the importance grid.
     """
     body = find_section(sections, "Snapshot")
     if body is None:
@@ -319,9 +375,10 @@ def check_snapshot(sections, mode, quick=False):
     if not rows:
         return ["Snapshot is not a fact table — re-render with the current build_report.py"]
     out = []
-    if mode == "report":
+    if mode in ("report", "legacy_report"):
         scope = detect_scope(body)
-        wanted = NEW_SNAPSHOT_CORE + NEW_SNAPSHOT_BY_SCOPE[scope]
+        core = NEW_SNAPSHOT_CORE if mode == "report" else LEGACY_REPORT_SNAPSHOT_CORE
+        wanted = core + NEW_SNAPSHOT_BY_SCOPE[scope]
     else:
         wanted = SNAPSHOT_ROWS[mode]
     if quick:
@@ -494,7 +551,7 @@ def check_tables(sections, mode):
     Scoped for precision, because a gate that cries wolf gets run with --check: only a line
     that OPENS with the glyph is a warning that failed to become a callout. Mid-line uses are
     a cross-reference ("see the ⚠️ above") or a verdict marker in a comparison table, and
-    both are fine — except in why_here, where the writing rules ban the glyph outright.
+    both are fine — except in the opinion section, where the writing rules ban the glyph outright.
     """
     out = []
     bodies = section_bodies(sections, mode)
@@ -506,9 +563,13 @@ def check_tables(sections, mode):
         tables = tables_in(body)
         if not tables:
             out.append(f"{key}: no table — the writing rules want {want}")
-        elif key == "why_here" and table_columns(tables[0]) != 2:
-            out.append(f"why_here: table has {table_columns(tables[0])} columns — it should be "
-                       f"2 (topic | honest read), with each hesitation folded into its verdict")
+        elif key in OPINION_KEYS and table_columns(tables[0]) != 2:
+            out.append(f"{key}: table has {table_columns(tables[0])} columns — it should be "
+                       f"2 (topic | our judgment, naming the section its evidence is in)")
+
+    if "our_assessment" in bodies and BOX_GRADES_ROW not in bodies["our_assessment"]:
+        out.append("our_assessment: no 'Grades vs entry bar' line — the research JSON left "
+                   "grades_vs_bar empty")
 
     for key, want in REQUIRED_CHECKLISTS[mode].items():
         body = bodies.get(key)
@@ -517,8 +578,10 @@ def check_tables(sections, mode):
         if not re.search(r"^\s*- \[ \]", body, re.M):
             out.append(f"{key}: no `- [ ]` checklist items — the writing rules want {want}")
 
+    schema = dict(SCHEMAS[mode])
+    opinion_headings = {schema.get(key) for key in OPINION_KEYS}
     for _, heading, body in sections:
-        in_why_here = heading == dict(SCHEMAS[mode]).get("why_here", "")
+        in_opinion = heading in opinion_headings
         for line in body:
             if "⚠" not in line:
                 continue
@@ -526,8 +589,8 @@ def check_tables(sections, mode):
             if stripped.startswith(">"):
                 continue
             if stripped.startswith("|"):
-                if in_why_here:
-                    out.append(f"why_here: ⚠️ in a table cell — that glyph is reserved for the "
+                if in_opinion:
+                    out.append(f"{heading}: ⚠️ in a table cell — that glyph is reserved for the "
                                f"red callouts: {excerpt(line)}")
                 continue
             if LEADING_NOISE.sub("", stripped).startswith("⚠"):
@@ -546,6 +609,40 @@ def check_faith(sections):
     return [f"{heading}: not ticked or asked for, so leave it out: {excerpt(line)}"
             for _, heading, body in sections if heading != "Sources"
             for line in body if FAITH_WORDS.search(line)]
+
+
+def word_findings(sections, patterns, why, skip=("Sources",)):
+    """One finding per line that hits a pattern, naming the words. Links are stripped first:
+    a URL is full of words that aren't prose."""
+    out = []
+    for _, heading, body in sections:
+        if heading in skip:
+            continue
+        for line in body:
+            text = strip_links(line)
+            # Bullets and checkboxes are stripped too, so a listed order counts as line-opening.
+            opened = LEADING_NOISE.sub("", text)
+            match = next((m for p in patterns for m in (p.search(opened),) if m), None)
+            if match:
+                words = match.group(0).strip(" .!?:|*")
+                out.append(f"{heading}: {why} {words!r}: {excerpt(line)}")
+    return out
+
+
+def check_hedges(sections):
+    """Guesses and verdict words, anywhere but the one box that may hold them."""
+    return word_findings(sections, [HEDGE_WORDS], "a guess or verdict belongs in the box:",
+                         skip=("Sources", BOX_HEADING))
+
+
+def check_advice(sections):
+    """Orders and recommendations. The box may judge, but it doesn't give orders either."""
+    return word_findings(sections, [ADVICE_WORDS, ORDER_WORDS], "state the fact, not an order:")
+
+
+def check_chatter(sections):
+    """Notes-to-self and tool names that reached the student."""
+    return word_findings(sections, [CHATTER_WORDS, FIRST_PERSON], "note-to-self:")
 
 
 def faith_allowed(md_path, slug=None):
@@ -578,10 +675,13 @@ def run(text, wanted, student_name=None, quick=False, faith_ok=False):
 
     results = {}
     if "structure" in wanted:
-        results["structure"] = check_structure(sections, mode, ambiguous)
+        results["structure"] = check_structure(sections, mode, ambiguous, quick)
+        if mode == "report" and not PREPARED_ON.search(text):
+            results["structure"].append("no 'Prepared on' date under the title — re-render with "
+                                        "the current build_report.py")
     # The rest read by section key, so a report whose section SET is wrong can't be
     # meaningfully linted past the structure check (same rule as check_master_list.py).
-    if set(h for _, h, _ in sections) != set(expected_headings(mode)):
+    if set(h for _, h, _ in sections) != set(expected_headings(mode, quick)):
         return mode, results
     if "snapshot" in wanted:
         results["snapshot"] = check_snapshot(sections, mode, quick=quick)
@@ -593,8 +693,15 @@ def run(text, wanted, student_name=None, quick=False, faith_ok=False):
         results["voice"] = check_voice(sections, student_name)
     if "tables" in wanted:
         results["tables"] = check_tables(sections, mode)
-    if "faith" in wanted and mode == "report" and not faith_ok:
+    if "faith" in wanted and mode in ("report", "legacy_report") and not faith_ok:
         results["faith"] = check_faith(sections)
+    if mode == "report":
+        if "hedges" in wanted:
+            results["hedges"] = check_hedges(sections)
+        if "advice" in wanted:
+            results["advice"] = check_advice(sections)
+        if "chatter" in wanted:
+            results["chatter"] = check_chatter(sections)
     return mode, results
 
 
