@@ -11,7 +11,9 @@ What these pin down (backlog R28, Decisions items 3-5):
   - apply_backfill.py refuses (or warns on) the same things before it writes;
   - the list PDF adds "Deadline passed" itself when Key deadline has gone by (R49);
   - a row reaches Finalist only as "Official page": flip_finalists.py refuses it, and
-    check_master_list.py fails a Finalist still reading "Not verified" (R33).
+    check_master_list.py fails a Finalist still reading "Not verified" (R33);
+  - a row for a student with recognition_targets carries one fixed accreditation result (R42);
+  - a Key deadline cell holds one date, whether it is written YYYY-MM-DD or in words (R50).
 
 Rows are built in memory from SHORTLIST_HEADERS; no student file is read or written (the one
 full flip_finalists.py run uses a temporary folder).
@@ -28,6 +30,7 @@ import re
 import sys
 import tempfile
 import unittest
+from datetime import date
 from pathlib import Path
 from unittest import mock
 
@@ -339,6 +342,151 @@ class FinalistMustBeVerified(unittest.TestCase):
                                       "Unchecked University": "Shortlist"})
             self.assertFalse(good.exists())
             self.assertTrue(bad.exists())
+
+
+class AccreditationCheck(unittest.TestCase):
+    """R42: a regulated row states what the accreditor's own list said, in one fixed shape."""
+    TARGETS = ["MQA", "BEM", "Washington Accord"]
+    TODAY = date(2026, 11, 2)
+    GOOD = "Accredited · ABET · 2026-11-02 · https://amspub.abet.org/"
+
+    def check(self, cell, targets=TARGETS):
+        row = make_row(**{"Recognised_in_Malaysia?": cell})
+        return cml.check_accreditation(rows_as_dicts(row), targets, today=self.TODAY)
+
+    def test_each_fixed_result_passes(self):
+        for result in ("Accredited", "Not accredited", "Not on list"):
+            with self.subTest(result=result):
+                self.assertEqual(self.check(f"{result} · ABET · 2026-11-02 · https://amspub.abet.org/"),
+                                 ([], []))
+
+    def test_not_checked_passes_with_a_warning(self):
+        failures, warnings = self.check("Not checked · EAC · 2026-11-02 · http://www.eac.org.my/")
+        self.assertEqual(failures, [])
+        self.assertEqual(len(warnings), 1)
+        self.assertIn("row 2 Test University", warnings[0])
+
+    def test_cell_without_a_fixed_result_fails(self):
+        for cell in ("ABET-accredited; confirm MQA equivalence",
+                     "",
+                     "accredited · ABET · 2026-11-02 · https://amspub.abet.org/",
+                     "Probably accredited · ABET · 2026-11-02 · https://amspub.abet.org/"):
+            with self.subTest(cell=cell):
+                failures, warnings = self.check(cell)
+                self.assertEqual(len(failures), 1)
+                self.assertIn("row 2 Test University", failures[0])
+                self.assertEqual(warnings, [])
+
+    def test_missing_part_fails(self):
+        for cell in ("Accredited",
+                     "Accredited · ABET",
+                     "Accredited · 2026-11-02 · https://amspub.abet.org/",
+                     "Accredited · ABET · https://amspub.abet.org/",
+                     "Accredited · ABET · 2026-11-02",
+                     "Accredited · ABET · 2026-11-02 · amspub.abet.org"):
+            with self.subTest(cell=cell):
+                self.assertEqual(len(self.check(cell)[0]), 1)
+
+    def test_text_after_the_link_fails(self):
+        self.assertEqual(len(self.check(self.GOOD + " · see notes")[0]), 1)
+
+    def test_bad_or_future_date_fails(self):
+        for stamp in ("2026-13-02", "2 Nov 2026", "2026-11-03"):
+            with self.subTest(stamp=stamp):
+                cell = f"Accredited · ABET · {stamp} · https://amspub.abet.org/"
+                self.assertEqual(len(self.check(cell)[0]), 1)
+
+    def test_student_with_no_targets_is_ignored(self):
+        self.assertEqual(self.check("MQA recognised; no professional body needed", targets=[]), ([], []))
+
+    def test_unknown_targets_warn_instead_of_passing_quietly(self):
+        failures, warnings = self.check("ABET-accredited", targets=None)
+        self.assertEqual(failures, [])
+        self.assertEqual(len(warnings), 1)
+        self.assertIn("profile.json", warnings[0])
+
+    def test_cell_passes_the_hedge_and_jargon_checks_on_the_same_row(self):
+        for cell in (self.GOOD,
+                     "Not checked · Washington Accord · 2026-11-02 · http://www.eac.org.my/",
+                     "Accredited · EAC · 2026-11-02 · https://www2.mqa.gov.my/mqr/"):
+            with self.subTest(cell=cell):
+                row = make_row(**{"Recognised_in_Malaysia?": cell})
+                self.assertEqual(cml.check_hedges(rows_as_dicts(row)), ([], []))
+                self.assertEqual(cml.check_jargon(rows_as_dicts(row)), [])
+
+    def run_tool(self, cell, profile):
+        """check_master_list.py as it really runs, on a CSV with a profile.json beside it."""
+        row = make_row(**{"Recognised_in_Malaysia?": cell})
+        with tempfile.TemporaryDirectory() as tmp:
+            csv_path = Path(tmp) / "master_list.csv"
+            with csv_path.open("w", newline="", encoding="utf-8") as f:
+                writer = csv.DictWriter(f, fieldnames=SHORTLIST_HEADERS)
+                writer.writeheader()
+                writer.writerow(row)
+            if profile is not None:
+                (Path(tmp) / "profile.json").write_text(json.dumps(profile), encoding="utf-8")
+            argv = ["check_master_list.py", "--file", str(csv_path), "--check", "accreditation"]
+            with mock.patch.object(sys, "argv", argv), \
+                    contextlib.redirect_stdout(io.StringIO()) as printed, \
+                    self.assertRaises(SystemExit) as stopped:
+                cml.main()
+        return stopped.exception.code, printed.getvalue()
+
+    def test_tool_passes_a_sample_row_and_fails_a_bad_one(self):
+        profile = {"recognition_targets": self.TARGETS}
+        code, printed = self.run_tool(self.GOOD, profile)
+        self.assertEqual(code, 0, printed)
+        code, printed = self.run_tool("ABET-accredited", profile)
+        self.assertEqual(code, 1, printed)
+        self.assertIn("FAIL accreditation", printed)
+
+    def test_tool_says_so_when_there_is_no_profile(self):
+        code, printed = self.run_tool("ABET-accredited", None)
+        self.assertEqual(code, 0)
+        self.assertIn("warn accreditation", printed)
+
+
+class OneDatePerDeadlineCell(unittest.TestCase):
+    """R50: an early round in the cell reads as "Deadline passed" while the regular one is open."""
+
+    def findings(self, cell):
+        return cml.check_deadlines(rows_as_dicts(make_row(Key_deadline=cell)))
+
+    def test_two_date_cell_fails(self):
+        findings = self.findings("2026-11-01 (EA); 2027-01-05 (RD)")
+        self.assertEqual(len(findings), 1)
+        self.assertIn("Key deadline", findings[0])
+        self.assertIn("2 dates", findings[0])
+
+    def test_one_date_cell_passes(self):
+        self.assertEqual(self.findings("2027-01-05"), [])
+
+    def test_regular_date_first_still_fails_with_an_early_date_after_it(self):
+        self.assertEqual(len(self.findings("2027-01-04 (Regular Action; Early Action 2026-11-01)")), 1)
+
+    def test_window_written_in_words_counts_as_two_dates(self):
+        self.assertEqual(len(self.findings("16 Dec 2026 - 17 Feb 2027")), 1)
+        self.assertEqual(len(self.findings("December 16, 2026 to February 17, 2027")), 1)
+
+    def test_iso_date_beside_a_written_date_counts_as_two_dates(self):
+        self.assertEqual(len(self.findings("2027-01-05; Early Action 1 November")), 1)
+
+    def test_one_date_with_a_label_passes(self):
+        self.assertEqual(self.findings("2027-01-13 (UCAS equal consideration)"), [])
+
+    def test_month_and_year_alone_is_not_a_date(self):
+        self.assertEqual(self.findings("2027-02-17 (AY2027/28, opens December 2026)"), [])
+
+    def test_cells_with_no_date_pass(self):
+        for cell in ("Rolling", "Not published", "Not published — check portal", ""):
+            with self.subTest(cell=cell):
+                self.assertEqual(self.findings(cell), [])
+
+    def test_run_reports_it_under_its_own_name(self):
+        row = make_row(Key_deadline="2026-11-01 (EA); 2027-01-05 (RD)")
+        header = list(SHORTLIST_HEADERS)
+        results, _ = cml.run(header, [[row[h] for h in header]], ["deadlines"])
+        self.assertEqual(len(results["deadlines"]), 1)
 
 
 if __name__ == "__main__":

@@ -22,7 +22,7 @@ dispatch — a `row-filler` doing `Course at a glance` and `English req` needs n
 |---|---|
 | `Overall rank` / `Subject rank` | [Rankings](#rankings) |
 | `Scholarship & portal`, `How to get the scholarship`, report §6 *Scholarships & financial aid* | [Malaysian sponsors](#malaysian-sponsors-the-standing-ones) |
-| `Recognition (MQA/body)`, report §9 *Recognition back home* — **a gate for regulated professions** | [Malaysian recognition](#malaysian-recognition--mqa--the-professional-bodies) |
+| `Recognised in Malaysia?`, report §9 *Recognition back home* — **a gate for regulated professions; required when `profile.recognition_targets` isn't empty** | [Malaysian recognition](#malaysian-recognition--mqa--the-professional-bodies) and [Accreditation lists](#accreditation-lists-by-field-and-country) |
 | `English req` when a university's own page is vague about the test itself | [English tests](#english-tests) |
 
 ## How to use an entry
@@ -40,6 +40,8 @@ Each row is **the question it answers → the URL → whether a plain fetch work
   either. Only a session that drives a real browser (the `mcp__claude-in-chrome__*` tools) or
   Evan by hand can read it. Subagents have no browser, so they write `Not checked` and leave
   the lookup to the main session. The row's own note says how to drive the form.
+- **`untested`** — the page was named from a real need but never fetched. Try it; whatever happens,
+  **fix the row** to say what you found.
 
 **If a URL 404s, do not guess a deeper path** — the deep links here are the ones that rot (five of
 the twelve deep paths tried while building this file were already dead). Go up to the section root,
@@ -164,6 +166,29 @@ rule says never to cache here.
 For **Malaysia-as-destination** rows, remember `countries/malaysia.md`'s rule: MQA is a *floor* there
 (every domestic programme has it), so the distinction that scores is the professional ladder —
 EAC/BEM/Washington vs ETAC/MBOT/Sydney.
+
+## Accreditation lists by field and country
+
+**Required for every row of a student whose `profile.recognition_targets` isn't empty** (backlog
+R42). The row's result must come from the accreditor's own list, read for the **exact degree
+title**. A university's own page is not that list: Michigan's robotics degree said ABET-accredited
+and wasn't. The cell's shape and the four results are in `03b_candidate_schema.md`, under
+"`recognised_back_home`". `check_master_list.py` tests the cell (its `accreditation` check).
+
+The **Body** is what goes in the cell. Addresses stay in the one file that owns them.
+
+| Field | Degree from | Body | Address | How to read it | Fetch |
+|---|---|---|---|---|---|
+| Engineering | Malaysia | EAC | `03b_candidate_schema.md`, the EAC register note | Its per-university PDFs are blocked, so read MQR (rows above): it gives the professional body and the accreditation window. Check the window's end date. | **blocked** (EAC), free (MQR) |
+| Engineering | USA | ABET | `countries/usa.md`, ABET row | Find the university, then the exact degree title. A similar title at the same university doesn't count. | untested |
+| Engineering | Taiwan | IEET | `countries/taiwan.md`, IEET row | Accreditation is per programme, so find the exact degree. | untested |
+| Medicine | Any | MMC | Malaysian recognition table above | Malaysia's own list of recognised medical programmes. Find the university and the exact degree. | untested |
+| Law | UK, Australia, New Zealand | LPQB | LPQB list note above | A named list. A university missing from it means `Not on list`. Note any effective date in `research_notes`. | **blocked** |
+
+**No row for your field and country, or a list you still can't read after Firecrawl:** write
+`Not checked` and say which in your reply. Helpers can't edit this file. The main session adds the
+row the first time a real buyer needs it (Evan, 2026-10-30: no testing in advance), starting from
+the body's home page in the table above or the country file's "Known-good sources".
 
 ## English tests
 

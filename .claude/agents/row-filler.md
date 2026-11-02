@@ -46,6 +46,8 @@ anyway is the exact cost this mode exists to avoid.
      file — read it only for that. Same rule as everything else here: it's a location to fetch,
      never a fee/deadline/rank to copy. If a URL there 404s, use the sentinel for that cell and
      note the dead link in `research_notes` rather than guessing a new path.
+   - **`profile.recognition_targets` isn't empty?** Read `workflows/sources.md` → "Accreditation
+     lists by field and country". This one is required: see `recognised_back_home` below.
 2. **The candidate schema at `workflows/03b_candidate_schema.md`** — every required field,
    the field notes, the `entry_margin` vs `admission_likelihood` distinction, the cell-budget
    readability rules, and the 0-5 scoring guide. Read it in full; this is what "the schema" and
@@ -65,7 +67,7 @@ anyway is the exact cost this mode exists to avoid.
    you assign is *relative to this student*, so you cannot score without reading them. —
    **discovery: always.** **Backfill: only if one of your columns actually depends on the
    student** — scholarship eligibility does (nationality, ethnicity-gated funds, budget),
-   `Overall rank` and `Key deadline` do not. Your prompt usually summarises the profile;
+   `Recognised in Malaysia?` does (`recognition_targets`), `Overall rank` and `Key deadline` do not. Your prompt usually summarises the profile;
    trust it and don't re-read the files for a rank lookup.
 
 ## What you produce — discovery mode
@@ -125,9 +127,9 @@ the write fence (`.tmp/<slug>/` only; never `master_list.csv`, never any of the 
   (via Bash/PowerShell) on that page. It costs credits; spend them, no permission needed.
   Always pass your own `--out` — siblings are running concurrently and the tool overwrites.
 - **Official pages only for hard facts.** Fees, entry requirements, English requirements,
-  deadlines, intake, recognition come from the university's own pages (or UCAS / Common
-  App / the visa authority / MQA). Aggregators are for *finding* the official page, never
-  for quoting a number. Stamp `source_authority: "Official page"` only when you actually
+  deadlines and intake come from the university's own pages (or UCAS / Common App / the visa
+  authority). Accreditation comes from the accreditor's own list (`recognised_back_home` below).
+  Aggregators are for *finding* the official page, never for quoting a number. Stamp `source_authority: "Official page"` only when you actually
   read the official page; leave `"Not verified"` if you could not.
 - **`English req` states the test bar; a waiver only in the university's own words.** Write the
   test and score (and any accepted English-subject grade, e.g. SPM English 1119, IGCSE English).
@@ -169,7 +171,22 @@ the write fence (`.tmp/<slug>/` only; never `master_list.csv`, never any of the 
     says "None published", or your university isn't one it covers (UK: all but Oxford and
     Cambridge) → `Not published`. Never from an aggregator, ranking site, news story or UCAS
     acceptance data.
-  - **`key_deadline`**: `YYYY-MM-DD`, `Rolling` or `Not published`.
+  - **`key_deadline`**: `YYYY-MM-DD`, `Rolling` or `Not published`. **One date only: the regular
+    round's**, for the row's intake. That's the round the university calls Regular, Main or
+    Standard. Only one round → its date. A window → its closing date. Numbered rounds with none
+    called regular → the last one open to international applicants. Early rounds (Early Action,
+    Early Decision, priority) and any other date go in `research_notes`, never the cell. The list
+    warns "Deadline passed" from this date, so an early date marks a row closed while its regular
+    round is open. `check_master_list.py` fails a cell with more than one date; the merge doesn't.
+  - **`recognised_back_home`** (the `Recognised in Malaysia?` column), **a required step when
+    `profile.recognition_targets` isn't empty.** Read the exact degree on the accreditor's own
+    list (`workflows/sources.md` → "Accreditation lists by field and country"), then write
+    `<result> · <body> · YYYY-MM-DD · <link>`, e.g.
+    `Accredited · ABET · 2026-11-02 · https://amspub.abet.org/`. The result is `Accredited`,
+    `Not accredited`, `Not on list` or `Not checked`; `workflows/03b_candidate_schema.md` says
+    which. The university's own page alone is `Not checked`, whatever it claims. No table row, or
+    a list still blocked after Firecrawl → `Not checked`, and name it in your `Gaps/flags` line.
+    `check_master_list.py` fails anything else. With no targets, this stays a plain sentence.
   - **`apply_link`**: the official page where this course is applied for: the university's own
     portal page, or `https://www.commonapp.org/` / `https://www.ucas.com/` when that is the route.
   - **`scholarship_link`**: the official page of the scholarship named in `scholarship_portal`.

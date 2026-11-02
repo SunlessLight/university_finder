@@ -93,11 +93,38 @@ from tuition + living × duration"*, which is the normal case.
     university's stated bar. It is a strict identity check, so the string `"No"` does **not** trigger
     the flag. The requirement itself goes in `english_req`, which *is* a column.
 - **Fixed-format fields** — money, ranks, `application_requirements`, `checked_on`, `admit_rate`,
-  `key_deadline`, `apply_link`, `scholarship_link` — follow `.claude/agents/row-filler.md` → "Fixed-format cells" (shapes, vocabulary,
+  `apply_link`, `scholarship_link` — follow `.claude/agents/row-filler.md` → "Fixed-format cells" (shapes, vocabulary,
   sources); `merge_candidates.py` rejects a miss. No hedge words (`likely`, `usually`, `confirm`, `~`)
   in any field that becomes a cell; doubt and calculations go in `research_notes`.
-- Put a date in `key_deadline` as `YYYY-MM-DD` so it parses. Where the university publishes none,
-  write the sentinel — `Rolling` or `Not published`.
+- Put **one** date in `key_deadline`, as `YYYY-MM-DD` so it parses: the regular round's. Early rounds
+  go in `research_notes`, never the cell (backlog R50; `check_master_list.py` fails more than one
+  date, and `merge_candidates.py` doesn't test this field). Which round counts where none is called
+  regular: `.claude/agents/row-filler.md` → "Fixed-format cells". Where the university publishes
+  none, write the sentinel — `Rolling` or `Not published`.
+- **`recognised_back_home` is a checked result when `profile.recognition_targets` isn't empty**
+  (backlog R42; `check_master_list.py` fails anything else). Read the exact degree on the
+  accreditor's own list (`sources.md` → "Accreditation lists by field and country"), then write:
+  ```
+  <result> · <body> · YYYY-MM-DD · <link>
+  Accredited · ABET · 2026-11-02 · https://amspub.abet.org/
+  ```
+  | Result | When |
+  |---|---|
+  | `Accredited` | The exact degree is on the list |
+  | `Not accredited` | The list shows it isn't, or that its accreditation has ended |
+  | `Not on list` | You read the list and the degree isn't there |
+  | `Not checked` | You couldn't read the list, or `sources.md` has no row for this field and country. A university's own page alone lands here too, whatever it claims |
+
+  - **Body** is the accreditor `sources.md` names, not whichever badge the degree holds: an ETAC
+    degree for a student targeting BEM is `Not on list · EAC`. Don't write `MQR` as the body; it's
+    a place to read, not an accreditor.
+  - **Date** is the day you read the list. **Link** is where you read it; if the exact page pushes
+    the cell over its 160-character budget, use the list's main address and put the exact page in
+    `research_notes`. Nothing goes after the link: caveats go in `research_notes`.
+  - **The result sets `recognition_fit`.** `Not accredited` or `Not on list`: **2 or less**, which
+    raises the `Recognition risk` warning. `Not checked`: **3 at most**, because that warning says
+    "not found on the list" and nobody looked.
+  - With empty targets, this stays a plain sentence, as in the example above.
 - **`source_authority` is `"Official page"` at Stage 3 now**, because Stage 3 is where hard facts get
   verified (the pre-flight moved here on 2026-07-29 — Stage 4 is report-only). Leave `"Not verified"`
   **only** on a row whose facts you genuinely could not confirm on an official page, and say which fact
@@ -164,7 +191,7 @@ from tuition + living × duration"*, which is the normal case.
 - `scholarship_opportunity` — realistic funding this student could actually get.
 - `experiential_fit` — hands-on opportunities: projects, research, community involvement, not just exams.
 - `location_pref_fit` — matches stated location/lifestyle preferences.
-- `recognition_fit` — recognised back home (MQA + professional body) where it matters.
+- `recognition_fit` — recognised back home (MQA + professional body) where it matters. With targets, the `recognised_back_home` result caps it (field notes above).
 
 > **Scoring `recognition_fit` for HOME-COUNTRY (Malaysian) rows — MQA is a floor, not a distinction.**
 > Every Malaysian programme is MQA-registered, so scoring MQA as recognition makes *every* domestic row
@@ -181,6 +208,10 @@ from tuition + living × duration"*, which is the normal case.
 > preference. Check `profile.recognition_targets`: if it names **BEM / Washington Accord**, an ETAC row
 > **fails the student's own gate even when the course title matches perfectly** — that's a real negative
 > finding worth keeping on the list, not a row to quietly score well.
+>
+> **The tell-tales and work-arounds below pick the ladder; they don't fill the cell.** Used alone, a
+> university's own page or FAQ gives `Not checked` (see `recognised_back_home` above). `Accredited`
+> needs the list itself, and for Malaysian rows that means MQR.
 >
 > **Tell-tales when the page doesn't name the accreditor** (common — programme pages often omit it):
 > - The **degree title** is the strongest signal: "Engineering **Technology**" ⇒ ETAC.

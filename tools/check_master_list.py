@@ -21,7 +21,24 @@ Checks (use --check to run a subset while working through a fix):
                warning on "Not verified" rows (warnings never change the exit code)
   numbers      money/rank/date/admit-rate cells off their fixed shape (cell_format_problem)
   requirements "Application requirements" outside the fixed vocabulary
+  accreditation  rows of a student with recognition_targets: "Recognised in Malaysia?" must be
+               one fixed result + body + date + link. "Not checked" passes with a warning
+  deadlines    "Key deadline" holding more than one date
   status       status.md over STATUS_BUDGET chars (--student mode only)
+
+2026-11-02 (backlog R50): deadlines added. _parse_iso_date reads a cell's first date, so
+"2026-11-01 (EA); 2027-01-05 (RD)" read as passed while the regular round was open, and leading
+with the regular date only hides the same fault. The cell holds the regular round's date; early
+rounds go to research_notes. Written dates count too: "16 Dec 2026 - 17 Feb 2027" is the same
+fault. Only this gate tests it: Key deadline isn't in FORMATTED_COLUMNS, so merge_candidates.py
+and apply_backfill.py let a two-date cell through.
+
+2026-11-02 (backlog R42): accreditation added. Michigan's robotics degree read "ABET-accredited"
+from the university's own page and wasn't, and nothing looked past "the cell isn't blank". A CSV
+doesn't hold the student's targets, so they come from the profile.json beside it (--student and
+--file alike); with no profile the check warns rather than passing quietly. Decided in T2: a
+blocked list must not stop a list going out, so "Not checked" warns instead of failing. Tighten
+that once the first real buyer shows which accreditor sites can be read.
 
 2026-10-30 (plans/list_pdf_plan.md T4, backlog R28): hedges, numbers and requirements added.
 Word lists are the regex table in fact_audit/08_output_sweep.md, with "~" allowed only as
@@ -62,6 +79,7 @@ Usage:
 
 import argparse
 import csv
+import json
 import re
 import sys
 from pathlib import Path
@@ -176,8 +194,34 @@ HEDGE_PATTERNS = [re.compile(p, re.IGNORECASE) for p in (
 NUMBER_COLUMNS = [c for c in FORMATTED_COLUMNS if c != "Application requirements"]
 REQUIREMENT_COLUMNS = ["Application requirements"]
 
+# The cell a regulated row must fill from the accreditor's own list (R42). Rules for the four
+# results: workflows/03b_candidate_schema.md. http:// is allowed because EAC serves nothing else
+# (workflows/sources.md), which is why this isn't cell_format_problem()'s https-only link rule.
+RECOGNITION_COLUMN = "Recognised in Malaysia?"
+RECOGNITION_RESULTS = ("Accredited", "Not accredited", "Not on list", "Not checked")
+RECOGNITION_NOT_CHECKED = "Not checked"
+RECOGNITION_FORMAT = "'<result> · <body> · YYYY-MM-DD · <link>'"
+_RECOGNITION_RE = re.compile(
+    rf"^({'|'.join(RECOGNITION_RESULTS)}) · ([^·]*\S) · (\S+) · (https?://\S+)$")
+
+# A date in a Key deadline cell, ISO or written (R50). A month and year alone ("December 2026")
+# names no day, so it isn't one.
+_MONTH = (r"(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|june?|july?|aug(?:ust)?"
+          r"|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)")
+_DATE_RE = re.compile(rf"\b\d{{4}}-\d{{2}}-\d{{2}}\b"
+                      rf"|\b\d{{1,2}}(?:st|nd|rd|th)?\s+{_MONTH}\b"
+                      rf"|\b{_MONTH}\s+\d{{1,2}}(?:st|nd|rd|th)?\b", re.IGNORECASE)
+
 CHECKS = ["schema", "completeness", "budget", "plausibility", "jargon", "values",
-          "contradiction", "hedges", "numbers", "requirements", "status"]
+          "contradiction", "hedges", "numbers", "requirements", "accreditation", "deadlines",
+          "status"]
+
+# What each check's warnings mean, printed on the "warn" line.
+WARNING_NOTES = {
+    "hedges": f"on \"{INFO_SOURCE_UNVERIFIED}\" rows; clear them before stamping the row "
+              f"\"{INFO_SOURCE_OFFICIAL}\"",
+    "accreditation": "read these before the list goes to a student",
+}
 
 # Every sentinel string, whatever column it belongs to — used to catch one being used
 # in a column that doesn't allow it (see check_completeness).
@@ -483,6 +527,72 @@ def check_requirements(rows_as_dicts):
     return _format_findings(rows_as_dicts, REQUIREMENT_COLUMNS)
 
 
+def recognition_problem(value, today=None):
+    """Why `value` isn't a fixed accreditation result, or None when it is one."""
+    text = str(value or "").strip()
+    m = _RECOGNITION_RE.match(text)
+    if not m:
+        return (f"{text!r} is not {RECOGNITION_FORMAT}, with the result one of "
+                f"{list(RECOGNITION_RESULTS)}")
+    return cell_format_problem("Checked on", m.group(3), today=today)
+
+
+def load_targets(csv_path):
+    """The student's recognition_targets from the profile.json beside the CSV.
+
+    [] means recognition is no gate for this student; None means there is no profile to ask.
+    """
+    profile_path = csv_path.parent / "profile.json"
+    if not profile_path.exists():
+        return None
+    profile = json.loads(profile_path.read_text(encoding="utf-8"))
+    return profile.get("recognition_targets") or []
+
+
+def check_accreditation(rows_as_dicts, targets, today=None):
+    """(failures, warnings): the accreditor's-list result on a regulated student's rows (R42).
+
+    A row with no fixed result fails, blank cells included: this is a gate, so it doesn't lean
+    on the completeness check still being in the --check list. "Not checked" is honest and
+    passes, but stays visible as a warning. An ordinary student (no targets) isn't judged here.
+    """
+    if targets is None:
+        return [], ["no profile.json beside this list, so its recognition targets are unknown "
+                    "and this check did not run"]
+    if not targets:
+        return [], []
+    failures, warnings = [], []
+    for n, row in rows_as_dicts:
+        uni = row.get("University", "?")[:32]
+        cell = (row.get(RECOGNITION_COLUMN) or "").strip()
+        problem = recognition_problem(cell, today=today)
+        if problem:
+            failures.append(f"row {n} {uni} — {RECOGNITION_COLUMN}: {problem}")
+        elif cell.startswith(RECOGNITION_NOT_CHECKED):
+            warnings.append(f"row {n} {uni} — {cell}")
+    return failures, warnings
+
+
+def deadline_problem(value):
+    """Why a Key deadline cell breaks the one-date rule, or None when it holds one date or none."""
+    dates = _DATE_RE.findall(str(value or ""))
+    if len(dates) > 1:
+        return (f"{len(dates)} dates in one cell ({', '.join(dates)}): keep the regular round's "
+                f"date, early rounds go in research_notes")
+    return None
+
+
+def check_deadlines(rows_as_dicts):
+    """"Key deadline" cells holding more than one date (R50)."""
+    out = []
+    for n, row in rows_as_dicts:
+        uni = row.get("University", "?")[:32]
+        problem = deadline_problem(row.get("Key deadline"))
+        if problem:
+            out.append(f"row {n} {uni} — Key deadline: {problem}")
+    return out
+
+
 def check_status(status_path):
     """status.md over STATUS_BUDGET chars — it's a snapshot read at the start of every
     /catchup, /longlist, /report, /decide and /apply-prep session, not a growing log.
@@ -505,7 +615,7 @@ def upgraded(header, rows):
         return None
 
 
-def run(header, rows, wanted, status_path=None, today=None):
+def run(header, rows, wanted, status_path=None, today=None, targets=None):
     """(results, warnings): check name -> findings. Only `results` decides the exit code."""
     results, warnings = {}, {}
     if "schema" in wanted:
@@ -539,6 +649,11 @@ def run(header, rows, wanted, status_path=None, today=None):
         results["numbers"] = check_numbers(rows_as_dicts, today=today)
     if "requirements" in wanted:
         results["requirements"] = check_requirements(rows_as_dicts)
+    if "accreditation" in wanted:
+        results["accreditation"], warnings["accreditation"] = check_accreditation(
+            rows_as_dicts, targets, today=today)
+    if "deadlines" in wanted:
+        results["deadlines"] = check_deadlines(rows_as_dicts)
     return results, warnings
 
 
@@ -589,7 +704,8 @@ def main():
         print_blanks(csv_path, [(i, dict(zip(header, r))) for i, r in enumerate(rows, start=2)])
         return
 
-    results, warnings = run(header, rows, wanted, status_path=status_path)
+    results, warnings = run(header, rows, wanted, status_path=status_path,
+                            targets=load_targets(csv_path))
 
     def show(findings):
         for line in findings[:args.limit]:
@@ -611,8 +727,7 @@ def main():
             print(f"  FAIL {name} ({len(findings)})")
             show(findings)
         if warnings.get(name):
-            print(f"  warn {name} ({len(warnings[name])}) — on \"{INFO_SOURCE_UNVERIFIED}\" rows; "
-                  f"clear them before stamping the row \"{INFO_SOURCE_OFFICIAL}\"")
+            print(f"  warn {name} ({len(warnings[name])}) — {WARNING_NOTES[name]}")
             show(warnings[name])
 
     sys.exit(1 if total else 0)
