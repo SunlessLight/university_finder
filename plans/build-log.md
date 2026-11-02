@@ -363,3 +363,21 @@ Entry format:
 - Decisions (and why): the public Australian PDF in `data/resources/` stays out of git (658 KB, no tool needs it). Default: add that folder to `.gitignore` later and keep the PDF on the laptop.
 - Problems / lessons: this session didn't write the R33 code. The commit-drafter read the diff, and entry 22 only came to light after the commit, so if the step 9 session is still working, it should check `bb562cb` before redoing anything. **`plans/additionals.md` not edited (rule 5):** two other sessions were open (both idle). Owed there: delete the R33 entry, take R33 and `tools/flip_finalists.py` out of step 9's row (R34 stays), move "next number" to R54, and add R53: "#### R53. Two Finalist rows on one old list aren't stamped Official page. **Added 2026-10-31** (R33's commit). **Stale data, urgent only if that list goes out again.** **What is true:** the commit-drafter counted 2 such rows on 1 of 27 lists; the list and the rows' values weren't read. `check_master_list.py` fails only the value `Not verified`, so the list fails only if the rows read that. **Suggested fix:** verify them on the official pages, then correct them through `apply_backfill.py`."
 - Next step: once no other session is on `plans/additionals.md`, make the edits above. Then R34, the rest of step 9.
+
+## 2026-11-02 · Task list checked against today's files; past clients parked
+- Done: tested the entries in `plans/additionals.md` against the code and the 27 lists (read-only). Evan parked all past-client work; recorded in the "Closed" section there, `decisions/log.md` and memory.
+- Decisions (and why): see `decisions/log.md`.
+- Problems / lessons: found but not yet edited in `plans/additionals.md`: R33 is done (entry 23's owed edits still stand), R46 and O12 can close, R36, R50, R42 and R35 need rewriting, R30's dated and money lines print in paid PDFs so should move before 10 Nov. No student folder has a `list.pdf` or tick weights yet, so the first paid list is the first real run.
+- Next step: step 9 (R34), because two report buyers have paid.
+
+## 2026-11-02 · One client's NUS and China facts re-checked (/catchup)
+- Done: re-read the NUS, Tsinghua, ZJU and BIT reports against live official pages. NUS holds. China dates and scholarship routes are stale or wrong. Fixed that student's `status.md`, wrote the detail to their `research_notes.md`, added R53.
+- Decisions (and why): changed no CSV, report or calendar, because Evan asked for a check and two answers are still owed by Tsinghua and the embassy.
+- Problems / lessons: NUS pages come back empty through WebFetch but read fine through `firecrawl_search.py --scrape-top`. PDFs that WebFetch can't read open with the Read tool or pypdf. An embassy result for another country looks like Malaysia's in search (mv = Maldives).
+- Next step: decide the Tsinghua round this week (Round 1 closes 20 Nov), then R53.
+
+## 2026-11-02 · Chinese-taught routes researched, deadlines put in Notion
+- Done: read Tsinghua's and ZJU's rules for Chinese-taught engineering. Added 19 dated tasks and research notes to the student's own Singapore and China projects in Notion, at their request.
+- Decisions (and why): NUS tasks sit under the existing NUS task, matching that project. Estimated dates say so in the task title. Reports and CSV still unchanged; R53 now also covers the wrong "closed to internationals" line.
+- Problems / lessons: nothing official states textbook language at ZJU, and no first-hand Malaysian account turned up, so the emails carry that question.
+- Next step: send the Tsinghua email, then decide track and round by 13 Nov.

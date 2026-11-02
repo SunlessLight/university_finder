@@ -9,7 +9,7 @@ done, delete it and its line in the steps below, and write one line in `plans/bu
 History: the full file up to 2026-10-28 (every closed entry, the old lane and round plans) is in
 git: `git show 10b847c:business/additionals.md`. Decisions are in `decisions/log.md`.*
 
-*Adding an entry: the next number is **R53**. Say whether it is **urgent**, and whether it is a
+*Adding an entry: the next number is **R54**. Say whether it is **urgent**, and whether it is a
 **tool gap** (the system will keep making the mistake) or **stale data** (old files only). Plain
 English, no student named, no grades, income or school. Then add it to a step below.*
 
@@ -38,6 +38,7 @@ English, no student named, no grades, income or school. Then add it to a step be
 | **2e** | R42 (accreditation check on every regulated row; plan first) | `workflows/sources.md`, `workflows/03b_candidate_schema.md`, `.claude/agents/row-filler.md`, `tools/check_master_list.py` | an approved plan | Medium |
 | **2g** | R51 (Monash's link in the sample) | the source student's `master_list.csv`; `business/sales/sample_pack/`; `prototype/data.js`, `prototype/_build/` | nothing | Small |
 | **2h** | R50 (deadline cells that open with an early round) | `.claude/agents/row-filler.md`, `workflows/03b_candidate_schema.md` | not alongside 2e (same files) | Small |
+| **2i** | R53 (China rows: stale dates, scholarship routes the programme may not allow) | the affected student's `master_list.csv`, report JSONs and calendar; `.claude/agents/row-filler.md`, `.claude/agents/report-writer.md` | Tsinghua's and the embassy's replies for the last two cells; the rest needs nothing | Medium |
 | **2i** | R52 (the public report and guide samples) | the source student's report and guide JSON; `business/sales/sample_pack/` | step 9 | Medium |
 | **9** | R33, R34 (reports; plan R34 first). **Moved up 2026-10-31: two report buyers have paid**, so this comes before the first paid report goes out | `tools/flip_finalists.py`, `tools/build_report.py`, `tools/check_report.py`, `workflows/04_university_report.md`, `.claude/agents/report-writer.md` | nothing | Medium |
 
@@ -82,10 +83,22 @@ with nine detailed reports beside it. Each entry names its report and finding nu
   finished. Only what the sample pack shows still counts (SP1).
 - **S4's open question** (who looks foreign degrees up on the Malaysian register): stays the
   default, a session in Chrome (`workflows/sources.md`).
+- **Past clients, on request only (Evan, 2026-11-02):** they were all free trials, so nothing is
+  done for them until one asks. Parked, entries kept for that day: steps 4, 5, 6 and I9, L2, R16,
+  R17, R21, R39, R47, I3, I4. Sample pack work on the source student's list (R51, R52) is for the
+  public, so it stays.
 
 ---
 
 ## Before 10 Nov
+
+#### R53. China rows carry last cycle's dates and a scholarship route the programme may not allow
+
+**Urgent for one client (a real deadline on 20 Nov). Both tool gap and stale data.** A live re-check on 2 Nov found four China finalists wrong in the CSV, reports and calendar. Four things: (1) Tsinghua now has two rounds and the first closes 20 Nov, but only the 28 Feb date is on file. (2) The Chinese Government Scholarship is written up as a full ride on English-taught rows, yet ZJU and BIT both publish it as Chinese-taught only, and Tsinghua's own programme guide doesn't list it. (3) BIT and ZJU rows still offer Type B, which ZJU says doesn't cover undergraduates. (4) CSCA dates are guesses and "every applicant must sit it" is too broad, because Tsinghua only lists it as one accepted test. Detail is in that student's `research_notes.md`, 2026-11-02. Later the same day: (5) the Tsinghua report says the Department of Mechanical Engineering degree is closed to international students. It's wrong: that major is offered in Tsinghua's Chinese-English track at RMB 30,000 a year, with HSK 5 or a waiver. No report compares it yet.
+
+**Why the system keeps doing it:** nothing tells a helper to check a scholarship against the programme's teaching language, and China dates get projected from an old embassy notice, whose country and cycle aren't recorded.
+
+**Suggested fix:** correct the rows through `apply_backfill.py`, the report JSONs and the calendar, then rebuild. Add two lines to `row-filler` and `report-writer`: check each scholarship against the teaching language, and record the cycle and country of any embassy notice. Link it to R50 and R42.
 
 #### R52. The public report and guide samples still show AI notes and coaching
 
